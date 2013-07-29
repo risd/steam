@@ -20,6 +20,9 @@ class Migration(SchemaMigration):
         db.create_table(u'backend_steamies', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('zip_code', self.gf('django.db.models.fields.CharField')(max_length=15)),
+            ('latitude', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('longitude', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('geohash', self.gf('django.db.models.fields.CharField')(max_length=50, null=True, blank=True)),
             ('engaged_as', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
             ('work_in', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
             ('tags', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
@@ -98,8 +101,11 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Steamies'},
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'engaged_as': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
+            'geohash': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'initiaive': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['backend.Initiaive']", 'null': 'True', 'blank': 'True'}),
+            'latitude': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'longitude': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'tags': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'work_in': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
             'zip_code': ('django.db.models.fields.CharField', [], {'max_length': '15'})
