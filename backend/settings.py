@@ -2,7 +2,8 @@
 
 # parse database configuration from $DATABASE_URL
 import dj_database_url
-DATABASES = dj_database_url.config()
+DATABASES = {}
+DATABASES['default'] = dj_database_url.config()
 DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
 # honor the 'x-forwarded-proto' header fro request.is_secure()
