@@ -31,6 +31,20 @@ class Steamies(models.Model):
         blank=False,
         null=False)
 
+    # populated based on zip
+    latitude = models.FloatField(
+        blank=True,
+        null=True)
+
+    longitude = models.FloatField(
+        blank=True,
+        null=True)
+
+    geohash = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True)
+
     # optional
     engaged_as = models.CharField(
         max_length=30,
