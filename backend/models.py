@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext as _
 
 
-class Initiaive(models.Model):
+class Initiative(models.Model):
     # optional
     title = models.CharField(
         'Title',
@@ -15,8 +15,8 @@ class Initiaive(models.Model):
         null=True)
 
     class Meta:
-        verbose_name = _('Initiaive')
-        verbose_name_plural = _('Initiaives')
+        verbose_name = _('Initiative')
+        verbose_name_plural = _('Initiatives')
 
     def __unicode__(self):
         pass
@@ -66,8 +66,8 @@ class Steamies(models.Model):
         blank=True,
         null=True)
 
-    initiaive = models.ForeignKey(
-        Initiaive,
+    initiative = models.ForeignKey(
+        Initiative,
         blank=True,
         null=True)
 
