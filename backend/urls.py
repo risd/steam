@@ -18,6 +18,15 @@ urlpatterns = patterns(
     url(r'^$', 'backend.views.home', name='home'),
     # url(r'^backend/', include('backend.foo.urls')),
     url(r'api/', include(v1_api.urls)),
+    url(r'auth_options/',
+        'backend.views.auth_options',
+        name='auth_options'),
+
+    url(r'auth_test/',
+        'backend.views.auth_test',
+        name='auth_options'),
+
+    url(r'', include('social_auth.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

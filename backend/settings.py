@@ -1,4 +1,17 @@
 # Django settings for backend project.
+import os
+
+APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def env_var(key, default=None):
+    """Retrieves env vars and makes Python boolean replacements"""
+    val = os.environ.get(key, default)
+    if val == 'True':
+        val = True
+    elif val == 'False':
+        val = False
+    return val
 
 # parse database configuration from $DATABASE_URL
 import dj_database_url
@@ -19,7 +32,7 @@ DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
-DEBUG = True
+DEBUG = env_var('DEBUG', False)
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -90,7 +103,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '=!zpt+l%d2c3cuf8gcifzf=0)xt#g2erwv9gsnr^%tx(xf*!s7'
+SECRET_KEY = env_var('DJANGO_SECRET_KEY')
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -107,7 +120,12 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'backend.middleware.crossdomainxhr.XsSharingMiddleware'
+
+    # 3rd party
+    'social_auth.middleware.SocialAuthExceptionMiddleware',
+
+    # local
+    'backend.middleware.crossdomainxhr.XsSharingMiddleware',
 )
 
 ROOT_URLCONF = 'backend.urls'
@@ -119,6 +137,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.normpath(os.path.join(APP_ROOT, 'templates')),
 )
 
 INSTALLED_APPS = (
@@ -136,6 +155,7 @@ INSTALLED_APPS = (
     # 3rd party
     'south',
     'tastypie',
+    'social_auth',
 
     # primary
     'backend',
@@ -177,3 +197,28 @@ XS_SHARING_ALLOWED_METHODS = ['POST', 'GET']
 XS_SHARING_ALLOWED_HEADERS = ['Content-Type', 'application/json']
 XS_SHARING_ALLOWED_CREDENTIALS = 'true'
 ### end Tastypie config
+
+### Social auth config
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.twitter.TwitterBackend',
+    'social_auth.backends.facebook.FacebookBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+TWITTER_CONSUMER_KEY = env_var('TWITTER_CONSUMER_KEY')
+TWITTER_CONSUMER_SECRET = env_var('TWITTER_CONSUMER_SECRET')
+FACEBOOK_APP_ID = ''
+FACEBOOK_API_SECRET = ''
+
+# LOGIN_URL = '/login-form/'
+# LOGIN_REDIRECT_URL = '/logged-in/'
+# LOGIN_ERROR_URL = '/login-error/'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'social_auth.context_processors.social_auth_by_name_backends',
+    'social_auth.context_processors.social_auth_backends',
+    'social_auth.context_processors.social_auth_by_type_backends',
+    'social_auth.context_processors.social_auth_login_redirect',
+)
+### end Social auth config
