@@ -107,6 +107,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'backend.middleware.crossdomainxhr.XsSharingMiddleware'
 )
 
 ROOT_URLCONF = 'backend.urls'
@@ -168,3 +169,11 @@ LOGGING = {
         },
     }
 }
+
+
+### Tastypie config
+XS_SHARING_ALLOWED_ORIGINS = '*'
+XS_SHARING_ALLOWED_METHODS = ['POST', 'GET']
+XS_SHARING_ALLOWED_HEADERS = ['Content-Type', 'application/json']
+XS_SHARING_ALLOWED_CREDENTIALS = 'true'
+### end Tastypie config
