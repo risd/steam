@@ -18,9 +18,6 @@ urlpatterns = patterns(
     url(r'^$', 'backend.views.home', name='home'),
     # url(r'^backend/', include('backend.foo.urls')),
     url(r'api/', include(v1_api.urls)),
-    url(r'auth_options/',
-        'backend.views.auth_options',
-        name='auth_options'),
 
     url(r'auth_test/',
         'backend.views.auth_test',

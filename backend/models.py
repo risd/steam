@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext as _
 
+from .signals.zipcodes import Zipcode
+
 
 class Initiative(models.Model):
     # optional
@@ -155,3 +157,15 @@ class Individual(Steamies):
 
     def __unicode__(self):
         pass
+
+
+def add_geo(sender, instance, created, *args, **kwargs):
+    if created:
+        print "created"
+        zipcode = Zipcode()
+        geo = zipcode.geo(instance.zip_code)
+        instance.longitude = geo['lon']
+        instance.latitude = geo['lat']
+
+models.signals.post_save.connect(add_geo, sender=Institution)
+models.signals.post_save.connect(add_geo, sender=Institution)

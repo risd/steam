@@ -202,17 +202,17 @@ XS_SHARING_ALLOWED_CREDENTIALS = 'true'
 AUTHENTICATION_BACKENDS = (
     'social_auth.backends.twitter.TwitterBackend',
     'social_auth.backends.facebook.FacebookBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    # 'django.contrib.auth.backends.ModelBackend',
 )
 
 TWITTER_CONSUMER_KEY = env_var('TWITTER_CONSUMER_KEY')
 TWITTER_CONSUMER_SECRET = env_var('TWITTER_CONSUMER_SECRET')
-FACEBOOK_APP_ID = ''
-FACEBOOK_API_SECRET = ''
+FACEBOOK_APP_ID = env_var('FACEBOOK_APP_ID')
+FACEBOOK_API_SECRET = env_var('FACEBOOK_API_SECRET')
 
 # LOGIN_URL = '/login-form/'
 # LOGIN_REDIRECT_URL = '/logged-in/'
-# LOGIN_ERROR_URL = '/login-error/'
+LOGIN_ERROR_URL = '/login-error/'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -221,4 +221,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_by_type_backends',
     'social_auth.context_processors.social_auth_login_redirect',
 )
+
+SOCIAL_AUTH_ENABLED_BACKENDS = ('twitter',)
 ### end Social auth config
