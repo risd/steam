@@ -47,6 +47,16 @@ class Steamies(models.Model):
         blank=True,
         null=True)
 
+    us_bool = models.BooleanField(
+        'In United States?',
+        default=False)
+
+    us_state = models.CharField(
+        'United State Abbreviation',
+        max_length=3,
+        blank=True,
+        null=True)
+
     # optional
     engaged_as = models.CharField(
         max_length=30,
@@ -162,10 +172,12 @@ class Individual(Steamies):
 def add_geo(sender, instance, created, *args, **kwargs):
     if created:
         print "created"
-        zipcode = Zipcode()
-        geo = zipcode.geo(instance.zip_code)
-        instance.longitude = geo['lon']
-        instance.latitude = geo['lat']
+        if instance.zip_code:
+            # must have a zipcode
+            zipcode = Zipcode()
+            geo = zipcode.geo(instance.zip_code)
+            instance.longitude = geo['lon']
+            instance.latitude = geo['lat']
 
 models.signals.post_save.connect(add_geo, sender=Institution)
-models.signals.post_save.connect(add_geo, sender=Institution)
+models.signals.post_save.connect(add_geo, sender=Individual)
