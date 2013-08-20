@@ -9,9 +9,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         try:
+            print 'Deleting Initiative models'
             Initiative.objects.all().delete()
+
+            print 'Deleting Institution models'
             Institution.objects.all().delete()
-            Initiative.objects.all().delete()
+
+            print 'Deleting Individual models'
+            Individual.objects.all().delete()
 
         except CommandError as detail:
             print 'Error deleting data! ' +\

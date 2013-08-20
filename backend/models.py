@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from .signals.zipcodes import Zipcode
+from .signals.geo import Geo
 
 
 class Initiative(models.Model):
@@ -51,7 +51,10 @@ class Steamies(models.Model):
         'In United States?',
         default=False)
 
-    us_state = models.CharField(
+    # captures the top level region that data
+    # will be associated with. Either a US State,
+    # or a country
+    level_1 = models.CharField(
         'United State Abbreviation',
         max_length=3,
         blank=True,
@@ -88,7 +91,7 @@ class Steamies(models.Model):
         verbose_name_plural = _("Steamies'")
 
     def __unicode__(self):
-        pass
+        return self.zip_code
 
 
 class Institution(Steamies):
@@ -123,7 +126,7 @@ class Institution(Steamies):
         verbose_name_plural = _('Institutions')
 
     def __unicode__(self):
-        self.name
+        return self.name
 
 
 class Individual(Steamies):
@@ -166,18 +169,29 @@ class Individual(Steamies):
         verbose_name_plural = _('Individuals')
 
     def __unicode__(self):
-        pass
+        return self.zip_code
 
 
 def add_geo(sender, instance, created, *args, **kwargs):
     if created:
         print "created"
         if instance.zip_code:
-            # must have a zipcode
-            zipcode = Zipcode()
-            geo = zipcode.geo(instance.zip_code)
-            instance.longitude = geo['lon']
-            instance.latitude = geo['lat']
+            # must have a zip_code
+
+            g = Geo()
+            geo = g.geo(instance.zip_code)
+            instance.longitude = float(geo['lon'])
+            instance.latitude = float(geo['lat'])
+            instance.us_bool = geo['us_bool']
+            instance.level_1 = geo['level_1']
+
+            print 'resaved with geo'
+            print instance.longitude
+            print instance.latitude
+            print instance.us_bool
+            print instance.level_1
+
+            instance.save()
 
 models.signals.post_save.connect(add_geo, sender=Institution)
 models.signals.post_save.connect(add_geo, sender=Individual)

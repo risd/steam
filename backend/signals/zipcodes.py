@@ -1,17 +1,16 @@
 from os import path
-from pygeocoder import Geocoder
 
 DEFAULT_ZIPCODE_FILE = \
     path.join(path.dirname(path.abspath(__file__)), 'zipcodes.tsv')
 
 
-class Zipcode():
+class Zipcodes():
     """Construct for dealing with zipcode data"""
     def __init__(self, filepath=DEFAULT_ZIPCODE_FILE):
-        self.zipcodes = self._prep(filepath)
+        self.zip_codes = self._prep(filepath)
 
     def _prep(self, filepath):
-        zipcodes = {}
+        zip_codes = {}
 
         count = 0
         with open(filepath, 'r') as f:
@@ -29,20 +28,5 @@ class Zipcode():
                     geo = {}
                     geo['lon'] = split_data[0]
                     geo['lat'] = split_data[1]
-                    zipcodes[split_data[2]] = geo
-        return zipcodes
-
-    def geo(self, zipcode):
-        if zipcode in self.zipcodes.keys():
-            return self.zipcodes[zipcode]
-        else:
-            try:
-                geocoded = Geocoder.geocode(zipcode)
-            except:
-                geo = {'error': 'could not be geocoded'}
-            else:
-                geo = {}
-                geo['lon'] = geocoded[0].coordinates[1]
-                geo['lat'] = geocoded[0].coordinates[0]
-
-            return geo
+                    zip_codes[split_data[2]] = geo
+        return zip_codes
