@@ -48,10 +48,12 @@ class AdditionalGeo():
 
                     geo.update(self.add_level_1(split_data[2]))
 
+                    print geo
+
                     geo_list.append(geo)
 
                 # geocoder needs time between requests
-                time.sleep(0.3)
+                time.sleep(0.5)
 
         return geo_list
 
