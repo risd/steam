@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext as _
 
@@ -27,6 +28,13 @@ class Initiative(models.Model):
 class Steamies(models.Model):
 
     # required
+    user = models.OneToOneField(
+        User,
+        on_delete=models.SET_NULL,
+        related_name="steamies",
+        blank=True,
+        null=True)
+
     zip_code = models.CharField(
         "Zip code",
         max_length=15,

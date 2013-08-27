@@ -211,8 +211,10 @@ FACEBOOK_APP_ID = env_var('FACEBOOK_APP_ID')
 FACEBOOK_API_SECRET = env_var('FACEBOOK_API_SECRET')
 
 # LOGIN_URL = '/login-form/'
-# LOGIN_REDIRECT_URL = '/logged-in/'
+LOGIN_REDIRECT_URL = '/logged-in/'
 LOGIN_ERROR_URL = '/login-error/'
+
+SOCIAL_AUTH_DEFAULT_USERNAME = 'new_social_auth_user'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -222,5 +224,5 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_login_redirect',
 )
 
-SOCIAL_AUTH_ENABLED_BACKENDS = ('twitter',)
+SOCIAL_AUTH_ENABLED_BACKENDS = ('twitter', 'facebook')
 ### end Social auth config
