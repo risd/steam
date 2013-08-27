@@ -55,7 +55,7 @@ class Steamies(models.Model):
     # will be associated with. Either a US State,
     # or a country
     level_1 = models.CharField(
-        'United State Abbreviation',
+        'State_District or Country Abbreviation',
         max_length=3,
         blank=True,
         null=True)
