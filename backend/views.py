@@ -12,3 +12,9 @@ def auth_test(request):
                   'auth.html',
                   {},
                   content_type="text/html")
+
+def logged-in(request):
+    return render(request,
+                 'auth.html',
+                 {'session': request.session},
+                 content_type='text/html')

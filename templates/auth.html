@@ -1,8 +1,12 @@
-<div data-href="{% url 'socialauth_begin' 'twitter' %}"
-	id="twitter-auth">
-	<h1>twitter</h1>
-</div>
-<div data-href="{% url 'socialauth_begin' 'facebook' %}"
-	id="facebook-auth">
-	<h1>facebook</h1>
-</div>
+<html>
+	<head>
+		<title>Authenticated</title>
+	</head>
+	<body>
+		<h1>authenticated. redirecting</h1>
+		<script>
+			window.authed = {};
+			window.authed.session = {{ session|escapejs }};
+		</script>
+	</body>
+</html>
