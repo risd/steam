@@ -6,7 +6,10 @@
 		<h1>authenticated. redirecting</h1>
 		<script>
 			window.authed = {};
-			window.authed.session = {{ session|escapejs }};
+			window.authed.user_id = {{ user_id|escapejs }};
+			(function pass_back () {
+				window.opener(mapped.user.authed(window.authed.user_id));
+			}());
 		</script>
 	</body>
 </html>

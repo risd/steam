@@ -19,9 +19,9 @@ urlpatterns = patterns(
     # url(r'^backend/', include('backend.foo.urls')),
     url(r'api/', include(v1_api.urls)),
 
-    url(r'logged-in/',
-        'backend.views.auth_test',
-        name='logged-in'),
+    url(r'logged-in/$',
+        'backend.views.logged_in',
+        name='logged_in'),
 
     url(r'', include('social_auth.urls')),
 
