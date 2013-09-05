@@ -1,40 +1,24 @@
+import json
+
 from django.http import HttpResponse
-from django.shortcuts import render
-
-import sys
 
 
-def home(request):
-    print >>sys.stderr, '\n\nboom\n\n'
-    return HttpResponse('<h1>hello</h1>')
+def authed(request):
 
+    if request.user.is_authenticated():
+        data = {
+            'authenticated': 1,
+            'uid': request.session.get('_auth_user_id'),
+        }
+    else:
+        data = {
+            'authenticated': 0,
+        }
 
-def auth_test(request):
-    return render(request,
-                  'auth.html',
-                  {},
-                  content_type="text/html")
+    response = HttpResponse(
+        json.dumps(data),
+        content_type='application/json')
 
+    response['Status Code'] = 200
 
-def logged_in(request):
-
-    print >>sys.stderr, '\n\n{0}'.format(request.session)
-    print >>sys.stderr, '{0}\n\n'.format(request.session.keys())
-    print >>sys.stderr, '{0}\n\n'.format(
-        request
-        .session
-        .get('_auth_user_id'))
-
-    user_id = request.session.get('_auth_user_id')
-
-    print >>sys.stderr, '\n\n{0}'.format(request.user)
-    print >>sys.stderr, '{0}'.format(request.user.__dict__)
-    print >>sys.stderr, '{0}'.format(request.user.first_name)
-    print >>sys.stderr, '{0}'.format(request.user.last_name)
-    print >>sys.stderr, '{0}'.format(request.user.email)
-    print >>sys.stderr, '{0}\n\n'.format(request.user.id)
-
-    return render(request,
-                  'auth.html',
-                  {'user_id': user_id},
-                  content_type='text/html')
+    return response

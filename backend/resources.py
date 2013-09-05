@@ -9,7 +9,7 @@ from tastypie.resources import ModelResource, ALL_WITH_RELATIONS
 from tastypie.serializers import Serializer
 
 
-from .models import Institution, Individual
+from .models import Steamies
 
 
 class CommonOpenResourceMeta:
@@ -20,7 +20,7 @@ class CommonOpenResourceMeta:
     authorization = Authorization()
 
     serializer = Serializer(formats=['json', 'jsonp'])
-    allowed_methods = ['get', 'post']
+    allowed_methods = ['get']
 
     always_return_data = True
 
@@ -33,12 +33,12 @@ class CommonAuthResourceMeta:
     authorization = DjangoAuthorization()
 
     serializer = Serializer(formats=['json', 'jsonp'])
-    allowed_methods = ['get', 'post', 'delete']
+    allowed_methods = ['post', 'delete']
 
     always_return_data = True
 
 
-class CountResource(ModelResource):
+class GeoResource(ModelResource):
     """
     Returns geojson of top_level steaminess
     steaminess is the count of individual
@@ -47,39 +47,25 @@ class CountResource(ModelResource):
     """
     class Meta(CommonOpenResourceMeta):
 
-        queryset = Institution.objects.all()
-        resource_name = 'institution'
-        filtering = {
-            'user': ALL_WITH_RELATIONS
-        }
+        queryset = Steamies.objects.all()
+        resource_name = 'geo'
 
 
-class IndividualResource(ModelResource):
+class NetworkResource(ModelResource):
     """
-    Open resource. Anyone can POST to this.
-    Used to GET all user data to start app.
+    Returns array of json for steamies
+    that are associated with a particular
+    top level uid
     """
     class Meta(CommonOpenResourceMeta):
-        authentication = Authentication()
-
-        queryset = Individual.objects.all()
-        resource_name = 'individual'
+        queryset = Steamies.objects.all()
+        resource_name = 'network'
 
 
-class AuthInstitutionResource(ModelResource):
+class AuthSteamieResource(ModelResource):
     """
-    This resource requires authentication.
+    Used to manage Steamie data. Individuals and Institutions.
     """
-    class Meta:
-        queryset = Institution.objects.all()
-        resource_name = 'auth/institution'
-
-
-class AuthIndividualResource(ModelResource):
-    """
-    This resource requires authentication.
-    """
-    class Meta:
-        queryset = Individual.objects.all()
-        resource_name = 'auth/individual'
-
+    class Meta(CommonAuthResourceMeta):
+        queryset = Steamies.objects.all()
+        resource_name = 'steamie'
