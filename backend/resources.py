@@ -1,7 +1,13 @@
 from tastypie.authentication import Authentication
+from tastypie.authentication import SessionAuthentication
+
 from tastypie.authorization import Authorization
+from tastypie.authorization import DjangoAuthorization
+
 from tastypie.resources import ModelResource, ALL_WITH_RELATIONS
+
 from tastypie.serializers import Serializer
+
 
 from .models import Institution, Individual
 
@@ -23,8 +29,8 @@ class CommonAuthResourceMeta:
     """
     Auth resources will subclass this.
     """
-    # authentication = Authentication()
-    # authorization = Authorization()
+    authentication = SessionAuthentication()
+    authorization = DjangoAuthorization()
 
     serializer = Serializer(formats=['json', 'jsonp'])
     allowed_methods = ['get', 'post', 'delete']
@@ -32,10 +38,12 @@ class CommonAuthResourceMeta:
     always_return_data = True
 
 
-class InstitutionResource(ModelResource):
+class CountResource(ModelResource):
     """
-    Open resource. Anyone can POST to this.
-    Used to GET all user data to start app.
+    Returns geojson of top_level steaminess
+    steaminess is the count of individual
+    and institution steamies. Broken down
+    by their 'work in' field
     """
     class Meta(CommonOpenResourceMeta):
 
@@ -74,3 +82,4 @@ class AuthIndividualResource(ModelResource):
     class Meta:
         queryset = Individual.objects.all()
         resource_name = 'auth/individual'
+

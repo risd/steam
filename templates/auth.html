@@ -1,15 +1,13 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>Authenticated</title>
 	</head>
 	<body>
-		<h1>authenticated. redirecting</h1>
+		<h1>Close this window to continue;</h1>
 		<script>
-			window.authed = {};
-			window.authed.user_id = {{ user_id|escapejs }};
-			(function pass_back () {
-				window.opener(mapped.user.authed(window.authed.user_id));
-			}());
+			window.user_id = {{ user_id }}
+			// window.close();
 		</script>
 	</body>
 </html>
