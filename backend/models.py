@@ -124,7 +124,7 @@ class Steamies(models.Model):
     # or a country
     top_level = models.CharField(
         'State_District or Country Abbreviation',
-        max_length=3,
+        max_length=6,
         blank=True,
         null=True)
 

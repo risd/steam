@@ -92,6 +92,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(APP_ROOT, 'backend/assets/'),
 )
 
 # List of finder classes that know how to find static files in
@@ -211,7 +212,8 @@ FACEBOOK_APP_ID = env_var('FACEBOOK_APP_ID')
 FACEBOOK_API_SECRET = env_var('FACEBOOK_API_SECRET')
 
 # LOGIN_URL = '/login-form/'
-LOGIN_REDIRECT_URL = 'http://localhost:8008/logged-in/'
+# LOGIN_REDIRECT_URL = 'http://localhost:8008/logged-in/'
+LOGIN_REDIRECT_URL = '/logged-in/'
 LOGIN_ERROR_URL = '/login-error/'
 
 SOCIAL_AUTH_DEFAULT_USERNAME = 'new_social_auth_user'

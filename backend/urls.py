@@ -15,6 +15,16 @@ v1_api.register(GeoResource())
 urlpatterns = patterns(
     '',
 
+    # map
+    url(r'^$',
+        'backend.views.map',
+        name='map'),
+
+    # final step of log in, redirects to front end
+    url(r'logged-in/$',
+        'backend.views.logged_in',
+        name='logged_in'),
+
     # answers the question: is this session authenticated?
     url(r'authed/$',
         'backend.views.authed',

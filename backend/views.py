@@ -1,9 +1,35 @@
 import json
 
-from django.http import HttpResponse
+from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseRedirect
+
+
+def map(request):
+    return render(request, 'map.html')
+
+
+def logged_in(request):
+    print '\n\n session'
+    print request.session
+    print request.session.keys()
+
+    print '\n\n Cookies'
+    print request.COOKIES
+
+    print '\n\n request.user'
+    print request.user
+    print request.user.id
+    print request.user.is_authenticated()
+
+    return render(request, 'logged_in.html')
 
 
 def authed(request):
+
+    print '\n\n session'
+    print request.session
+    print request.session.keys()
+    print '\n\n'
 
     if request.user.is_authenticated():
         data = {
