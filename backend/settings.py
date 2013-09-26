@@ -201,15 +201,18 @@ XS_SHARING_ALLOWED_CREDENTIALS = 'true'
 
 ### Social auth config
 AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.google.GoogleOAuth2Backend',
     'social_auth.backends.twitter.TwitterBackend',
     'social_auth.backends.facebook.FacebookBackend',
-    # 'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 TWITTER_CONSUMER_KEY = env_var('TWITTER_CONSUMER_KEY')
 TWITTER_CONSUMER_SECRET = env_var('TWITTER_CONSUMER_SECRET')
 FACEBOOK_APP_ID = env_var('FACEBOOK_APP_ID')
 FACEBOOK_API_SECRET = env_var('FACEBOOK_API_SECRET')
+GOOGLE_OAUTH2_CLIENT_ID = env_var('GOOGLE_OAUTH2_CLIENT_ID')
+GOOGLE_OAUTH2_CLIENT_SECRET = env_var('GOOGLE_OAUTH2_CLIENT_SECRET')
 
 # LOGIN_URL = '/login-form/'
 # LOGIN_REDIRECT_URL = 'http://localhost:8008/logged-in/'
@@ -226,7 +229,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_login_redirect',
 )
 
-SOCIAL_AUTH_ENABLED_BACKENDS = ('twitter', 'facebook')
+SOCIAL_AUTH_ENABLED_BACKENDS = ('twitter', 'facebook', 'google')
 
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 

@@ -177,8 +177,6 @@
         return ui;
     };
 
-    mapped.data.ui = mapped.data.UI();
-
     // visualization of the network
     mapped.Network = function () {
         var network = {},
@@ -418,51 +416,6 @@
         return network;
     };
 
-    mapped.network = mapped.Network();
-
-    mapped.network.init = function (data) {
-        // used to initialize a network graph
-
-        // zoom to area
-        var padding = 0,
-            area_of_interest = d3.select('.top_level.' + data.uid),
-            aoi_bounds = d3.geo.bounds(area_of_interest.datum()),
-            max_ne = new L.LatLng(aoi_bounds[1][1] + padding,
-                                aoi_bounds[1][0] + padding),
-            max_sw = new L.LatLng(aoi_bounds[0][1] - padding,
-                                aoi_bounds[0][0] - padding),
-            aoi_l_bounds = new L.LatLngBounds(max_sw, max_ne);
-
-        // at end of zoom, highlight the area
-        mapped.map.once('moveend', function () {
-            if (DEBUG) console.log('focusing');
-            if (DEBUG) console.log(area_of_interest);
-
-            // reset the top_level svg
-            mapped.data.top_level.reset();
-
-            area_of_interest
-                .classed('active', true);
-        });
-
-        // move the map to fit the bounds
-        mapped.map.fitBounds(aoi_l_bounds);
-
-        // var data_url =
-            // mapped.data.backend + '/api/' + uid + '/';
-        // d3.json(data_url, function (err, network_data) {
-        //     mapped.network
-        //           .nodes(network_data)
-        //           .create();
-        // });
-        var network_data = mapped.fake.network(data);
-        if (DEBUG) console.log('steamies');
-        if (DEBUG) console.log(network_data.steamies);
-        mapped.network
-              .nodes(network_data.steamies)
-              .create();
-    };
-
     mapped.Map = function () {
         // returns leaflet map object
         // with properties set
@@ -499,8 +452,6 @@
 
         return map;
     };
-
-    mapped.map = mapped.Map();
 
     mapped.Clusters = function () {
 
@@ -654,9 +605,6 @@
         return clusters;
     };
 
-    mapped.clusters = mapped.Clusters();
-
-
     mapped.data.TopLevel = function () {
         var top_level = {},
             top_level_bounds,
@@ -664,6 +612,7 @@
             top_level_sel,
             top_level_tj,
             data,
+            map,               // reference to map object
             top_level_svg = d3
                 .select(mapped
                         .map.getPanes().overlayPane)
@@ -672,40 +621,46 @@
 
             top_level_g = top_level_svg.append('g');
 
-            top_level.svg = function () {
-                return top_level_svg;
-            };
+        top_level.svg = function () {
+            return top_level_svg;
+        };
 
-            top_level.data = function (x) {
-                if (!arguments.length) return data;
+        top_level.data = function (x) {
+            if (!arguments.length) return data;
 
-                data = x;
+            data = x;
 
-                top_level_tj = topojson
-                    .feature(
-                        data,
-                        data.objects.level_1);
+            top_level_tj = topojson
+                .feature(
+                    data,
+                    data.objects.level_1);
 
-                top_level_bounds = d3.geo.bounds(top_level_tj);
-                top_level_path = d3.geo.path().projection(project);
+            top_level_bounds = d3.geo.bounds(top_level_tj);
+            top_level_path = d3.geo.path().projection(project);
 
-                top_level_sel = top_level_g.selectAll('top_level')
-                    .data(top_level_tj.features)
-                    .enter()
-                    .append('path')
-                    .attr('class', function (d,i) {
-                        return 'top_level ' + d.properties.uid;
-                    });
-                reset();
+            top_level_sel = top_level_g.selectAll('top_level')
+                .data(top_level_tj.features)
+                .enter()
+                .append('path')
+                .attr('class', function (d,i) {
+                    return 'top_level ' + d.properties.uid;
+                });
+            reset();
 
-                return top_level;
-            };
+            return top_level;
+        };
 
-        
+        top_level.map = function (x) {
+            if (!arguments.length) return map;
+
+            map = x;
+
+            return top_level;
+        };
 
         // use leaflet to implement d3 geo projection
         function project (x) {
-            var point = mapped.map
+            var point = map
                             .latLngToLayerPoint(
                                 new L.LatLng(x[1], x[0]));
             return [point.x , point.y];
@@ -740,20 +695,9 @@
         return top_level;
     };
 
-    mapped.data.top_level = mapped.data.TopLevel();
-
-    mapped.init = function () {
-        d3.json('/static/geo/fake_level_1_pnt.geojson',
-                mapped.clusters.data);
-
-        d3.json('/static/geo/level_1.topojson',
-            mapped.data.top_level.data);
-    }();
-
-    
-
     mapped.Form = function () {
         var form = {},
+            state,         // current state
             child_window,  // ref to the popup window object
             child_status;  // set interval function to check
 
@@ -813,7 +757,7 @@
             }
         };
 
-        var state = {
+        var states = {
             inactive: function () {
                 el.display
                     .modal
@@ -927,36 +871,46 @@
         },{
             'name': 'Facebook',
             'url': mapped.data.backend + '/login/facebook'
+        },{
+            'name': 'Google',
+            'url': mapped.data.backend + '/login/google'
         }];
+
+        form.state = function (x) {
+            if (!arguments.length) return state;
+
+            if (x in states) {
+                state = x;
+                states[state]();
+            }
+
+            return form;
+        };
 
 
         form.init = function () {
             el.button
                 .activate
                 .on('click', function () {
-                    state
-                        .choose_login();
+                    form.state('choose_login');
                 });
 
             el.button
                 .type_choice_institution
                 .on('click', function () {
-                    state
-                        .fill_out_institution();
+                    form.state('fill_out_institution');
                 });
 
             el.button
                 .type_choice_individual
                 .on('click', function () {
-                    state
-                        .fill_out_individual();
+                    form.state('fill_out_individual');
                 });
 
             el.button
                 .deactivate
                 .on('click', function () {
-                    state
-                        .inactive();
+                    form.state('inactive');
                 });
 
             d3.select('#add-yourself-login')
@@ -989,6 +943,8 @@
                     return d.name;
                 });
 
+            form.state('inactive');
+
             return form;
         };
 
@@ -1007,14 +963,19 @@
 
         return form;
     };
-    mapped.form = mapped.Form().init();
 
     mapped.User = function () {
         var user = {},
+            form,     // mapped.form object
             authed,   // true/false
             uid;      // user id
 
         user.check_auth = function () {
+            // checks the server to see if user
+            // is authenticated
+            // depending on response, sets state
+            // of the form.
+
             var url = mapped.data.backend + '/authed/';
             d3.json(url, function (err, status) {
                 if (DEBUG) console.log('checking auth');
@@ -1022,9 +983,22 @@
                 authed = status.authenticated;
 
                 if (authed) {
-                    uid = status.uid;
+                    // response should inform if user
+                    // - is on the map OR not.
+
+                    // for now, taking for granted
+                    // the user is NOT on the map.
+                    form.state('choose_type');
                 }
             });
+
+            return user;
+        };
+
+        user.form = function (x) {
+            if (!arguments.length) return form;
+
+            form = x;
 
             return user;
         };
@@ -1048,5 +1022,66 @@
         return user;
     };
 
-    mapped.user = mapped.User();
+    mapped.clusters = mapped.Clusters();
+    mapped.map = mapped.Map();
+
+    mapped.data.top_level = mapped.data.TopLevel()
+                                  .map(mapped.map);
+
+    mapped.data.ui = mapped.data.UI();
+
+    mapped.network = mapped.Network();
+    mapped.form = mapped.Form().init();
+    mapped.user = mapped.User().form(mapped.form);
+
+    mapped.network.init = function (data) {
+        // used to initialize a network graph
+
+        // zoom to area
+        var padding = 0,
+            area_of_interest = d3.select('.top_level.' + data.uid),
+            aoi_bounds = d3.geo.bounds(area_of_interest.datum()),
+            max_ne = new L.LatLng(aoi_bounds[1][1] + padding,
+                                aoi_bounds[1][0] + padding),
+            max_sw = new L.LatLng(aoi_bounds[0][1] - padding,
+                                aoi_bounds[0][0] - padding),
+            aoi_l_bounds = new L.LatLngBounds(max_sw, max_ne);
+
+        // at end of zoom, highlight the area
+        mapped.map.once('moveend', function () {
+            if (DEBUG) console.log('focusing');
+            if (DEBUG) console.log(area_of_interest);
+
+            // reset the top_level svg
+            mapped.data.top_level.reset();
+
+            area_of_interest
+                .classed('active', true);
+        });
+
+        // move the map to fit the bounds
+        mapped.map.fitBounds(aoi_l_bounds);
+
+        // var data_url =
+            // mapped.data.backend + '/api/' + uid + '/';
+        // d3.json(data_url, function (err, network_data) {
+        //     mapped.network
+        //           .nodes(network_data)
+        //           .create();
+        // });
+        var network_data = mapped.fake.network(data);
+        if (DEBUG) console.log('steamies');
+        if (DEBUG) console.log(network_data.steamies);
+        mapped.network
+              .nodes(network_data.steamies)
+              .create();
+    };
+
+    mapped.init = function () {
+        d3.json('/static/geo/fake_level_1_pnt.geojson',
+                mapped.clusters.data);
+
+        d3.json('/static/geo/level_1.topojson',
+            mapped.data.top_level.data);
+    }();
 })();
