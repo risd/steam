@@ -1087,15 +1087,18 @@
             d3.json(url, function (err, status) {
                 if (DEBUG) console.log('checking auth');
                 if (DEBUG) console.log(status);
-                authed = status.authenticated;
 
-                if (authed) {
+                if (status.authenticated) {
                     // response should inform if user
                     // - is on the map OR not.
 
-                    // for now, taking for granted
-                    // the user is NOT on the map.
-                    form.state('choose_type');
+                    if (status.type === 'individual') {
+                        form.state('fill_out_individual');
+                    } else if (status.type === 'institution') {
+                        form.state('fill_out_institution');
+                    } else {
+                        form.state('choose_type');
+                    }
                 }
             });
 

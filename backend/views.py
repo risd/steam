@@ -3,6 +3,8 @@ import json
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 
+from .models import Steamies, Individual, Institution
+
 
 def map(request):
     return render(request, 'map.html')
@@ -31,15 +33,32 @@ def authed(request):
     print request.session.keys()
     print '\n\n'
 
+    print 'user'
+    print request.user
+    print request.user.__dict__
+    print '\n\n'
+
+    # initialize response with default data
+    # about the user.
+    data = {
+        'authenticated': 0,  # tracks whether they have ever signed in
+        'type': 0            # tracks type (individual/institution)
+    }
     if request.user.is_authenticated():
-        data = {
-            'authenticated': 1,
-            'uid': request.session.get('_auth_user_id'),
-        }
-    else:
-        data = {
-            'authenticated': 0,
-        }
+        if '_auth_user_id' in request.session.keys():
+            uid = request.session.get('_auth_user_id')
+            steamie = Steamies.objects.get(user=uid)
+
+            steamie_type = ''
+            if steamie.individual:
+                steamie_type = 'individual'
+            elif steamie.institution:
+                steamie_type = 'institution'
+
+            data = {
+                'authenticated': 1,
+                'type': steamie_type,
+            }
 
     response = HttpResponse(
         json.dumps(data),
