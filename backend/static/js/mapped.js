@@ -38,8 +38,6 @@
     //     'http://limitless-atoll-9939.herokuapp.com';
     mapped.data.backend = 'http://0.0.0.0:5000';
 
-    mapped.user = {};
-
     mapped.fake = {
         network: function (args) {
             // pass in geojson properties, return
@@ -113,66 +111,90 @@
     // UI for manipulating data
     mapped.data.UI = function () {
         var ui = {},
+            filters,   // reference to global filters
+            network,   // reference to global network
+            clusters,  // reference to global clusters
             clicked = 0;
 
         var filter_bar = d3.select('.filter_bar');
 
         ui.filter_bar = filter_bar;
 
+        ui.filters = function (x) {
+            if (!arguments.length) return filters;
 
-        var filter_buttons = filter_bar.selectAll('.button')
-            .data(mapped.data.filters)
-            .enter()
-            .append('div')
-            .attr('class', function (d) {
-                return 'button active ' + d.abbr;
-            })
-            .text(function (d) {
-                return d.display;
-            })
-            .on('click', function (d) {
-                if (DEBUG) console.log('clicked');
+            filters = x;
 
-                if (clicked === 0) {
-                    // first click selects just one segment
-                    // so all filter states are set inactive,
-                    // then this one is set active.
+            return ui;
+        };
 
-                    var i;
-                    for (i=0; i < mapped.data.filters.length; i++) {
-                        if (mapped.data.filters[i].abbr === d.abbr) {
-                            mapped.data.filters[i].active = 1;
+        ui.network = function (x) {
+            if (!arguments.length) return network;
+            network = x;
+            return ui;
+        };
 
-                        } else {
+        ui.clusters = function (x) {
+            if (!arguments.length) return clusters;
+            clusters = x;
+            return ui;
+        };
 
-                            mapped.data.filters[i].active = 0;
-                            if (DEBUG) console.log(
-                                d3.select(
-                                    '.button.' +
-                                    mapped.data.filters[i].abbr
-                                ).classed('active', false));
+        ui.init = function () {
+            var filter_buttons = filter_bar.selectAll('.button')
+                .data(filters)
+                .enter()
+                .append('div')
+                .attr('class', function (d) {
+                    return 'button active ' + d.abbr;
+                })
+                .text(function (d) {
+                    return d.display;
+                })
+                .on('click', function (d) {
+                    if (DEBUG) console.log('clicked');
+
+                    if (clicked === 0) {
+                        // first click selects just one segment
+                        // so all filter states are set inactive,
+                        // then this one is set active.
+
+                        var i;
+                        for (i=0; i < filters.length; i++) {
+                            if (filters[i].abbr === d.abbr) {
+                                filters[i].active = 1;
+
+                            } else {
+
+                                filters[i].active = 0;
+                                if (DEBUG) console.log(
+                                    d3.select(
+                                        '.button.' +
+                                        filters[i].abbr
+                                    ).classed('active', false));
+                            }
                         }
+                    } else {
+                        // subsequent clicks add or remove based
+                        // on active state
+
+                        // toggle state
+                        d.active = d.active ? 0 : 1;
+
+                        // toggle visual
+                        d3.select(this)
+                            .classed('active', d.active);
                     }
-                } else {
-                    // subsequent clicks add or remove based
-                    // on active state
 
-                    // toggle state
-                    d.active = d.active ? 0 : 1;
+                    // apply filter to network and map
+                    network.filter();
+                    clusters.filter();
 
-                    // toggle visual
-                    d3.select(this)
-                        .classed('active', d.active);
-                }
-
-                // apply filter to network and map
-                mapped.network.filter();
-                mapped.clusters.filter();
-
-                // up the click count, to enable
-                // secondary behavior
-                clicked += 1;
-            });
+                    // up the click count, to enable
+                    // secondary behavior
+                    clicked += 1;
+                });
+        }
 
         return ui;
     };
@@ -187,7 +209,9 @@
             nodes,
             force,
             blurred_sel,
-            focused_sel;
+            focused_sel,
+            top_level, // reference to global top_level
+            map;       // reference to global map
 
         var random_around_zero = function (range) {
             var val = Math.floor(Math.random() * range);
@@ -206,6 +230,17 @@
             blurred_radius = individual_radius/2,
             growth_radius = 2;
 
+        network.map = function (x) {
+            if (!arguments.length) return map;
+            map = x;
+            return network;
+        };
+
+        network.top_level = function (x) {
+            if (!arguments.length) return top_level;
+            top_level = x;
+            return network;
+        };
 
         network.filter = function () {
             try {
@@ -309,7 +344,7 @@
             // add a close button
             canvas_wrapper
                 .selectAll('.button')
-                .data([{ t: 'x', f: mapped.network.destroy }])
+                .data([{ t: 'x', f: network.destroy }])
                 .enter()
                 .append('div')
                 .attr('class', 'button')
@@ -385,6 +420,51 @@
             return network;
         };
 
+        network.init = function (data) {
+            // used to initialize a network graph
+            // data is passed in from the cluster
+            // group that is clicked.
+
+            // zoom to area
+            var padding = 0,
+                area_of_interest = d3.select('.top_level.' + data.uid),
+                aoi_bounds = d3.geo.bounds(area_of_interest.datum()),
+                max_ne = new L.LatLng(aoi_bounds[1][1] + padding,
+                                    aoi_bounds[1][0] + padding),
+                max_sw = new L.LatLng(aoi_bounds[0][1] - padding,
+                                    aoi_bounds[0][0] - padding),
+                aoi_l_bounds = new L.LatLngBounds(max_sw, max_ne);
+
+            // at end of zoom, highlight the area
+            map.once('moveend', function () {
+                if (DEBUG) console.log('focusing');
+                if (DEBUG) console.log(area_of_interest);
+
+                // reset the top_level svg
+                top_level.reset();
+
+                area_of_interest
+                    .classed('active', true);
+            });
+
+            // move the map to fit the bounds
+            map.fitBounds(aoi_l_bounds);
+
+            // var data_url =
+                // mapped.data.backend + '/api/' + uid + '/';
+            // d3.json(data_url, function (err, network_data) {
+            //     mapped.network
+            //           .nodes(network_data)
+            //           .create();
+            // });
+            var network_data = mapped.fake.network(data);
+            if (DEBUG) console.log('steamies');
+            if (DEBUG) console.log(network_data.steamies);
+            network
+                  .nodes(network_data.steamies)
+                  .create();
+        };
+
         function radius (d) {
             if (d.type === 'g') {
                 return group_radius;
@@ -456,6 +536,9 @@
     mapped.Clusters = function () {
 
         var clusters = {},
+            network, // reference to network object
+            map,     // reference to map object
+            filters, // reference to filters object
             geojson, // L.geojson of data
             data,    // raw data
             max;     // max of data
@@ -531,14 +614,40 @@
             // click cluster
             if (DEBUG) console.log(item.layer.feature.properties);
 
-            mapped.network.init(item.layer.feature.properties);
+            network.init(item.layer.feature.properties);
         });
 
         clusters_group.on('clusterclick', function (d) {
             if (DEBUG) console.log('cluster clicked!');
             var bounds = d.layer.getBounds().pad(0.5);
-            mapped.map.fitBounds(bounds);
+            map.fitBounds(bounds);
         });
+
+        clusters.network = function (x) {
+            // pass the network object
+            // to be able to initiate network graphs
+            if (!arguments.length) return network;
+
+            network = x;
+
+            return clusters;
+        };
+
+        clusters.map = function (x) {
+            // pass map object that references
+            // the global map
+            if (!arguments.length) return map;
+            map = x;
+            return clusters;
+        };
+
+        clusters.filters = function (x) {
+            // pass filters object that tracks
+            // the state of filters
+            if (!arguments) return filters;
+            filters = x;
+            return clusters;
+        };
 
         clusters.data = function (x) {
             // initialize data on the map
@@ -564,7 +673,7 @@
             // remove cluster layers
             clusters_group.clearLayers();
 
-            mapped.map.removeLayer(clusters_group);
+            map.removeLayer(clusters_group);
 
             return clusters;
         };
@@ -586,16 +695,14 @@
 
             clusters_group.addLayer(geojson);
 
-            mapped.map.addLayer(clusters_group);
+            map.addLayer(clusters_group);
         }
 
         function calculate_steamies (d) {
             var total = 0;
-            for (var i = 0; i < mapped.data.filters.length; i++) {
-                if (mapped.data.filters[i].active) {
-                    total += d.properties[mapped
-                                            .data
-                                            .filters[i].abbr];
+            for (var i = 0; i < filters.length; i++) {
+                if (filters[i].active) {
+                    total += d.properties[filters[i].abbr];
                 }
             }
 
@@ -1022,66 +1129,48 @@
         return user;
     };
 
-    mapped.clusters = mapped.Clusters();
     mapped.map = mapped.Map();
 
-    mapped.data.top_level = mapped.data.TopLevel()
+    mapped.data.top_level = mapped.data
+                                  .TopLevel()
                                   .map(mapped.map);
 
-    mapped.data.ui = mapped.data.UI();
+    mapped.network = mapped.Network()
+                           .map(mapped.map)
+                           .top_level(mapped.data.top_level);
+   
+   mapped.clusters = mapped.Clusters()
+                           .network(mapped.network)
+                           .map(mapped.map)
+                           .filters(mapped.data.filters);
 
-    mapped.network = mapped.Network();
-    mapped.form = mapped.Form().init();
-    mapped.user = mapped.User().form(mapped.form);
+   mapped.data.ui = mapped.data.UI()
+                          .filters(mapped.data.filters)
+                          .network(mapped.network)
+                          .clusters(mapped.clusters)
+                          .init();
 
-    mapped.network.init = function (data) {
-        // used to initialize a network graph
+    mapped.form = mapped.Form()
+                        .init();
 
-        // zoom to area
-        var padding = 0,
-            area_of_interest = d3.select('.top_level.' + data.uid),
-            aoi_bounds = d3.geo.bounds(area_of_interest.datum()),
-            max_ne = new L.LatLng(aoi_bounds[1][1] + padding,
-                                aoi_bounds[1][0] + padding),
-            max_sw = new L.LatLng(aoi_bounds[0][1] - padding,
-                                aoi_bounds[0][0] - padding),
-            aoi_l_bounds = new L.LatLngBounds(max_sw, max_ne);
+    mapped.user = mapped.User()
+                        .form(mapped.form);
 
-        // at end of zoom, highlight the area
-        mapped.map.once('moveend', function () {
-            if (DEBUG) console.log('focusing');
-            if (DEBUG) console.log(area_of_interest);
-
-            // reset the top_level svg
-            mapped.data.top_level.reset();
-
-            area_of_interest
-                .classed('active', true);
-        });
-
-        // move the map to fit the bounds
-        mapped.map.fitBounds(aoi_l_bounds);
-
-        // var data_url =
-            // mapped.data.backend + '/api/' + uid + '/';
-        // d3.json(data_url, function (err, network_data) {
-        //     mapped.network
-        //           .nodes(network_data)
-        //           .create();
-        // });
-        var network_data = mapped.fake.network(data);
-        if (DEBUG) console.log('steamies');
-        if (DEBUG) console.log(network_data.steamies);
-        mapped.network
-              .nodes(network_data.steamies)
-              .create();
-    };
+    
 
     mapped.init = function () {
+        // start the project
+
+        // load level_1_point data that will be
+        // clustered on the map.
         d3.json('/static/geo/fake_level_1_pnt.geojson',
                 mapped.clusters.data);
 
+        // load level_1 topojson that represents
+        // each of the level_1 areas.
         d3.json('/static/geo/level_1.topojson',
             mapped.data.top_level.data);
+
+        mapped.user.check_auth();
     }();
 })();
