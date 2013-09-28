@@ -116,8 +116,8 @@ class Steamies(models.Model):
     zip_code = models.CharField(
         "Zip code",
         max_length=15,
-        blank=False,
-        null=False)
+        blank=True,
+        null=True)
 
     # captures the top level region that data
     # will be associated with. Either a US State,
@@ -173,7 +173,7 @@ class Steamies(models.Model):
         verbose_name_plural = _("Steamies'")
 
     def __unicode__(self):
-        return self.zip_code
+        return unicode(self.zip_code) or user
 
 
 def add_geo(sender, instance, created, *args, **kwargs):

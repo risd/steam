@@ -2,6 +2,7 @@ import json
 
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.models import User
 
 from .models import Steamies, Individual, Institution
 
@@ -46,8 +47,9 @@ def authed(request):
     }
     if request.user.is_authenticated():
         if '_auth_user_id' in request.session.keys():
-            uid = request.session.get('_auth_user_id')
-            steamie = Steamies.objects.get(user=uid)
+            uid = int(request.session.get('_auth_user_id'))
+            u = User.objects.get(id=uid)
+            steamie = Steamies.objects.get(user=u)
 
             steamie_type = ''
             if steamie.individual:

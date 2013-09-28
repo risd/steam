@@ -980,7 +980,7 @@
             'url': mapped.data.backend + '/login/facebook'
         },{
             'name': 'Google',
-            'url': mapped.data.backend + '/login/google'
+            'url': mapped.data.backend + '/login/google-auth2'
         }];
 
         form.state = function (x) {
