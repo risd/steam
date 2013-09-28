@@ -974,13 +974,13 @@
 
         var login = [{
             'name': 'Twitter',
-            'url': mapped.data.backend + '/login/twitter'
+            'url': mapped.data.backend + '/login/twitter/'
         },{
             'name': 'Facebook',
-            'url': mapped.data.backend + '/login/facebook'
+            'url': mapped.data.backend + '/login/facebook/'
         },{
             'name': 'Google',
-            'url': mapped.data.backend + '/login/google-auth2'
+            'url': mapped.data.backend + '/login/google-oauth2/'
         }];
 
         form.state = function (x) {
