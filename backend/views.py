@@ -8,10 +8,22 @@ from .models import Steamies, Individual, Institution
 
 
 def map(request):
-    return render(request, 'map.html')
+    """
+    Directs request to the map application.
+    """
+    return render(
+        request,
+        'map.html',
+        {
+            'backend': request.get_host()
+        })
 
 
 def logged_in(request):
+    """
+    Redirect after social authentication login.
+    Used to simply close the dialog box that pops up.
+    """
     print '\n\n session'
     print request.session
     print request.session.keys()
@@ -24,42 +36,12 @@ def logged_in(request):
     print request.user.id
     print request.user.is_authenticated()
 
-    return render(request, 'logged_in.html')
+    return render(request, 'redirected.html')
 
 
-def authed(request):
-
-    print '\n\n session'
-    print request.session
-    print request.session.keys()
-    print '\n\n'
-
-    print 'user'
-    print request.user
-    print request.user.__dict__
-    print '\n\n'
-
-    # initialize response with default data
-    # about the user.
-    data = {
-        'authenticated': 0,  # tracks whether they have ever signed in
-        'type': 0            # tracks type (individual/institution)
-    }
-    if request.user.is_authenticated():
-        if '_auth_user_id' in request.session.keys():
-            uid = int(request.session.get('_auth_user_id'))
-            u = User.objects.get(id=uid)
-            steamie = Steamies.objects.get(user=u)
-
-            data = {
-                'authenticated': 1,
-                # 'steamie': steamie,
-            }
-
-    response = HttpResponse(
-        json.dumps(data),
-        content_type='application/json')
-
-    response['Status Code'] = 200
-
-    return response
+def login_error(request):
+    """
+    Redirect after social authentication login fails.
+    Used to simply close the dialog box that pops up.
+    """
+    return render(request, 'redirected.html')

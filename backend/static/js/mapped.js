@@ -1,11 +1,4 @@
 (function () {
-    var DEBUG = true;
-
-    // mapped object holds all map.
-    var mapped = window.mapped = {};
-
-    mapped.map = undefined;
-    mapped.data = {};
 
     // state of the filters for both
     // the map and the network graphs
@@ -33,10 +26,6 @@
         edu: 'yellow',
         ind: 'grey'
     };
-
-    // mapped.data.backend =
-    //     'http://limitless-atoll-9939.herokuapp.com';
-    mapped.data.backend = 'http://0.0.0.0:5000';
 
     mapped.fake = {
         network: function (args) {
@@ -804,9 +793,12 @@
 
     mapped.Form = function () {
         var form = {},
-            state,         // current state
-            child_window,  // ref to the popup window object
-            child_status;  // set interval function to check
+            user,            //  ref to user mapped.User
+            state,           // current state
+            previous_state,  // previous state
+            type,            // type chosen on the way through
+            child_window,    // ref to the popup window object
+            child_status;    // set interval function to check
 
         var ui = {
             popup_window_properties: function () {
@@ -843,6 +835,7 @@
         var el = {
             button: {
                 deactivate: d3.select('#close-modal-add-yourself'),
+                back: d3.select('#back-modal-add-yourself'),
 
                 activate: d3.select('#activate-add-yourself'),
 
@@ -861,8 +854,8 @@
             },
             display: {
                 modal: d3.select('#modal-add-yourself'),
-                login_choices: d3.select('#add-yourself-login'),
-                type_choices: d3.select('#add-yourself-types'),
+                call_to_action: d3.select('#call-to-action'),
+                auth_choices: d3.select('#add-yourself-login'),
                 form_individual:
                     d3.select('#add-yourself-individual-form-wrapper'),
                 form_institution:
@@ -877,12 +870,16 @@
                     .modal
                     .classed('active', false);
 
-                el.display
-                    .login_choices
+                el.button
+                    .back
                     .classed('active', false);
 
                 el.display
-                    .type_choices
+                    .call_to_action
+                    .classed('active', false);
+
+                el.display
+                    .auth_choices
                     .classed('active', false);
 
                 el.display
@@ -893,18 +890,26 @@
                     .form_institution
                     .classed('active', false);
             },
-            choose_login: function () {
+            choose_auth: function () {
+                // depends on having set
+                // a type (individual/institution)
                 el.display
                     .modal
                     .classed('active', true);
 
-                el.display
-                    .login_choices
+                el.button
+                    .back
                     .classed('active', true);
 
                 el.display
-                    .type_choices
+                    .call_to_action
                     .classed('active', false);
+
+                el.display
+                    .auth_choices
+                    .classed('active', true)
+                    .select('.form_type')
+                    .text('Authorize as ' + type);
 
                 el.display
                     .form_individual
@@ -914,19 +919,23 @@
                     .form_institution
                     .classed('active', false);
             },
-            choose_type: function () {
+            call_to_action: function () {
                 if (DEBUG) console.log('choose type');
                 el.display
                     .modal
                     .classed('active', true);
 
-                el.display
-                    .login_choices
+                el.button
+                    .back
                     .classed('active', false);
 
                 el.display
-                    .type_choices
+                    .call_to_action
                     .classed('active', true);
+
+                el.display
+                    .auth_choices
+                    .classed('active', false);
 
                 el.display
                     .form_individual
@@ -942,12 +951,16 @@
                     .modal
                     .classed('active', true);
 
+                el.button
+                    .back
+                    .classed('active', true);
+
                 el.display
-                    .login_choices
+                    .call_to_action
                     .classed('active', false);
 
                 el.display
-                    .type_choices
+                    .auth_choices
                     .classed('active', false);
 
                 el.display
@@ -965,8 +978,16 @@
                     .modal
                     .classed('active', true);
 
+                el.button
+                    .back
+                    .classed('active', true);
+
                 el.display
-                    .type_choices
+                    .call_to_action
+                    .classed('active', false);
+
+                el.display
+                    .auth_choices
                     .classed('active', false);
 
                 el.display
@@ -1012,24 +1033,65 @@
             return form;
         };
 
+        form.type = function (x) {
+            if (!arguments.length) return type;
+
+            type = x;
+
+            return form;
+        };
+
+        form.user = function (x) {
+            if (!arguments.length) return user;
+
+            user = x;
+
+            return form;
+        };
+
 
         form.init = function () {
             el.button
                 .activate
                 .on('click', function () {
-                    form.state('choose_login');
+                    if (previous_state === 'inactive') {
+                        // first time through
+                        form.state('call_to_action');
+                    } else {
+                        form.state(prev_state);
+                    }
+                });
+
+            el.button
+                .back
+                .on('click', function () {
+                    form.state(prev_state);
                 });
 
             el.button
                 .type_choice_institution
                 .on('click', function () {
-                    form.state('fill_out_institution');
+                    prev_state = state;
+                    form.type('institution');
+
+                    if (user.authed()) {
+                        form.state('fill_out_institution');
+                    } else {
+                        form.state('choose_auth');
+                    }
                 });
 
             el.button
                 .type_choice_individual
                 .on('click', function () {
-                    form.state('fill_out_individual');
+                    prev_state = state;
+                    form.type('individual');
+
+                    if (user.authed()) {
+                        form.state('fill_out_individual');
+                    } else {
+                        form.state('choose_auth');
+                    }
                 });
 
             el.button
@@ -1082,7 +1144,7 @@
                     return d.name;
                 });
 
-            form.state('inactive');
+            form.state('call_to_action');
 
             return form;
         };
@@ -1128,9 +1190,9 @@
                     return;
                 }
 
-                // take for granted the user is signing
-                // up for the first time, continue the
-                // flow through that process.
+                // if call comes back without err,
+                // then the user is authenticated.
+                user.authed(true);
 
                 // status.objects[0] is the result you
                 // are after.
@@ -1142,7 +1204,7 @@
                     form.state('fill_out_institution');
 
                 } else {
-                    form.state('choose_type');
+                    form.state('fill_out_' + form.type());
                 }
 
                 form.add_avatar(status.objects[0].avatar_url);
@@ -1190,22 +1252,25 @@
                            .map(mapped.map)
                            .top_level(mapped.data.top_level);
    
-   mapped.clusters = mapped.Clusters()
+    mapped.clusters = mapped.Clusters()
                            .network(mapped.network)
                            .map(mapped.map)
                            .filters(mapped.data.filters);
 
-   mapped.data.ui = mapped.data.UI()
+    mapped.data.ui = mapped.data.UI()
                           .filters(mapped.data.filters)
                           .network(mapped.network)
                           .clusters(mapped.clusters)
                           .init();
 
-    mapped.form = mapped.Form()
-                        .init();
+    mapped.form = mapped.Form();
 
     mapped.user = mapped.User()
                         .form(mapped.form);
+
+    mapped.form
+        .user(mapped.user)
+        .init();
 
     
 

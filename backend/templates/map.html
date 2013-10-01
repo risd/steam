@@ -59,20 +59,30 @@
 
                 <div class="clearfix row full-width"
                      id="modal-toolbar">
+                    <div id="back-modal-add-yourself"
+                         class="modal-toolbar-button left hide-til-active">
+                        < Back
+                    </div>
                     <div id="close-modal-add-yourself"
-                         class="modal-toolbar-button">x</div>    
+                         class="modal-toolbar-button right">x</div>    
                 </div>
+
+                <div id="call-to-action"
+                     class="hide-til-active">
+                     <h1>call to action</h1>
+                     <div id="add-yourself-type-individual"
+                          class="clickable">
+                        Individual
+                    </div>
+                     <div id="add-yourself-type-institution"
+                          class="clickable">
+                        Institution
+                    </div>
+                 </div>
                 
                 <div id="add-yourself-login"
                      class="hide-til-active">
-                </div>
-                
-                <div id="add-yourself-types"
-                     class="hide-til-active">
-
-                    <div id="add-yourself-type-individual">Individual</div>
-                    <div id="add-yourself-type-institution">Institution</div>
-
+                     <div class="form-type"></div>
                 </div>
 
                 <div id="add-yourself-individual-form-wrapper"
@@ -133,7 +143,16 @@
             </div>
         </div>
     
+        <script>
+        var DEBUG = true;
 
+        // mapped object holds all map.
+        var mapped = window.mapped = {};
+
+        mapped.data = {};
+        mapped.data.backend = 'http://{{ backend }}';
+
+        </script>
         <script src="{% static "js/lib/leaflet-0.6.3/leaflet-src.js" %}"></script>
         <script src="{% static "js/lib/leaflet-0.6.3/markerclusterer/leaflet.markercluster-src.js" %}"></script>
         <script src='//api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.standalone.js'></script>

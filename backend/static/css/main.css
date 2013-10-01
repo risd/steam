@@ -155,16 +155,24 @@ header:hover {
     background: rgba(255,255,255,0.5);
 }
 .modal-toolbar-button {
-    float: right;
     padding: 10px;
 
     cursor: pointer;
+}
+.modal-toolbar-button.left {
+    float: left;
+}
+.modal-toolbar-button.right {
+    float: right;
 }
 .hide-til-active {
     display: none;
 }
 .hide-til-active.active {
     display: block;
+}
+.clickable {
+    cursor: pointer;
 }
 
 .z-0 {

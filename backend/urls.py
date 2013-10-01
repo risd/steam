@@ -28,10 +28,10 @@ urlpatterns = patterns(
         'backend.views.logged_in',
         name='logged_in'),
 
-    # answers the question: is this session authenticated?
-    url(r'authed/$',
-        'backend.views.authed',
-        name='authed'),
+    # if something goes wrong in log in process
+    url(r'login-error/$',
+        'backend.views.login_error',
+        name='login_error'),
 
     url(r'api/', include(v1_api.urls)),
 
