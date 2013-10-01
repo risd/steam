@@ -51,15 +51,9 @@ def authed(request):
             u = User.objects.get(id=uid)
             steamie = Steamies.objects.get(user=u)
 
-            steamie_type = ''
-            if steamie.individual:
-                steamie_type = 'individual'
-            elif steamie.institution:
-                steamie_type = 'institution'
-
             data = {
                 'authenticated': 1,
-                'type': steamie_type,
+                # 'steamie': steamie,
             }
 
     response = HttpResponse(

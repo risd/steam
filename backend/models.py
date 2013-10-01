@@ -119,6 +119,12 @@ class Steamies(models.Model):
         blank=True,
         null=True)
 
+    avatar_url = models.URLField(
+        "Avatar url",
+        max_length=200,
+        blank=True,
+        null=True)
+
     # captures the top level region that data
     # will be associated with. Either a US State,
     # or a country
@@ -173,26 +179,32 @@ class Steamies(models.Model):
         verbose_name_plural = _("Steamies'")
 
     def __unicode__(self):
-        return unicode(self.zip_code) or user
+        return unicode(self.user) or unicode(self.zip_code)
 
 
 def add_geo(sender, instance, created, *args, **kwargs):
-    if created:
-        print "created"
-        if instance.zip_code:
-            # must have a zip_code
+    if not isinstance(instance.zip_code, type(None)):
+        # could make this a bit more efficient if, on save
+        # you passed the update_fields attribute. then
+        # you could simply see if update_fields includes
+        # zip_code, and then, and only then, would the
+        # top_level be re-assessed.
 
-            g = Geo()
-            geo = g.geo(instance.zip_code)
-            ## these are now removed
-            # instance.longitude = float(geo['lon'])
-            # instance.latitude = float(geo['lat'])
-            # instance.us_bool = geo['us_bool']
-            instance.top_level = geo['top_level']
+        # instance.save(update_fields=['name'])
 
-            print 'resaved with geo'
-            print instance.top_level
+        # must have a zip_code
 
-            instance.save()
+        g = Geo()
+        geo = g.geo(instance.zip_code)
+        ## these are now removed
+        # instance.longitude = float(geo['lon'])
+        # instance.latitude = float(geo['lat'])
+        # instance.us_bool = geo['us_bool']
+        instance.top_level = geo['top_level']
+
+        print 'resaved with geo'
+        print instance.top_level
+
+        instance.save()
 
 models.signals.post_save.connect(add_geo, sender=Steamies)

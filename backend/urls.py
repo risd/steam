@@ -6,11 +6,14 @@ admin.autodiscover()
 
 from tastypie.api import Api
 
-from .resources import AuthSteamieResource, GeoResource
+from .resources import AuthSteamieResource
+from .resources import GeoResource
+from .resources import NetworkResource
 
 v1_api = Api(api_name='v1')
 v1_api.register(AuthSteamieResource())
 v1_api.register(GeoResource())
+v1_api.register(NetworkResource())
 
 urlpatterns = patterns(
     '',
