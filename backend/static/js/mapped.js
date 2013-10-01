@@ -852,6 +852,12 @@
                 type_choice_institution:
                     d3.select('#add-yourself-type-institution'),
 
+                submit_individual:
+                    d3.select('#individual-submit-button'),
+
+                submit_institution:
+                    d3.select('#institutio-submit-button')
+
             },
             display: {
                 modal: d3.select('#modal-add-yourself'),
@@ -860,7 +866,8 @@
                 form_individual:
                     d3.select('#add-yourself-individual-form-wrapper'),
                 form_institution:
-                    d3.select('#add-yourself-institution-form-wrapper')
+                    d3.select('#add-yourself-institution-form-wrapper'),
+                modal_toolbar: d3.select('#modal-toolbar')
             }
         };
 
@@ -994,6 +1001,17 @@
             return form;
         };
 
+        form.submit = function () {};
+
+        form.add_avatar = function (x) {
+            el.display.modal_toolbar
+                .append('div')
+                .attr('class', 'avatar rounded')
+                .append('img')
+                .attr('src', x);
+            return form;
+        };
+
 
         form.init = function () {
             el.button
@@ -1018,6 +1036,20 @@
                 .deactivate
                 .on('click', function () {
                     form.state('inactive');
+                });
+
+            el.button
+                .submit_institution
+                .on('click', function () {
+                    console.log('needs to validate');
+                    console.log('submit');
+                });
+
+            el.button
+                .submit_individual
+                .on('click', function () {
+                    console.log('needs to validate');
+                    console.log('submit');
                 });
 
             d3.select('#add-yourself-login')
@@ -1083,23 +1115,39 @@
             // depending on response, sets state
             // of the form.
 
-            var url = mapped.data.backend + '/authed/';
+            var url = mapped.data.backend +
+                      '/api/v1/steamie/?format=json';
             d3.json(url, function (err, status) {
                 if (DEBUG) console.log('checking auth');
+                if (DEBUG) console.log(err);
                 if (DEBUG) console.log(status);
 
-                if (status.authenticated) {
-                    // response should inform if user
-                    // - is on the map OR not.
-
-                    if (status.type === 'individual') {
-                        form.state('fill_out_individual');
-                    } else if (status.type === 'institution') {
-                        form.state('fill_out_institution');
-                    } else {
-                        form.state('choose_type');
-                    }
+                if (err) {
+                    // not auth'ed
+                    console.log('Not authed.');
+                    return;
                 }
+
+                // take for granted the user is signing
+                // up for the first time, continue the
+                // flow through that process.
+
+                // status.objects[0] is the result you
+                // are after.
+
+                if ('individual' in status.objects[0]) {
+                    form.state('fill_out_individual');
+
+                } else if ('institution' in status.objects[0]) {
+                    form.state('fill_out_institution');
+
+                } else {
+                    form.state('choose_type');
+                }
+
+                form.add_avatar(status.objects[0].avatar_url);
+
+
             });
 
             return user;

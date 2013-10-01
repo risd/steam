@@ -41,6 +41,7 @@ def get_avatar_url(request, backend, response, steamie, *args, **kwargs):
         print "twitter"
 
     elif isinstance(backend, GoogleOAuth2Backend):
+        # https://gist.github.com/jcsrb/1081548
         print "google"
 
     else:
