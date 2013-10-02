@@ -793,12 +793,14 @@
 
     mapped.Form = function () {
         var form = {},
-            user,            //  ref to user mapped.User
-            state,           // current state
-            previous_state,  // previous state
-            type,            // type chosen on the way through
-            child_window,    // ref to the popup window object
-            child_status;    // set interval function to check
+            user,               //  ref to user mapped.User
+            state,              // current state
+            previous_state,     // previous state
+            validator,          // used to validate user
+            validation_status,  // used to validate user
+            type,               // type chosen on the way through
+            child_window,       // ref to the popup window object
+            child_status;       // set interval function to check
 
         var ui = {
             popup_window_properties: function () {
@@ -1022,7 +1024,23 @@
             return form;
         };
 
-        form.submit = function () {};
+        form.validator = function (x) {
+            if (!arguments.length) return validator;
+            validator = x;
+            return form;
+        };
+
+        form.type = function (x) {
+            if (!arguments.length) return type;
+            type = x;
+            return form;
+        };
+
+        form.user = function (x) {
+            if (!arguments.length) return user;
+            user = x;
+            return form;
+        };
 
         form.add_avatar = function (x) {
             el.display.modal_toolbar
@@ -1033,20 +1051,46 @@
             return form;
         };
 
-        form.type = function (x) {
-            if (!arguments.length) return type;
+        form.submit = function () {
+            // get data
+            // would it be easier to construct
+            // the forms in d3, then validate?
 
-            type = x;
+            // validate data
+            // validate();
 
-            return form;
+            validation_status = setInterval(check_validation_status,
+                                            500);
+
+            // submit data
+            // d3.xhr()
         };
 
-        form.user = function (x) {
-            if (!arguments.length) return user;
+        // figure out validation check.
+        // function check_validation_status () {
+        //     if (validation_status === 'set') {
+        //         clearInterval(validation_status)
+        //     } else {
+        //         return false;
+        //     }
+        // }
 
-            user = x;
+        function validate (data) {
+            // pass in data to validate
 
-            return form;
+            // returns
+            // result
+
+            validation_status = 'checking';
+
+            validator.validate(data, function (err, result) {
+                validation_status = 'set';
+                if (err) {
+                    return err;
+                }
+
+                return result;
+            });
         };
 
 
@@ -1103,6 +1147,8 @@
             el.button
                 .submit_institution
                 .on('click', function () {
+                    // form.validate();
+                    // form.submit();
                     console.log('needs to validate');
                     console.log('submit');
                 });
@@ -1110,6 +1156,8 @@
             el.button
                 .submit_individual
                 .on('click', function () {
+                    // form.validate();
+                    // form.submit();
                     console.log('needs to validate');
                     console.log('submit');
                 });
@@ -1242,6 +1290,21 @@
         return user;
     };
 
+    mapped.validate = {};
+    mapped.validate.individual = LGMT.validator
+        .validates('individual-first-name')
+            .required('You must enter a first name')
+        .validates('individual-last-name')
+            .required('You must enter a last name')
+        .validates('individual-email')
+            .required('You must enter an email')
+        .validates('individual-zip-code')
+            .required('You must eneter a zip code');
+
+    mapped.validate.institution = LGMT.validator
+        .validates('institution-name')
+            .required('You must enter a name');
+
     mapped.map = mapped.Map();
 
     mapped.data.top_level = mapped.data
@@ -1270,6 +1333,7 @@
 
     mapped.form
         .user(mapped.user)
+        .validator(mapped.validates)
         .init();
 
     
