@@ -3,10 +3,13 @@ import json
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .models import Steamies, Individual, Institution
+from .urls import v1_api
 
 
+@ensure_csrf_cookie
 def map(request):
     """
     Directs request to the map application.
@@ -15,7 +18,8 @@ def map(request):
         request,
         'map.html',
         {
-            'backend': request.get_host()
+            'backend': request.get_host(),
+            'api_version': v1_api.api_name
         })
 
 

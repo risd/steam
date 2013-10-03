@@ -797,8 +797,9 @@
             state,              // current state
             previous_state,     // previous state
             validator,          // used to validate user
-            validation_status,  // used to validate user
-            type,               // type chosen on the way through
+            type,               // institution/individual
+            api,                // api urls
+            input_data,         // object that tracks input data
             child_window,       // ref to the popup window object
             child_status;       // set interval function to check
 
@@ -1017,6 +1018,7 @@
             if (!arguments.length) return state;
 
             if (x in states) {
+                prev_state = state;
                 state = x;
                 states[state]();
             }
@@ -1042,6 +1044,12 @@
             return form;
         };
 
+        form.api = function (x) {
+            if (!arguments.length) return api;
+            api = x;
+            return form;
+        };
+
         form.add_avatar = function (x) {
             el.display.modal_toolbar
                 .append('div')
@@ -1051,47 +1059,136 @@
             return form;
         };
 
-        form.submit = function () {
-            // get data
-            // would it be easier to construct
-            // the forms in d3, then validate?
+        form.grab_input_data = function () {
+            console.log('grab input data');
 
-            // validate data
-            // validate();
+            // clear input data
+            input_data = {};
+            input_data[type] = {};
 
-            validation_status = setInterval(check_validation_status,
-                                            500);
+            // set id of form to grab input data from
+            var id;
+            if (type === 'individual') {
+                id = '#add-yourself-individual-form-wrapper';
+            } else {
+                id = '#add-yourself-institution-form-wrapper';
+            }
 
+            var steamie_values = [
+                'zip_code',
+                'engaged_as',
+                'work_in',
+                'tags',
+                'description',
+                'description'
+            ];
+
+            // get all of the input values
+            d3.selectAll(id + ' input')
+                .each(function () {
+                    var key = d3.select(this).attr('data-mapped');
+                    if (steamie_values.indexOf(key) > -1) {
+                        // save to steamie
+                        input_data[key] = this.value;
+                    } else {
+                        // save to type model
+                        input_data[type][key] = this.value;
+                    }
+                });
+
+            return form;
+        };
+
+        form.submit_flow = function () {
+            console.log('submit flow');
+            form.grab_input_data();
+
+
+            // override input data for testing
+            input_data = {
+                "meta": {
+                    "total_count": 1
+                },
+                "objects": [{
+                    "description": "new description",
+                    "individual": {
+                        "email": "rrr@r.me",
+                        "first_name": "ruben",
+                    }
+                }]
+            };
+            complete_submit();
+            // console.log(input_data);
+            // end override
+
+            // data must be mapped to
+            // look like the response from
+            // http://0.0.0.0:5000/api/v1/steamie/?format=json
+            // or else, values are turned to null
+
+            // form
+            //     .validator()[type]  // returns LGTM obj
+            //     .validate(input_data)
+            //     .then(function (result) {
+            //         console.log(result);
+            //         if (result.valid) {
+            //             complete_submit();
+            //         } else {
+            //             show_validation_errors(result.errors);
+            //         }
+            //     });
+        };
+
+        function complete_submit() {
+            console.log('complete submit');
             // submit data
-            // d3.xhr()
-        };
 
-        // figure out validation check.
-        // function check_validation_status () {
-        //     if (validation_status === 'set') {
-        //         clearInterval(validation_status)
-        //     } else {
-        //         return false;
-        //     }
-        // }
+            var csrf_token = get_cookie('csrftoken');
+            console.log(csrf_token);
 
-        function validate (data) {
-            // pass in data to validate
+            console.log('url');
+            console.log(api.steamie);
+            // api.steamie
+            // 'http://0.0.0.0:5000/api/v1/steamie/'
+            var xhr = d3.xhr(api.steamie)
+                .mimeType('application/json')
+                .header('X-CSRFToken', csrf_token)
+                .header('Content-type', 'application/json')
+                .send('PUT', JSON.stringify(input_data),
+                        function (err, results) {
+                    console.log('results');
+                    console.log(results);
+                });
 
-            // returns
-            // result
+        }
 
-            validation_status = 'checking';
+        function xhr_result (result)  {
+            console.log('result');
+            console.log(result);
+        }
 
-            validator.validate(data, function (err, result) {
-                validation_status = 'set';
-                if (err) {
-                    return err;
+        function show_validation_errors(errors) {
+            console.log('show validation errors');
+        }
+
+        function get_cookie (c_name) {
+            var c_value = document.cookie;
+            var c_start = c_value.indexOf(" " + c_name + "=");
+            if (c_start == -1) {
+                c_start = c_value.indexOf(c_name + "=");
+            }
+            if (c_start == -1) {
+                c_value = null;
+            } else {
+                c_start = c_value.indexOf("=", c_start) + 1;
+                var c_end = c_value.indexOf(";", c_start);
+                if (c_end == -1) {
+                    c_end = c_value.length;
                 }
-
-                return result;
-            });
-        };
+                c_value = unescape(c_value.substring(c_start, c_end));
+            }
+            return c_value;
+        }
 
 
         form.init = function () {
@@ -1115,7 +1212,6 @@
             el.button
                 .type_choice_institution
                 .on('click', function () {
-                    prev_state = state;
                     form.type('institution');
 
                     if (user.authed()) {
@@ -1128,7 +1224,6 @@
             el.button
                 .type_choice_individual
                 .on('click', function () {
-                    prev_state = state;
                     form.type('individual');
 
                     if (user.authed()) {
@@ -1147,19 +1242,19 @@
             el.button
                 .submit_institution
                 .on('click', function () {
-                    // form.validate();
-                    // form.submit();
                     console.log('needs to validate');
                     console.log('submit');
+
+                    form.submit_flow();
                 });
 
             el.button
                 .submit_individual
                 .on('click', function () {
-                    // form.validate();
-                    // form.submit();
                     console.log('needs to validate');
                     console.log('submit');
+
+                    form.submit_flow();
                 });
 
             d3.select('#add-yourself-login')
@@ -1235,6 +1330,7 @@
                 if (err) {
                     // not auth'ed
                     console.log('Not authed.');
+
                     return;
                 }
 
@@ -1245,11 +1341,23 @@
                 // status.objects[0] is the result you
                 // are after.
 
-                if ('individual' in status.objects[0]) {
-                    form.state('fill_out_individual');
+                if (status.objects[0].individual) {
+                    if (status.objects[0].individual.zip_code) {
+                        // already on map
+                        // form.state('profile');
 
-                } else if ('institution' in status.objects[0]) {
-                    form.state('fill_out_institution');
+                        // for now
+                        form.type('individual')
+                            .state('inactive');
+                    } else {
+                        // not on map, fill it out
+                        form.type('individual')
+                            .state('fill_out_individual');
+                    }
+
+                } else if (status.objects[0].institution) {
+                    form.type('institution')
+                        .state('fill_out_institution');
 
                 } else {
                     form.state('fill_out_' + form.type());
@@ -1265,45 +1373,90 @@
 
         user.form = function (x) {
             if (!arguments.length) return form;
-
             form = x;
-
             return user;
         };
 
         user.authed = function (x) {
             if (!arguments.length) return authed;
-
             authed = x;
-
-            return user;
-        };
-
-        user.uid = function (x) {
-            if (!arguments.length) return uid;
-
-            uid = x;
-
             return user;
         };
 
         return user;
     };
 
-    mapped.validate = {};
-    mapped.validate.individual = LGMT.validator
-        .validates('individual-first-name')
-            .required('You must enter a first name')
-        .validates('individual-last-name')
-            .required('You must enter a last name')
-        .validates('individual-email')
-            .required('You must enter an email')
-        .validates('individual-zip-code')
-            .required('You must eneter a zip code');
+    mapped.Api = function () {
+        var urls = {},
+            created_urls,
+            api_version,
+            backend;
 
-    mapped.validate.institution = LGMT.validator
-        .validates('institution-name')
-            .required('You must enter a name');
+        urls.backend = function (x) {
+            if (!arguments.length) return backend;
+            backend = x;
+            return urls;
+        };
+
+        urls.version = function (x) {
+            if (!arguments.length) return version;
+            version = x;
+            return urls;
+        };
+
+        urls.create = function () {
+            var base = backend + '/api/' + version;
+
+            return {
+                steamie: base + '/steamie/?format=json',
+                geo: base + '/geo/?format=json',
+                network: base + '/network/?format=json'
+            };
+        };
+
+        return urls;
+    };
+
+    mapped.api = mapped.Api()
+        .backend(mapped.data.backend)
+        .version(mapped.data.api_version)
+        .create();
+
+    mapped.validate = {};
+    mapped.validate.regex = {
+        email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+    };
+    mapped.validate.individual = LGTM.validator()
+        .validates('first_name')
+            .using(function (value, attr, object) {
+                if (object.individual.first_name) {
+                    return true;
+                }
+                return false;
+            }, 'You must enter a first name')
+        .validates('last_name')
+            .using(function (value, attr, object) {
+                if (object.individual.last_name) {
+                    return true;
+                }
+                return false;
+            }, 'You must enter a last name')
+        .validates('email')
+            .using(function (value, attr, object) {
+                if (object.individual.email
+                        .match(mapped.validate.regex.email)) {
+                    return true;
+                }
+                return false;
+            }, 'You must enter an email')
+        .validates('zip_code')
+            .required('You must eneter a zip code')
+        .build();
+
+    mapped.validate.institution = LGTM.validator()
+        .validates('name')
+            .required('You must enter a name')
+        .build();
 
     mapped.map = mapped.Map();
 
@@ -1333,10 +1486,10 @@
 
     mapped.form
         .user(mapped.user)
-        .validator(mapped.validates)
+        .validator(mapped.validate)
+        .api(mapped.api)
         .init();
 
-    
 
     mapped.init = function () {
         // start the project
@@ -1351,6 +1504,8 @@
         d3.json('/static/geo/level_1.topojson',
             mapped.data.top_level.data);
 
+        // gets the party started,
+        // and start sets state of form
         mapped.user.check_auth();
     }();
 })();

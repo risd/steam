@@ -89,19 +89,27 @@
                      class="hide-til-active">
 
                     <label for="individual-first-name">First Name</label>
-                    <input type="text" id="individual-first-name">
+                    <input type="text"
+                           id="individual-first-name"
+                           data-mapped="first_name">
                     <br>
 
                     <label for="individual-last-name">Last Name</label>
-                    <input type="text" id="individual-last-name">
+                    <input type="text"
+                           id="individual-last-name"
+                           data-mapped="last_name">
                     <br>
 
                     <label for="individual-email">Email</label>
-                    <input type="email" id="individual-email">
+                    <input type="email"
+                           id="individual-email"
+                           data-mapped="email">
                     <br>
 
                     <label for="individual-zip-code">Zip code</label>
-                    <input type="text" id="individual-zip-code">
+                    <input type="text"
+                           id="individual-zip-code"
+                           data-mapped="zip_code">
                     <br>
 
                     <div id="individual-submit-button"
@@ -112,29 +120,40 @@
                      class="hide-til-active">
 
                     <label for="institution-name">Name</label>
-                    <input type="text" id="institution-name">
+                    <input type="text"
+                           id="institution-name"
+                           data-mapped="name">
                     <br>
 
                     <label for="institution-url">URL</label>
-                    <input type="url" id="institution-url">
+                    <input type="url"
+                           id="institution-url"
+                           data-mapped="url">
                     <br>
 
                     <label for="institution-zip-code">Zip code</label>
-                    <input type="text" id="institution-zip-code">
+                    <input type="text"
+                           id="institution-zip-code"
+                           data-mapped="zip_code">
                     <br>
 
                     <label for="individual-representative-first-name">First Name</label>
-                    <input type="text" id="individual-representative-first-name">
+                    <input type="text"
+                           id="individual-representative-first-name"
+                           data-mapped="representative_first_name">
                     <br>
 
                     <label for="individual-representative-last-name">Last Name</label>
-                    <input type="text" id="individual-representative-last-name">
+                    <input type="text"
+                           id="individual-representative-last-name"
+                           data-mapped="representative_last_name">
                     <br>
 
                     <label for="institution-representative-email"
                            >Email</label>
                     <input type="email"
-                           id="institution-representative-email">
+                           id="institution-representative-email"
+                           data-mapped="representative_email">
                     <br>
 
                     <div id="institution-submit-button"
@@ -151,6 +170,7 @@
 
         mapped.data = {};
         mapped.data.backend = 'http://{{ backend }}';
+        mapped.data.api_version = '{{ api_version }}';
 
         </script>
         <script src="{% static "js/lib/leaflet-0.6.3/leaflet-src.js" %}"></script>
@@ -161,6 +181,7 @@
         <script src="{% static "js/lib/d3/d3.v3.2.7.js" %} "></script>
         <script src="{% static "js/lib/lgtm/lgtm-standalone.js" %} "></script>
         <script src="{% static "js/lib/faker/Faker.js" %}"></script>
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 
         <script src="{% static "js/mapped.js" %}"></script>
 

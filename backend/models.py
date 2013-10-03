@@ -100,7 +100,7 @@ class Individual(models.Model):
         verbose_name_plural = _('Individuals')
 
     def __unicode__(self):
-        return self.zip_code
+        return "{0} {1}".format(self.first_name, self.last_name)
 
 
 class Steamies(models.Model):

@@ -197,6 +197,7 @@ XS_SHARING_ALLOWED_ORIGINS = '*'
 XS_SHARING_ALLOWED_METHODS = ['POST', 'GET']
 XS_SHARING_ALLOWED_HEADERS = ['Content-Type', 'application/json']
 XS_SHARING_ALLOWED_CREDENTIALS = 'true'
+CSRF_COOKIE_NAME = 'csrftoken'
 ### end Tastypie config
 
 ### Social auth config

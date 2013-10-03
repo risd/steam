@@ -1,3 +1,5 @@
+from tastypie import fields
+
 from tastypie.authentication import Authentication
 from tastypie.authentication import SessionAuthentication
 
@@ -5,11 +7,12 @@ from tastypie.authorization import Authorization
 
 from tastypie.exceptions import Unauthorized
 
-from tastypie.resources import ModelResource, ALL_WITH_RELATIONS
+from tastypie.resources import ModelResource, ALL
 
 from tastypie.serializers import Serializer
 
-from .models import Steamies
+from django.contrib.auth.models import User
+from .models import Steamies, Institution, Individual
 
 
 class UserObjectsOnlyAuthorization(Authorization):
@@ -22,7 +25,6 @@ class UserObjectsOnlyAuthorization(Authorization):
         return object_list.filter(user=bundle.request.user)
 
     def read_detail(self, object_list, bundle):
-        # user owns obj?
         return bundle.obj.user == bundle.request.user
 
     def create_list(self, object_list, bundle):
@@ -75,7 +77,7 @@ class CommonAuthResourceMeta:
     authorization = UserObjectsOnlyAuthorization()
 
     serializer = Serializer(formats=['json', 'jsonp'])
-    allowed_methods = ['get', 'post', 'delete']
+    allowed_methods = ['get', 'post', 'delete', 'put']
 
     always_return_data = True
 
@@ -104,10 +106,63 @@ class NetworkResource(ModelResource):
         resource_name = 'network'
 
 
+class InstitutionResource(ModelResource):
+    """
+    Returns Institution objects to AuthSteamieResource
+    """
+    class Meta(CommonOpenResourceMeta):
+        queryset = Institution.objects.all()
+
+
+class IndividualResource(ModelResource):
+    """
+    Returns Institution objects to AuthSteamieResource
+    """
+    class Meta(CommonOpenResourceMeta):
+        queryset = Individual.objects.all()
+
+
+class UserResource(ModelResource):
+    """
+    Returns User objects to AuthSteamieResource
+    """
+    class Meta(CommonOpenResourceMeta):
+        queryset = User.objects.all()
+
+
 class AuthSteamieResource(ModelResource):
     """
-    Used to manage Steamie data. Individuals and Institutions.
+    Used to manage Steamie models.
+    Including their Individual and Institution models.
     """
+    user = fields.ForeignKey(
+        UserResource,
+        'user',
+        null=True,
+        full=True)
+    institution = fields.ForeignKey(
+        InstitutionResource,
+        'institution',
+        null=True,
+        full=True)
+    individual = fields.ForeignKey(
+        IndividualResource,
+        'individual',
+        null=True,
+        full=True)
+
     class Meta(CommonAuthResourceMeta):
         queryset = Steamies.objects.all()
         resource_name = 'steamie'
+        excludes = ['id']
+
+    def obj_create(self, bundle, **kwargs):
+        # sets user based on request to
+        # ensure auth passes
+        # http://django-tastypie.readthedocs.org/
+        #     en/latest/cookbook.html#creating-per-user-resources
+        return super(AuthSteamieResource, self)\
+            .obj_create(bundle, user=bundle.request.user)
+
+    def apply_authorization_limits(self, request, object_list):
+        object_list.filter(user=request.user)
