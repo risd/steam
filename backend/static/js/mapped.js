@@ -562,18 +562,55 @@
                 }
 
 
+                // start class list
+                var c = ' mc-',
+                    // (radius * 2) + (10[max arc width]*2)
+                    div_icon_size;
 
-                var c = ' marker-cluster-',
-                    max = clusters.max();
+                // set the scale of the cluster
+                if (steamie_count < 100) {
 
-                if (steamie_count <
-                            (max * 0.3)) {
-                    c += 'small';
-                } else if (steamie_count <
-                            (max * 0.6)) {
-                    c += 'medium';
-                } else {
-                    c += 'large';
+                    c += '2-digit';
+                    div_icon_size = {
+                        x: 56,  //36+20
+                        y: 56
+                    };
+                }
+
+                else if (steamie_count < 1000) {
+
+                    c += '3-digit';
+                    div_icon_size = {
+                        x: 62,  //42+20 = 62
+                        y: 62
+                    };
+                }
+
+                else if (steamie_count < 10000) {
+
+                    c += '4-digit';
+                    div_icon_size = {
+                        x: 70,  //50+20
+                        y: 70
+                    };
+                }
+
+                else if (steamie_count < 100000) {
+
+                    c += '5-digit';
+                    div_icon_size = {
+                        x: 74,  //54+20
+                        y: 74
+                    };
+                }
+
+                else {
+
+                    c += '6-digit';
+                    div_icon_size = {
+                        x: 81,  //61+20
+                        y: 81
+                    };
                 }
 
                 if (child_count === 1) {
@@ -586,7 +623,8 @@
                     html: '<div><span>' +
                         steamie_count + '</span></div>',
                     className: 'marker-cluster' + c,
-                    iconSize: new L.Point(40, 40)
+                    iconSize: new L.Point(div_icon_size.x,
+                                          div_icon_size.y)
                 });
             },
 
@@ -595,7 +633,11 @@
             polygonOptions: {
                 color: 'red',
                 fillColor: 'red'
-            }
+            },
+
+            //A cluster will cover at most 
+            // this many pixels from its center
+            maxClusterRadius: 80
         });
 
         // on click of individual clusters
@@ -665,15 +707,6 @@
             map.removeLayer(clusters_group);
 
             return clusters;
-        };
-
-        clusters.max = function () {
-            // find max count to set symbology relative
-            // to the max value.
-
-            return d3.max(data.features, function (d) {
-                return calculate_steamies(d);
-            });
         };
 
         function add_to_map () {
@@ -1101,6 +1134,20 @@
 
         form.submit_flow = function () {
             console.log('submit flow');
+
+            // data must be mapped to
+            // look like the response from
+            // http://0.0.0.0:5000/api/v1/steamie/?format=json
+            // or else, values are turned to null
+            // so, perhaps, instead of just
+            // grabbing the data and putting it
+            // the format produced by grab_input_data
+            // this form should have an object that
+            // IS that response. the initial auth
+            // check. Then updating data in a form
+            // updates the data in the object
+            // and submitting it, just sends it back
+            // to the server. about right, yeah.
             form.grab_input_data();
 
 
@@ -1120,11 +1167,6 @@
             complete_submit();
             // console.log(input_data);
             // end override
-
-            // data must be mapped to
-            // look like the response from
-            // http://0.0.0.0:5000/api/v1/steamie/?format=json
-            // or else, values are turned to null
 
             // form
             //     .validator()[type]  // returns LGTM obj
@@ -1157,14 +1199,13 @@
                 .send('PUT', JSON.stringify(input_data),
                         function (err, results) {
                     console.log('results');
+                    // no results are returned.
+                    // so if you do get something back
+                    // its likely an error?
+                    // test it out.
                     console.log(results);
                 });
 
-        }
-
-        function xhr_result (result)  {
-            console.log('result');
-            console.log(result);
         }
 
         function show_validation_errors(errors) {
