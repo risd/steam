@@ -21,10 +21,10 @@
     }];
 
     mapped.data.colors = {
-        res: 'cyan',
-        pol: 'magenta',
-        edu: 'yellow',
-        ind: 'grey'
+        res: 'rgb(105,230,64)',
+        pol: 'rgb(255,97,227)',
+        edu: 'rgb(255,137,49)',
+        ind: 'rgb(39,180,242)'
     };
 
     mapped.fake = {
@@ -183,7 +183,7 @@
                     // secondary behavior
                     clicked += 1;
                 });
-        }
+        };
 
         return ui;
     };
@@ -225,7 +225,7 @@
             return network;
         };
 
-        network.top_level = function (x) {
+        network.topLevel = function (x) {
             if (!arguments.length) return top_level;
             top_level = x;
             return network;
@@ -522,15 +522,186 @@
         return map;
     };
 
+    mapped.ClusterIconSize = function () {
+        var size = {
+            inner_diameter: {
+                two_digit: 36,
+                three_digit: 42,
+                four_digit: 50,
+                five_digit: 54,
+                six_digit: 61
+            },
+            // gap between inner icon and arc
+            gap_width: {
+                inactive: 2,
+                active: 1
+            },
+            // width of the arc
+            arc_width: {
+                inactive: 4,
+                active: 10
+            }
+        };
+
+        size.total = {
+            // height and width of icon
+            // inner + gap_width + arc_width
+            two_digit:
+                size.inner_diameter.two_digit +
+                ((size.gap_width.active +
+                  size.arc_width.active) * 2),
+            three_digit:
+                size.inner_diameter.three_digit +
+                ((size.gap_width.active +
+                  size.arc_width.active) * 2),
+            four_digit:
+                size.inner_diameter.four_digit +
+                ((size.gap_width.active +
+                  size.arc_width.active) * 2),
+            five_digit:
+                size.inner_diameter.five_digit +
+                ((size.gap_width.active +
+                  size.arc_width.active) * 2),
+            six_digit:
+                size.inner_diameter.six_digit +
+                ((size.gap_width.active +
+                  size.arc_width.active) * 2),
+        };
+
+        return size;
+    };
+
+    mapped.Arcs = function () {
+        var arcs = {},
+            icon_size;  // ref to global obj
+
+        arcs.iconSize = function (x) {
+            if (!arguments.length) return icon_size;
+
+            icon_size = x;
+
+            return arcs;
+        };
+
+        arcs.create = function () {
+            // bound to the zoom of the map
+            // sets the arcs per marker cluster
+
+            console.log('creating arcs');
+
+            // adding arcs
+            d3.selectAll('.arc-wrapper')
+                .html('')
+                .each(function () {
+                    var node = d3.select(this);
+
+                    var meta = {
+                        total: +node.attr('data-total'),
+                        total_active:
+                            +node.attr('data-total-active'),
+                        icon_category:
+                            node.attr('data-icon-cateogry')
+                    };
+
+                    var data = [
+                        {
+                            'abbr': 'res',
+                            'count': +node.attr('data-res')
+                        }, {
+                            'abbr': 'pol',
+                            'count': +node.attr('data-pol')
+                        }, {
+                            'abbr': 'edu',
+                            'count': +node.attr('data-edu')
+                        }, {
+                            'abbr': 'ind',
+                            'count': +node.attr('data-ind')
+                        }
+                    ];
+
+                    // to calculate radians of each slice
+                    var τ = 2 * Math.PI;
+
+                    var arc_scale = d3.scale.linear()
+                        .domain([0, meta.total])
+                        .range([0, τ]);
+
+
+                    // add start and end angles to
+                    // each piece of data
+                    var accounted_for = 0;
+                    data.forEach(function (d, i) {
+                        d.startAngle = accounted_for;
+
+                        var slice = arc_scale(d.count);
+                        accounted_for += slice;
+                        
+                        d.endAngle = accounted_for;
+                    });
+
+                    var arc = {
+                        inactive: d3.svg.arc()
+                                .innerRadius(
+                                    (icon_size.inner_diameter[
+                                        meta.icon_category]/2) +
+                                    (icon_size.gap_width.inactive))
+                                .outerRadius(
+                                    (icon_size.inner_diameter[
+                                        meta.icon_category]/2) +
+                                     (icon_size.gap_width.inactive) +
+                                     (icon_size.arc_width.inactive)),
+
+                        active: d3.svg.arc()
+                                .innerRadius(
+                                    (icon_size.inner_diameter[
+                                        meta.icon_category]/2) +
+                                    (icon_size.gap_width.active))
+                                .outerRadius(
+                                    (icon_size.inner_diameter[
+                                        meta.icon_category]/2) +
+                                     (icon_size.gap_width.active) +
+                                     (icon_size.arc_width.active))
+                    };
+
+                    var svg_dimensions =
+                        icon_size.total[meta.icon_category];
+
+                    var svg = node.append('svg')
+                        .attr('class', 'arc-svg')
+                        .attr('width', svg_dimensions)
+                        .attr('height', svg_dimensions)
+                        .append('g')
+                        .attr('transform',
+                              'translate(' +
+                              svg_dimensions / 2 + ',' +
+                              svg_dimensions / 2 + ')');
+
+                    var arc_res = svg.selectAll('.arc-segment')
+                        .data(data)
+                        .enter()
+                        .append('path')
+                        .attr('class', 'arc-segment')
+                        .style('fill', function (d) {
+                            return mapped.data.colors[d.abbr];
+                        })
+                        .attr('d', arc.inactive);
+                });
+        };
+
+        return arcs;
+    };
+
     mapped.Clusters = function () {
 
         var clusters = {},
-            network, // reference to network object
-            map,     // reference to map object
-            filters, // reference to filters object
-            geojson, // L.geojson of data
-            data,    // raw data
-            max;     // max of data
+            network,    // reference to network object
+            map,        // reference to map object
+            filters,    // reference to filters object
+            arcs,       // reference to arcs object
+            geojson,    // L.geojson of data
+            data,       // raw data
+            max,        // max of data
+            icon_size;  // icon sizes by catogegory
 
         // clustering settings
         var clusters_group = L.markerClusterGroup({
@@ -552,65 +723,58 @@
             // or more than one.
             iconCreateFunction: function (cluster) {
 
-                var steamie_count = 0;
+                var steamie_count = {
+                    res: 0,
+                    pol: 0,
+                    edu: 0,
+                    ind: 0,
+                    total: 0,
+                    total_active: 0
+                };
                 var children = cluster.getAllChildMarkers(),
                     child_count = cluster.getChildCount();
 
                 for (var i = 0; i < children.length; i++) {
-                    steamie_count += calculate_steamies(
-                                        children[i].feature);
+                    steamie_count =
+                        calculate_steamies(
+                            children[i].feature,
+                            steamie_count);
                 }
 
 
                 // start class list
                 var c = ' mc-',
-                    // (radius * 2) + (10[max arc width]*2)
-                    div_icon_size;
+                    icon_category;
 
                 // set the scale of the cluster
-                if (steamie_count < 100) {
+                if (steamie_count.total < 100) {
 
                     c += '2-digit';
-                    div_icon_size = {
-                        x: 56,  //36+20
-                        y: 56
-                    };
+                    icon_category = 'two_digit';
                 }
 
-                else if (steamie_count < 1000) {
+                else if (steamie_count.total < 1000) {
 
                     c += '3-digit';
-                    div_icon_size = {
-                        x: 62,  //42+20 = 62
-                        y: 62
-                    };
+                    icon_category = 'three_digit';
                 }
 
-                else if (steamie_count < 10000) {
+                else if (steamie_count.total < 10000) {
 
                     c += '4-digit';
-                    div_icon_size = {
-                        x: 70,  //50+20
-                        y: 70
-                    };
+                    icon_category = 'four_digit';
                 }
 
-                else if (steamie_count < 100000) {
+                else if (steamie_count.total < 100000) {
 
                     c += '5-digit';
-                    div_icon_size = {
-                        x: 74,  //54+20
-                        y: 74
-                    };
+                    icon_category = 'five_digit';
                 }
 
                 else {
 
                     c += '6-digit';
-                    div_icon_size = {
-                        x: 81,  //61+20
-                        y: 81
-                    };
+                    icon_category = 'six_digit';
                 }
 
                 if (child_count === 1) {
@@ -620,11 +784,26 @@
                 }
 
                 return new L.DivIcon({
-                    html: '<div><span>' +
-                        steamie_count + '</span></div>',
+                    html: '<div>' +
+                        '<span>' +
+                        steamie_count.total_active +
+                        '</span>' +
+                        '</div>' +
+                        '<div class="arc-wrapper"' +
+                             ' data-res=' + steamie_count.res +
+                             ' data-pol=' + steamie_count.pol +
+                             ' data-edu=' + steamie_count.edu +
+                             ' data-ind=' + steamie_count.ind +
+                             ' data-total=' + steamie_count.total +
+                             ' data-total-active=' +
+                             steamie_count.total_active +
+                             ' data-icon-cateogry="' +
+                             icon_category + '"' +
+                             '></div>',
                     className: 'marker-cluster' + c,
-                    iconSize: new L.Point(div_icon_size.x,
-                                          div_icon_size.y)
+                    iconSize: new L.Point(
+                                 icon_size.total[icon_category],
+                                 icon_size.total[icon_category])
                 });
             },
 
@@ -652,7 +831,17 @@
             if (DEBUG) console.log('cluster clicked!');
             var bounds = d.layer.getBounds().pad(0.5);
             map.fitBounds(bounds);
+
+            // remove all svg references.
         });
+
+        clusters.bindArcs = function () {
+            clusters_group.on('animationend', function () {
+                arcs.create();
+            });
+
+            return clusters;
+        };
 
         clusters.network = function (x) {
             // pass the network object
@@ -691,10 +880,28 @@
             return clusters;
         };
 
+        clusters.iconSize = function (x) {
+            if (!arguments.length) return icon_size;
+
+            icon_size = x;
+
+            return clusters;
+        };
+
+        clusters.arcs = function (x) {
+            if (!arguments.length) return arcs;
+
+            arcs = x;
+
+            return clusters;
+        };
+
         clusters.filter = function () {
             if (DEBUG) console.log('filtering');
 
+            // clear clusters
             clusters.clear();
+            // add clusters
             add_to_map();
 
             return clusters;
@@ -718,17 +925,25 @@
             clusters_group.addLayer(geojson);
 
             map.addLayer(clusters_group);
+            arcs.create();
         }
 
-        function calculate_steamies (d) {
-            var total = 0;
+        function calculate_steamies (d, count) {
+            // d - is the current cluster's data
+            // count - is the cumulative count of cluster data
+            // count.res, count.pol, count.total, ect
             for (var i = 0; i < filters.length; i++) {
                 if (filters[i].active) {
-                    total += d.properties[filters[i].abbr];
+                    count.total_active +=
+                        d.properties[filters[i].abbr];
                 }
+                count.total +=
+                    d.properties[filters[i].abbr];
+                count[filters[i].abbr] +=
+                    d.properties[filters[i].abbr];
             }
 
-            return total;
+            return count;
         }
 
         return clusters;
@@ -1501,18 +1716,26 @@
 
     mapped.map = mapped.Map();
 
+    mapped.cluster_icon_size = mapped.ClusterIconSize();
+
+    mapped.arcs = mapped.Arcs()
+                        .iconSize(mapped.cluster_icon_size);
+
     mapped.data.top_level = mapped.data
                                   .TopLevel()
                                   .map(mapped.map);
 
     mapped.network = mapped.Network()
                            .map(mapped.map)
-                           .top_level(mapped.data.top_level);
+                           .topLevel(mapped.data.top_level);
    
     mapped.clusters = mapped.Clusters()
+                           .iconSize(mapped.cluster_icon_size)
+                           .arcs(mapped.arcs)
                            .network(mapped.network)
                            .map(mapped.map)
-                           .filters(mapped.data.filters);
+                           .filters(mapped.data.filters)
+                           .bindArcs();
 
     mapped.data.ui = mapped.data.UI()
                           .filters(mapped.data.filters)

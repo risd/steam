@@ -193,20 +193,50 @@ header:hover {
     z-index: 200;
 }
 
+// colors
+$color-res: rgb(105,230,64);
+$color-pol: rgb(255,97,227);
+$color-edu: rgb(255,137,49);
+$color-ind: rgb(39,180,242);
+
+#steamie-network .button {
+    position: absolute;
+    top: 100px;
+    right: 100px;
+
+    cursor: pointer;
+}
+
 /************
 Global filters
 */
+.filter_bar {
+    position: absolute;
+    top: 200px;
+}
+.filter_bar .button {
+    opacity: 0.2;
+}
+.filter_bar .button.active {
+    opacity: 1.0;
+}
+h3.filter-by {
+    font-family: Sentinel;
+    font-weight: light;
+    font-size: 22px;
+    color: rgb(165,165,165);
+}
 .button.res {
-    background: cyan;
+    background: $color-res;
 }
 .button.pol {
-    background: magenta;
+    background: $color-pol;
 }
 .button.edu {
-    background: yellow;
+    background: $color-edu;
 }
 .button.ind {
-    background: grey;
+    background: $color-ind;
 }
 /* end global filters */
 
@@ -216,18 +246,44 @@ Leaflet map styles
 .leaflet-top {
     top: 120px;
 }
+.leaflet-left {
+    left: 40px;
+
+    .leaflet-control {
+        margin: 0;
+    }
+    .leaflet-bar {
+        border: none;
+    }
+
+    .leaflet-control-zoom-in {
+        height: 25px;
+        width: 25px;
+        border-radius: 12.5px;
+    }
+    .leaflet-control-zoom-in {
+        height: 25px;
+        width: 25px;
+        border-radius: 12.5px;
+
+    }
+}
 /* end Leaflet map styles */
 
 /************
 Leaflet Marker Cluster Styles
 */
-$grey: grey;
+$cluster-fill: rgba(78,91,109,0.8);
 @mixin mixin-cluster($diameter) {
-    border-radius: ($diameter/2) + 10;
+    $arc-width: 10px;
+    $arc-gap: 1px;
+    $arc-total-width: $arc-gap + $arc-width;
+
+    border-radius: ($diameter/2) + $arc-total-width;
 
     div {
         // width of the arc
-        margin: 10px;
+        margin: $arc-total-width;
         height: $diameter;
         width: $diameter;
         border-radius: $diameter/2;
@@ -235,15 +291,33 @@ $grey: grey;
 
     span {
         line-height: $diameter;
+
+        font-family: AntennaComp;
+        font-weight: Medium;
+        font-size: 26px;
+        text-align: center;
+        letter-spacing: 1px;
+        color: rgb(255,255,255);
+    }
+
+    div.arc-wrapper {
+        border-radius: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: ($diameter + (2 * 11));
+        width: ($diameter + (2 * 11));
+        background-color: transparent;
+        margin: 0;
     }
 }
 
 .marker-cluster {
-    background: blue;
+    // background: blue;
 }
 
 .marker-cluster div {
-    background-color: $grey;
+    background-color: $cluster-fill;
 }
 
 .mc-2-digit {
@@ -290,23 +364,6 @@ d3 top_level outline
 /************
 network graph
 */
-#steamie-network .button {
-    position: absolute;
-    top: 100px;
-    right: 100px;
-
-    cursor: pointer;
-}
-.filter_bar {
-    position: absolute;
-    top: 200px;
-}
-.filter_bar .button {
-    opacity: 0.2;
-}
-.filter_bar .button.active {
-    opacity: 1.0;
-}
 
 /* all nodes  */
 .node {
@@ -321,17 +378,18 @@ network graph
 .node.i {
     stroke: 0;
 }
+
 .node.res {
-    fill: cyan;
+    fill: $color-res;
 }
 .node.pol {
-    fill: magenta;
+    fill: $color-pol;
 }
 .node.edu {
-    fill: yellow;
+    fill: $color-edu;
 }
 .node.ind {
-    fill: grey;
+    fill: $color-ind;
 }
 
 /************
