@@ -103,6 +103,9 @@
             filters,   // reference to global filters
             network,   // reference to global network
             clusters,  // reference to global clusters
+            arcs,      // reference to global clusters
+            active_count = 4,
+            prev_active_count,
             clicked = 0;
 
         var filter_bar = d3.select('.filter_bar');
@@ -129,6 +132,12 @@
             return ui;
         };
 
+        ui.arcs = function (x) {
+            if (!arguments.length) return arcs;
+            arcs = x;
+            return ui;
+        };
+
         ui.init = function () {
             var filter_buttons = filter_bar.selectAll('.button')
                 .data(filters)
@@ -143,25 +152,67 @@
                 .on('click', function (d) {
                     if (DEBUG) console.log('clicked');
 
-                    if (clicked === 0) {
-                        // first click selects just one segment
-                        // so all filter states are set inactive,
-                        // then this one is set active.
+                    prev_active_count = active_count;
+                    console.log('prev_active_count', prev_active_count);
+                    console.log('active_count', active_count);
 
+                    if (prev_active_count === 4) {
+                        // all filters were active
+                        // set only one filter to active
                         var i;
+                        // reset active count to get an 
+                        // update as we loop through filters
+                        active_count = 0;
                         for (i=0; i < filters.length; i++) {
+                            // set the active attribute
+                            // of filters based on click
                             if (filters[i].abbr === d.abbr) {
                                 filters[i].active = 1;
-
+                                active_count += 1;
                             } else {
-
                                 filters[i].active = 0;
-                                if (DEBUG) console.log(
-                                    d3.select(
-                                        '.button.' +
-                                        filters[i].abbr
-                                    ).classed('active', false));
+                                filter_bar
+                                    .select('.button.' +
+                                            filters[i].abbr)
+                                    .classed('active', false);
                             }
+                        }
+
+                    } else if (prev_active_count === 1) {
+                        // one filter was active
+
+                        if (d.active) {
+                            // if that one active filter, is the
+                            // on that was just pressed, reactivate
+                            // all of the filters
+
+                            var i;
+                            active_count = 0;
+                            for (i=0; i < filters.length; i++) {
+                                filters[i].active = 1;
+                                active_count += 1;
+                            }
+                            filter_bar
+                                .selectAll('.button')
+                                .classed('active', true);
+
+                        } else {
+                            console.log('errtime');
+                            // if the one active filter is NOT the
+                            // one that was just pressed, add
+                            // the newly clicked filter as active too
+                            
+                            var i;
+                            for (i=0; i < filters.length; i++) {
+
+                                if (filters[i].abbr === d.abbr) {
+                                    filters[i].active = 1;
+                                    active_count += 1;
+                                }
+                            }
+                            d3.select(this)
+                                .classed('active', d.active);
+
                         }
                     } else {
                         // subsequent clicks add or remove based
@@ -169,6 +220,12 @@
 
                         // toggle state
                         d.active = d.active ? 0 : 1;
+
+                        if (d.active) {
+                            active_count += 1;
+                        } else {
+                            active_count -= 1;
+                        }
 
                         // toggle visual
                         d3.select(this)
@@ -181,7 +238,7 @@
 
                     // up the click count, to enable
                     // secondary behavior
-                    clicked += 1;
+                    // clicked += 1;
                 });
         };
 
@@ -197,9 +254,11 @@
             canvas,
             nodes,
             force,
+            node_sel,
             blurred_sel,
             focused_sel,
             top_level, // reference to global top_level
+            filters,   // reference to global filters
             map;       // reference to global map
 
         var random_around_zero = function (range) {
@@ -228,6 +287,12 @@
         network.topLevel = function (x) {
             if (!arguments.length) return top_level;
             top_level = x;
+            return network;
+        };
+
+        network.filters = function (x) {
+            if (!arguments.length) return filters;
+            filters = x;
             return network;
         };
 
@@ -468,11 +533,10 @@
             var status = false,
                 i;
 
-            for (i=0; i < mapped.data.filters.length; i++) {
-                if (mapped.data.filters[i].abbr ===
-                        d.work_in) {
+            for (i=0; i < filters.length; i++) {
+                if (filters[i].abbr === d.work_in) {
 
-                    if (mapped.data.filters[i].active) {
+                    if (filters[i].active) {
 
                         return true;
                     }
@@ -573,7 +637,9 @@
 
     mapped.Arcs = function () {
         var arcs = {},
-            icon_size;  // ref to global obj
+            prev_filters, // track filters to transition
+            filters,      // ref to global obj
+            icon_size;    // ref to global obj
 
         arcs.iconSize = function (x) {
             if (!arguments.length) return icon_size;
@@ -583,11 +649,19 @@
             return arcs;
         };
 
+        arcs.filters = function (x) {
+            if (!arguments.length) return filters;
+            filters = x;
+            prev_filters = filters;
+            return arcs;
+        };
+
         arcs.create = function () {
             // bound to the zoom of the map
             // sets the arcs per marker cluster
 
             console.log('creating arcs');
+            console.log(filters);
 
             // adding arcs
             d3.selectAll('.arc-wrapper')
@@ -676,7 +750,8 @@
                               svg_dimensions / 2 + ',' +
                               svg_dimensions / 2 + ')');
 
-                    var arc_res = svg.selectAll('.arc-segment')
+                    // add the arcs
+                    var arc_sel = svg.selectAll('.arc-segment')
                         .data(data)
                         .enter()
                         .append('path')
@@ -684,9 +759,58 @@
                         .style('fill', function (d) {
                             return mapped.data.colors[d.abbr];
                         })
-                        .attr('d', arc.inactive);
+                        .attr('d', function (d) {
+                            var i;
+                            for (i = 0; i < prev_filters.length; i++) {
+                                if (prev_filters[i].abbr === d.abbr) {
+
+                                    if (prev_filters[i].active) {
+                                        d.prev_state = 1;
+                                        return arc.active(d);
+                                    } else {
+                                        d.prev_state = 0;
+                                        return arc.inactive(d);
+                                    }
+                                }
+                            }
+                        })
+                        .transition()
+                        .duration(1000)
+                        .call(arc_scale);
                 });
+
+            prev_filters = filters;
         };
+
+        function arc_scale (transition) {
+
+            // manage the transition between
+            // arc states.
+
+            transition.attrTween('d', function (d) {
+                var interpolate_inner = d3.interpolate(),
+                    interpolate_outter = d3.interpolate();
+
+                var i;
+                for (i = 0; i < filters.length; i++) {
+                    if (filters[i].abbr === d.abbr) {
+
+                        if (filters[i].active) {
+                            d.state = 1;
+                        } else {
+                            d.state = 0;
+                        }
+                    }
+                }
+                if (d.state === d.prev_state) {
+                    // same state, no tween
+                    return;
+                }
+
+                // return arc.active(d);
+                // return arc.inactive(d);
+            });
+        }
 
         return arcs;
     };
@@ -1719,13 +1843,15 @@
     mapped.cluster_icon_size = mapped.ClusterIconSize();
 
     mapped.arcs = mapped.Arcs()
-                        .iconSize(mapped.cluster_icon_size);
+                        .iconSize(mapped.cluster_icon_size)
+                        .filters(mapped.data.filters);
 
     mapped.data.top_level = mapped.data
                                   .TopLevel()
                                   .map(mapped.map);
 
     mapped.network = mapped.Network()
+                           .filters(mapped.data.filters)
                            .map(mapped.map)
                            .topLevel(mapped.data.top_level);
    
@@ -1741,6 +1867,7 @@
                           .filters(mapped.data.filters)
                           .network(mapped.network)
                           .clusters(mapped.clusters)
+                          .arcs(mapped.arcs)
                           .init();
 
     mapped.form = mapped.Form();
