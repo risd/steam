@@ -22,7 +22,7 @@
 
     mapped.data.colors = {
         res: 'rgb(105,230,64)',
-        pol: 'rgb(255,97,227)',
+        pol: 'rgb(255,97,127)',
         edu: 'rgb(255,137,49)',
         ind: 'rgb(39,180,242)'
     };
@@ -153,8 +153,7 @@
                     if (DEBUG) console.log('clicked');
 
                     prev_active_count = active_count;
-                    console.log('prev_active_count', prev_active_count);
-                    console.log('active_count', active_count);
+                    arcs.prevFilters(clone(filters));
 
                     if (prev_active_count === 4) {
                         // all filters were active
@@ -197,7 +196,6 @@
                                 .classed('active', true);
 
                         } else {
-                            console.log('errtime');
                             // if the one active filter is NOT the
                             // one that was just pressed, add
                             // the newly clicked filter as active too
@@ -232,15 +230,45 @@
                             .classed('active', d.active);
                     }
 
+                    arcs.filters(filters);
+
+                    console.log(arcs.prevFilters());
+                    console.log(arcs.filters());
+
                     // apply filter to network and map
                     network.filter();
                     clusters.filter();
-
-                    // up the click count, to enable
-                    // secondary behavior
-                    // clicked += 1;
                 });
         };
+
+        function clone (obj) {
+            // Thanks to stackoverflow:
+            // http://stackoverflow.com/questions/
+            // 728360/most-elegant-way-to-clone-a-javascript-object
+
+            // Handle the 3 simple types, and null or undefined
+            if (null == obj || "object" != typeof obj) return obj;
+
+            // Handle Array
+            if (obj instanceof Array) {
+                var copy = [];
+                for (var i = 0, len = obj.length; i < len; i++) {
+                    copy[i] = clone(obj[i]);
+                }
+                return copy;
+            }
+
+            // Handle Object
+            if (obj instanceof Object) {
+                var copy = {};
+                for (var attr in obj) {
+                    if (obj.hasOwnProperty(attr)) {
+                        copy[attr] = clone(obj[attr]);
+                    }
+                }
+                return copy;
+            }
+        }
 
         return ui;
     };
@@ -597,13 +625,15 @@
             },
             // gap between inner icon and arc
             gap_width: {
-                inactive: 2,
-                active: 1
+                small: 4,
+                default: 2,
+                large: 1
             },
             // width of the arc
             arc_width: {
-                inactive: 4,
-                active: 10
+                small: 1,
+                default: 4,
+                large: 10
             }
         };
 
@@ -612,24 +642,24 @@
             // inner + gap_width + arc_width
             two_digit:
                 size.inner_diameter.two_digit +
-                ((size.gap_width.active +
-                  size.arc_width.active) * 2),
+                ((size.gap_width.large +
+                  size.arc_width.large) * 2),
             three_digit:
                 size.inner_diameter.three_digit +
-                ((size.gap_width.active +
-                  size.arc_width.active) * 2),
+                ((size.gap_width.large +
+                  size.arc_width.large) * 2),
             four_digit:
                 size.inner_diameter.four_digit +
-                ((size.gap_width.active +
-                  size.arc_width.active) * 2),
+                ((size.gap_width.large +
+                  size.arc_width.large) * 2),
             five_digit:
                 size.inner_diameter.five_digit +
-                ((size.gap_width.active +
-                  size.arc_width.active) * 2),
+                ((size.gap_width.large +
+                  size.arc_width.large) * 2),
             six_digit:
                 size.inner_diameter.six_digit +
-                ((size.gap_width.active +
-                  size.arc_width.active) * 2),
+                ((size.gap_width.large +
+                  size.arc_width.large) * 2),
         };
 
         return size;
@@ -637,9 +667,11 @@
 
     mapped.Arcs = function () {
         var arcs = {},
-            prev_filters, // track filters to transition
-            filters,      // ref to global obj
-            icon_size;    // ref to global obj
+            transition_filters, // track filters to transition
+            prev_filters,
+            svg_arcs,           // obj with 3 sized arcs
+            filters,            // ref to global obj
+            icon_size;          // ref to global obj
 
         arcs.iconSize = function (x) {
             if (!arguments.length) return icon_size;
@@ -652,7 +684,12 @@
         arcs.filters = function (x) {
             if (!arguments.length) return filters;
             filters = x;
-            prev_filters = filters;
+            return arcs;
+        };
+
+        arcs.prevFilters = function (x) {
+            if (!arguments.length) return prev_filters;
+            prev_filters = x;
             return arcs;
         };
 
@@ -693,6 +730,10 @@
                         }
                     ];
 
+                    // add the prev_size, and size
+                    // attributes to this object
+                    add_size(data);
+
                     // to calculate radians of each slice
                     var τ = 2 * Math.PI;
 
@@ -713,28 +754,39 @@
                         d.endAngle = accounted_for;
                     });
 
-                    var arc = {
-                        inactive: d3.svg.arc()
+                    svg_arcs = {
+                        small: d3.svg.arc()
                                 .innerRadius(
                                     (icon_size.inner_diameter[
                                         meta.icon_category]/2) +
-                                    (icon_size.gap_width.inactive))
+                                    (icon_size.gap_width.small))
                                 .outerRadius(
                                     (icon_size.inner_diameter[
                                         meta.icon_category]/2) +
-                                     (icon_size.gap_width.inactive) +
-                                     (icon_size.arc_width.inactive)),
+                                     (icon_size.gap_width.small) +
+                                     (icon_size.arc_width.small)),
 
-                        active: d3.svg.arc()
+                        default: d3.svg.arc()
                                 .innerRadius(
                                     (icon_size.inner_diameter[
                                         meta.icon_category]/2) +
-                                    (icon_size.gap_width.active))
+                                    (icon_size.gap_width.default))
                                 .outerRadius(
                                     (icon_size.inner_diameter[
                                         meta.icon_category]/2) +
-                                     (icon_size.gap_width.active) +
-                                     (icon_size.arc_width.active))
+                                     (icon_size.gap_width.default) +
+                                     (icon_size.arc_width.default)),
+
+                        large: d3.svg.arc()
+                                .innerRadius(
+                                    (icon_size.inner_diameter[
+                                        meta.icon_category]/2) +
+                                    (icon_size.gap_width.large))
+                                .outerRadius(
+                                    (icon_size.inner_diameter[
+                                        meta.icon_category]/2) +
+                                     (icon_size.gap_width.large) +
+                                     (icon_size.arc_width.large))
                     };
 
                     var svg_dimensions =
@@ -750,9 +802,33 @@
                               svg_dimensions / 2 + ',' +
                               svg_dimensions / 2 + ')');
 
-                    // add the arcs
+                    // d3.transition()
+                    //     .ease("bounce")
+                    //     .duration(1000)
+                    //     .each(function () {
+                    //         var arc_sel = svg.selectAll('.arc-segment')
+                    //             .data(data);
+
+                    //         arc_sel
+                    //             .enter()
+                    //             .append('path')
+                    //             .attr('class', 'arc-segment')
+                    //             .style('fill', function (d) {
+                    //                 return mapped.data.colors[d.abbr];
+                    //             })
+                    //             .attr('d', function (d) {
+                    //                 return svg_arcs[d.prev_size](d);
+                    //             });
+
+                    //         arc_sel
+                    //             .transition()
+                    //             .call(arc_scale);
+                    //     });
+                    
                     var arc_sel = svg.selectAll('.arc-segment')
-                        .data(data)
+                        .data(data);
+
+                    arc_sel
                         .enter()
                         .append('path')
                         .attr('class', 'arc-segment')
@@ -760,56 +836,120 @@
                             return mapped.data.colors[d.abbr];
                         })
                         .attr('d', function (d) {
-                            var i;
-                            for (i = 0; i < prev_filters.length; i++) {
-                                if (prev_filters[i].abbr === d.abbr) {
+                            return svg_arcs[d.prev_size](d);
+                        });
 
-                                    if (prev_filters[i].active) {
-                                        d.prev_state = 1;
-                                        return arc.active(d);
-                                    } else {
-                                        d.prev_state = 0;
-                                        return arc.inactive(d);
-                                    }
-                                }
-                            }
-                        })
+                    arc_sel
                         .transition()
-                        .duration(1000)
+                        .duration(800)
                         .call(arc_scale);
-                });
 
-            prev_filters = filters;
+                    // add the arcs
+                    // var arc_sel = svg.selectAll('.arc-segment')
+                    //     .data(data)
+                    //     .enter()
+                    //     .append('path')
+                    //     .attr('class', 'arc-segment')
+                    //     .style('fill', function (d) {
+                    //         return mapped.data.colors[d.abbr];
+                    //     })
+                    //     .attr('d', function (d) {
+                    //         return svg_arcs[d.prev_size](d);
+                    //     })
+                    //     .transition()
+                    //     .duration(1000)
+                    //     .call(arc_scale);
+                });
         };
 
         function arc_scale (transition) {
 
             // manage the transition between
             // arc states.
+            console.log('arc_scale');
+            console.log(transition);
 
             transition.attrTween('d', function (d) {
-                var interpolate_inner = d3.interpolate(),
-                    interpolate_outter = d3.interpolate();
+                // tween is run for every instance of d
 
-                var i;
-                for (i = 0; i < filters.length; i++) {
-                    if (filters[i].abbr === d.abbr) {
+                var interpolate_inner =
+                        d3.interpolate(
+                            d.innerRadius(),
+                            svg_args[d.size](d).innerRadius()),
+                    interpolate_outer =
+                        d3.interpolate(
+                            d.outerRadius(),
+                            svg_args[d.size](d).outerRadius());
 
-                        if (filters[i].active) {
-                            d.state = 1;
+                return function (t) {
+                    d.innerRadius = interpolate_inner(t);
+                    d.outerRadius = interpolate_outer(t);
+                    return svg_arcs[d.size](d);
+                };
+            });
+        }
+
+        function add_size (node_data) {
+            // answers the question, what size
+            // does this need to be?
+            // @param d: data obj to create arcs
+            // 
+            // possible values
+            // 0, no transition // not in use
+            // 1, transition to 'small'
+            // 2, transition to 'default'
+            // 3, transition to 'large'
+            // 
+            // value is found in the filters
+            // array, alongside each object.
+            // 'size' and 'prev_size'
+
+            for (var j = node_data.length - 1; j >= 0; j--) {
+
+                // check for all being active
+                var active_count = 0;
+                for (var i = filters.length - 1; i >= 0; i--) {
+                    var cur_active = false;
+                    if(filters[i].active) {
+                        active_count += 1;
+                        cur_active = true;
+                    }
+                    if(filters[i].abbr === node_data[j].abbr) {
+                        if (cur_active) {
+                            node_data[j].size = 'large';
                         } else {
-                            d.state = 0;
+                            node_data[j].size = 'small';
                         }
                     }
                 }
-                if (d.state === d.prev_state) {
-                    // same state, no tween
-                    return;
+
+                // check for all being active
+                var prev_active_count = 0;
+                for (var i = prev_filters.length - 1; i >= 0; i--) {
+                    var cur_active = false;
+                    if(prev_filters[i].active) {
+                        prev_active_count += 1;
+                        cur_active = true;
+                    }
+                    if(prev_filters[i].abbr === node_data[j].abbr) {
+                        if (cur_active) {
+                            node_data[j].prev_size = 'large';
+                        } else {
+                            node_data[j].prev_size = 'small';
+                        }
+                    }
                 }
 
-                // return arc.active(d);
-                // return arc.inactive(d);
-            });
+                if (active_count === 4) {
+                    node_data[j].size = 'default';
+                }
+                if (prev_active_count === 4) {
+                    node_data[j].prev_size = 'default';
+                }
+
+            }
+
+            return node_data;
         }
 
         return arcs;
@@ -1844,6 +1984,7 @@
 
     mapped.arcs = mapped.Arcs()
                         .iconSize(mapped.cluster_icon_size)
+                        .prevFilters(mapped.data.filters)
                         .filters(mapped.data.filters);
 
     mapped.data.top_level = mapped.data
