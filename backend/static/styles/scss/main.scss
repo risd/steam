@@ -371,8 +371,7 @@ network graph
 }
 /* network nodes representing institutions  */
 .node.g {
-    stroke: black;
-    stroke-width: 2;
+    stroke: 0;
 }
 /* network nodes representing individuals  */
 .node.i {

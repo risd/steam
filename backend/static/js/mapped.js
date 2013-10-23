@@ -301,10 +301,14 @@
         var gravity = 0.1,
             friction = 0.9,
             charge = -30,
-            group_radius = 4,
-            individual_radius = 5,
-            blurred_radius = individual_radius/2,
-            growth_radius = 2;
+            group_radius = 4.5,
+            individual_radius = 4.5,
+            blurred_radius = 3,
+            growth_radius = 6,
+
+            radius_small = 3,
+            radius_default = 4.5,
+            radius_large = 6;
 
         network.map = function (x) {
             if (!arguments.length) return map;
@@ -330,32 +334,48 @@
                 // an instance of nodes having been
                 // selected
 
-                // not-active
-                focused_sel = nodes_sel
-                    .filter(function (d) {
-                        return focused(d);
-                    });
+                var active_count = 0;
+                for (var i = filters.length - 1; i >= 0; i--) {
+                    if (filters[i].active) {
+                        active_count += 1;
+                    }
+                }
 
-                blurred_sel = nodes_sel
-                    .filter(function (d) {
-                        return !focused(d);
-                    });
+                if (active_count === 4) {
+                    // reset all to default
+                    nodes_sel
+                        .transition()
+                        .duration(1000)
+                        .style('opacity', 1.0)
+                        .attr('r', radius_default);
+                } else {
+                    // set focused and non
 
-                // active
-                focused_sel
-                    .transition()
-                    .duration(1000)
-                    .style('opacity', 1.0)
-                    .attr('r', function (d) {
-                        return radius(d) + growth_radius;
-                    });
+                    // not-active
+                    focused_sel = nodes_sel
+                        .filter(function (d) {
+                            return focused(d);
+                        });
 
-                // inactive
-                blurred_sel
-                    .transition()
-                    .duration(1000)
-                    .style('opacity', 0.2)
-                    .attr('r', blurred_radius);
+                    blurred_sel = nodes_sel
+                        .filter(function (d) {
+                            return !focused(d);
+                        });
+
+                    // active
+                    focused_sel
+                        .transition()
+                        .duration(1000)
+                        .style('opacity', 1.0)
+                        .attr('r', radius_large);
+
+                    // inactive
+                    blurred_sel
+                        .transition()
+                        .duration(1000)
+                        .style('opacity', 0.5)
+                        .attr('r', radius_small);
+                }
 
             } catch (e) {
                 if (DEBUG) console.log(
@@ -455,9 +475,7 @@
                                 d.work_in + ' ' +
                                 d.type;
                     })
-                    .attr('r', function (d) {
-                        return radius(d);
-                    })
+                    .attr('r', radius_default)
                     .style('opacity', function (d) {
                         // account for mappe.data.filters value
                         // on creatation of graph
@@ -465,7 +483,7 @@
                         if (focused(d)) {
                             return 1;
                         } else {
-                            return 0.2;
+                            return 0.5;
                         }
                     })
                     .call(force.drag)
