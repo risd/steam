@@ -283,8 +283,8 @@
             nodes,
             force,
             node_sel,
-            blurred_sel,
-            focused_sel,
+            inactive_sel,
+            active_sel,
             top_level, // reference to global top_level
             filters,   // reference to global filters
             map;       // reference to global map
@@ -349,28 +349,28 @@
                         .style('opacity', 1.0)
                         .attr('r', radius_default);
                 } else {
-                    // set focused and non
+                    // set active and non
 
                     // not-active
-                    focused_sel = nodes_sel
+                    active_sel = nodes_sel
                         .filter(function (d) {
-                            return focused(d);
+                            return active(d);
                         });
 
-                    blurred_sel = nodes_sel
+                    inactive_sel = nodes_sel
                         .filter(function (d) {
-                            return !focused(d);
+                            return !active(d);
                         });
 
                     // active
-                    focused_sel
+                    active_sel
                         .transition()
                         .duration(1000)
                         .style('opacity', 1.0)
                         .attr('r', radius_large);
 
                     // inactive
-                    blurred_sel
+                    inactive_sel
                         .transition()
                         .duration(1000)
                         .style('opacity', 0.5)
@@ -480,7 +480,7 @@
                         // account for mappe.data.filters value
                         // on creatation of graph
 
-                        if (focused(d)) {
+                        if (active(d)) {
                             return 1;
                         } else {
                             return 0.5;
@@ -573,8 +573,8 @@
             }
         }
 
-        function focused (d) {
-            // returns true if focused
+        function active (d) {
+            // returns true if active
             // returns false if blurred
             var status = false,
                 i;
