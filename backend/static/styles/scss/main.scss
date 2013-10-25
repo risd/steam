@@ -93,6 +93,29 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+@mixin sentinel {
+    font-family: 'Sentinel SSm A', 'Sentinel SSm B';
+    font-weight: 400;
+    font-style: normal;
+
+    -webkit-font-smoothing: antialiased;
+}
+
+@mixin antenna-bold {
+    font-family: "Antenna Comp";
+    font-style: normal;
+    font-weight: bold;
+    
+    -webkit-font-smoothing: antialiased;
+}
+
+@mixin antenna-medium {
+    font-family: "Antenna Comp Medium";
+    font-style: normal;
+    font-weight: normal;
+    
+    -webkit-font-smoothing: antialiased;
+}
 
 html, body {
     margin: 0;
@@ -215,28 +238,86 @@ Global filters
     top: 200px;
 }
 .filter_bar .button {
-    opacity: 0.2;
+    width: 124px;
+
+    font-family: "Mercury Display";
+    font-weight: "light";
+    font-size: 18px;
+
+    text-align: left;
+
+    border-top: 1px solid rgb(204, 204, 204);
+
+    padding: 11px 0 11px 18px;
+    margin: 0;
+    line-height: 0.9em;
+}
+
+.filter_bar .button {
+    background-color: transparent;
+    opacity: 0.5;
 }
 .filter_bar .button.active {
+    color: white;
+    opacity: 1.0;
+}
+.filter_bar .button.active.res {
+    background-color: $color-res;
+}
+.filter_bar .button.active.edu {
+    background-color: $color-edu;
+}
+.filter_bar .button.active.pol {
+    background-color: $color-pol;
+}
+.filter_bar .button.active.ind {
+    background-color: $color-ind;
+}
+.filter_bar.all-active .button.active {
+    background-color: transparent;
+    color: rgb(128, 130, 133);
     opacity: 1.0;
 }
 h3.filter-by {
-    font-family: Sentinel;
-    font-weight: light;
+    @include sentinel;
+
     font-size: 22px;
+
     color: rgb(165,165,165);
+
+    margin: 0 0 0 27px;
+    padding: 0;
 }
-.button.res {
-    background: $color-res;
+.filter_bar .button:before {
+    position: relative;
+    display: inline-block;
+
+    top: 0;
+    left: -9px;
+
+    content: "";
+
+    height: 8px;
+    width: 8px;
+
+    border-radius: 4px;
+    border-width: 1px;
+    border-style: solid;
 }
-.button.pol {
-    background: $color-pol;
+.filter_bar .button:before {
+    border-color: white;
 }
-.button.edu {
-    background: $color-edu;
+.filter_bar.all-active .button.res:before {
+    border-color: $color-res;
 }
-.button.ind {
-    background: $color-ind;
+.filter_bar.all-active .button.pol:before {
+    border-color: $color-pol;
+}
+.filter_bar.all-active .button.edu:before {
+    border-color: $color-edu;
+}
+.filter_bar.all-active .button.ind:before {
+    border-color: $color-ind;
 }
 /* end global filters */
 
@@ -255,18 +336,39 @@ Leaflet map styles
     .leaflet-bar {
         border: none;
     }
+}
 
-    .leaflet-control-zoom-in {
-        height: 25px;
-        width: 25px;
-        border-radius: 12.5px;
-    }
-    .leaflet-control-zoom-in {
-        height: 25px;
-        width: 25px;
-        border-radius: 12.5px;
+.leaflet-bar > a.leaflet-control-zoom-in,
+.leaflet-bar > a.leaflet-control-zoom-out {
+    height: 23px;
+    width: 23px;
 
-    }
+    border-width: 1px;
+    border-color: rgb(204, 204, 204);
+    border-style: solid;
+    border-radius: 50%;
+    
+    color: rgb(204, 204, 204);
+    background-color: transparent;
+
+    @include sentinel;
+
+    line-height: 21px;
+}
+.leaflet-bar > a.leaflet-control-zoom-in:hover ,
+.leaflet-bar > a.leaflet-control-zoom-out:hover {
+        height: 23px;
+        width: 23px;
+        background-color: rgb(240, 240, 240);
+
+        line-height: 21px;
+}
+.leaflet-bar > a.leaflet-control-zoom-in:active ,
+.leaflet-bar > a.leaflet-control-zoom-out:active {
+    background-color: rgb(150,150,150);
+}
+a.leaflet-control-zoom-out {
+    margin-top: 7px;
 }
 /* end Leaflet map styles */
 
@@ -292,8 +394,8 @@ $cluster-fill: rgba(78,91,109,0.8);
     span {
         line-height: $diameter;
 
-        font-family: AntennaComp;
-        font-weight: Medium;
+        @include antenna-medium;
+
         font-size: 26px;
         text-align: center;
         letter-spacing: 1px;
@@ -397,7 +499,7 @@ form
 #activate-add-yourself {
     position: absolute;
     top: 97px;
-    left: 10px;
+    right: 10px;
     background-color: red;
     height: 26px;
     width: 26px;

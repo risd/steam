@@ -4,19 +4,19 @@
     // the map and the network graphs
     mapped.data.filters = [{
         abbr: 'res',
-        display: 'Research',
+        display: 'research',
         active: 1
     }, {
         abbr: 'edu',
-        display: 'Education',
+        display: 'education',
         active: 1
     }, {
         abbr: 'pol',
-        display: 'Political',
+        display: 'political',
         active: 1
     }, {
         abbr: 'ind',
-        display: 'Industry',
+        display: 'industry',
         active: 1
     }];
 
@@ -139,6 +139,8 @@
         };
 
         ui.init = function () {
+            filter_bar.classed('all-active', true);
+
             var filter_buttons = filter_bar.selectAll('.button')
                 .data(filters)
                 .enter()
@@ -185,15 +187,16 @@
                             // on that was just pressed, reactivate
                             // all of the filters
 
+                            filter_bar
+                                .selectAll('.button')
+                                .classed('active', true);
+
                             var i;
                             active_count = 0;
                             for (i=0; i < filters.length; i++) {
                                 filters[i].active = 1;
                                 active_count += 1;
                             }
-                            filter_bar
-                                .selectAll('.button')
-                                .classed('active', true);
 
                         } else {
                             // if the one active filter is NOT the
@@ -208,6 +211,7 @@
                                     active_count += 1;
                                 }
                             }
+
                             d3.select(this)
                                 .classed('active', d.active);
 
@@ -228,6 +232,14 @@
                         // toggle visual
                         d3.select(this)
                             .classed('active', d.active);
+                    }
+
+                    if (active_count === 4) {
+                        filter_bar
+                            .classed('all-active', true);
+                    } else {
+                        filter_bar
+                            .classed('all-active', false);
                     }
 
                     arcs.filters(filters);
@@ -301,14 +313,23 @@
         var gravity = 0.1,
             friction = 0.9,
             charge = -30,
-            group_radius = 4.5,
-            individual_radius = 4.5,
-            blurred_radius = 3,
-            growth_radius = 6,
-
             radius_small = 3,
             radius_default = 4.5,
             radius_large = 6;
+
+        var svg_node = {
+            // indivual node svg
+            i: d3.svg.arc()
+                .innerRadius(0)
+                .outerRadius(radius_default)
+                .startAngle(0)
+                .endAngle(360),
+            g: d3.svg.arc()
+                .innerRadius(radius_default - 1)
+                .outerRadius(1)
+                .startAngle(0)
+                .endAngle(360)
+        };
 
         network.map = function (x) {
             if (!arguments.length) return map;
@@ -475,7 +496,13 @@
                                 d.work_in + ' ' +
                                 d.type;
                     })
-                    .attr('r', radius_default)
+                    .attr('r', function (d) {
+                        if (active(d)) {
+                            return radius_default;
+                        } else {
+                            return radius_small;
+                        }
+                    })
                     .style('opacity', function (d) {
                         // account for mappe.data.filters value
                         // on creatation of graph
@@ -564,14 +591,6 @@
                   .nodes(network_data.steamies)
                   .create();
         };
-
-        function radius (d) {
-            if (d.type === 'g') {
-                return group_radius;
-            } else{
-                return individual_radius;
-            }
-        }
 
         function active (d) {
             // returns true if active
@@ -820,28 +839,6 @@
                               svg_dimensions / 2 + ',' +
                               svg_dimensions / 2 + ')');
 
-                    // d3.transition()
-                    //     .ease("bounce")
-                    //     .duration(1000)
-                    //     .each(function () {
-                    //         var arc_sel = svg.selectAll('.arc-segment')
-                    //             .data(data);
-
-                    //         arc_sel
-                    //             .enter()
-                    //             .append('path')
-                    //             .attr('class', 'arc-segment')
-                    //             .style('fill', function (d) {
-                    //                 return mapped.data.colors[d.abbr];
-                    //             })
-                    //             .attr('d', function (d) {
-                    //                 return svg_arcs[d.prev_size](d);
-                    //             });
-
-                    //         arc_sel
-                    //             .transition()
-                    //             .call(arc_scale);
-                    //     });
                     
                     var arc_sel = svg.selectAll('.arc-segment')
                         .data(data);
@@ -985,6 +982,8 @@
             max,        // max of data
             icon_size;  // icon sizes by catogegory
 
+        var format = d3.format(',');
+
         // clustering settings
         var clusters_group = L.markerClusterGroup({
             // gives single markers the same
@@ -1068,7 +1067,7 @@
                 return new L.DivIcon({
                     html: '<div>' +
                         '<span>' +
-                        steamie_count.total_active +
+                        format(steamie_count.total_active) +
                         '</span>' +
                         '</div>' +
                         '<div class="arc-wrapper"' +
