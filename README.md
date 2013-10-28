@@ -8,10 +8,15 @@ Django application for STEAM.
 [Development][development].
 
 /backend/    - configuration
+
 /docs/       - documentation
+
 /map/        - map application
+
 /news/       - news application
+
 /static/     - assets for all applications
+
 /templates/  - templates for all applications
 
 [production]:http://stemtosteam.org/
