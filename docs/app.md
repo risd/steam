@@ -1,6 +1,10 @@
 # STEAM Backend API
 
-This is a django application. The API is developed leans on the power of Tastypie and the authentication layer is done with Social Auth.
+This is a django application. The API is developed leans on the power of Tastypie.
+
+The map application uses Social Auth for the authentication layer.
+
+The news application uses tumblr and twitter.
 
 
 ## going ssl

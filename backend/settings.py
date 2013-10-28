@@ -92,7 +92,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(APP_ROOT, 'backend/static/'),
+    os.path.join(APP_ROOT, 'static/'),
 )
 
 # List of finder classes that know how to find static files in
@@ -138,7 +138,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.normpath(os.path.join(APP_ROOT, 'templates')),
+    os.path.join(APP_ROOT, 'templates/'),
 )
 
 INSTALLED_APPS = (
@@ -160,6 +160,7 @@ INSTALLED_APPS = (
 
     # primary
     'backend',
+    'map',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -242,7 +243,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.associate_user',
     'social_auth.backends.pipeline.social.load_extra_data',
     'social_auth.backends.pipeline.user.update_user_details',
-    'backend.pipeline.create_steamie',
-    'backend.pipeline.get_avatar_url',
+    'map.pipeline.create_steamie',
+    'map.pipeline.get_avatar_url',
 )
 ### end Social auth config

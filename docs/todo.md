@@ -1,3 +1,12 @@
+### start the news section
+
+- create api resource for content
+    - tweets &
+    - tumblr posts
+
+- create page powered by api to digest news.
+
+
 ### moving off map
 
 - arcs around clusters need to transition

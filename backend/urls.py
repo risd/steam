@@ -6,9 +6,9 @@ admin.autodiscover()
 
 from tastypie.api import Api
 
-from .resources import AuthSteamieResource
-from .resources import GeoResource
-from .resources import NetworkResource
+from map.resources import AuthSteamieResource
+from map.resources import GeoResource
+from map.resources import NetworkResource
 
 v1_api = Api(api_name='v1')
 v1_api.register(AuthSteamieResource())
@@ -20,17 +20,17 @@ urlpatterns = patterns(
 
     # map
     url(r'^$',
-        'backend.views.map',
+        'map.views.map',
         name='map'),
 
     # final step of log in, redirects to front end
     url(r'logged-in/$',
-        'backend.views.logged_in',
+        'map.views.logged_in',
         name='logged_in'),
 
     # if something goes wrong in log in process
     url(r'login-error/$',
-        'backend.views.login_error',
+        'map.views.login_error',
         name='login_error'),
 
     url(r'api/', include(v1_api.urls)),
