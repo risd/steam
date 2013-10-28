@@ -7,6 +7,8 @@ Django application for STEAM.
 - [Production][production]. *
 - [Development][development].
 
+Organization
+
 - /backend/    - configuration
 - /docs/       - documentation
 - /map/        - map application
