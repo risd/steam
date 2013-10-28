@@ -4,7 +4,7 @@ Work in progress
 
 Django application for STEAM.
 
-[Production][production]. - yet to be moved there.
+[Production][production]. *
 [Development][development].
 
 - /backend/    - configuration
@@ -13,6 +13,8 @@ Django application for STEAM.
 - /news/       - news application
 - /static/     - assets for all applications
 - /templates/  - templates for all applications
+
+* yet to be moved there.
 
 [production]:http://stemtosteam.org/
 [development]:http://limitless-atoll-9939.herokuapp.com/
