@@ -4,8 +4,8 @@ Work in progress
 
 Django application for STEAM.
 
-[Production][production]. *
-[Development][development].
+- [Production][production]. *
+- [Development][development].
 
 - /backend/    - configuration
 - /docs/       - documentation
