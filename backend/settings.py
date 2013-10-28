@@ -161,6 +161,7 @@ INSTALLED_APPS = (
     # primary
     'backend',
     'map',
+    'news',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -247,3 +248,8 @@ SOCIAL_AUTH_PIPELINE = (
     'map.pipeline.get_avatar_url',
 )
 ### end Social auth config
+
+### news app config
+TUMBLR_CONSUMER_KEY = env_var('TUMBLR_CONSUMER_KEY')
+TUMBLR_CONSUMER_SECRET = env_var('TUMBLR_CONSUMER_SECRET')
+### end news app config

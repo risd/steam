@@ -18,8 +18,23 @@ v1_api.register(NetworkResource())
 urlpatterns = patterns(
     '',
 
+    # home
+    # url(r'^$',
+    #     'evergreen.views.home',
+    #     name='home'),
+
+    # news
+    # url(r'news/$',
+    #     'news.views.news',
+    #     name='news'),
+
+    # resources
+    # url(r'resources/$',
+    #     'evergreen.views.resources',
+    #     name='resources'),
+
     # map
-    url(r'^$',
+    url(r'map/$',
         'map.views.map',
         name='map'),
 

@@ -14,7 +14,7 @@ Run the server wsgi server
 
 Run django development server
 
-    foreman run python manage.py runserver
+    foreman run python manage.py runserver localhost:5000
 
 ## Deploying
 
@@ -32,9 +32,3 @@ Run syncdb to setup the inital tables.
 
     foreman run python manage.py syncdb
     foreman run python manage.py migrate
-
-Set up the individual application tables
-
-    foreman run python manage.py schemamigration map --initial
-    foreman run python manage.py migrate map
-
