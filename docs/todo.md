@@ -1,3 +1,9 @@
+### left off
+
+debugging getting tumblr data in
+
+    foreman run python manage.py worker_tumblr
+
 ### start the news section
 
 - create api resource for content

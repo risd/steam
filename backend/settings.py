@@ -172,6 +172,15 @@ INSTALLED_APPS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s' +\
+                '%(process)d %(thread)d %(message)s',
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s',
+        },
+    },
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -182,13 +191,40 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'logfile': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(APP_ROOT, 'logfile'),
+            'maxBytes': 50000,
+            'backupCount': 2,
+            'formatter': 'simple',
+        },
     },
     'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'WARN',
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'DEBUG',
+        },
         'django.request': {
             'handlers': ['mail_admins'],
-            'level': 'ERROR',
             'propagate': True,
+            'level': 'ERROR',
+        },
+        '': {  # could alternatively be the name of the app
+            'handlers': ['console'],
+            'level': 'DEBUG',
         },
     }
 }

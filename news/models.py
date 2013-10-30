@@ -11,9 +11,9 @@ class Tweet(models.Model):
     def __unicode__(self):
         return self.url()
 
-    user = models.CharField('User', max_length=16)
-    content = models.CharField('Tweet', max_length=50)
     twitter_id = models.CharField('Tweet ID', max_length=200)
+    user = models.CharField('User', max_length=16)
+    html = models.CharField('Tweet', max_length=50)
     timestamp = models.DateTimeField('timestamp')
 
     def url(self):
@@ -30,14 +30,14 @@ class TumblEvent(models.Model):
         verbose_name_plural = _('Tumblr Events')
 
     def __unicode__(self):
-        pass
+        return unicode(self.tid)
 
-    content = models.TextField('Tumblr Post')
+    tid = models.BigIntegerField('Tumblr ID')
+    html = models.TextField('Tumblr Post')
     url = models.URLField('Post URL')
     state = models.CharField('State', max_length=50)
-    tid = models.BigIntegerField('Tumblr ID')
 
-    steam_content = models.TextField('STEAM Formatted Post')
+    steam_html = models.TextField('STEAM Formatted Post')
     steam_url = models.URLField('STEAM Post URL')
 
     timestamp = models.DateTimeField('timestamp')
@@ -49,14 +49,14 @@ class TumblFeature(models.Model):
         verbose_name_plural = _('Tumblr Events')
 
     def __unicode__(self):
-        pass
+        return unicode(self.tid)
 
     tid = models.BigIntegerField('Tumblr ID')
-    content = models.TextField('Tumblr Post')
+    html = models.TextField('Tumblr Post')
     url = models.URLField('Post URL')
     state = models.CharField('state', max_length=50)
 
-    steam_content = models.TextField('STEAM Formatted Post')
+    steam_html = models.TextField('STEAM Formatted Post')
     steam_url = models.URLField('STEAM Post URL')
 
     timestamp = models.DateTimeField('timestamp')
