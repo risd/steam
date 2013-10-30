@@ -9,7 +9,7 @@ class Tweet(models.Model):
         verbose_name_plural = _('Tweets')
 
     def __unicode__(self):
-        return self.url()
+        return self.twitter_id
 
     twitter_id = models.CharField('Tweet ID', max_length=200)
     user = models.CharField('User', max_length=16)
@@ -30,11 +30,12 @@ class TumblEvent(models.Model):
         verbose_name_plural = _('Tumblr Events')
 
     def __unicode__(self):
-        return unicode(self.tid)
+        return self.steam_url
 
     tid = models.BigIntegerField('Tumblr ID')
     html = models.TextField('Tumblr Post')
     url = models.URLField('Post URL')
+    title = models.CharField('title', max_length=50, default="")
     state = models.CharField('State', max_length=50)
 
     steam_html = models.TextField('STEAM Formatted Post')
@@ -49,11 +50,12 @@ class TumblFeature(models.Model):
         verbose_name_plural = _('Tumblr Events')
 
     def __unicode__(self):
-        return unicode(self.tid)
+        return self.steam_url
 
     tid = models.BigIntegerField('Tumblr ID')
     html = models.TextField('Tumblr Post')
     url = models.URLField('Post URL')
+    title = models.CharField('title', max_length=50, default="")
     state = models.CharField('state', max_length=50)
 
     steam_html = models.TextField('STEAM Formatted Post')
