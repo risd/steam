@@ -66,12 +66,14 @@ class Command(BaseCommand):
                 tumbls.to_create()
 
             for event in events_to_create:
-                obj = TumblEvent(**event)
+                post_type, post_data = event.data()
+                obj = TumblEvent(**post_data)
                 obj.save()
                 event.exists_in_database = True
 
             for feature in features_to_create:
-                obj = TumblFeature(**feature)
+                post_type, post_data = feature.data()
+                obj = TumblFeature(**post_data)
                 obj.save()
                 feature.exists_in_database = True
 

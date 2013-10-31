@@ -38,7 +38,7 @@ class Tumbl():
         self.setup()
 
     def _html_feature(self):
-        """ take in self, return html """
+        """ take in self, set html, return self """
         # p - holds original post, with div around it
         # s - holds steam html
 
@@ -77,7 +77,7 @@ class Tumbl():
             p.remove('p:first-child'))
         post_wrapper.append(share_wrapper)
 
-        title_container.append(feature)
+        title_container.append(title)
         title_container.append(header_img)
 
         post_container.append(post_date_ul)
@@ -92,7 +92,7 @@ class Tumbl():
         return self
 
     def _html_event(self):
-        """ take in self, return html """
+        """ take in self, set html, return self """
         # p - holds original post, with div around it
         # s - holds steam html
 

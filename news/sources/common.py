@@ -8,6 +8,7 @@ class CommonHTML():
         pass
 
     def share(self):
+        """share buttons on a post"""
         share_wrapper = pq('<ul></ul>')\
             .attr('class', 'sharing clear-fix')
 
@@ -20,6 +21,7 @@ class CommonHTML():
         return share_wrapper
 
     def filter(self, type):
+        """post type"""
         post_filter = pq('<p></p>')\
             .attr('class', 'filter-type')\
             .html(type)

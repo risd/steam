@@ -9,19 +9,14 @@ class Tweet(models.Model):
         verbose_name_plural = _('Tweets')
 
     def __unicode__(self):
-        return self.twitter_id
+        return self.tid
 
-    twitter_id = models.CharField('Tweet ID', max_length=200)
+    tid = models.CharField('Tweet ID', max_length=200)
     user = models.CharField('User', max_length=16)
-    html = models.CharField('Tweet', max_length=50)
+    screen_name = models.CharField('Screen name', max_length=50)
+    html = models.TextField('STEAM formatted Tweet')
     timestamp = models.DateTimeField('timestamp')
-
-    def url(self):
-        # https://twitter.com/<user>/status/<id>
-        return 'https://twitter.com/' +\
-            '{0}/'.format(self.user) +\
-            'status/' +\
-            '{0}'.format(self.tweetid)
+    url = models.URLField('Tweet URL')
 
 
 class TumblEvent(models.Model):

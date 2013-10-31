@@ -64,7 +64,7 @@ class Tumbls():
         """
         tumbl = None
 
-        # set `tumbl` to the dictionary
+        # set `tumbl` to the Tumbl class
         # of data that tumblr sent us
         # to compare against steam_model
         if post_type == 'event':
