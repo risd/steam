@@ -20,8 +20,8 @@ class Tumbl():
 
         # variables to be initialized
         # based on the Tumblr response
-        self.type = None
         self.tid = None
+        self.tagged_type = None
         self.html = None
         self.url = None
         self.title = None
@@ -68,7 +68,7 @@ class Tumbl():
         post_wrapper = pq('<div></div>')\
             .attr('class', 'post three-column clearfix')
 
-        post_filter = common.filter(self.type)
+        post_filter = common.filter(self.tagged_type)
 
         share_wrapper = common.share()
 
@@ -110,7 +110,7 @@ class Tumbl():
         event_container = pq('<div></div>')\
             .attr('class', 'post clearfix three-column')
 
-        post_filter = common.filter(self.type)
+        post_filter = common.filter(self.tagged_type)
 
         title = pq('<h3></h3>')\
             .html(self.title)
@@ -133,12 +133,11 @@ class Tumbl():
 
     def _create_html(self):
         # converts tumblr html to steam html
-        if self.type == 'feature':
+        if self.tagged_type == 'feature':
             self._html_feature()
-        elif self.type == 'event':
+        elif self.tagged_type == 'event':
             self._html_event()
 
-        # make this work
         return self
 
     def _create_url(self):
@@ -161,13 +160,13 @@ class Tumbl():
 
     def setup(self):
         if u'feature' in self.post[u'tags']:
-            self.type = 'feature'
+            self.tagged_type = 'feature'
 
         elif u'event' in self.post[u'tags']:
-            self.type = 'event'
+            self.tagged_type = 'event'
 
         else:
-            self.type = None
+            self.tagged_type = None
             err = 'Tumblr post that was not an ' +\
                 'event, or a feature. ' +\
                 '{0}'.format(self.post[u'tags'])
@@ -188,8 +187,9 @@ class Tumbl():
         return self
 
     def data(self):
-        return self.type, {
+        return {
             'tid': self.tid,
+            'tagged_type': self.tagged_type,
             'html': self.html,
             'url': self.url,
             'title': self.title,

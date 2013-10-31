@@ -46,7 +46,7 @@ class Tweets():
 
     def compare(self, steam_model):
         """
-        steam_model is a Tweet model
+        steam_model is a Tweet model instance
 
         if update needs to occur, do so
         from the steam_model instance
@@ -104,9 +104,8 @@ class Tweets():
         looks for Tweet objects that have
         a False ['exists_in_database'] value
 
-        returns two lists, one for events,
-        and one for features that need to
-        be created in the database.
+        returns a list of tweets that
+        need to be created in the database.
         """
         tweets_to_create = []
 

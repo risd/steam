@@ -1,6 +1,10 @@
+import logging
+
 from django.core.management.base import BaseCommand, CommandError
 
-from ...models import TumblFeature, TumblEvent
+from ...models import Tumbl, Tweet, News
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -10,12 +14,17 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         try:
 
-            print 'Deleting Tumblr Feature models'
-            TumblFeature.objects.all().delete()
+            logger.info('Deleting Tumbl models')
+            Tumbl.objects.all().delete()
 
-            print 'Deleting Tumblr Event models'
-            TumblEvent.objects.all().delete()
+            logger.info('Deleting Tweet models')
+            Tweet.objects.all().delete()
+
+            logger.info('Deleting News models')
+            News.objects.all().delete()
 
         except CommandError as detail:
-            print 'Error deleting data! ' +\
+            err = 'Error deleting data! ' +\
                 '{0}'.format(detail)
+
+            logger.error(err)

@@ -19,39 +19,20 @@ class Tweet(models.Model):
     url = models.URLField('Tweet URL')
 
 
-class TumblEvent(models.Model):
+class Tumbl(models.Model):
     class Meta:
-        verbose_name = _('Tumblr Event')
-        verbose_name_plural = _('Tumblr Events')
+        verbose_name = _('Tumblr Post')
+        verbose_name_plural = _('Tumblr Posts')
 
     def __unicode__(self):
         return self.steam_url
 
     tid = models.BigIntegerField('Tumblr ID')
+    tagged_type = models.CharField('Post Type', max_length=50)
     html = models.TextField('Tumblr Post')
     url = models.URLField('Post URL')
     title = models.CharField('title', max_length=50, default="")
     state = models.CharField('State', max_length=50)
-
-    steam_html = models.TextField('STEAM Formatted Post')
-    steam_url = models.URLField('STEAM Post URL')
-
-    timestamp = models.DateTimeField('timestamp')
-
-
-class TumblFeature(models.Model):
-    class Meta:
-        verbose_name = _('Tumblr Event')
-        verbose_name_plural = _('Tumblr Events')
-
-    def __unicode__(self):
-        return self.steam_url
-
-    tid = models.BigIntegerField('Tumblr ID')
-    html = models.TextField('Tumblr Post')
-    url = models.URLField('Post URL')
-    title = models.CharField('title', max_length=50, default="")
-    state = models.CharField('state', max_length=50)
 
     steam_html = models.TextField('STEAM Formatted Post')
     steam_url = models.URLField('STEAM Post URL')
@@ -74,16 +55,9 @@ class News(models.Model):
         blank=True,
         null=True)
 
-    tumbl_event = models.OneToOneField(
-        TumblEvent,
+    tumbl = models.OneToOneField(
+        Tumbl,
         on_delete=models.SET_NULL,
-        related_name='tumbl_event',
-        blank=True,
-        null=True)
-
-    tumbl_feature = models.OneToOneField(
-        TumblFeature,
-        on_delete=models.SET_NULL,
-        related_name='tumbl_feature',
+        related_name='tumbl',
         blank=True,
         null=True)

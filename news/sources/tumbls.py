@@ -11,13 +11,11 @@ class Tumbls():
     """
     def __init__(self):
         # arrays of tumbl entrys, as Tumbl objects
-        self.features = []
-        self.events = []
+        self.tumbls = []
 
         # arrays of tids represented
         # in this object
-        self.event_tids = []
-        self.feature_tids = []
+        self.tids = []
 
         # tumblr connection
         self.client = pytumblr.TumblrRestClient(
@@ -41,21 +39,14 @@ class Tumbls():
         add a Tumbl instance to be tracked
         for updates, to to be created
         """
-        if tumbl.type == 'event':
-            self.event_tids.append(tumbl.tid)
-            self.events.append(tumbl)
-
-        elif tumbl.type == 'feature':
-            self.feature_tids.append(tumbl.tid)
-            self.features.append(tumbl)
+        self.tids.append(tumbl.tid)
+        self.tumbls.append(tumbl)
 
         return self
 
-    def compare(self, post_type, steam_model):
+    def compare(self, steam_model):
         """
-        post_type is a str
-        steam_model is a TumblFeature
-            or TumbleEvent model instance
+        steam_model is a Tumbl model instance
 
         if update needs to occur, do so
         from the steam_model instance
@@ -67,16 +58,10 @@ class Tumbls():
         # set `tumbl` to the Tumbl class
         # of data that tumblr sent us
         # to compare against steam_model
-        if post_type == 'event':
-            for event in self.events:
-                if steam_model.tid == event.tid:
-                    tumbl = event
-                    break
-        elif post_type == 'feature':
-            for feature in self.features:
-                if steam_model.tid == feature.tid:
-                    tumbl = feature
-                    break
+        for t in self.tumbls:
+            if steam_model.tid == t.tid:
+                tumbl = t
+                break
 
         # compare the tumblr data to steam data
         if tumbl:
@@ -87,6 +72,10 @@ class Tumbls():
             tumbl.exists_in_database = True
 
             need_to_save = False
+
+            if steam_model.tagged_type != tumbl.tagged_type:
+                need_to_save = True
+                steam_model.tagged_type = tumbl.tagged_type
 
             if steam_model.html != tumbl.html:
                 need_to_save = True
@@ -127,20 +116,13 @@ class Tumbls():
         looks for Tumbl objects that have
         a False ['exists_in_database'] value
 
-        returns two lists, one for events,
-        and one for features that need to
-        be created in the database.
+        returns a list of tumbls that
+        need to be created in the database.
         """
-        events_to_create = []
-        features_to_create = []
+        tumbls_to_create = []
 
-        for event in self.events:
-            if not event.exists_in_database:
-                events_to_create.append(event)
+        for tumbl in self.tumbls:
+            if not tumbl.exists_in_database:
+                tumbls_to_create.append(tumbl)
 
-        for feature in self.features:
-            if not feature.exists_in_database:
-                features_to_create.append(feature)
-
-        # first events, then features
-        return events_to_create, features_to_create
+        return tumbls_to_create

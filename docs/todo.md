@@ -1,3 +1,3 @@
 ### left off
 
-- working on pulling in tweets
+- create tastypie resources to pull tweets and tumblr posts
