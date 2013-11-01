@@ -7,6 +7,7 @@ from ...sources.tumbl import Tumbl
 from ...sources.tumbls import Tumbls
 
 from ...models import Tumbl as SteamTumbl
+from ...models import News as SteamNews
 
 
 logger = logging.getLogger(__name__)
@@ -55,7 +56,12 @@ class Command(BaseCommand):
             for tumbl in tumbls_to_create:
                 obj = SteamTumbl(**tumbl.data())
                 obj.save()
+
                 tumbl.exists_in_database = True
+
+                news = SteamNews()
+                news.tumbl = obj
+                news.save()
 
             logging.info("Tumblr posts now up to date.")
 

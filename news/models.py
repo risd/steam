@@ -46,7 +46,10 @@ class News(models.Model):
         verbose_name_plural = _('News\'')
 
     def __unicode__(self):
-        pass
+        if self.tweet:
+            return self.tweet
+        elif self.tumbl:
+            return self.tumbl
 
     tweet = models.OneToOneField(
         Tweet,

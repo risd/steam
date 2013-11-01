@@ -7,6 +7,7 @@ from ...sources.tweet import Tweet
 from ...sources.tweets import Tweets
 
 from ...models import Tweet as SteamTweet
+from ...models import News as SteamNews
 
 
 logger = logging.getLogger(__name__)
@@ -54,7 +55,12 @@ class Command(BaseCommand):
             for tweet in tweets_to_create:
                 obj = SteamTweet(**tweet.data())
                 obj.save()
+
                 tweet.exists_in_database = True
+
+                news = SteamNews()
+                news.tweet = obj
+                news.save()
 
             logging.info("Tweets now up to date.")
 
