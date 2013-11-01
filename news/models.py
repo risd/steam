@@ -38,6 +38,9 @@ class Tumbl(models.Model):
     steam_url = models.URLField('STEAM Post URL')
 
     timestamp = models.DateTimeField('timestamp')
+    ticker_timestamp = models.CharField(
+        'News Ticker Timestamp',
+        max_length=50)
 
 
 class News(models.Model):

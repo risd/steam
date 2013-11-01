@@ -41,6 +41,8 @@ class TumblResource(ModelResource):
         queryset = Tumbl.objects.all()
         resource_name = 'tumbl'
 
+        excludes = ['timestamp']
+
 
 class NewsResource(ModelResource):
     """

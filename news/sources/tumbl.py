@@ -29,6 +29,7 @@ class Tumbl():
         self.steam_html = None
         self.steam_url = None
         self.timestamp = None
+        self.ticker_timestamp = None
 
         # tracks status of the object
         # being in the database or not
@@ -158,6 +159,11 @@ class Tumbl():
 
         return self
 
+    def _create_ticker_timestamp(self):
+        self.ticker_timestamp = self.timestamp\
+            .strftime('%B %d %Y')
+        return self
+
     def setup(self):
         if u'feature' in self.post[u'tags']:
             self.tagged_type = 'feature'
@@ -181,6 +187,7 @@ class Tumbl():
         # based on the variables above,
         # set the steam variables
         self._create_timestamp()\
+            ._create_ticker_timestamp()\
             ._create_url()\
             ._create_html()
 
@@ -197,4 +204,5 @@ class Tumbl():
             'steam_html': self.steam_html,
             'steam_url': self.steam_url,
             'timestamp': self.timestamp,
+            'ticker_timestamp': self.ticker_timestamp,
         }
