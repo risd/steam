@@ -128,7 +128,6 @@ class Tumbl():
         s.append(event_wrapper)
 
         self.steam_html = unicode(s.html())
-        print self.steam_html
 
         return self
 

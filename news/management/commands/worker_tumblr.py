@@ -35,6 +35,7 @@ class Command(BaseCommand):
             for existing_tumbl in existing_tumbls:
                 # compare existing features to tumbls data
                 # updates if necessary
+                logging.info(existing_tumbl.steam_html)
                 tumbls.compare(existing_tumbl)
 
             # get entries in the database
