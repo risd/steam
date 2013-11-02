@@ -81,6 +81,10 @@ class Tweets():
                 need_to_save = True
                 steam_model.screen_name = tweet.screen_name
 
+            if steam_model.text != tweet.text:
+                need_to_save = True
+                steam_model.text = tweet.text
+
             if steam_model.html != tweet.html:
                 need_to_save = True
                 steam_model.html = tweet.html

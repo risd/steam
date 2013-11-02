@@ -17,6 +17,7 @@ class Tweet(models.Model):
     html = models.TextField('STEAM formatted Tweet')
     timestamp = models.DateTimeField('timestamp')
     url = models.URLField('Tweet URL')
+    text = models.TextField('Tweet content')
 
 
 class Tumbl(models.Model):

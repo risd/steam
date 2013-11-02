@@ -13,9 +13,9 @@ common = CommonHTML()
 
 class Tweet():
     """docstring for Tweets"""
-    def __init__(self, tweet):
+    def __init__(self, toot):
         # raw response data from Twitter
-        self.tweet = tweet
+        self.raw = toot
 
         # variables to be initialized
         # based on the Twitter response
@@ -25,6 +25,7 @@ class Tweet():
         self.html = None
         self.timestamp = None
         self.url = None
+        self.text = None
 
         # tracks status of the object
         # being in the database or not
@@ -50,7 +51,7 @@ class Tweet():
         post_filter = common.filter('tweet')
 
         tweet = pq('<h3></h3>')\
-            .html(self.tweet['text'])
+            .html(self.raw['text'])
 
         user_info = pq('<p></p>')\
             .attr('class', 'single-tweet')\
@@ -76,7 +77,7 @@ class Tweet():
 
     def _create_timestamp(self):
         self.timestamp = datetime\
-            .strptime(self.tweet['created_at'],
+            .strptime(self.raw['created_at'],
                       '%a %b %d %H:%M:%S +0000 %Y')\
             .replace(tzinfo=pytz.utc)
 
@@ -92,9 +93,10 @@ class Tweet():
         return self
 
     def setup(self):
-        self.tid = self.tweet['id_str']
-        self.user = self.tweet['user']['screen_name']
-        self.screen_name = self.tweet['user']['screen_name']
+        self.tid = self.raw['id_str']
+        self.text = self.raw['text']
+        self.user = self.raw['user']['screen_name']
+        self.screen_name = self.raw['user']['screen_name']
 
         self._create_url()\
             ._create_timestamp()\
@@ -110,4 +112,5 @@ class Tweet():
             'html': self.html,
             'timestamp': self.timestamp,
             'url': self.url,
+            'text': self.text,
         }
