@@ -71,7 +71,7 @@ class Tweet():
         s = pq(tweet_section)
         s.append(grid)
 
-        self.html = unicode(s)
+        self.html = unicode(s.html())
 
         return self
 

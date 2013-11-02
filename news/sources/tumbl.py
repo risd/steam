@@ -88,7 +88,7 @@ class Tumbl():
         s.append(title_container)
         s.append(post_container)
 
-        self.steam_html = unicode(s)
+        self.steam_html = unicode(s.html())
 
         return self
 
@@ -116,7 +116,6 @@ class Tumbl():
         title = pq('<h3></h3>')\
             .html(self.title)
 
-
         event_container\
             .append(post_filter)\
             .append(title)\
@@ -128,7 +127,8 @@ class Tumbl():
         s = pq(event)
         s.append(event_wrapper)
 
-        self.steam_html = unicode(s)
+        self.steam_html = unicode(s.html())
+        print self.steam_html
 
         return self
 
