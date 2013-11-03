@@ -44,16 +44,27 @@ class Tumbl(models.Model):
         max_length=50)
 
 
+class NewsManager(models.Manager):
+    def timestamp_order(self, *args, **kwargs):
+        qs = self.get_query_set().filter(*args, **kwargs)
+        f = lambda x: \
+            x.tumbl.timestamp \
+            if x.tumbl is not None \
+            else x.tweet.timestamp
+
+        return sorted(qs, key=f, reverse=True)
+
+
 class News(models.Model):
     class Meta:
         verbose_name = _('News')
         verbose_name_plural = _('News\'')
 
     def __unicode__(self):
-        if self.tweet:
-            return self.tweet
-        elif self.tumbl:
-            return self.tumbl
+        if self.tweet is not None:
+            return unicode(self.tweet)
+        elif self.tumbl is not None:
+            return unicode(self.tumbl)
 
     tweet = models.OneToOneField(
         Tweet,
@@ -68,3 +79,5 @@ class News(models.Model):
         related_name='tumbl',
         blank=True,
         null=True)
+
+    objects = NewsManager()

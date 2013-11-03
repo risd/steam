@@ -3,7 +3,6 @@ import logging
 from django.core.management.base import BaseCommand, CommandError
 
 # sources of content for this app
-from ...sources.tumbl import Tumbl
 from ...sources.tumbls import Tumbls
 
 from ...models import Tumbl as SteamTumbl
@@ -35,7 +34,6 @@ class Command(BaseCommand):
             for existing_tumbl in existing_tumbls:
                 # compare existing features to tumbls data
                 # updates if necessary
-                logging.info(existing_tumbl.steam_html)
                 tumbls.compare(existing_tumbl)
 
             # get entries in the database

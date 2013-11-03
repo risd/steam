@@ -1,5 +1,7 @@
 # resources for
 # News, Tweets, Tumbls
+import logging
+
 from tastypie import fields
 
 from tastypie.resources import ModelResource
@@ -10,6 +12,8 @@ from tastypie.authorization import Authorization
 from tastypie.serializers import Serializer
 
 from .models import News, Tweet, Tumbl
+
+logger = logging.getLogger(__name__)
 
 
 class CommonOpenResourceMeta:
