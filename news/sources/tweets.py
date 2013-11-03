@@ -89,6 +89,10 @@ class Tweets():
                 need_to_save = True
                 steam_model.html = tweet.html
 
+            if steam_model.epoch_timestamp != tweet.epoch_timestamp:
+                need_to_save = True
+                steam_model.epoch_timestamp = tweet.epoch_timestamp
+
             if steam_model.timestamp != tweet.timestamp:
                 need_to_save = True
                 steam_model.timestamp = tweet.timestamp

@@ -29,6 +29,7 @@ class Tumbl():
         self.steam_html = None
         self.steam_url = None
         self.timestamp = None
+        self.epoch_timestamp = None
         self.ticker_timestamp = None
 
         # tracks status of the object
@@ -158,6 +159,10 @@ class Tumbl():
 
         return self
 
+    def _create_epoch_timestamp(self):
+        self.epoch_timestamp = int(self.timestamp.strftime('%s'))
+        return self
+
     def _create_ticker_timestamp(self):
         self.ticker_timestamp = self.timestamp\
             .strftime('%B %d %Y')
@@ -187,6 +192,7 @@ class Tumbl():
         # set the steam variables
         self._create_timestamp()\
             ._create_ticker_timestamp()\
+            ._create_epoch_timestamp()\
             ._create_url()\
             ._create_html()
 
@@ -203,5 +209,6 @@ class Tumbl():
             'steam_html': self.steam_html,
             'steam_url': self.steam_url,
             'timestamp': self.timestamp,
+            'epoch_timestamp': self.epoch_timestamp,
             'ticker_timestamp': self.ticker_timestamp,
         }

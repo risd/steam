@@ -101,6 +101,10 @@ class Tumbls():
                 need_to_save = True
                 steam_model.steam_url = tumbl.steam_url
 
+            if steam_model.epoch_timestamp != tumbl.epoch_timestamp:
+                need_to_save = True
+                steam_model.epoch_timestamp = tumbl.epoch_timestamp
+
             if steam_model.timestamp != tumbl.timestamp:
                 need_to_save = True
                 steam_model.timestamp = tumbl.timestamp

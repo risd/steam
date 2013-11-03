@@ -16,6 +16,7 @@ class Tweet(models.Model):
     screen_name = models.CharField('Screen name', max_length=50)
     html = models.TextField('STEAM formatted Tweet')
     timestamp = models.DateTimeField('timestamp')
+    epoch_timestamp = models.IntegerField('Epoch timestamp')
     url = models.URLField('Tweet URL')
     text = models.TextField('Tweet content')
 
@@ -39,6 +40,7 @@ class Tumbl(models.Model):
     steam_url = models.URLField('STEAM Post URL')
 
     timestamp = models.DateTimeField('timestamp')
+    epoch_timestamp = models.IntegerField('Epoch timestamp')
     ticker_timestamp = models.CharField(
         'News Ticker Timestamp',
         max_length=50)

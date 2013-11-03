@@ -24,6 +24,7 @@ class Tweet():
         self.screen_name = None
         self.html = None
         self.timestamp = None
+        self.epoch_timestamp = None
         self.url = None
         self.text = None
 
@@ -83,6 +84,10 @@ class Tweet():
 
         return self
 
+    def _create_epoch_timestamp(self):
+        self.epoch_timestamp = int(self.timestamp.strftime('%s'))
+        return self
+
     def _create_url(self):
         # https://twitter.com/<user>/status/<id>
         self.url = 'https://twitter.com/' +\
@@ -100,6 +105,7 @@ class Tweet():
 
         self._create_url()\
             ._create_timestamp()\
+            ._create_epoch_timestamp()\
             ._create_html()
 
         return self
@@ -111,6 +117,7 @@ class Tweet():
             'screen_name': self.screen_name,
             'html': self.html,
             'timestamp': self.timestamp,
+            'epoch_timestamp': self.epoch_timestamp,
             'url': self.url,
             'text': self.text,
         }
