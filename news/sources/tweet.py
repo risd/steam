@@ -35,6 +35,41 @@ class Tweet():
         # kick it all off
         self.setup()
 
+    def _wrap_links_in_a(self):
+        linked_toot = self.text
+
+        # wrap the urls in a tags
+        for url in self.raw[u'entities'][u'urls']:
+            wrapped_url = pq('<a></a>')\
+                .attr('href', url[u'url'])\
+                .text(url[u'url'])
+            linked_toot = linked_toot.replace(url[u'url'], unicode(wrapped_url))
+
+        # wrap the hashtags in a tags
+        for hashtag in self.raw[u'entities'][u'hashtags']:
+            link = 'https://twitter.com/search?q=%23' +\
+                '{0}'.format(hashtag[u'text']) +\
+                '&src=hash'
+
+            wrapped_hastag = pq('<a></a>')\
+                .attr('href', link)\
+                .text(u'#' + hashtag[u'text'])
+
+            linked_toot = linked_toot.replace(u'#' + hashtag[u'text'],
+                                              unicode(wrapped_hastag))
+
+        for user in self.raw[u'entities'][u'user_mentions']:
+            link = 'https://twitter.com/{0}'.format(user[u'screen_name'])
+
+            wrapped_user = pq('<a></a>')\
+                .attr('href', link)\
+                .text(u'@' + user[u'screen_name'])
+
+            linked_toot = linked_toot.replace(u'@' + user[u'screen_name'],
+                                              unicode(wrapped_user))
+
+        return linked_toot
+
     def _create_html(self):
         """ take in self, set html, return self """
 
@@ -52,7 +87,7 @@ class Tweet():
         post_filter = common.filter('tweet')
 
         tweet = pq('<h3></h3>')\
-            .html(self.raw['text'])
+            .html(self._wrap_links_in_a())
 
         user_info = pq('<p></p>')\
             .attr('class', 'single-tweet')\
