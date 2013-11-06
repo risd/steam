@@ -28,7 +28,7 @@ urlpatterns = patterns(
 
     # email marketing (mailchimp) subscription
     url(r'join-us/$',
-        'marketing.join_us',
+        'marketing.views.join_us',
         name='join_us'),
 
     # map
