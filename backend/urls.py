@@ -26,20 +26,10 @@ v1_api.register(NewsResource())
 urlpatterns = patterns(
     '',
 
-    # home
-    # url(r'^$',
-    #     'evergreen.views.home',
-    #     name='home'),
-
-    # news
-    # url(r'news/$',
-    #     'news.views.news',
-    #     name='news'),
-
-    # resources
-    # url(r'resources/$',
-    #     'evergreen.views.resources',
-    #     name='resources'),
+    # email marketing (mailchimp) subscription
+    url(r'join-us/$',
+        'marketing.join_us',
+        name='join_us'),
 
     # map
     url(r'map/$',
@@ -56,8 +46,10 @@ urlpatterns = patterns(
         'map.views.login_error',
         name='login_error'),
 
+    # tastypie api urls
     url(r'api/', include(v1_api.urls)),
 
+    # social auth urls, used to ensure the correct ones are used in JS calls
     url(r'', include('social_auth.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

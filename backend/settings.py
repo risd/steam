@@ -162,6 +162,7 @@ INSTALLED_APPS = (
     'backend',
     'map',
     'news',
+    'marketing',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -296,3 +297,7 @@ NEWS_TWITTER_ACCESS_TOKEN = env_var('NEWS_TWITTER_ACCESS_TOKEN')
 NEWS_TWITTER_ACCESS_TOKEN_SECRET =\
     env_var('NEWS_TWITTER_ACCESS_TOKEN_SECRET')
 ### end news app config
+
+### marketing app config
+MAILCHIMP_APIKEY = env_var('MAILCHIMP_APIKEY')
+### end marketing app config
