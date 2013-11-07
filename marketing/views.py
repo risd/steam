@@ -56,12 +56,11 @@ def join_us(request):
         logger.info(mres)
 
         if mres[u'error_count']:
-            # had an error, tell user to try again
-            response_data['result'] = 'Failed.'
-            response_data['message'] = 'Failed.'
-
+            logger.info('mailchimp error')
+            response_data['result'] = 'Error'
+            response_data['message'] = mres[u'errors'][0][u'error']
         else:
-            response_data['result'] = 'Successfully added'
+            response_data['result'] = 'Success'
             response_data['message'] = 'You were successfully added!'
 
         # end of request.method == POST statmenet
@@ -70,4 +69,6 @@ def join_us(request):
         response_data['result'] = 'Failed.'
         response_data['message'] = 'Failed.'
 
+    logger.info('response_data')
+    logger.info(response_data)
     return HttpResponse(json.dumps(response_data))
