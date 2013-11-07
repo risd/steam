@@ -231,13 +231,16 @@ LOGGING = {
 }
 
 
-### Tastypie config
+### Cross domain middleware config, mostly for tastypie
 XS_SHARING_ALLOWED_ORIGINS = '*'
 XS_SHARING_ALLOWED_METHODS = ['POST', 'GET']
 XS_SHARING_ALLOWED_HEADERS = ['Content-Type', 'application/json']
 XS_SHARING_ALLOWED_CREDENTIALS = 'true'
 CSRF_COOKIE_NAME = 'csrftoken'
-### end Tastypie config
+
+# paths to not apply this stuff to.
+XS_SHARING_EXEMPT_PATHS = ['/join-us/', ]
+### end cross domain middleware config, mostly for tastypie
 
 ### Social auth config
 AUTHENTICATION_BACKENDS = (

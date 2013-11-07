@@ -1,4 +1,7 @@
+import logging
 from django import http
+
+logger = logging.getLogger(__name__)
 
 try:
     from django.conf import settings
@@ -8,6 +11,8 @@ try:
 
     XS_SHARING_ALLOWED_CREDENTIALS = \
         settings.XS_SHARING_ALLOWED_CREDENTIALS
+
+    XS_SHARING_EXEMPT_PATHS = settings.XS_SHARING_EXEMPT_PATHS
 except:
     XS_SHARING_ALLOWED_ORIGINS = '*'
     XS_SHARING_ALLOWED_METHODS = ['POST',
@@ -31,6 +36,10 @@ class XsSharingMiddleware(object):
         Based on https://gist.github.com/strogonoff/1369619
     """
     def process_request(self, request):
+
+        # /join-us/ will handle this on its own
+        if request.path in XS_SHARING_EXEMPT_PATHS:
+            return None
 
         if 'HTTP_ACCESS_CONTROL_REQUEST_METHOD' in request.META:
             response = http.HttpResponse()
