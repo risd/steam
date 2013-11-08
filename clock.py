@@ -1,10 +1,8 @@
-import logging
 import subprocess
 import atexit
 
 from apscheduler.scheduler import Scheduler
 
-logger = logging.getLogger(__name__)
 sched = Scheduler(daemon=True)
 atexit.register(lambda: sched.shutdown(wait=False))
 
@@ -16,13 +14,13 @@ def update_from_apis():
                                     'python',
                                     'manage.py',
                                     'worker_twitter'])
-    logger.info(tweets)
+    print tweets
     tumblr = subprocess.check_call(['foreman',
                                     'run',
                                     'python',
                                     'manage.py',
                                     'worker_tumblr'])
-    logger.info(tumblr)
+    print tumblr
 
 sched.start()
 
