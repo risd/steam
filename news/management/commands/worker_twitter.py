@@ -56,11 +56,20 @@ class Command(BaseCommand):
                 obj = SteamTweet(**tweet.data())
                 obj.save()
 
-                tweet.exists_in_database = True
+                if obj.pk:
 
-                news = SteamNews()
-                news.tweet = obj
-                news.save()
+                    tweet.exists_in_database = True
+
+                    news = SteamNews()
+                    news.tweet = obj
+                    news.save()
+
+                    logger.info('saving')
+                    logger.info(news)
+
+                else:
+                    logger.info('could not save. here is data:')
+                    logger.info(tweet.data())
 
             logging.info("Tweets now up to date.")
 

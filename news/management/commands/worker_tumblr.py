@@ -56,11 +56,19 @@ class Command(BaseCommand):
                 obj = SteamTumbl(**tumbl.data())
                 obj.save()
 
-                tumbl.exists_in_database = True
+                if obj.pk:
+                    tumbl.exists_in_database = True
 
-                news = SteamNews()
-                news.tumbl = obj
-                news.save()
+                    news = SteamNews()
+                    news.tumbl = obj
+                    news.save()
+
+                    logger.info('saving')
+                    logger.info(news)
+
+                else:
+                    logger.info('could not save. here is data:')
+                    logger.info(tumbl.data())
 
             logging.info("Tumblr posts now up to date.")
 
