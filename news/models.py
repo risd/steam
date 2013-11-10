@@ -82,4 +82,6 @@ class News(models.Model):
         blank=True,
         null=True)
 
+    epoch_timestamp = models.IntegerField('Epoch timestamp')
+
     objects = NewsManager()

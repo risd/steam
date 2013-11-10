@@ -62,6 +62,7 @@ class Command(BaseCommand):
 
                     news = SteamNews()
                     news.tweet = obj
+                    news.epoch_timestamp = obj.epoch_timestamp
                     news.save()
 
                     logger.info('saving')

@@ -61,6 +61,7 @@ class Command(BaseCommand):
 
                     news = SteamNews()
                     news.tumbl = obj
+                    news.epoch_timestamp = obj.epoch_timestamp
                     news.save()
 
                     logger.info('saving')

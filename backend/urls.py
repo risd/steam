@@ -11,7 +11,7 @@ from map.resources import GeoResource
 from map.resources import NetworkResource
 
 from news.resources import TweetResource
-from news.resources import TumblResource
+from news.resources import NewsTumblResource
 from news.resources import NewsResource
 
 v1_api = Api(api_name='v1')
@@ -20,7 +20,7 @@ v1_api.register(GeoResource())
 v1_api.register(NetworkResource())
 
 v1_api.register(TweetResource())
-v1_api.register(TumblResource())
+v1_api.register(NewsTumblResource())
 v1_api.register(NewsResource())
 
 urlpatterns = patterns(

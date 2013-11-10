@@ -2,6 +2,8 @@
 # News, Tweets, Tumbls
 import logging
 
+from django.conf.urls import url
+
 from tastypie import fields
 
 from tastypie.resources import ModelResource
@@ -43,9 +45,31 @@ class TumblResource(ModelResource):
     """
     class Meta(CommonOpenResourceMeta):
         queryset = Tumbl.objects.all()
-        resource_name = 'tumbl'
+
+        # resource name is tumbl_ref
+        # because its not actuallu used
+        # by the front end, its just
+        # an internal API resource
+        resource_name = 'tumbl_ref'
 
         excludes = ['timestamp']
+
+
+class NewsTumblResource(ModelResource):
+    """
+    Returns tumbls, wrapped in their news object
+    """
+    tumbl = fields.ForeignKey(
+        TumblResource,
+        'tumbl',
+        null=True,
+        full=True)
+
+    class Meta(CommonOpenResourceMeta):
+        queryset = News.objects.all().exclude(tumbl=None)
+        resource_name = 'tumbl'
+
+        ordering = ['-epoch_timestamp']
 
 
 class NewsResource(ModelResource):
@@ -66,3 +90,5 @@ class NewsResource(ModelResource):
     class Meta(CommonOpenResourceMeta):
         queryset = News.objects.all()
         resource_name = 'news'
+
+        ordering = ['-epoch_timestamp']

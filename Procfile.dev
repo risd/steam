@@ -1,3 +1,2 @@
 web: python manage.py runserver localhost:5000
-clock: python clock.py
 sass: sass --watch static/styles/scss:static/styles/css
