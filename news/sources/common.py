@@ -14,9 +14,9 @@ class CommonHTML():
 
         share_wrapper\
             .append(u'<li>share:</li>')\
-            .append(u'<li class="icon">t</li>')\
-            .append(u'<li class="icon">F</li>')\
-            .append(u'<li class="icon">Å</li>')
+            .append(u'<li class="icon twitter"></li>')\
+            .append(u'<li class="icon facebook"></li>')\
+            .append(u'<li class="icon permalink"></li>')
 
         return share_wrapper
 
