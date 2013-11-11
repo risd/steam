@@ -2,7 +2,7 @@ import logging
 
 from django.core.management.base import BaseCommand, CommandError
 
-from ...models import Tumbl, Tweet, News
+from ...models import News, HashTweets
 
 logger = logging.getLogger(__name__)
 
@@ -14,14 +14,11 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         try:
 
-            logger.info('Deleting Tumbl models')
-            Tumbl.objects.all().delete()
-
-            logger.info('Deleting Tweet models')
-            Tweet.objects.all().delete()
-
             logger.info('Deleting News models')
             News.objects.all().delete()
+
+            logger.info('Deleting all HashTweet models')
+            HashTweets.objects.all().delete()
 
         except CommandError as detail:
             err = 'Error deleting data! ' +\

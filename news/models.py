@@ -1,4 +1,5 @@
 from django.db import models
+from django.dispatch import receiver
 
 from django.utils.translation import ugettext as _
 
@@ -114,3 +115,13 @@ class News(models.Model):
     epoch_timestamp = models.IntegerField('Epoch timestamp')
 
     objects = NewsManager()
+
+
+@receiver(models.signals.pre_delete, sender=Tweet)
+def delete_news_tweet(sender, instance, **kwargs):
+    News.objects.get(tweet=instance).delete()
+
+
+@receiver(models.signals.pre_delete, sender=Tumbl)
+def delete_news_tumbl(sender, instance, **kwargs):
+    News.objects.get(tumbl=instance).delete()

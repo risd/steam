@@ -25,13 +25,12 @@ class Tweets():
             settings.NEWS_TWITTER_ACCESS_TOKEN_SECRET)
 
         # raw twitter response
-        # tweets are stashed in
-        # raw[u'statuses']
-        self.raw = self.api.search(q='%23stemtosteam',
-                                   result_type='recent')
+        self.timeline = self.api.get_user_timeline(screen_name='risd_mg')
+        self.favorites = self.api.get_favorites(screen_name='risd_mg')
+        self.raw = self.timeline + self.favorites
 
         # add all posts to this manager
-        for tweet in self.raw[u'statuses']:
+        for tweet in self.raw:
             self.add(Tweet(tweet))
 
     def add(self, tweet):
