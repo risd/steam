@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 common = CommonHTML()
 
 
-class Tweet():
-    """Wrapper around Tweet models"""
+class HashTweet():
+    """Wrapper around HashTweet models"""
     def __init__(self, toot):
         # raw response data from Twitter
         self.raw = toot
@@ -36,7 +36,7 @@ class Tweet():
         # kick it all off
         self.setup()
 
-    def _wrap_links_in_a(self):
+    def _create_html(self):
         linked_toot = self.text
 
         # wrap the urls in a tags
@@ -69,46 +69,7 @@ class Tweet():
             linked_toot = linked_toot.replace(u'@' + user[u'screen_name'],
                                               unicode(wrapped_user))
 
-        return linked_toot
-
-    def _create_html(self):
-        """ take in self, set html, return self """
-
-        tweet_section = pq('<section></section>')\
-            .attr('class', 'content tweet')
-
-        grid = pq('<div></div>')\
-            .attr('class', 'grid full-width clearfix')
-
-        post_date_ul = common.post_date(self.timestamp)
-
-        post_wrapper = pq('<div></div>')\
-            .attr('class', 'post clearfix three-column')
-
-        post_filter = common.filter('tweet')
-
-        tweet = pq('<h3></h3>')\
-            .html(self._wrap_links_in_a())
-
-        user_info = pq('<p></p>')\
-            .attr('class', 'single-tweet')\
-            .html('{0} <span>{1}</span>'.format(self.user,
-                                                self.screen_name))
-        share = common.share()
-
-        post_wrapper\
-            .append(post_filter)\
-            .append(tweet)\
-            .append(user_info)\
-            .append(share)
-
-        grid.append(post_date_ul)\
-            .append(post_wrapper)
-
-        s = pq(tweet_section)
-        s.append(grid)
-
-        self.html = unicode(s.html())
+        self.html = linked_toot
 
         return self
 

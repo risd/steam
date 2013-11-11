@@ -2,12 +2,12 @@ from django.conf import settings
 
 from twython import Twython
 
-from .tweet import Tweet
+from .hash_tweet import HashTweet
 
 
-class Tweets():
+class HashTweets():
     """
-    Manages Tweet class instances.
+    Manages HashTweet class instances.
     """
     def __init__(self):
         # arrays of tweets classes
@@ -32,11 +32,11 @@ class Tweets():
 
         # add all posts to this manager
         for tweet in self.raw[u'statuses']:
-            self.add(Tweet(tweet))
+            self.add(HashTweet(tweet))
 
     def add(self, tweet):
         """
-        add a Tweet instance to be tracked
+        add a HashTweet instance to be tracked
         for updates, to to be created
         """
         self.tids.append(tweet.tid)
@@ -46,7 +46,7 @@ class Tweets():
 
     def compare(self, steam_model):
         """
-        steam_model is a Tweet model instance
+        steam_model is a HashTweet model instance
 
         if update needs to occur, do so
         from the steam_model instance
@@ -55,7 +55,7 @@ class Tweets():
         """
         tweet = None
 
-        # set `tweet` to the Tweet class
+        # set `tweet` to the HashTweet class
         # of data that twitter sent us
         # to compare against steam_model
         for t in self.tweets:
@@ -109,7 +109,7 @@ class Tweets():
 
     def to_create(self):
         """
-        looks for Tweet objects that have
+        looks for HashTweet objects that have
         a False ['exists_in_database'] value
 
         returns a list of tweets that

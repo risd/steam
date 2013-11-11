@@ -3,7 +3,33 @@ from django.db import models
 from django.utils.translation import ugettext as _
 
 
+class HashTweet(models.Model):
+    """
+    Any #stemtosteam tweets
+    """
+
+    class Meta:
+        verbose_name = _('Hash Tweet')
+        verbose_name_plural = _('Hash Tweets')
+
+    def __unicode__(self):
+        return self.tid
+
+    tid = models.CharField('Tweet ID', max_length=200)
+    user = models.CharField('User', max_length=16)
+    screen_name = models.CharField('Screen name', max_length=50)
+    html = models.TextField('STEAM formatted Tweet')
+    timestamp = models.DateTimeField('timestamp')
+    epoch_timestamp = models.IntegerField('Epoch timestamp')
+    url = models.URLField('Tweet URL')
+    text = models.TextField('Tweet content')
+
+
 class Tweet(models.Model):
+    """
+    Tweets/Retweets/Favs from @STEMtoSTEAM
+    """
+
     class Meta:
         verbose_name = _('Tweet')
         verbose_name_plural = _('Tweets')
@@ -22,6 +48,9 @@ class Tweet(models.Model):
 
 
 class Tumbl(models.Model):
+    """
+    Tumblr posts, either features or events
+    """
     class Meta:
         verbose_name = _('Tumblr Post')
         verbose_name_plural = _('Tumblr Posts')

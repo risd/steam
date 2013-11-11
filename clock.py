@@ -16,14 +16,21 @@ def update_from_apis():
                                     'run',
                                     'python',
                                     'manage.py',
-                                    'worker_twitter'])
+                                    'worker_news_tweets'])
     logger.info(tweets)
     tumblr = subprocess.check_call(['foreman',
                                     'run',
                                     'python',
                                     'manage.py',
-                                    'worker_tumblr'])
+                                    'worker_news_tumbls'])
+
     logger.info(tumblr)
+    hash_tweets = subprocess.check_call(['foreman',
+                                         'run',
+                                         'python',
+                                         'manage.py',
+                                         'worker_hash_tweets'])
+    logger.info(hash_tweets)
 
 sched.start()
 

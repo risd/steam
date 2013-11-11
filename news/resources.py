@@ -13,7 +13,7 @@ from tastypie.authorization import Authorization
 
 from tastypie.serializers import Serializer
 
-from .models import News, Tweet, Tumbl
+from .models import News, Tweet, Tumbl, HashTweet
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +30,18 @@ class CommonOpenResourceMeta:
     ordering = ['-timestamp']
 
 
+class HashTweetResource(ModelResource):
+    """
+    Returns array of all HashTweet in the db
+    """
+    class Meta(CommonOpenResourceMeta):
+        queryset = HashTweet.objects.all()
+        resource_name = 'hash_tweet'
+
+
 class TweetResource(ModelResource):
     """
-    Returns array of all tweets in the db
+    Returns array of all Tweet in the db
     """
     class Meta(CommonOpenResourceMeta):
         queryset = Tweet.objects.all()
