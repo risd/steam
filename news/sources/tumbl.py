@@ -170,7 +170,8 @@ class Tumbl():
 
     def setup(self):
         if u'feature' in self.post[u'tags'] or\
-           u'features' in self.post[u'tags']:
+           u'features' in self.post[u'tags'] or\
+           u'featured' in self.post[u'tags']:
             self.tagged_type = 'feature'
 
         elif u'event' in self.post[u'tags'] or\

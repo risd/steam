@@ -26,7 +26,7 @@ class Tumbls():
         # posts are stashed in
         # raw[u'posts']
         self.raw = self.client\
-            .posts('risd-media-dev.tumblr.com',
+            .posts(settings.TUMBLR_URL,
                    limit=1000)
 
         # add all posts to this manager
