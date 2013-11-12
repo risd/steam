@@ -1,8 +1,11 @@
+import logging
 from django.conf import settings
 
 import pytumblr
 
 from .tumbl import Tumbl
+
+logger = logging.getLogger(__name__)
 
 
 class Tumbls():
@@ -25,14 +28,46 @@ class Tumbls():
         # raw tumblr response
         # posts are stashed in
         # raw[u'posts']
-        self.raw = self.client\
-            .posts(settings.TUMBLR_URL,
-                   limit=1000)
+        self.raw = self.get_tumbls()
 
         # add all posts to this manager
-        for post in self.raw[u'posts']:
+        for post in self.raw:
             tumbl = Tumbl(post)
             self.add(tumbl)
+
+    def get_tumbls(self):
+        """
+        Requires self to have a client (pytumblr.TumblrRestClient)
+        instance. Uses it to call the API as many times as necessary
+        in order to get all of the posts in memory.
+
+        Returns an array of all posts
+        Call the API, get all the tumbls.
+        """
+        offset = 0
+        posts_per_call = 20
+        posts = []
+
+        # intiial request
+        response = self.client\
+                       .posts(settings.TUMBLR_URL,
+                              limit=posts_per_call)
+        # find out how many posts, will determine
+        # how many times to loop
+        total_posts = response[u'total_posts']
+
+        posts += response[u'posts']
+
+        # loop through requests until you have all of the posts
+        while len(posts) < total_posts:
+            offset += posts_per_call
+            response = self.client\
+                           .posts(settings.TUMBLR_URL,
+                                  limit=posts_per_call,
+                                  offset=offset)
+            posts += response[u'posts']
+
+        return posts
 
     def add(self, tumbl):
         """
