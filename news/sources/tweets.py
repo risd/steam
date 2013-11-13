@@ -47,16 +47,18 @@ class Tweets():
         tweets = []
         timeline, favorites = None, None
         try:
-            timeline = self.api.get_user_timeline(screen_name='risd_mg',
-                                                  count=200,
-                                                  include_rts=True,
-                                                  exclude_replies=True)
+            timeline = self.api.get_user_timeline(
+                screen_name=settings.NEWS_TWITTER_ACCOUNT,
+                count=200,
+                include_rts=True,
+                exclude_replies=True)
             # sleep for 10 seconds
             # between calls.
             time.sleep(10)
 
-            favorites = self.api.get_favorites(screen_name='risd_mg',
-                                               count=200)
+            favorites = self.api.get_favorites(
+                screen_name=settings.NEWS_TWITTER_ACCOUNT,
+                count=200)
 
             if len(timeline) > 0 and len(favorites) > 0:
 

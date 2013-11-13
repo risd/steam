@@ -49,7 +49,7 @@ def join_us(request):
         # test list
         # found under lists > list > settings > list name & defaults
         mres = m.lists.batch_subscribe(
-            id='1cfad57775',
+            id=settings.MAILCHIMP_LIST_ID,
             batch=subscribers)
 
         logger.info("mailchimp response")
