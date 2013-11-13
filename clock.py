@@ -12,15 +12,16 @@ atexit.register(lambda: sched.shutdown(wait=False))
 
 @sched.interval_schedule(minutes=1)
 def update_for_news():
-    tweets = subprocess.check_call(['python',
-                                    'manage.py',
-                                    'worker_news_tweets'])
-    logger.info(tweets)
     tumblr = subprocess.check_call(['python',
                                     'manage.py',
                                     'worker_news_tumbls'])
 
     logger.info(tumblr)
+
+    tweets = subprocess.check_call(['python',
+                                    'manage.py',
+                                    'worker_news_tweets'])
+    logger.info(tweets)
 
 
 @sched.interval_schedule(minutes=15)
