@@ -23,55 +23,59 @@ class Command(BaseCommand):
             # where we will store all tumbls
             tweets = Tweets()
 
-            # get tumblr posts that are already
-            # represented in the database, and
-            # see if they need to be updated.
-            logging.info("Updating existing twitter posts")
-            existing_tweets = SteamTweet\
-                .objects\
-                .filter(tid__in=tweets.tids)
+            if tweets.successful_connection:
 
-            for existing_tweet in existing_tweets:
-                # compare existing features to tweet data
-                # updates if necessary
-                tweets.compare(existing_tweet)
+                # get tumblr posts that are already
+                # represented in the database, and
+                # see if they need to be updated.
+                logging.info("Updating existing twitter posts")
+                existing_tweets = SteamTweet\
+                    .objects\
+                    .filter(tid__in=tweets.tids)
 
-            # get entries in the database
-            # that are not represented in the
-            # twitter data. means they have been
-            # deleted, and should be removed
-            # here as well
-            logging.info("Removing deleted twitter posts")
-            SteamTweet\
-                .objects\
-                .exclude(tid__in=tweets.tids)\
-                .delete()
+                for existing_tweet in existing_tweets:
+                    # compare existing features to tweet data
+                    # updates if necessary
+                    tweets.compare(existing_tweet)
 
-            # create new tumblr posts
-            logging.info("Figuring out which tweets to create")
-            tweets_to_create = tweets.to_create()
+                # get entries in the database
+                # that are not represented in the
+                # twitter data. means they have been
+                # deleted, and should be removed
+                # here as well
+                logging.info("Removing deleted twitter posts")
+                SteamTweet\
+                    .objects\
+                    .exclude(tid__in=tweets.tids)\
+                    .delete()
 
-            for tweet in tweets_to_create:
-                obj = SteamTweet(**tweet.data())
-                obj.save()
+                # create new tumblr posts
+                logging.info("Figuring out which tweets to create")
+                tweets_to_create = tweets.to_create()
 
-                if obj.pk:
+                for tweet in tweets_to_create:
+                    obj = SteamTweet(**tweet.data())
+                    obj.save()
 
-                    tweet.exists_in_database = True
+                    if obj.pk:
 
-                    news = SteamNews()
-                    news.tweet = obj
-                    news.epoch_timestamp = obj.epoch_timestamp
-                    news.save()
+                        tweet.exists_in_database = True
 
-                    logger.info('saving')
-                    logger.info(news)
+                        news = SteamNews()
+                        news.tweet = obj
+                        news.epoch_timestamp = obj.epoch_timestamp
+                        news.save()
 
-                else:
-                    logger.info('could not save. here is data:')
-                    logger.info(tweet.data())
+                        logger.info('saving')
+                        logger.info(news)
 
-            logging.info("Tweets now up to date.")
+                    else:
+                        logger.info('could not save. here is data:')
+                        logger.info(tweet.data())
+
+                logging.info("Tweets now up to date.")
+            else:
+                logging.info("Could not update News Tweets.")
 
         except CommandError as detail:
             err = 'Error getting Tweet data! ' +\

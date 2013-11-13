@@ -16,6 +16,10 @@ class Tumbls():
         # arrays of tumbl entrys, as Tumbl objects
         self.tumbls = []
 
+        # Boolean that tracks if the calls
+        # to the server were successful.
+        self.successful_connection = False
+
         # arrays of tids represented
         # in this object
         self.tids = []
@@ -47,25 +51,32 @@ class Tumbls():
         offset = 0
         posts_per_call = 20
         posts = []
+        total_posts = 0
 
-        # intiial request
-        response = self.client\
-                       .posts(settings.TUMBLR_URL,
-                              limit=posts_per_call)
-        # find out how many posts, will determine
-        # how many times to loop
-        total_posts = response[u'total_posts']
-
-        posts += response[u'posts']
-
-        # loop through requests until you have all of the posts
-        while len(posts) < total_posts:
-            offset += posts_per_call
+        try:
+            # intiial request
             response = self.client\
                            .posts(settings.TUMBLR_URL,
-                                  limit=posts_per_call,
-                                  offset=offset)
+                                  limit=posts_per_call)
+            # find out how many posts, will determine
+            # how many times to loop
+            total_posts = response[u'total_posts']
+
             posts += response[u'posts']
+
+            # loop through requests until you have all of the posts
+            while len(posts) < total_posts:
+                offset += posts_per_call
+                response = self.client\
+                               .posts(settings.TUMBLR_URL,
+                                      limit=posts_per_call,
+                                      offset=offset)
+                posts += response[u'posts']
+
+            self.successful_connection = True
+        except:
+            self.successful_connection = False
+            logging.error('Problems getting tumbls from Tumblr API.')
 
         return posts
 

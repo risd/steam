@@ -1,8 +1,12 @@
+import logging
+
 from django.conf import settings
 
 from twython import Twython
 
 from .hash_tweet import HashTweet
+
+logger = logging.getLogger(__name__)
 
 
 class HashTweets():
@@ -12,6 +16,10 @@ class HashTweets():
     def __init__(self):
         # arrays of tweets classes
         self.tweets = []
+
+        # Boolean that tracks if the calls
+        # to the server were successful.
+        self.successful_connection = False
 
         # arrays of tids represented
         # in this object
@@ -27,12 +35,34 @@ class HashTweets():
         # raw twitter response
         # tweets are stashed in
         # raw[u'statuses']
-        self.raw = self.api.search(q='%23stemtosteam',
-                                   result_type='recent')
+        self.raw = self.get_tweets()
 
         # add all posts to this manager
-        for tweet in self.raw[u'statuses']:
+        for tweet in self.raw:
             self.add(HashTweet(tweet))
+
+    def get_tweets(self):
+        """
+        Will get all of the toots to deal with, and
+        set the `successful_connection` flag on the
+        class so the tweets can be processed.
+        """
+        tweets = []
+        try:
+            raw = self.api.search(q='%23stemtosteam',
+                                  result_type='recent')
+            if len(raw[u'statuses'] > 0):
+
+                tweets = raw[u'statuses']
+                self.successful_connection = True
+
+            else:
+                self.successful_connection = False
+        except:
+            self.successful_connection = False
+            logging.error("Problems getting tweets from Twitter API.")
+
+        return tweets
 
     def add(self, tweet):
         """

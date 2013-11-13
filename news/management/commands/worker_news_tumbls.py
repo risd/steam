@@ -23,55 +23,59 @@ class Command(BaseCommand):
             # where we will store all tumbls
             tumbls = Tumbls()
 
-            # get tumblr posts that are already
-            # represented in the database, and
-            # see if they need to be updated.
-            logging.info("Updating existing tumblr posts")
-            existing_tumbls = SteamTumbl\
-                .objects\
-                .filter(tid__in=tumbls.tids)
+            if tumbls.successful_connection:
 
-            for existing_tumbl in existing_tumbls:
-                # compare existing features to tumbls data
-                # updates if necessary
-                tumbls.compare(existing_tumbl)
+                # get tumblr posts that are already
+                # represented in the database, and
+                # see if they need to be updated.
+                logging.info("Updating existing tumblr posts")
+                existing_tumbls = SteamTumbl\
+                    .objects\
+                    .filter(tid__in=tumbls.tids)
 
-            # get entries in the database
-            # that are not represented in the
-            # tumblr data. means they have been
-            # deleted, and should be removed
-            # here as well
-            logging.info("Removing deleted tumblr posts")
-            SteamTumbl\
-                .objects\
-                .exclude(tid__in=tumbls.tids)\
-                .delete()
+                for existing_tumbl in existing_tumbls:
+                    # compare existing features to tumbls data
+                    # updates if necessary
+                    tumbls.compare(existing_tumbl)
 
-            # create new tumblr posts
-            logging.info("Figuring out which posts to create")
-            tumbls_to_create = tumbls.to_create()
+                # get entries in the database
+                # that are not represented in the
+                # tumblr data. means they have been
+                # deleted, and should be removed
+                # here as well
+                logging.info("Removing deleted tumblr posts")
+                SteamTumbl\
+                    .objects\
+                    .exclude(tid__in=tumbls.tids)\
+                    .delete()
 
-            logging.info("Creating Tumbls")
-            for tumbl in tumbls_to_create:
-                obj = SteamTumbl(**tumbl.data())
-                obj.save()
+                # create new tumblr posts
+                logging.info("Figuring out which posts to create")
+                tumbls_to_create = tumbls.to_create()
 
-                if obj.pk:
-                    tumbl.exists_in_database = True
+                logging.info("Creating Tumbls")
+                for tumbl in tumbls_to_create:
+                    obj = SteamTumbl(**tumbl.data())
+                    obj.save()
 
-                    news = SteamNews()
-                    news.tumbl = obj
-                    news.epoch_timestamp = obj.epoch_timestamp
-                    news.save()
+                    if obj.pk:
+                        tumbl.exists_in_database = True
 
-                    logger.info('saving')
-                    logger.info(news)
+                        news = SteamNews()
+                        news.tumbl = obj
+                        news.epoch_timestamp = obj.epoch_timestamp
+                        news.save()
 
-                else:
-                    logger.info('could not save. here is data:')
-                    logger.info(tumbl.data())
+                        logger.info('saving')
+                        logger.info(news)
 
-            logging.info("Tumblr posts now up to date.")
+                    else:
+                        logger.info('could not save. here is data:')
+                        logger.info(tumbl.data())
+
+                logging.info("Tumblr posts now up to date.")
+            else:
+                logging.info("Could not update News Tumblr")
 
         except CommandError as detail:
             err = 'Error getting tumblr data! ' +\

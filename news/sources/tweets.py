@@ -1,8 +1,11 @@
+import logging
 from django.conf import settings
 
 from twython import Twython
 
 from .tweet import Tweet
+
+logger = logging.getLogger(__name__)
 
 
 class Tweets():
@@ -12,6 +15,10 @@ class Tweets():
     def __init__(self):
         # arrays of tweets classes
         self.tweets = []
+
+        # Boolean that tracks if the calls
+        # to the server were successful.
+        self.successful_connection = False
 
         # arrays of tids represented
         # in this object
@@ -25,13 +32,37 @@ class Tweets():
             settings.NEWS_TWITTER_ACCESS_TOKEN_SECRET)
 
         # raw twitter response
-        self.timeline = self.api.get_user_timeline(screen_name='risd_mg')
-        self.favorites = self.api.get_favorites(screen_name='risd_mg')
-        self.raw = self.timeline + self.favorites
+        self.raw = self.get_tweets()
 
         # add all posts to this manager
         for tweet in self.raw:
             self.add(Tweet(tweet))
+
+    def get_tweets(self):
+        """
+        will get all of the toots to deal with
+        """
+        tweets = []
+        try:
+            self.timeline = self.api.get_user_timeline(screen_name='risd_mg',
+                                                       count=200,
+                                                       include_rts=True,
+                                                       exclude_replies=True)
+            self.favorites = self.api.get_favorites(screen_name='risd_mg',
+                                                    count=200)
+
+            if len(self.timeline) > 0 and len(self.favorites) > 0:
+
+                tweets = self.timeline + self.favorites
+                self.successful_connection = True
+
+            else:
+                self.successful_connection = False
+        except:
+            self.successful_connection = False
+            logging.info("Problems getting tweets from Twitter API.")
+
+        return tweets
 
     def add(self, tweet):
         """
