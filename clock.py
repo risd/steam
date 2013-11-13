@@ -11,7 +11,7 @@ atexit.register(lambda: sched.shutdown(wait=False))
 
 
 @sched.interval_schedule(minutes=1)
-def update_from_apis():
+def update_for_news():
     tweets = subprocess.check_call(['python',
                                     'manage.py',
                                     'worker_news_tweets'])
@@ -21,6 +21,10 @@ def update_from_apis():
                                     'worker_news_tumbls'])
 
     logger.info(tumblr)
+
+
+@sched.interval_schedule(minutes=15)
+def update_for_home():
     hash_tweets = subprocess.check_call(['python',
                                          'manage.py',
                                          'worker_hash_tweets'])
