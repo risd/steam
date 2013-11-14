@@ -31,6 +31,7 @@ class Tumbl():
         self.timestamp = None
         self.epoch_timestamp = None
         self.ticker_timestamp = None
+        self.announcement = False
 
         # tracks status of the object
         # being in the database or not
@@ -185,6 +186,10 @@ class Tumbl():
                 '{0}'.format(self.post[u'tags'])
             logging.error(err)
 
+        if u'announcement' in self.post[u'tags'] or\
+           u'announcements' in self.post[u'tags']:
+            self.announcement = True
+
         self.tid = self.post[u'id']
         self.html = self.post[u'body']
         self.url = self.post[u'post_url']
@@ -214,4 +219,5 @@ class Tumbl():
             'timestamp': self.timestamp,
             'epoch_timestamp': self.epoch_timestamp,
             'ticker_timestamp': self.ticker_timestamp,
+            'announcement': self.announcement,
         }

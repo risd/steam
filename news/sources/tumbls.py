@@ -155,6 +155,10 @@ class Tumbls():
                 need_to_save = True
                 steam_model.timestamp = tumbl.timestamp
 
+            if steam_model.announcement != tumbl.announcement:
+                need_to_save = True
+                steam_model.announcement = tumbl.announcement
+
             if steam_model.ticker_timestamp !=\
                     tumbl.ticker_timestamp:
 

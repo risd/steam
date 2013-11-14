@@ -42,6 +42,7 @@ class HashTweetResource(ModelResource):
 class TweetResource(ModelResource):
     """
     Returns array of all Tweet in the db
+    Used to power the News Resource below.
     """
     class Meta(CommonOpenResourceMeta):
         queryset = Tweet.objects.all()
@@ -62,6 +63,30 @@ class TumblResource(ModelResource):
         resource_name = 'tumbl_ref'
 
         excludes = ['timestamp']
+
+
+class AnnounceTumblResource(ModelResource):
+    """
+    Returns Announcement tumbls wrapped in news objects
+    """
+    tumbl = fields.ForeignKey(
+        TumblResource,
+        'tumbl',
+        null=True,
+        full=True)
+
+    class Meta(CommonOpenResourceMeta):
+        # get the single announcement
+        announcement_qs = Tumbl.objects.all().filter(announcement=True)
+        # get the news object for it,
+        # so it can be linked back to.
+        queryset = News.objects.all()\
+                               .filter(tumbl__in=announcement_qs)
+
+        resource_name = 'announcement'
+
+        ordering = ['-epoch_timestamp']
+        limit = 1
 
 
 class NewsTumblResource(ModelResource):

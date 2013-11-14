@@ -42,7 +42,7 @@ def join_us(request):
                 'FNAME': payload['first_name'],
                 'LNAME': payload['last_name'],
                 'EMAIL': payload['email'],
-                'WEBST': payload['website'],
+                'MMERGE5': payload['website'],
             }
         })
 

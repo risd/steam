@@ -74,6 +74,7 @@ class Tumbl(models.Model):
     ticker_timestamp = models.CharField(
         'News Ticker Timestamp',
         max_length=50)
+    announcement = models.BooleanField('Announcement')
 
 
 class NewsManager(models.Manager):
