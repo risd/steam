@@ -1,6 +1,9 @@
 # resources for
 # News, Tweets, Tumbls
 import logging
+from datetime import datetime
+from datetime import timedelta
+import pytz
 
 from django.conf.urls import url
 
@@ -77,7 +80,13 @@ class AnnounceTumblResource(ModelResource):
 
     class Meta(CommonOpenResourceMeta):
         # get the single announcement
-        announcement_qs = Tumbl.objects.all().filter(announcement=True)
+        since_announcement = timedelta(days=5)
+        now = datetime.now().replace(tzinfo=pytz.utc)
+        announcement_range = now - since_announcement
+
+        announcement_qs = Tumbl.objects.all()\
+                                       .filter(announcement=True)\
+                                       .filter(timestamp__gt=announcement_range)
         # get the news object for it,
         # so it can be linked back to.
         queryset = News.objects.all()\
