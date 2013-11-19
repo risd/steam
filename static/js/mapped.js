@@ -295,8 +295,6 @@
             nodes,
             force,
             node_sel,
-            inactive_sel,
-            active_sel,
             top_level, // reference to global top_level
             filters,   // reference to global filters
             map;       // reference to global map
@@ -313,23 +311,18 @@
         var gravity = 0.1,
             friction = 0.9,
             charge = -30,
-            radius_small = 3,
-            radius_default = 4.5,
-            radius_large = 6;
-
-        var svg_node = {
-            // indivual node svg
-            i: d3.svg.arc()
-                .innerRadius(0)
-                .outerRadius(radius_default)
-                .startAngle(0)
-                .endAngle(360),
-            g: d3.svg.arc()
-                .innerRadius(radius_default - 1)
-                .outerRadius(1)
-                .startAngle(0)
-                .endAngle(360)
-        };
+            radius_outter = 4.5,
+            radius_inner = 2,
+            scale = {
+                default: 1,
+                unselected: 0.666666667,
+                selected: 1.333333333
+            },
+            opacity = {
+                default: 1,
+                unselected: 0.5,
+                selected: 1
+            };
 
         network.map = function (x) {
             if (!arguments.length) return map;
@@ -364,39 +357,36 @@
 
                 if (active_count === 4) {
                     // reset all to default
-                    nodes_sel
-                        .transition()
-                        .duration(1000)
-                        .style('opacity', 1.0)
-                        .attr('r', radius_default);
-                } else {
-                    // set active and non
+                    nodes_sel.each(function (d) {
+                        d.status = 'default';
+                    });
 
-                    // not-active
-                    active_sel = nodes_sel
+                } else {
+
+                    // selected
+                    nodes_sel
                         .filter(function (d) {
                             return active(d);
+                        })
+                        .each(function (d) {
+                            d.status = 'selected';
                         });
 
-                    inactive_sel = nodes_sel
+                    // unselected
+                    nodes_sel
                         .filter(function (d) {
                             return !active(d);
+                        })
+                        .each(function (d) {
+                            d.status = 'unselected';
                         });
-
-                    // active
-                    active_sel
-                        .transition()
-                        .duration(1000)
-                        .style('opacity', 1.0)
-                        .attr('r', radius_large);
-
-                    // inactive
-                    inactive_sel
-                        .transition()
-                        .duration(1000)
-                        .style('opacity', 0.5)
-                        .attr('r', radius_small);
                 }
+
+                nodes_sel
+                    .transition()
+                    .duration(1000)
+                    .style('opacity', set_opacity)
+                    .attr('transform', transform);
 
             } catch (e) {
                 if (DEBUG) console.log(
@@ -490,39 +480,31 @@
             nodes_sel = canvas.selectAll('.node')
                     .data(nodes)
                 .enter()
-                .append('circle')
+                .append('g')
                     .attr('class', function (d) {
                         return 'node ' +
                                 d.work_in + ' ' +
                                 d.type;
                     })
-                    .attr('r', function (d) {
+                    .each(function (d, i) {
                         if (active(d)) {
-                            return radius_default;
+                            d.status = 'selected';
                         } else {
-                            return radius_small;
+                            d.status = 'unselected';
                         }
                     })
-                    .style('opacity', function (d) {
-                        // account for mappe.data.filters value
-                        // on creatation of graph
-
-                        if (active(d)) {
-                            return 1;
-                        } else {
-                            return 0.5;
-                        }
-                    })
+                    .style('opacity', set_opacity)
+                    .attr('transform', transform)
                     .call(force.drag)
                     .on('click', function (d) {
                         if (DEBUG) console.log('clicked');
                         if (DEBUG) console.log(d);
-                    });
+                    })
+                    .call(add_symbols);
 
             force.on('tick', function () {
                 nodes_sel
-                    .attr('cx', function (d) { return d.x; })
-                    .attr('cy', function (d) { return d.y; });
+                    .attr('transform', transform);
             });
 
             return network;
@@ -591,6 +573,39 @@
                   .nodes(network_data.steamies)
                   .create();
         };
+
+        function transform (d) {
+            return 'translate(' + d.x + ',' + d.y + ') ' +
+                   'scale(' + scale[d.status] + ')';
+        }
+        function set_opacity (d) {
+            return opacity[d.status];
+        }
+
+        function add_symbols (sel) {
+
+            var industry = sel.filter(function (d) {
+                // looking for groups/industries
+                return d.type === 'g';
+            });
+
+            // all g.node elements.
+            sel.append('circle')
+                .attr('class', 'outter')
+                .attr('r', radius_outter)
+                .attr('cx', radius_outter)
+                .attr('cy', radius_outter);
+
+            industry.append('circle')
+                .attr('class', 'inner')
+                .attr('r', radius_inner)
+                .attr('cx', radius_outter)
+                .attr('cy', radius_outter);
+        }
+
+        function node_status (d) {
+
+        }
 
         function active (d) {
             // returns true if active

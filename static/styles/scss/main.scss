@@ -471,26 +471,34 @@ network graph
 .node {
     cursor: pointer;
 }
-/* network nodes representing institutions  */
-.node.g {
-    stroke: 0;
-}
-/* network nodes representing individuals  */
-.node.i {
-    stroke: 0;
-}
 
 .node.res {
     fill: $color-res;
+    stroke: $color-res;
 }
 .node.pol {
     fill: $color-pol;
+    stroke: $color-pol;
 }
 .node.edu {
     fill: $color-edu;
+    stroke: $color-edu;
 }
 .node.ind {
     fill: $color-ind;
+    stroke: $color-ind;
+}
+/* network nodes representing institutions  */
+.node.g circle.outter {
+    stroke-width: 1;
+    fill: none;   
+}
+.node.g circle.inner {
+    stroke-width: 0;
+}
+/* network nodes representing individuals  */
+.node.i circle.outter {
+    stroke-width: 0;
 }
 
 /************

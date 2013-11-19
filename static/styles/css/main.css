@@ -461,25 +461,33 @@ network graph
 .node {
   cursor: pointer; }
 
-/* network nodes representing institutions  */
-.node.g {
-  stroke: 0; }
-
-/* network nodes representing individuals  */
-.node.i {
-  stroke: 0; }
-
 .node.res {
-  fill: #69e640; }
+  fill: #69e640;
+  stroke: #69e640; }
 
 .node.pol {
-  fill: #ff617f; }
+  fill: #ff617f;
+  stroke: #ff617f; }
 
 .node.edu {
-  fill: #ff8931; }
+  fill: #ff8931;
+  stroke: #ff8931; }
 
 .node.ind {
-  fill: #27b4f2; }
+  fill: #27b4f2;
+  stroke: #27b4f2; }
+
+/* network nodes representing institutions  */
+.node.g circle.outter {
+  stroke-width: 1;
+  fill: none; }
+
+.node.g circle.inner {
+  stroke-width: 0; }
+
+/* network nodes representing individuals  */
+.node.i circle.outter {
+  stroke-width: 0; }
 
 /************
 form
