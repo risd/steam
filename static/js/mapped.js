@@ -363,22 +363,13 @@
 
                 } else {
 
-                    // selected
                     nodes_sel
-                        .filter(function (d) {
-                            return active(d);
-                        })
                         .each(function (d) {
-                            d.status = 'selected';
-                        });
-
-                    // unselected
-                    nodes_sel
-                        .filter(function (d) {
-                            return !active(d);
-                        })
-                        .each(function (d) {
-                            d.status = 'unselected';
+                            if (active(d)) {
+                                d.status = 'selected';
+                            } else {
+                                d.status = 'unselected';
+                            }
                         });
                 }
 
