@@ -27,6 +27,37 @@
         ind: 'rgb(39,180,242)'
     };
 
+    mapped.util = {
+        clone: function clone (obj) {
+            // Thanks to stackoverflow:
+            // http://stackoverflow.com/questions/
+            // 728360/most-elegant-way-to-clone-a-javascript-object
+
+            // Handle the 3 simple types, and null or undefined
+            if (null == obj || "object" != typeof obj) return obj;
+
+            // Handle Array
+            if (obj instanceof Array) {
+                var copy = [];
+                for (var i = 0, len = obj.length; i < len; i++) {
+                    copy[i] = clone(obj[i]);
+                }
+                return copy;
+            }
+
+            // Handle Object
+            if (obj instanceof Object) {
+                var copy = {};
+                for (var attr in obj) {
+                    if (obj.hasOwnProperty(attr)) {
+                        copy[attr] = clone(obj[attr]);
+                    }
+                }
+                return copy;
+            }
+        }
+    };
+
     mapped.fake = {
         network: function (args) {
             // pass in geojson properties, return
@@ -155,7 +186,7 @@
                     if (DEBUG) console.log('clicked');
 
                     prev_active_count = active_count;
-                    arcs.prevFilters(clone(filters));
+                    arcs.prevFilters(mapped.util.clone(filters));
 
                     if (prev_active_count === 4) {
                         // all filters were active
@@ -244,43 +275,11 @@
 
                     arcs.filters(filters);
 
-                    console.log(arcs.prevFilters());
-                    console.log(arcs.filters());
-
                     // apply filter to network and map
                     network.filter();
                     clusters.filter();
                 });
         };
-
-        function clone (obj) {
-            // Thanks to stackoverflow:
-            // http://stackoverflow.com/questions/
-            // 728360/most-elegant-way-to-clone-a-javascript-object
-
-            // Handle the 3 simple types, and null or undefined
-            if (null == obj || "object" != typeof obj) return obj;
-
-            // Handle Array
-            if (obj instanceof Array) {
-                var copy = [];
-                for (var i = 0, len = obj.length; i < len; i++) {
-                    copy[i] = clone(obj[i]);
-                }
-                return copy;
-            }
-
-            // Handle Object
-            if (obj instanceof Object) {
-                var copy = {};
-                for (var attr in obj) {
-                    if (obj.hasOwnProperty(attr)) {
-                        copy[attr] = clone(obj[attr]);
-                    }
-                }
-                return copy;
-            }
-        }
 
         return ui;
     };
@@ -594,10 +593,6 @@
                 .attr('cy', radius_outter);
         }
 
-        function node_status (d) {
-
-        }
-
         function active (d) {
             // returns true if active
             // returns false if blurred
@@ -620,12 +615,13 @@
         return network;
     };
 
-    mapped.Map = function () {
+    mapped.Map = function (args) {
         // returns leaflet map object
         // with properties set
 
         var zoomstart = function () {
             mapped.data.top_level.svg().classed('active', false);
+            args.arcs.prevFilters(mapped.util.clone(mapped.data.filters));
         };
 
         var zoomend = function() {
@@ -667,54 +663,71 @@
                 six_digit: 61
             },
             // gap between inner icon and arc
+            // based on arc.status
             gap_width: {
-                small: 4,
+                unselected: 4,
                 default: 2,
-                large: 1
+                selected: 1
             },
             // width of the arc
             arc_width: {
-                small: 1,
+                unselected: 1,
                 default: 4,
-                large: 10
+                selected: 10
             }
         };
 
-        size.total = {
-            // height and width of icon
-            // inner + gap_width + arc_width
-            two_digit:
-                size.inner_diameter.two_digit +
-                ((size.gap_width.large +
-                  size.arc_width.large) * 2),
-            three_digit:
-                size.inner_diameter.three_digit +
-                ((size.gap_width.large +
-                  size.arc_width.large) * 2),
-            four_digit:
-                size.inner_diameter.four_digit +
-                ((size.gap_width.large +
-                  size.arc_width.large) * 2),
-            five_digit:
-                size.inner_diameter.five_digit +
-                ((size.gap_width.large +
-                  size.arc_width.large) * 2),
-            six_digit:
-                size.inner_diameter.six_digit +
-                ((size.gap_width.large +
-                  size.arc_width.large) * 2),
-        };
+        (function set_size (size) {
+            for (var key in size.inner_diameter) {
+                size[key] = {
+                    total: size.inner_diameter[key] +
+                           ((size.gap_width.selected +
+                             size.arc_width.selected) * 2),
+                    unselected: {
+                        innerRadius: ((size.inner_diameter[key] / 2) +
+                                      (size.gap_width.unselected)),
+                        outerRadius: ((size.inner_diameter[key] / 2) +
+                                      (size.gap_width.unselected) +
+                                      (size.arc_width.unselected))
+                    },
+                    default: {
+                        innerRadius: ((size.inner_diameter[key] / 2) +
+                                      (size.gap_width.default)),
+                        outerRadius: ((size.inner_diameter[key] / 2) +
+                                      (size.gap_width.default) +
+                                      (size.arc_width.default))
+                    },
+                    selected: {
+                        innerRadius: ((size.inner_diameter[key] / 2) +
+                                      (size.gap_width.selected)),
+                        outerRadius: ((size.inner_diameter[key] / 2) +
+                                      (size.gap_width.selected) +
+                                      (size.arc_width.selected))
+                    }
+                };
+            }
+        })(size);
 
         return size;
     };
 
     mapped.Arcs = function () {
         var arcs = {},
-            transition_filters, // track filters to transition
+            // ref to global obj
+            // used to check the status of each filter
+            filters,
+            // ref to the same global obj
+            // used to transition from, since
+            // arcs are recreated on each zoom
             prev_filters,
-            svg_arcs,           // obj with 3 sized arcs
-            filters,            // ref to global obj
-            icon_size;          // ref to global obj
+            // ref to global obj
+            // determines arc radii
+            icon_size,
+
+            arc = d3.svg.arc(),
+            τ = 2 * Math.PI,
+            arc_scale = d3.scale.linear()
+                .range([0, τ]);
 
         arcs.iconSize = function (x) {
             if (!arguments.length) return icon_size;
@@ -732,6 +745,8 @@
 
         arcs.prevFilters = function (x) {
             if (!arguments.length) return prev_filters;
+            // a clone of the filter object, set just before
+            // the filter is initiated.
             prev_filters = x;
             return arcs;
         };
@@ -740,15 +755,14 @@
             // bound to the zoom of the map
             // sets the arcs per marker cluster
 
-            console.log('creating arcs');
-            console.log(filters);
-
             // adding arcs
             d3.selectAll('.arc-wrapper')
                 .html('')
                 .each(function () {
                     var node = d3.select(this);
 
+                    // icon display, set in the createIconFactory
+                    // method in the cluster creation process.
                     var meta = {
                         total: +node.attr('data-total'),
                         total_active:
@@ -757,6 +771,8 @@
                             node.attr('data-icon-cateogry')
                     };
 
+                    // the data that will be bound to the svg
+                    // in order to draw the arcs.
                     var data = [
                         {
                             'abbr': 'res',
@@ -773,20 +789,18 @@
                         }
                     ];
 
-                    // add the prev_size, and size
-                    // attributes to this object
-                    add_size(data);
+                    // add the prev_status, and status
+                    // attributes to the data object
+                    // for appropriate scaling based on
+                    // the filter settings
+                    add_status(data);
 
-                    // to calculate radians of each slice
-                    var τ = 2 * Math.PI;
+                    // update the domain to set the
+                    // arc start and end angles
+                    arc_scale.domain([0, meta.total]);
 
-                    var arc_scale = d3.scale.linear()
-                        .domain([0, meta.total])
-                        .range([0, τ]);
-
-
-                    // add start and end angles to
-                    // each piece of data
+                    // add arc specific data to the
+                    // data to be bound and drawn.
                     var accounted_for = 0;
                     data.forEach(function (d, i) {
                         d.startAngle = accounted_for;
@@ -795,45 +809,19 @@
                         accounted_for += slice;
                         
                         d.endAngle = accounted_for;
+
+                        d.innerRadius = icon_size
+                                            [meta.icon_category]
+                                            [d.prev_status]
+                                            .innerRadius;
+                        d.outerRadius = icon_size
+                                            [meta.icon_category]
+                                            [d.prev_status]
+                                            .outerRadius;
                     });
 
-                    svg_arcs = {
-                        small: d3.svg.arc()
-                                .innerRadius(
-                                    (icon_size.inner_diameter[
-                                        meta.icon_category]/2) +
-                                    (icon_size.gap_width.small))
-                                .outerRadius(
-                                    (icon_size.inner_diameter[
-                                        meta.icon_category]/2) +
-                                     (icon_size.gap_width.small) +
-                                     (icon_size.arc_width.small)),
-
-                        default: d3.svg.arc()
-                                .innerRadius(
-                                    (icon_size.inner_diameter[
-                                        meta.icon_category]/2) +
-                                    (icon_size.gap_width.default))
-                                .outerRadius(
-                                    (icon_size.inner_diameter[
-                                        meta.icon_category]/2) +
-                                     (icon_size.gap_width.default) +
-                                     (icon_size.arc_width.default)),
-
-                        large: d3.svg.arc()
-                                .innerRadius(
-                                    (icon_size.inner_diameter[
-                                        meta.icon_category]/2) +
-                                    (icon_size.gap_width.large))
-                                .outerRadius(
-                                    (icon_size.inner_diameter[
-                                        meta.icon_category]/2) +
-                                     (icon_size.gap_width.large) +
-                                     (icon_size.arc_width.large))
-                    };
-
                     var svg_dimensions =
-                        icon_size.total[meta.icon_category];
+                        icon_size[meta.icon_category].total;
 
                     var svg = node.append('svg')
                         .attr('class', 'arc-svg')
@@ -847,83 +835,60 @@
 
                     
                     var arc_sel = svg.selectAll('.arc-segment')
-                        .data(data);
-
-                    arc_sel
+                        .data(data)
                         .enter()
                         .append('path')
                         .attr('class', 'arc-segment')
                         .style('fill', function (d) {
                             return mapped.data.colors[d.abbr];
                         })
-                        .attr('d', function (d) {
-                            return svg_arcs[d.prev_size](d);
-                        });
+                        .attr('d', arc);
 
-                    arc_sel
-                        .transition()
+                    arc_sel.transition()
                         .duration(800)
-                        .call(arc_scale);
+                        .attrTween('d', tweenArc(function (d, i) {
+                            return {
+                                innerRadius: icon_size
+                                               [meta.icon_category]
+                                               [d.status]
+                                               .innerRadius,
+                                outerRadius: icon_size
+                                               [meta.icon_category]
+                                               [d.status]
+                                               .outerRadius
+                            };
+                        }));
 
-                    // add the arcs
-                    // var arc_sel = svg.selectAll('.arc-segment')
-                    //     .data(data)
-                    //     .enter()
-                    //     .append('path')
-                    //     .attr('class', 'arc-segment')
-                    //     .style('fill', function (d) {
-                    //         return mapped.data.colors[d.abbr];
-                    //     })
-                    //     .attr('d', function (d) {
-                    //         return svg_arcs[d.prev_size](d);
-                    //     })
-                    //     .transition()
-                    //     .duration(1000)
-                    //     .call(arc_scale);
                 });
         };
 
-        function arc_scale (transition) {
-
-            // manage the transition between
-            // arc states.
-            console.log('arc_scale');
-            console.log(transition);
-
-            transition.attrTween('d', function (d) {
-                // tween is run for every instance of d
-
-                var interpolate_inner =
-                        d3.interpolate(
-                            d.innerRadius(),
-                            svg_args[d.size](d).innerRadius()),
-                    interpolate_outer =
-                        d3.interpolate(
-                            d.outerRadius(),
-                            svg_args[d.size](d).outerRadius());
-
-                return function (t) {
-                    d.innerRadius = interpolate_inner(t);
-                    d.outerRadius = interpolate_outer(t);
-                    return svg_arcs[d.size](d);
+        function tweenArc(b) {
+            return function(a, i) {
+                var d = b.call(this, a, i),
+                    i = d3.interpolate(a, d);
+                for (var k in d) {
+                    // update data
+                    a[k] = d[k];
+                }
+                return function(t) {
+                    return arc(i(t));
                 };
-            });
+            };
         }
 
-        function add_size (node_data) {
+        function add_status (node_data) {
             // answers the question, what size
             // does this need to be?
             // @param d: data obj to create arcs
             // 
             // possible values
-            // 0, no transition // not in use
-            // 1, transition to 'small'
-            // 2, transition to 'default'
-            // 3, transition to 'large'
+            // 'unselected'
+            // 'default'
+            // 'selected'
             // 
             // value is found in the filters
             // array, alongside each object.
-            // 'size' and 'prev_size'
+            // 'status' and 'status_size'
 
             for (var j = node_data.length - 1; j >= 0; j--) {
 
@@ -937,9 +902,9 @@
                     }
                     if(filters[i].abbr === node_data[j].abbr) {
                         if (cur_active) {
-                            node_data[j].size = 'large';
+                            node_data[j].status = 'selected';
                         } else {
-                            node_data[j].size = 'small';
+                            node_data[j].status = 'unselected';
                         }
                     }
                 }
@@ -954,23 +919,23 @@
                     }
                     if(prev_filters[i].abbr === node_data[j].abbr) {
                         if (cur_active) {
-                            node_data[j].prev_size = 'large';
+                            node_data[j].prev_status = 'selected';
                         } else {
-                            node_data[j].prev_size = 'small';
+                            node_data[j].prev_status = 'unselected';
                         }
                     }
                 }
 
                 if (active_count === 4) {
-                    node_data[j].size = 'default';
+                    node_data[j].status = 'default';
                 }
                 if (prev_active_count === 4) {
-                    node_data[j].prev_size = 'default';
+                    node_data[j].prev_status = 'default';
                 }
 
             }
 
-            return node_data;
+            // return node_data;
         }
 
         return arcs;
@@ -1089,8 +1054,8 @@
                              '></div>',
                     className: 'marker-cluster' + c,
                     iconSize: new L.Point(
-                                 icon_size.total[icon_category],
-                                 icon_size.total[icon_category])
+                                 icon_size[icon_category].total,
+                                 icon_size[icon_category].total)
                 });
             },
 
@@ -2001,14 +1966,14 @@
             .required('You must enter a name')
         .build();
 
-    mapped.map = mapped.Map();
-
     mapped.cluster_icon_size = mapped.ClusterIconSize();
 
     mapped.arcs = mapped.Arcs()
                         .iconSize(mapped.cluster_icon_size)
                         .prevFilters(mapped.data.filters)
                         .filters(mapped.data.filters);
+
+    mapped.map = mapped.Map({arcs: mapped.arcs});
 
     mapped.data.top_level = mapped.data
                                   .TopLevel()
