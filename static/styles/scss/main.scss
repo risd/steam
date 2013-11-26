@@ -441,29 +441,6 @@ $cluster-fill: rgba(78,91,109,0.8);
 
 
 /************
-d3 top_level outline
-*/
-.top_level_svg {
-    display: none;
-}
-.top_level_svg.active {
-    display: block;
-}
-.top_level {
-    stroke: transparent;
-    stroke-width: 0;
-    stroke-linecap: round;
-    fill: transparent;
-}
-.top_level.active {
-    stroke: black;
-    /*stroke-width: 3px;*/
-    fill: rgba(200,200,200, 1.0);
-}
-/* end d3 svg */
-
-
-/************
 network graph
 */
 
@@ -502,7 +479,7 @@ network graph
 }
 
 /************
-form
+form/profile
 */
 #activate-add-yourself {
     position: absolute;

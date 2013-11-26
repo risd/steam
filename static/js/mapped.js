@@ -294,7 +294,6 @@
             nodes,
             force,
             node_sel,
-            top_level, // reference to global top_level
             filters,   // reference to global filters
             map;       // reference to global map
 
@@ -326,12 +325,6 @@
         network.map = function (x) {
             if (!arguments.length) return map;
             map = x;
-            return network;
-        };
-
-        network.topLevel = function (x) {
-            if (!arguments.length) return top_level;
-            top_level = x;
             return network;
         };
 
@@ -512,10 +505,6 @@
                 .exit()
                 .remove();
 
-            // turn off outline of top_level area
-            d3.select('.top_level.active')
-                .classed('active', false);
-
             return network;
         };
 
@@ -524,30 +513,10 @@
             // data is passed in from the cluster
             // group that is clicked.
 
-            // zoom to area
-            var padding = 0,
-                area_of_interest = d3.select('.top_level.' + data.uid),
-                aoi_bounds = d3.geo.bounds(area_of_interest.datum()),
-                max_ne = new L.LatLng(aoi_bounds[1][1] + padding,
-                                    aoi_bounds[1][0] + padding),
-                max_sw = new L.LatLng(aoi_bounds[0][1] - padding,
-                                    aoi_bounds[0][0] - padding),
-                aoi_l_bounds = new L.LatLngBounds(max_sw, max_ne);
-
             // at end of zoom, highlight the area
             map.once('moveend', function () {
                 if (DEBUG) console.log('focusing');
-                if (DEBUG) console.log(area_of_interest);
-
-                // reset the top_level svg
-                top_level.reset();
-
-                area_of_interest
-                    .classed('active', true);
             });
-
-            // move the map to fit the bounds
-            map.fitBounds(aoi_l_bounds);
 
             // var data_url =
                 // mapped.data.backend + '/api/' + uid + '/';
@@ -620,12 +589,11 @@
         // with properties set
 
         var zoomstart = function () {
-            mapped.data.top_level.svg().classed('active', false);
             args.arcs.prevFilters(mapped.util.clone(mapped.data.filters));
         };
 
         var zoomend = function() {
-            mapped.data.top_level.svg().classed('active', true);
+
         };
 
         var mabox_id = "",
@@ -1199,96 +1167,6 @@
         }
 
         return clusters;
-    };
-
-    mapped.data.TopLevel = function () {
-        var top_level = {},
-            top_level_bounds,
-            top_level_path,
-            top_level_sel,
-            top_level_tj,
-            data,
-            map,               // reference to map object
-            top_level_svg = d3
-                .select(mapped
-                        .map.getPanes().overlayPane)
-                    .append('svg')
-                    .attr('class', 'top_level_svg'),
-
-            top_level_g = top_level_svg.append('g');
-
-        top_level.svg = function () {
-            return top_level_svg;
-        };
-
-        top_level.data = function (x) {
-            if (!arguments.length) return data;
-
-            data = x;
-
-            top_level_tj = topojson
-                .feature(
-                    data,
-                    data.objects.level_1);
-
-            top_level_bounds = d3.geo.bounds(top_level_tj);
-            top_level_path = d3.geo.path().projection(project);
-
-            top_level_sel = top_level_g.selectAll('top_level')
-                .data(top_level_tj.features)
-                .enter()
-                .append('path')
-                .attr('class', function (d,i) {
-                    return 'top_level ' + d.properties.uid;
-                });
-            reset();
-
-            return top_level;
-        };
-
-        top_level.map = function (x) {
-            if (!arguments.length) return map;
-
-            map = x;
-
-            return top_level;
-        };
-
-        // use leaflet to implement d3 geo projection
-        function project (x) {
-            var point = map
-                            .latLngToLayerPoint(
-                                new L.LatLng(x[1], x[0]));
-            return [point.x , point.y];
-        }
-
-        function reset () {
-            var top_level_bottom_left =
-                    project(top_level_bounds[0]),
-                top_level_top_right =
-                    project(top_level_bounds[1]);
-
-            top_level_svg
-                .attr('width',
-                    top_level_top_right[0] - top_level_bottom_left[0])
-                .attr('height',
-                    top_level_bottom_left[1] - top_level_top_right[1])
-                .style('margin-left',
-                    top_level_bottom_left[0] + 'px')
-                .style('margin-top',
-                    top_level_top_right[1] + 'px');
-
-            top_level_g
-                .attr('transform', 'translate(' +
-                    -top_level_bottom_left[0] + ',' +
-                    -top_level_top_right[1] + ')');
-
-            top_level_sel.attr('d', top_level_path);
-        }
-
-        top_level.reset = reset;
-
-        return top_level;
     };
 
     mapped.Form = function () {
@@ -1975,14 +1853,9 @@
 
     mapped.map = mapped.Map({arcs: mapped.arcs});
 
-    mapped.data.top_level = mapped.data
-                                  .TopLevel()
-                                  .map(mapped.map);
-
     mapped.network = mapped.Network()
                            .filters(mapped.data.filters)
-                           .map(mapped.map)
-                           .topLevel(mapped.data.top_level);
+                           .map(mapped.map);
    
     mapped.clusters = mapped.Clusters()
                            .iconSize(mapped.cluster_icon_size)
@@ -2018,11 +1891,6 @@
         // clustered on the map.
         d3.json('/static/geo/fake_level_1_pnt.geojson',
                 mapped.clusters.data);
-
-        // load level_1 topojson that represents
-        // each of the level_1 areas.
-        d3.json('/static/geo/level_1.topojson',
-            mapped.data.top_level.data);
 
         // gets the party started,
         // and start sets state of form

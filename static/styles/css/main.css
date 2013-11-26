@@ -434,27 +434,6 @@ Leaflet Marker Cluster Styles
 
 /* end Leaflet Marker Cluster Styles */
 /************
-d3 top_level outline
-*/
-.top_level_svg {
-  display: none; }
-
-.top_level_svg.active {
-  display: block; }
-
-.top_level {
-  stroke: transparent;
-  stroke-width: 0;
-  stroke-linecap: round;
-  fill: transparent; }
-
-.top_level.active {
-  stroke: black;
-  /*stroke-width: 3px;*/
-  fill: #c8c8c8; }
-
-/* end d3 svg */
-/************
 network graph
 */
 /* all nodes  */
@@ -490,7 +469,7 @@ network graph
   stroke-width: 0; }
 
 /************
-form
+form/profile
 */
 #activate-add-yourself {
   position: absolute;
