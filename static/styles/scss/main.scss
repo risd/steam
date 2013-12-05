@@ -16,11 +16,11 @@ input,
 select,
 textarea {
     color: #222;
+    font-size: 16px;
 }
 
 body {
     font-size: 1em;
-    line-height: 1.4;
 }
 
 /*
@@ -219,6 +219,12 @@ $fullscreen-color-opacity: 0.8;
     font-size: 120px;
     margin: 0;
 }
+.modal-wrapper p {
+    @include sentinel;
+
+    font-size: 1.2em;
+    line-height: 1.8em;
+}
 .modal-toolbar-button {
     padding: 10px;
 
@@ -254,6 +260,11 @@ $fullscreen-color-opacity: 0.8;
     .column.one:nth-child(2) {
         margin-right: 0%;
     }
+}
+.centered {
+    position: relative;
+    margin: 0 auto;
+    display: inline-block;
 }
 .modal-sidebar {
     width: 11.6666667%; // 70/600
@@ -377,6 +388,8 @@ h3.filter-by {
 }
 /* end global filters */
 
+
+
 /************
 Leaflet map styles
 */
@@ -496,6 +509,8 @@ $cluster-fill: rgba(78,91,109,0.8);
 /* end Leaflet Marker Cluster Styles */
 
 
+
+
 /************
 network graph
 */
@@ -533,6 +548,8 @@ network graph
 .node.i circle.outter {
     stroke-width: 0;
 }
+
+
 
 /************
 form/profile

@@ -13,11 +13,11 @@ button,
 input,
 select,
 textarea {
-  color: #222; }
+  color: #222;
+  font-size: 16px; }
 
 body {
-  font-size: 1em;
-  line-height: 1.4; }
+  font-size: 1em; }
 
 /*
  * Remove text-shadow in selection highlight: h5bp.com/i
@@ -149,6 +149,14 @@ header:hover {
   font-size: 120px;
   margin: 0; }
 
+.modal-wrapper p {
+  font-family: 'Sentinel SSm A', 'Sentinel SSm B';
+  font-weight: 400;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  font-size: 1.2em;
+  line-height: 1.8em; }
+
 .modal-toolbar-button {
   padding: 10px;
   cursor: pointer; }
@@ -178,6 +186,11 @@ header:hover {
     margin-right: 5%; }
   .modal-main-area .column.one:nth-child(2) {
     margin-right: 0%; }
+
+.centered {
+  position: relative;
+  margin: 0 auto;
+  display: inline-block; }
 
 .modal-sidebar {
   width: 11.6666667%;

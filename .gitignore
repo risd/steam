@@ -5,3 +5,5 @@
 .sass-cache
 
 logfile
+
+static/js/node_modules/*
