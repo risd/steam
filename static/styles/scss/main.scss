@@ -117,6 +117,13 @@ textarea {
     -webkit-font-smoothing: antialiased;
 }
 
+// colors
+$color-res: rgb(105,230,64);
+$color-pol: rgb(255,97,127);
+$color-edu: rgb(255,137,49);
+$color-ind: rgb(39,180,242);
+$color-slate: rgb(81, 98, 114);
+
 html, body {
     margin: 0;
     padding: 0;
@@ -159,33 +166,68 @@ header:hover {
 .fullscreen.active {
     display: block;
 }
+// overlay colors
+$fullscreen-color-opacity: 0.8;
 
 .modal {
     position: absolute;
     top: 0;
     bottom: 0;
     width: 100%;
-}
-.modal.active {
-    display: block;
+    height: 100%;
+
+    &.active {
+        display: block;
+    }
+
+    &.fullscreen {
+        color: white;
+
+        background-color: rgba($color-slate, $fullscreen-color-opacity);
+
+        &.res {
+            background-color: rgba($color-res, $fullscreen-color-opacity);
+        }
+        &.pol {
+            background-color: rgba($color-pol, $fullscreen-color-opacity);
+        }
+        &.edu {
+            background-color: rgba($color-edu, $fullscreen-color-opacity);
+        }
+        &.ind {
+            background-color: rgba($color-ind, $fullscreen-color-opacity);
+        }
+    }
 }
 .modal-wrapper {
     position: relative;
     width: 80%;
+    height: 90%;
+    overflow-y: scroll;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 5% auto;
 
-    background: rgba(255,255,255,0.5);
+    .column {
+        float: left;
+        position: relative;
+        display: inline;
+    }
+}
+.modal-wrapper h1 {
+    @include antenna-medium;
+
+    font-size: 120px;
+    margin: 0;
 }
 .modal-toolbar-button {
     padding: 10px;
 
     cursor: pointer;
 }
-.modal-toolbar-button.left {
+.modal-nav-button.left {
     float: left;
 }
-.modal-toolbar-button.right {
+.modal-nav-button.right {
     float: right;
 }
 .hide-til-active {
@@ -196,6 +238,26 @@ header:hover {
 }
 .clickable {
     cursor: pointer;
+}
+
+.modal-main-area {
+    width: 88.3333333%; // 530/600
+    max-width: 530px;
+
+    .column.two {
+        width: 100%;
+    }
+    .column.one {
+        width: 45%;
+        margin-right: 5%
+    }
+    .column.one:nth-child(2) {
+        margin-right: 0%;
+    }
+}
+.modal-sidebar {
+    width: 11.6666667%; // 70/600
+    max-width: 70px;
 }
 
 .z-0 {
@@ -215,12 +277,6 @@ header:hover {
 .z-200 {
     z-index: 200;
 }
-
-// colors
-$color-res: rgb(105,230,64);
-$color-pol: rgb(255,97,127);
-$color-edu: rgb(255,137,49);
-$color-ind: rgb(39,180,242);
 
 #steamie-network .button {
     position: absolute;
@@ -246,7 +302,7 @@ Global filters
 
     text-align: left;
 
-    border-top: 1px solid rgb(204, 204, 204);
+    border-top: 1px dashed rgb(204, 204, 204);
 
     padding: 11px 0 11px 18px;
     margin: 0;

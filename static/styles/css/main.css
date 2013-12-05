@@ -113,26 +113,50 @@ header:hover {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 100%; }
-
-.modal.active {
-  display: block; }
+  width: 100%;
+  height: 100%; }
+  .modal.active {
+    display: block; }
+  .modal.fullscreen {
+    color: white;
+    background-color: rgba(81, 98, 114, 0.8); }
+    .modal.fullscreen.res {
+      background-color: rgba(105, 230, 64, 0.8); }
+    .modal.fullscreen.pol {
+      background-color: rgba(255, 97, 127, 0.8); }
+    .modal.fullscreen.edu {
+      background-color: rgba(255, 137, 49, 0.8); }
+    .modal.fullscreen.ind {
+      background-color: rgba(39, 180, 242, 0.8); }
 
 .modal-wrapper {
   position: relative;
   width: 80%;
+  height: 90%;
+  overflow-y: scroll;
   max-width: 600px;
-  margin: 0 auto;
-  background: rgba(255, 255, 255, 0.5); }
+  margin: 5% auto; }
+  .modal-wrapper .column {
+    float: left;
+    position: relative;
+    display: inline; }
+
+.modal-wrapper h1 {
+  font-family: "Antenna Comp Medium";
+  font-style: normal;
+  font-weight: normal;
+  -webkit-font-smoothing: antialiased;
+  font-size: 120px;
+  margin: 0; }
 
 .modal-toolbar-button {
   padding: 10px;
   cursor: pointer; }
 
-.modal-toolbar-button.left {
+.modal-nav-button.left {
   float: left; }
 
-.modal-toolbar-button.right {
+.modal-nav-button.right {
   float: right; }
 
 .hide-til-active {
@@ -143,6 +167,21 @@ header:hover {
 
 .clickable {
   cursor: pointer; }
+
+.modal-main-area {
+  width: 88.3333333%;
+  max-width: 530px; }
+  .modal-main-area .column.two {
+    width: 100%; }
+  .modal-main-area .column.one {
+    width: 45%;
+    margin-right: 5%; }
+  .modal-main-area .column.one:nth-child(2) {
+    margin-right: 0%; }
+
+.modal-sidebar {
+  width: 11.6666667%;
+  max-width: 70px; }
 
 .z-0 {
   z-index: 0;
@@ -179,7 +218,7 @@ Global filters
   font-weight: "light";
   font-size: 18px;
   text-align: left;
-  border-top: 1px solid #cccccc;
+  border-top: 1px dashed #cccccc;
   padding: 11px 0 11px 18px;
   margin: 0;
   line-height: 0.9em; }

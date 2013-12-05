@@ -1215,7 +1215,7 @@
 
         var el = {
             button: {
-                deactivate: d3.select('#close-modal-add-yourself'),
+                deactivate: d3.select('#close-modal'),
                 back: d3.select('#back-modal-add-yourself'),
 
                 activate: d3.select('#activate-add-yourself'),
@@ -1234,7 +1234,7 @@
 
             },
             display: {
-                modal: d3.select('#modal-add-yourself'),
+                modal: d3.select('#modal'),
                 call_to_action: d3.select('#call-to-action'),
                 auth_choices: d3.select('#add-yourself-login'),
                 form_individual:
@@ -1619,11 +1619,40 @@
                     }
                 });
 
+            var button_size = 45;
+
             el.button
                 .deactivate
                 .on('click', function () {
                     form.state('inactive');
-                });
+                })
+                // used to draw the x
+                .append('svg')
+                .attr('width', button_size)
+                .attr('height', button_size)
+                .selectAll('line')
+                .data([
+                    { x1: 0, y1: 0,
+                      x2: button_size, y2: button_size },
+                    { x1: button_size, y1: 0,
+                      x2: 0, y2: button_size }
+                ])
+                .enter()
+                .append('line')
+                    .attr('x1', function (d) {
+                        return d.x1;
+                    })
+                    .attr('y1', function (d) {
+                        return d.y1;
+                    })
+                    .attr('x2', function (d) {
+                        return d.x2;
+                    })
+                    .attr('y2', function (d) {
+                        return d.y2;
+                    })
+                    .attr('stroke-width', 1)
+                    .attr('stroke', 'white');
 
             el.button
                 .submit_institution

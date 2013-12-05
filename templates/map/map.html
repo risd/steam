@@ -61,111 +61,127 @@
 
         
         <!-- modal for adding oneself -->
-        <div id="modal-add-yourself" class="fullscreen z-200 hide-til-active">
+        <div id="modal" class="fullscreen z-200 hide-til-active modal">
             <div class="modal-wrapper">
 
-                <div class="clearfix row full-width"
-                     id="modal-toolbar">
-                    <div id="back-modal-add-yourself"
-                         class="modal-toolbar-button left hide-til-active">
-                        < Back
+                    <div class="modal-main-area column">
+
+                        <div class="modal-header">
+                            <h1>Join the Movement</h1>
+                        </div>
+
+                        <div class="modal-content">
+                            
+                            <div id="call-to-action"
+                                 class="hide-til-active modal-content">
+                                 <p>Add yourself to the map to show members of congress that people in their districts think art and design education is critical to innovation in the 21st century.</p>
+                                 <div id="add-yourself-type-individual"
+                                      class="clickable">
+                                    Individual
+                                </div>
+                                 <div id="add-yourself-type-institution"
+                                      class="clickable">
+                                    Institution
+                                </div>
+                             </div>
+                            
+                            <div id="add-yourself-login"
+                                 class="hide-til-active modal-content">
+                                 <div class="form-type"></div>
+                            </div>
+
+                            <div id="add-yourself-individual-form-wrapper"
+                                 class="hide-til-active modal-content">
+
+                                <label for="individual-first-name">First Name</label>
+                                <input type="text"
+                                       id="individual-first-name"
+                                       data-mapped="first_name">
+                                <br>
+
+                                <label for="individual-last-name">Last Name</label>
+                                <input type="text"
+                                       id="individual-last-name"
+                                       data-mapped="last_name">
+                                <br>
+
+                                <label for="individual-email">Email</label>
+                                <input type="email"
+                                       id="individual-email"
+                                       data-mapped="email">
+                                <br>
+
+                                <label for="individual-zip-code">Zip code</label>
+                                <input type="text"
+                                       id="individual-zip-code"
+                                       data-mapped="zip_code">
+                                <br>
+
+                                <div id="individual-submit-button"
+                                      class="button submit">Add me, I'm Steamie</div>
+                            </div>
+
+                            <div id="add-yourself-institution-form-wrapper"
+                                 class="hide-til-active modal-content">
+
+                                <label for="institution-name">Name</label>
+                                <input type="text"
+                                       id="institution-name"
+                                       data-mapped="name">
+                                <br>
+
+                                <label for="institution-url">URL</label>
+                                <input type="url"
+                                       id="institution-url"
+                                       data-mapped="url">
+                                <br>
+
+                                <label for="institution-zip-code">Zip code</label>
+                                <input type="text"
+                                       id="institution-zip-code"
+                                       data-mapped="zip_code">
+                                <br>
+
+                                <label for="individual-representative-first-name">First Name</label>
+                                <input type="text"
+                                       id="individual-representative-first-name"
+                                       data-mapped="representative_first_name">
+                                <br>
+
+                                <label for="individual-representative-last-name">Last Name</label>
+                                <input type="text"
+                                       id="individual-representative-last-name"
+                                       data-mapped="representative_last_name">
+                                <br>
+
+                                <label for="institution-representative-email"
+                                       >Email</label>
+                                <input type="email"
+                                       id="institution-representative-email"
+                                       data-mapped="representative_email">
+                                <br>
+
+                                <div id="institution-submit-button"
+                                      class="button submit">Add me, I'm Steamie</div>
+                            </div>
+                            
+                        </div>
+
+                        <div class="clearfix row full-width"
+                             id="modal-nav">
+                            <div id="back-modal-add-yourself"
+                                 class="modal-nav-button left hide-til-active">
+                                < Back
+                            </div>
+                        </div>
+
                     </div>
-                    <div id="close-modal-add-yourself"
-                         class="modal-toolbar-button right">x</div>    
-                </div>
 
-                <div id="call-to-action"
-                     class="hide-til-active">
-                     <h1>call to action</h1>
-                     <div id="add-yourself-type-individual"
-                          class="clickable">
-                        Individual
+                    <div class="modal-sidebar column">
+                        <div id="close-modal"
+                             class="modal-toolbar-button right"></div>
                     </div>
-                     <div id="add-yourself-type-institution"
-                          class="clickable">
-                        Institution
-                    </div>
-                 </div>
-                
-                <div id="add-yourself-login"
-                     class="hide-til-active">
-                     <div class="form-type"></div>
-                </div>
 
-                <div id="add-yourself-individual-form-wrapper"
-                     class="hide-til-active">
-
-                    <label for="individual-first-name">First Name</label>
-                    <input type="text"
-                           id="individual-first-name"
-                           data-mapped="first_name">
-                    <br>
-
-                    <label for="individual-last-name">Last Name</label>
-                    <input type="text"
-                           id="individual-last-name"
-                           data-mapped="last_name">
-                    <br>
-
-                    <label for="individual-email">Email</label>
-                    <input type="email"
-                           id="individual-email"
-                           data-mapped="email">
-                    <br>
-
-                    <label for="individual-zip-code">Zip code</label>
-                    <input type="text"
-                           id="individual-zip-code"
-                           data-mapped="zip_code">
-                    <br>
-
-                    <div id="individual-submit-button"
-                          class="button submit">Add me, I'm Steamie</div>
-                </div>
-
-                <div id="add-yourself-institution-form-wrapper"
-                     class="hide-til-active">
-
-                    <label for="institution-name">Name</label>
-                    <input type="text"
-                           id="institution-name"
-                           data-mapped="name">
-                    <br>
-
-                    <label for="institution-url">URL</label>
-                    <input type="url"
-                           id="institution-url"
-                           data-mapped="url">
-                    <br>
-
-                    <label for="institution-zip-code">Zip code</label>
-                    <input type="text"
-                           id="institution-zip-code"
-                           data-mapped="zip_code">
-                    <br>
-
-                    <label for="individual-representative-first-name">First Name</label>
-                    <input type="text"
-                           id="individual-representative-first-name"
-                           data-mapped="representative_first_name">
-                    <br>
-
-                    <label for="individual-representative-last-name">Last Name</label>
-                    <input type="text"
-                           id="individual-representative-last-name"
-                           data-mapped="representative_last_name">
-                    <br>
-
-                    <label for="institution-representative-email"
-                           >Email</label>
-                    <input type="email"
-                           id="institution-representative-email"
-                           data-mapped="representative_email">
-                    <br>
-
-                    <div id="institution-submit-button"
-                          class="button submit">Add me, I'm Steamie</div>
-                </div>
             </div>
         </div>
     

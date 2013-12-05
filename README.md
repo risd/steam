@@ -19,4 +19,4 @@ Organization
 * yet to be moved there.
 
 [production]:http://stemtosteam.org/
-[development]:http://limitless-atoll-9939.herokuapp.com/
+[development]:http://django-steam.herokuapp.com/
