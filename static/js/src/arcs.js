@@ -1,5 +1,3 @@
-var d3 = require('d3');
-
 module.exports = Arcs;
 
 // Manage the arcs that wrap clusters
@@ -101,7 +99,7 @@ function Arcs (context) {
                     .append('path')
                     .attr('class', 'arc-segment')
                     .style('fill', function (d) {
-                        return mapped.data.colors[d.abbr];
+                        return context.colors[d.abbr];
                     })
                     .attr('d', arc);
 

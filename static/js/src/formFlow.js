@@ -1,5 +1,4 @@
-var d3 = require('d3'),
-    validator = require('./validators');
+var validator = require('./validators');
 
 module.exports = FormFlow;
 
@@ -132,7 +131,6 @@ function FormFlow (context) {
                 .classed('active', false);
         },
         call_to_action: function () {
-            if (DEBUG) console.log('choose type');
             el.display
                 .modal
                 .classed('active', true);
@@ -214,13 +212,13 @@ function FormFlow (context) {
 
     var login = [{
         'name': 'Twitter',
-        'url': mapped.data.backend + '/login/twitter/'
+        'url': context.api.base + '/login/twitter/'
     },{
         'name': 'Facebook',
-        'url': mapped.data.backend + '/login/facebook/'
+        'url': context.api.base + '/login/facebook/'
     },{
         'name': 'Google',
-        'url': mapped.data.backend + '/login/google-oauth2/'
+        'url': context.api.base + '/login/google-oauth2/'
     }];
 
     form.state = function (x) {
@@ -496,7 +494,6 @@ function FormFlow (context) {
                     d.name.toLowerCase();
             })
             .on('click', function (d) {
-                if (DEBUG) console.log('opening ', d.url);
 
                 var popup = ui.popup_window_properties(),
 
@@ -522,14 +519,13 @@ function FormFlow (context) {
 
     function check_child () {
         if (child_window.closed) {
-            if (DEBUG) console.log('child closed');
             // stop checking for the child window status
             clearInterval(child_status);
 
             // check to see if auth occured
             context.user.check_auth();
         } else {
-            if (DEBUG) console.log('child open');
+            // console.log('child open');
         }
     }
 

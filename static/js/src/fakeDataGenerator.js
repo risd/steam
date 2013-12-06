@@ -1,5 +1,3 @@
-var Faker = require('Faker');
-
 module.exports = {
     network: function (args) {
         // pass in geojson properties, return

@@ -1,9 +1,3 @@
-var d3 = require('d3'),
-    L = require('leaflet'),
-    markercluster = require('leaflet.markercluster');
-
-markercluster(L);
-
 module.exports = Clusters;
 
 function Clusters (context) {

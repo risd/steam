@@ -1,8 +1,3 @@
-var Q = require('q'),
-    LGTM = require('lgtm');
-
-LGTM.configure('defer', Q.defer);
-
 module.exports = Validators;
 
 function Validators () {

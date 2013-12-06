@@ -1,5 +1,3 @@
-var d3 = require('d3');
-
 module.exports = User;
 
 function User (context) {
@@ -13,13 +11,9 @@ function User (context) {
         // depending on response, sets state
         // of the form.
 
-        var url = mapped.data.backend +
-                  '/api/v1/steamie/?format=json';
-        d3.json(url, function (err, status) {
-            if (DEBUG) console.log('checking auth');
-            if (DEBUG) console.log(err);
-            if (DEBUG) console.log(status);
+        var url = context.api.steamie;
 
+        d3.json(url, function (err, status) {
             if (err) {
                 // not auth'ed
                 console.log('Not authed.');

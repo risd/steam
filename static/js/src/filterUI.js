@@ -1,5 +1,3 @@
-var d3 = require('d3');
-
 module.exports = filterUI;
 
 // UI for manipulating data
@@ -28,7 +26,6 @@ function filterUI (context) {
                 return d.display;
             })
             .on('click', function (d) {
-                if (DEBUG) console.log('clicked');
 
                 prev_active_count = active_count;
                 // context.arcs.prevFilters(context.clone(context.filters));

@@ -2,13 +2,14 @@ var config = require('./config')(location.hostname);
 
 module.exports = Backend;
 
-function Backend (config) {
+function Backend () {
 
-    var base = config.backend_url + '/api/' + config.version;
+    var api = config.backend_url + '/api/' + config.version;
 
     return {
-        steamie: base + '/steamie/?format=json',
-        geo: base + '/geo/?format=json',
-        network: base + '/network/?format=json'
+        base: config.backend_url,
+        steamie: api + '/steamie/?format=json',
+        geo: api + '/geo/?format=json',
+        network: api + '/network/?format=json'
     };
 }

@@ -1,9 +1,9 @@
 var filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./clone'),
-    icon_size = require('./clusterIconSize'),
+    icon_size = require('./clusterIconSize')(),
 
-    api = require('./backend'),
+    api = require('./backend')(),
 
     filterUI = require('./filterUI'),
     network = require('./network'),
@@ -16,7 +16,9 @@ var filters = require('./filters'),
 
     fake = require('./fakeDataGenerator');
 
-function map() {
+STEAMMap();
+
+function STEAMMap() {
     var context = {};
 
     // util
@@ -40,6 +42,7 @@ function map() {
     context.user = user(context);
 
     function init () {
+        console.log('running');
         context.clusters
             .bindArcs()
             .init();

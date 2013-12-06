@@ -1,12 +1,11 @@
-var L = require('leaflet');
-
 module.exports = Map;
 
 // returns leaflet map object
 function Map (context) {
 
     var zoomstart = function () {
-        context.arcs.prevFilters(context.clone(context.filters));
+        // so that the zoom does make things re-filter
+        context.prev_filters = context.clone(context.filters);
     };
 
     var zoomend = function() {

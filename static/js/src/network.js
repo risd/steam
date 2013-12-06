@@ -1,5 +1,3 @@
-var d3 = require('d3');
-
 module.exports = Network;
 
 // Network graph
@@ -77,7 +75,7 @@ function Network (context) {
                 .attr('transform', transform);
 
         } catch (e) {
-            if (DEBUG) console.log(
+            console.log(
                 'Can not filter the non-existent network.');
         }
 
@@ -97,14 +95,10 @@ function Network (context) {
 
         nodes = x;
 
-        if (DEBUG) console.log(nodes);
-
         return network;
     };
 
     network.create = function () {
-        if (DEBUG) console.log('nodes length');
-        if (DEBUG) console.log(nodes.length);
 
         // set gravity of force based on the
         // number of nodes
@@ -131,9 +125,6 @@ function Network (context) {
             // greater than 2000
             gravity = 0.6;
         }
-
-        if (DEBUG) console.log('gravity');
-        if (DEBUG) console.log(gravity);
 
         canvas = canvas_wrapper
                     .classed('active', true)
@@ -185,8 +176,7 @@ function Network (context) {
                 .attr('transform', transform)
                 .call(force.drag)
                 .on('click', function (d) {
-                    if (DEBUG) console.log('clicked');
-                    if (DEBUG) console.log(d);
+                    // show user data
                 })
                 .call(add_symbols);
 
@@ -218,11 +208,6 @@ function Network (context) {
         // data is passed in from the cluster
         // group that is clicked.
 
-        // at end of zoom, highlight the area
-        context.map.once('moveend', function () {
-            if (DEBUG) console.log('focusing');
-        });
-
         // var data_url =
             // mapped.data.backend + '/api/' + uid + '/';
         // d3.json(data_url, function (err, network_data) {
@@ -231,8 +216,7 @@ function Network (context) {
         //           .create();
         // });
         var network_data = context.fake.network(data);
-        if (DEBUG) console.log('steamies');
-        if (DEBUG) console.log(network_data.steamies);
+
         network
               .nodes(network_data.steamies)
               .create();
