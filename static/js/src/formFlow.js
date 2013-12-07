@@ -1,4 +1,5 @@
-var validator = require('./validators');
+var validator = require('./validators'),
+    editable = require('./editable');
 
 module.exports = FormFlow;
 
@@ -139,13 +140,13 @@ function FormFlow (context) {
     };
 
     var login = [{
-        'name': 'Twitter',
+        'name': 'twitter',
         'url': context.api.base + '/login/twitter/'
     },{
-        'name': 'Facebook',
+        'name': 'facebook',
         'url': context.api.base + '/login/facebook/'
     },{
-        'name': 'Google',
+        'name': 'google',
         'url': context.api.base + '/login/google-oauth2/'
     }];
 
@@ -317,6 +318,8 @@ function FormFlow (context) {
 
 
     form.init = function () {
+
+        var editable_zip = editable(d3.select('#add-yourself-zip'));
 
         for (var key in el.button) {
             // setup buttons

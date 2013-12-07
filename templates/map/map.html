@@ -19,14 +19,13 @@
         <!-- Sentinel -->
         <link rel="stylesheet" type="text/css" href="//cloud.typography.com/641934/792222/css/fonts.css" />
 
-        <link rel="stylesheet" href="{% static "styles/css/normalize.css" %}">
         <link rel="stylesheet" href="{% static "js/lib/leaflet-0.6.4/leaflet.css" %}">
         <link rel="stylesheet" href="{% static "js/lib/leaflet.markercluster/MarkerCluster.css" %}">
         <link rel="stylesheet" href="{% static "js/lib/leaflet.markercluster/MarkerCluster.Default.css" %}">
 
         <link href='//api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.css' rel='stylesheet' />
 
-        <link rel="stylesheet" href="{% static "styles/css/main.css" %}">
+        <link rel="stylesheet" href="{% static "styles/css/site.css" %}">
 
         <script src="{% static "js/lib/modernizr-2.6.2.min.js"%}"></script>
     </head>
@@ -36,7 +35,7 @@
         <![endif]-->
 
         <!-- Add your site or application content here -->
-        <header class="z-100 full-width row clearfix">
+        <header class="z-100 row clearfix">
             <h1>steam</h1>
             <nav>
             </nav>
@@ -75,11 +74,19 @@
                             <div id="call-to-action"
                                  class="hide-til-active modal-content">
                                  <p>Add yourself to the map to show members of congress that people in their districts think art and design education is critical to innovation in the 21st century.</p>
-                                 <div class="centered">
-                                     <div id="add-yourself-login"
-                                          class="hide-til-active modal-content">
-                                          <div class="form-type"></div>
-                                     </div>
+                                 <div class="row clearfix">
+                                    <div class="column half">
+                                       <p>sign in with:</p>
+                                        <div id="add-yourself-login"></div>
+                                    </div>
+                                    <div class="column half omega">
+                                        <p>enter your zipcode:</p>
+                                        <div contenteditable="true"
+                                               class="large editable"
+                                               id="add-yourself-zip"
+                                               placeholder="00000">
+                                               00000</div>
+                                    </div>
                                  </div>
                              </div>
 
@@ -160,7 +167,7 @@
                             
                         </div>
 
-                        <div class="clearfix row full-width"
+                        <div class="clearfix row"
                              id="modal-nav">
                             <div id="back-modal-add-yourself"
                                  class="modal-nav-button left hide-til-active">

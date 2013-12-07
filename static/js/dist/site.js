@@ -559,6 +559,69 @@ function Config (hostname) {
     };
 }
 },{}],8:[function(require,module,exports){
+// gives an element simple placeholder
+// functionality that is enjoyed by
+// input elements.
+
+// pass in a d3 selected dom node with a placeholder attr,
+// or pass one in
+// ensures contenteditable is true
+// if on focus, placeholder = value, remove
+// the contents
+// if on unfocus, there is no value, replace
+// the placeholder
+module.exports = Editable;
+
+function Editable (node) {
+    var editable = {},
+        placeholder = '',
+        focused = false;
+
+    editable.placeholder = function (x) {
+        if (!arguments.length) return placeholder;
+        placeholder = x;
+        return editable;
+    };
+
+    function set_placeholder () {
+        if (node.html() === placeholder) {
+
+        }
+        node.html(placeholder);
+    }
+
+    function init () {
+
+        var dom_placeholder = node.attr('placeholder');
+        if (dom_placeholder) {
+            placeholder = dom_placeholder;
+        }
+
+        node.on('focus', function () {
+                node.classed('focused', true);
+                if (node.html() === placeholder) {
+                    node.html('');
+                }
+                focused = true;
+            })
+            .on('blur', function () {
+                node.classed('focused', false);
+                if (node.html() === '') {
+                    node.html(placeholder);
+                    node.classed('value-set', false);
+                } else {
+                    node.classed('value-set', true);
+                }
+                focused = false;
+            })
+            .html(placeholder);
+    }
+
+    init ();
+
+    return editable;
+}
+},{}],9:[function(require,module,exports){
 module.exports = {
     network: function (args) {
         // pass in geojson properties, return
@@ -628,7 +691,7 @@ module.exports = {
         return network_data;
     }
 };
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = filterUI;
 
 // UI for manipulating data
@@ -755,7 +818,7 @@ function filterUI (context) {
 
     return ui;
 }
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var filters = [{
         abbr: 'res',
         display: 'research',
@@ -779,8 +842,9 @@ if (typeof module !== 'undefined') {
 } else {
     window.filters = filters;
 }
-},{}],11:[function(require,module,exports){
-var validator = require('./validators');
+},{}],12:[function(require,module,exports){
+var validator = require('./validators'),
+    editable = require('./editable');
 
 module.exports = FormFlow;
 
@@ -921,13 +985,13 @@ function FormFlow (context) {
     };
 
     var login = [{
-        'name': 'Twitter',
+        'name': 'twitter',
         'url': context.api.base + '/login/twitter/'
     },{
-        'name': 'Facebook',
+        'name': 'facebook',
         'url': context.api.base + '/login/facebook/'
     },{
-        'name': 'Google',
+        'name': 'google',
         'url': context.api.base + '/login/google-oauth2/'
     }];
 
@@ -1100,6 +1164,8 @@ function FormFlow (context) {
 
     form.init = function () {
 
+        var editable_zip = editable(d3.select('#add-yourself-zip'));
+
         for (var key in el.button) {
             // setup buttons
             el.button[key]
@@ -1185,7 +1251,7 @@ function FormFlow (context) {
 
     return form;
 }
-},{"./validators":16}],12:[function(require,module,exports){
+},{"./editable":8,"./validators":17}],13:[function(require,module,exports){
 var filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./clone'),
@@ -1240,7 +1306,7 @@ function STEAMMap() {
 
     init();
 }
-},{"./arcs":1,"./backend":2,"./clone":3,"./clusterIconSize":4,"./clusters":5,"./colors":6,"./fakeDataGenerator":8,"./filterUI":9,"./filters":10,"./formFlow":11,"./map":13,"./network":14,"./user":15}],13:[function(require,module,exports){
+},{"./arcs":1,"./backend":2,"./clone":3,"./clusterIconSize":4,"./clusters":5,"./colors":6,"./fakeDataGenerator":9,"./filterUI":10,"./filters":11,"./formFlow":12,"./map":14,"./network":15,"./user":16}],14:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -1279,7 +1345,7 @@ function Map (context) {
 
     return map;
 }
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = Network;
 
 // Network graph
@@ -1554,7 +1620,7 @@ function Network (context) {
 
     return network;
 }
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = User;
 
 function User (context) {
@@ -1623,7 +1689,7 @@ function User (context) {
 
     return user;
 }
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = Validators;
 
 function Validators () {
@@ -1668,5 +1734,5 @@ function Validators () {
 
     return validators;
 }
-},{}]},{},[12])
+},{}]},{},[13])
 ;

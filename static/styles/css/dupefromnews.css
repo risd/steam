@@ -1,0 +1,15 @@
+input {
+  border: none;
+  padding: 10px 0px 10px 0px;
+  border-bottom: 1px dotted #c8c8c8;
+  margin-bottom: 20px;
+  color: #fafafa;
+  background: none;
+  -webkit-transition: all 0.2s ease-in-out;
+  -webkit-font-smoothing: antialiased; }
+
+input:focus {
+  background: white;
+  color: #1e1e1e;
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(30, 30, 30, 0.2); }

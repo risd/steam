@@ -1,94 +1,3 @@
-/*
- * HTML5 Boilerplate
- *
- * What follows is the result of much research on cross-browser styling.
- * Credit left inline and big thanks to Nicolas Gallagher, Jonathan Neal,
- * Kroc Camen, and the H5BP dev community and team.
- */
-
-/* ==========================================================================
-   Base styles: opinionated defaults
-   ========================================================================== */
-
-html,
-button,
-input,
-select,
-textarea {
-    color: #222;
-    font-size: 16px;
-}
-
-body {
-    font-size: 1em;
-}
-
-/*
- * Remove text-shadow in selection highlight: h5bp.com/i
- * These selection rule sets have to be separate.
- * Customize the background color to match your design.
- */
-
-::-moz-selection {
-    background: #b3d4fc;
-    text-shadow: none;
-}
-
-::selection {
-    background: #b3d4fc;
-    text-shadow: none;
-}
-
-/*
- * A better looking default horizontal rule
- */
-
-hr {
-    display: block;
-    height: 1px;
-    border: 0;
-    border-top: 1px solid #ccc;
-    margin: 1em 0;
-    padding: 0;
-}
-
-/*
- * Remove the gap between images and the bottom of their containers: h5bp.com/i/440
- */
-
-img {
-    vertical-align: middle;
-}
-
-/*
- * Remove default fieldset styles.
- */
-
-fieldset {
-    border: 0;
-    margin: 0;
-    padding: 0;
-}
-
-/*
- * Allow only vertical resizing of textareas.
- */
-
-textarea {
-    resize: vertical;
-}
-
-/* ==========================================================================
-   Chrome Frame prompt
-   ========================================================================== */
-
-.chromeframe {
-    margin: 0.2em 0;
-    background: #ccc;
-    color: #000;
-    padding: 0.2em 0;
-}
-
 /* ==========================================================================
    Author's custom styles
    ========================================================================== */
@@ -123,6 +32,7 @@ $color-pol: rgb(255,97,127);
 $color-edu: rgb(255,137,49);
 $color-ind: rgb(39,180,242);
 $color-slate: rgb(81, 98, 114);
+$white: rgb(255,255,255);
 
 html, body {
     margin: 0;
@@ -143,13 +53,19 @@ header:hover {
     background: rgba(0,0,0,0.5);
 }
 
-.full-width {
-    width: 100%;
-}
+// .full-width {
+//     width: 100%;
+// }
 
 .row {
+    width: 100%;
+    position: relative;
+}
+
+.column {
     float: left;
     position: relative;
+    display: inline;
 }
 
 .fullscreen {
@@ -181,7 +97,7 @@ $fullscreen-color-opacity: 0.8;
     }
 
     &.fullscreen {
-        color: white;
+        color: $white;
 
         background-color: rgba($color-slate, $fullscreen-color-opacity);
 
@@ -206,17 +122,12 @@ $fullscreen-color-opacity: 0.8;
     overflow-y: scroll;
     max-width: 600px;
     margin: 5% auto;
-
-    .column {
-        float: left;
-        position: relative;
-        display: inline;
-    }
 }
 .modal-wrapper h1 {
     @include antenna-medium;
 
     font-size: 120px;
+    line-height: 95px;
     margin: 0;
 }
 .modal-wrapper p {
@@ -224,6 +135,9 @@ $fullscreen-color-opacity: 0.8;
 
     font-size: 1.2em;
     line-height: 1.8em;
+
+    margin-top: 1.5em;
+    margin-bottom: 0;
 }
 .modal-toolbar-button {
     padding: 10px;
@@ -260,11 +174,6 @@ $fullscreen-color-opacity: 0.8;
     .column.one:nth-child(2) {
         margin-right: 0%;
     }
-}
-.centered {
-    position: relative;
-    margin: 0 auto;
-    display: inline-block;
 }
 .modal-sidebar {
     width: 11.6666667%; // 70/600
@@ -325,7 +234,7 @@ Global filters
     opacity: 0.5;
 }
 .filter_bar .button.active {
-    color: white;
+    color: $white;
     opacity: 1.0;
 }
 .filter_bar .button.active.res {
@@ -372,7 +281,7 @@ h3.filter-by {
     border-style: solid;
 }
 .filter_bar .button:before {
-    border-color: white;
+    border-color: $white;
 }
 .filter_bar.all-active .button.res:before {
     border-color: $color-res;
@@ -552,7 +461,7 @@ network graph
 
 
 /************
-form/profile
+form / profile
 */
 #activate-add-yourself {
     position: absolute;
@@ -577,200 +486,52 @@ input {
     cursor: pointer;
 }
 
+.column.half {
+    width: 45%;
+    margin-right: 5%; 
+}
+.column.half.omega {
+    margin-right: 0;
+}
+
 .add-yourself-login { }
 
-.login-option { }
-/* end form */
+.login-option {
+    cursor: pointer;
 
+    @include antenna-medium;
 
-
-
-/* ==========================================================================
-   Helper classes
-   ========================================================================== */
-
-/*
- * Image replacement
- */
-
-.ir {
-    background-color: transparent;
-    border: 0;
-    overflow: hidden;
-    /* IE 6/7 fallback */
-    *text-indent: -9999px;
-}
-
-.ir:before {
-    content: "";
-    display: block;
-    width: 0;
-    height: 150%;
-}
-
-/*
- * Hide from both screenreaders and browsers: h5bp.com/u
- */
-
-.hidden {
-    display: none !important;
-    visibility: hidden;
-}
-
-/*
- * Hide only visually, but have it available for screenreaders: h5bp.com/v
- */
-
-.visuallyhidden {
-    border: 0;
-    clip: rect(0 0 0 0);
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    padding: 0;
-    position: absolute;
-    width: 1px;
-}
-
-/*
- * Extends the .visuallyhidden class to allow the element to be focusable
- * when navigated to via the keyboard: h5bp.com/p
- */
-
-.visuallyhidden.focusable:active,
-.visuallyhidden.focusable:focus {
-    clip: auto;
-    height: auto;
+    font-size: 100px;
+    line-height: 95px;
     margin: 0;
-    overflow: visible;
-    position: static;
-    width: auto;
-}
 
-/*
- * Hide visually and from screenreaders, but maintain layout
- */
+    border-bottom: 1px solid $white;
 
-.invisible {
-    visibility: hidden;
-}
+    color: rgba($white ,0.5);
 
-/*
- * Clearfix: contain floats
- *
- * For modern browsers
- * 1. The space content is one way to avoid an Opera bug when the
- *    `contenteditable` attribute is included anywhere else in the document.
- *    Otherwise it causes space to appear at the top and bottom of elements
- *    that receive the `clearfix` class.
- * 2. The use of `table` rather than `block` is only necessary if using
- *    `:before` to contain the top-margins of child elements.
- */
-
-.clearfix:before,
-.clearfix:after {
-    content: " "; /* 1 */
-    display: table; /* 2 */
-}
-
-.clearfix:after {
-    clear: both;
-}
-
-/*
- * For IE 6/7 only
- * Include this rule to trigger hasLayout and contain floats.
- */
-
-.clearfix {
-    *zoom: 1;
-}
-
-/* ==========================================================================
-   EXAMPLE Media Queries for Responsive Design.
-   These examples override the primary ('mobile first') styles.
-   Modify as content requires.
-   ========================================================================== */
-
-@media only screen and (min-width: 35em) {
-    /* Style adjustments for viewports that meet the condition */
-}
-
-@media print,
-       (-o-min-device-pixel-ratio: 5/4),
-       (-webkit-min-device-pixel-ratio: 1.25),
-       (min-resolution: 120dpi) {
-    /* Style adjustments for high resolution devices */
-}
-
-/* ==========================================================================
-   Print styles.
-   Inlined to avoid required HTTP connection: h5bp.com/r
-   ========================================================================== */
-
-@media print {
-    * {
-        background: transparent !important;
-        color: #000 !important; /* Black prints faster: h5bp.com/s */
-        box-shadow: none !important;
-        text-shadow: none !important;
+    &:last-child {
+        border-bottom: 0;
     }
 
-    a,
-    a:visited {
-        text-decoration: underline;
-    }
-
-    a[href]:after {
-        content: " (" attr(href) ")";
-    }
-
-    abbr[title]:after {
-        content: " (" attr(title) ")";
-    }
-
-    /*
-     * Don't show links for images, or javascript/internal links
-     */
-
-    .ir a:after,
-    a[href^="javascript:"]:after,
-    a[href^="#"]:after {
-        content: "";
-    }
-
-    pre,
-    blockquote {
-        border: 1px solid #999;
-        page-break-inside: avoid;
-    }
-
-    thead {
-        display: table-header-group; /* h5bp.com/t */
-    }
-
-    tr,
-    img {
-        page-break-inside: avoid;
-    }
-
-    img {
-        max-width: 100% !important;
-    }
-
-    @page {
-        margin: 0.5cm;
-    }
-
-    p,
-    h2,
-    h3 {
-        orphans: 3;
-        widows: 3;
-    }
-
-    h2,
-    h3 {
-        page-break-after: avoid;
+    &.selected,
+    &:hover {
+        color: $white;
     }
 }
+.editable.large {
+    @include antenna-medium;
+
+    font-size: 100px;
+    line-height: 95px;
+    margin: 0;
+
+    border-bottom: 1px solid $white;
+}
+.editable {
+    color: rgba($white ,0.5);
+}
+.editable.focused,
+.editable.value-set {
+    color: white;
+}
+/* end form */
