@@ -32,7 +32,7 @@ header:hover {
   height: 100%;
   width: 100%;
   display: none;
-  background: rgba(200, 200, 200, 0.5); }
+  background: rgba(255, 255, 255, 0.8); }
 
 .fullscreen.active {
   display: block; }
@@ -441,6 +441,66 @@ network graph
 /* network nodes representing individuals  */
 .node.i circle.outter {
   stroke-width: 0; }
+
+.info_tip {
+  position: fixed;
+  top: 20%;
+  left: 20%;
+  width: 250px;
+  font-family: 'Sentinel SSm A', 'Sentinel SSm B';
+  font-weight: 400;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased; }
+
+.info_tip .avatar {
+  width: 50px;
+  height: auto;
+  border-radius: 25px;
+  border-width: 1px;
+  border-style: solid;
+  position: absolute;
+  top: 0;
+  left: -65px; }
+
+.info_tip p {
+  font-size: 1.1em;
+  line-height: 1.5em;
+  font-style: italic;
+  margin: 0; }
+
+.info_tip p.description {
+  padding-left: 15px;
+  margin-top: 10px;
+  border-left-width: 1px;
+  border-left-style: solid; }
+
+.info_tip.res p.name {
+  color: #69e640; }
+.info_tip.res p.description {
+  border-left-color: #69e640; }
+.info_tip.res .avatar {
+  border-color: #69e640; }
+
+.info_tip.pol p.name {
+  color: #ff617f; }
+.info_tip.pol p.description {
+  border-color: #ff617f; }
+.info_tip.pol .avatar {
+  border-color: #ff617f; }
+
+.info_tip.edu p.name {
+  color: #ff8931; }
+.info_tip.edu p.description {
+  border-color: #ff8931; }
+.info_tip.edu .avatar {
+  border-color: #ff8931; }
+
+.info_tip.ind p.name {
+  color: #27b4f2; }
+.info_tip.ind p.description {
+  border-color: #27b4f2; }
+.info_tip.ind .avatar {
+  border-color: #27b4f2; }
 
 /************
 form / profile

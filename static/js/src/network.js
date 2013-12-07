@@ -10,7 +10,8 @@ function Network (context) {
         canvas,
         nodes,
         force,
-        node_sel;
+        node_sel,
+        info_tip_sel;
 
     var random_around_zero = function (range) {
         var val = Math.floor(Math.random() * range);
@@ -176,7 +177,50 @@ function Network (context) {
                 .attr('transform', transform)
                 .call(force.drag)
                 .on('click', function (d) {
+                    // clear user data
+                    if (info_tip_sel) {
+                        info_tip_sel.data([]).exit().remove();
+                    }
+
+                    var mouse_position =
+                        d3.mouse(canvas_wrapper.node());
+
+                    var infotip_position = new Array(2);
+
+                    if (mouse_position[1] < (window.innerHeight/2)) {
+                        infotip_position[1] = {
+                            offset_from: 'top',
+                            offset_distance: mouse_position[1] + 20,
+                            offset_reset: 'bottom',
+                            offset_reset_value: 'auto'
+                        };
+                    } else {
+                        infotip_position[1] = {
+                            offset_from: 'bottom',
+                            offset_distance: window.innerHeight -
+                                             mouse_position[1],
+                            offset_reset: 'top',
+                            offset_reset_value: 'auto'
+                        };
+                    }
+
                     // show user data
+                    info_tip_sel =
+                        canvas_wrapper
+                            .selectAll('.info_tip')
+                            .data([d])
+                            .enter()
+                            .append('div')
+                            .attr('class', function (d) {
+                                return 'info_tip z-200 ' + d.work_in;
+                            })
+                            .style('left', mouse_position[0] + 'px')
+                            .style(infotip_position[1].offset_from,
+                                   infotip_position[1].offset_distance +
+                                   'px')
+                            .style(infotip_position[1].offset_reset,
+                                   infotip_position[1].offset_reset_value)
+                            .call(update_info_tip);
                 })
                 .call(add_symbols);
 
@@ -200,6 +244,8 @@ function Network (context) {
             .exit()
             .remove();
 
+        remove_info_tip();
+
         return network;
     };
 
@@ -221,6 +267,12 @@ function Network (context) {
               .nodes(network_data.steamies)
               .create();
     };
+
+    function remove_info_tip () {
+        info_tip_sel.data([])
+            .exit()
+            .remove();
+    }
 
     function transform (d) {
         return 'translate(' + d.x + ',' + d.y + ') ' +
@@ -266,8 +318,33 @@ function Network (context) {
                 }
             }
         }
-
         return false;
+    }
+
+    function update_info_tip (sel) {
+        sel.append('img')
+            .attr('class', 'avatar')
+            .attr('src', function (d) {
+                // return d.avatar;
+                return "https://pbs.twimg.com" +
+                    "/profile_images/2216753469/ruben_face_normal.png";
+            });
+
+        var inner_div = sel.append('div')
+                           .attr('class', 'user_info');
+
+        inner_div.append('p')
+            .attr('class', 'name')
+            .text(function (d) {
+                return d.first_name + ' ' + d.last_name;
+            });
+
+        inner_div.append('p')
+            .attr('class', 'description')
+            .text(function (d) {
+                return d.description || 'This is a tweets length'+
+                    ' description about why I am interested in STEAM';
+            });
     }
 
     return network;
