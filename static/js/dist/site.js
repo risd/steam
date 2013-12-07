@@ -827,168 +827,96 @@ function FormFlow (context) {
 
     var el = {
         button: {
-            deactivate: d3.select('#close-modal'),
-            back: d3.select('#back-modal-add-yourself'),
+            deactivate: {
+                el: d3.select('#close-modal'),
+                on_click: function () {
+                    form.state('inactive');
+                },
+                append_to_el: function (sel) {
+                    var button_size = 45;
 
-            activate: d3.select('#activate-add-yourself'),
+                    // add the closing x as svg
+                    sel.append('svg')
+                        .attr('width', button_size)
+                        .attr('height', button_size)
+                        .selectAll('line')
+                        .data([
+                            { x1: 0, y1: 0,
+                              x2: button_size, y2: button_size },
+                            { x1: button_size, y1: 0,
+                              x2: 0, y2: button_size }
+                        ])
+                        .enter()
+                        .append('line')
+                            .attr('x1', function (d) {
+                                return d.x1;
+                            })
+                            .attr('y1', function (d) {
+                                return d.y1;
+                            })
+                            .attr('x2', function (d) {
+                                return d.x2;
+                            })
+                            .attr('y2', function (d) {
+                                return d.y2;
+                            })
+                            .attr('stroke-width', 1)
+                            .attr('stroke', 'white');
+                }
+            },
 
-            type_choice_individual:
-                d3.select('#add-yourself-type-individual'),
+            back: {
+                el: d3.select('#back-modal-add-yourself'),
+                on_click: function () {
+                    form.state(prev_state);
+                },
+                append_to_el: function () {}
+            },
 
-            type_choice_institution:
-                d3.select('#add-yourself-type-institution'),
-
-            submit_individual:
-                d3.select('#individual-submit-button'),
-
-            submit_institution:
-                d3.select('#institutio-submit-button')
-
+            activate: {
+                el: d3.select('#activate-add-yourself'),
+                on_click: function () {
+                    if (previous_state === 'inactive') {
+                        // first time through
+                        form.state('call_to_action');
+                    } else {
+                        form.state(prev_state);
+                    }
+                },
+                append_to_el: function () {}
+            }
         },
         display: {
-            modal: d3.select('#modal'),
-            call_to_action: d3.select('#call-to-action'),
-            auth_choices: d3.select('#add-yourself-login'),
-            form_individual:
-                d3.select('#add-yourself-individual-form-wrapper'),
-            form_institution:
-                d3.select('#add-yourself-institution-form-wrapper'),
-            modal_toolbar: d3.select('#modal-toolbar')
+            modal: {
+                el: d3.select('#modal')
+            },
+            call_to_action: {
+                el: d3.select('#call-to-action')
+            },
+            form_individual: {
+                el: d3.select('#add-yourself-individual-form-wrapper')
+            },
+            form_institution: {
+                el: d3.select('#add-yourself-institution-form-wrapper')
+            }
         }
     };
 
     var states = {
         inactive: function () {
-            el.display
-                .modal
-                .classed('active', false);
-
-            el.button
-                .back
-                .classed('active', false);
-
-            el.display
-                .call_to_action
-                .classed('active', false);
-
-            el.display
-                .auth_choices
-                .classed('active', false);
-
-            el.display
-                .form_individual
-                .classed('active', false);
-
-            el.display
-                .form_institution
-                .classed('active', false);
-        },
-        choose_auth: function () {
-            // depends on having set
-            // a type (individual/institution)
-            el.display
-                .modal
-                .classed('active', true);
-
-            el.button
-                .back
-                .classed('active', true);
-
-            el.display
-                .call_to_action
-                .classed('active', false);
-
-            el.display
-                .auth_choices
-                .classed('active', true)
-                .select('.form_type')
-                .text('Authorize as ' + type);
-
-            el.display
-                .form_individual
-                .classed('active', false);
-
-            el.display
-                .form_institution
-                .classed('active', false);
+            var active = [];
+            apply_state(active);
         },
         call_to_action: function () {
-            el.display
-                .modal
-                .classed('active', true);
+            var active = [{
+                el_type: 'display',
+                el_name: 'modal'
+            }, {
+                el_type: 'display',
+                el_name: 'call_to_action'
+            }];
 
-            el.button
-                .back
-                .classed('active', false);
-
-            el.display
-                .call_to_action
-                .classed('active', true);
-
-            el.display
-                .auth_choices
-                .classed('active', false);
-
-            el.display
-                .form_individual
-                .classed('active', false);
-
-            el.display
-                .form_institution
-                .classed('active', false);
-        },
-        fill_out_individual: function () {
-
-            el.display
-                .modal
-                .classed('active', true);
-
-            el.button
-                .back
-                .classed('active', true);
-
-            el.display
-                .call_to_action
-                .classed('active', false);
-
-            el.display
-                .auth_choices
-                .classed('active', false);
-
-            el.display
-                .form_individual
-                .classed('active', true);
-
-            el.display
-                .form_institution
-                .classed('active', false);
-
-        },
-        fill_out_institution: function () {
-            
-            el.display
-                .modal
-                .classed('active', true);
-
-            el.button
-                .back
-                .classed('active', true);
-
-            el.display
-                .call_to_action
-                .classed('active', false);
-
-            el.display
-                .auth_choices
-                .classed('active', false);
-
-            el.display
-                .form_individual
-                .classed('active', false);
-
-            el.display
-                .form_institution
-                .classed('active', true);
+            apply_state(active);
         }
     };
 
@@ -1171,99 +1099,14 @@ function FormFlow (context) {
 
 
     form.init = function () {
-        el.button
-            .activate
-            .on('click', function () {
-                if (previous_state === 'inactive') {
-                    // first time through
-                    form.state('call_to_action');
-                } else {
-                    form.state(prev_state);
-                }
-            });
 
-        el.button
-            .back
-            .on('click', function () {
-                form.state(prev_state);
-            });
-
-        el.button
-            .type_choice_institution
-            .on('click', function () {
-                form.type('institution');
-
-                if (context.user.authed()) {
-                    form.state('fill_out_institution');
-                } else {
-                    form.state('choose_auth');
-                }
-            });
-
-        el.button
-            .type_choice_individual
-            .on('click', function () {
-                form.type('individual');
-
-                if (context.user.authed()) {
-                    form.state('fill_out_individual');
-                } else {
-                    form.state('choose_auth');
-                }
-            });
-
-        var button_size = 45;
-
-        el.button
-            .deactivate
-            .on('click', function () {
-                form.state('inactive');
-            })
-            // used to draw the x
-            .append('svg')
-            .attr('width', button_size)
-            .attr('height', button_size)
-            .selectAll('line')
-            .data([
-                { x1: 0, y1: 0,
-                  x2: button_size, y2: button_size },
-                { x1: button_size, y1: 0,
-                  x2: 0, y2: button_size }
-            ])
-            .enter()
-            .append('line')
-                .attr('x1', function (d) {
-                    return d.x1;
-                })
-                .attr('y1', function (d) {
-                    return d.y1;
-                })
-                .attr('x2', function (d) {
-                    return d.x2;
-                })
-                .attr('y2', function (d) {
-                    return d.y2;
-                })
-                .attr('stroke-width', 1)
-                .attr('stroke', 'white');
-
-        el.button
-            .submit_institution
-            .on('click', function () {
-                console.log('needs to validate');
-                console.log('submit');
-
-                form.submit_flow();
-            });
-
-        el.button
-            .submit_individual
-            .on('click', function () {
-                console.log('needs to validate');
-                console.log('submit');
-
-                form.submit_flow();
-            });
+        for (var key in el.button) {
+            // setup buttons
+            el.button[key]
+                .el
+                .on('click', el.button[key].on_click)
+                .call(el.button[key].append_to_el);
+        }
 
         d3.select('#add-yourself-login')
             .selectAll('.login-option')
@@ -1308,6 +1151,35 @@ function FormFlow (context) {
             context.user.check_auth();
         } else {
             // console.log('child open');
+        }
+    }
+
+    function apply_state (active) {
+        // referencing the el obj of this module
+        
+        for (var type_key in el) {
+            for (var name_key in el[type_key]) {
+                if (active.length === 0) {
+                    // set all inactive
+                    el[type_key][name_key]
+                        .el
+                        .classed('active', false);
+                } else {
+                    var status_to_set = false;
+
+                    for (var i = 0; i < active.length; i++) {
+                        if ((active[i].el_type === type_key) &
+                            (active[i].el_name === name_key)) {
+
+                            status_to_set = true;
+                        }
+                    }
+
+                    el[type_key][name_key]
+                            .el
+                            .classed('active', status_to_set);
+                }
+            }
         }
     }
 
@@ -1358,7 +1230,6 @@ function STEAMMap() {
     context.user = user(context);
 
     function init () {
-        console.log('running');
         context.clusters
             .bindArcs()
             .init();

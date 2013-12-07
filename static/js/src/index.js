@@ -42,7 +42,6 @@ function STEAMMap() {
     context.user = user(context);
 
     function init () {
-        console.log('running');
         context.clusters
             .bindArcs()
             .init();
