@@ -177,6 +177,19 @@ function Network (context) {
                 .attr('transform', transform)
                 .call(force.drag)
                 .on('click', function (d) {
+                    // reset value that will be used
+                    // to set the opacity
+                    nodes_sel.each(function (nd) {
+                        nd.solo_selected_status = 'unselected';
+                    });
+                    d.solo_selected_status = 'selected';
+
+                    // set opacity based on above value
+                    nodes_sel
+                        .transition()
+                        .duration(500)
+                        .style('opacity', set_opacity_solo);
+
                     // clear user data
                     if (info_tip_sel) {
                         info_tip_sel.data([]).exit().remove();
@@ -280,6 +293,9 @@ function Network (context) {
     }
     function set_opacity (d) {
         return opacity[d.status];
+    }
+    function set_opacity_solo (d) {
+        return opacity[d.solo_selected_status];
     }
 
     function add_symbols (sel) {
