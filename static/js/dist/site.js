@@ -855,7 +855,8 @@ function FormFlow (context) {
         type,               // institution/individual
         input_data,         // object that tracks input data
         child_window,       // ref to the popup window object
-        child_status;       // set interval function to check
+        child_status,       // set interval function to check
+        login_option_sel;
 
     var ui = {
         popup_window_properties: function () {
@@ -1174,7 +1175,7 @@ function FormFlow (context) {
                 .call(el.button[key].append_to_el);
         }
 
-        d3.select('#add-yourself-login')
+        var login_option_sel = d3.select('#add-yourself-login')
             .selectAll('.login-option')
             .data(login)
             .enter()
@@ -1185,23 +1186,21 @@ function FormFlow (context) {
                     d.name.toLowerCase();
             })
             .on('click', function (d) {
+                var cur = d.name;
 
-                var popup = ui.popup_window_properties(),
+                login_option_sel.each(function (d) {
+                    var bool = (cur === d.name);
 
-                    window_features =
-                        'width=' + popup.width + ',' +
-                        'height=' + popup.height + ',' +
-                        'left=' + popup.x + ',' +
-                        'top=' + popup.y;
+                    d3.select(this)
+                        .classed('selected', bool);
 
-                child_window =
-                    window.open(d.url, '',  window_features);
-
-                child_status = setInterval(check_child, 1000);
+                });
+                
             })
             .text(function (d) {
                 return d.name;
-            });
+            })
+            .call(add_checkmarks);
 
         form.state('call_to_action');
 
@@ -1218,6 +1217,21 @@ function FormFlow (context) {
         } else {
             // console.log('child open');
         }
+    }
+
+    function process_authentication () {
+        var popup = ui.popup_window_properties(),
+
+            window_features =
+                'width=' + popup.width + ',' +
+                'height=' + popup.height + ',' +
+                'left=' + popup.x + ',' +
+                'top=' + popup.y;
+
+        child_window =
+            window.open(d.url, '',  window_features);
+
+        child_status = setInterval(check_child, 1000);
     }
 
     function apply_state (active) {
@@ -1247,6 +1261,38 @@ function FormFlow (context) {
                 }
             }
         }
+    }
+
+    function add_checkmarks (sel) {
+        var size = 30;
+
+        sel.append('svg')
+            .attr('width', size)
+            .attr('height', size)
+            .attr('class', 'checkmark')
+            .selectAll('line')
+            .data([
+                { x1: 0, y1: size/2,
+                  x2: size/2, y2: size },
+                { x1: size/2, y1: size,
+                  x2: size, y2: 0 }
+            ])
+            .enter()
+            .append('line')
+                .attr('x1', function (d) {
+                    return d.x1;
+                })
+                .attr('y1', function (d) {
+                    return d.y1;
+                })
+                .attr('x2', function (d) {
+                    return d.x2;
+                })
+                .attr('y2', function (d) {
+                    return d.y2;
+                })
+                .attr('stroke-width', 1)
+                .attr('stroke', 'white');
     }
 
     return form;

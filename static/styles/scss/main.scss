@@ -118,7 +118,7 @@ $fullscreen-color-opacity: 0.8;
     width: 80%;
     height: 90%;
     overflow-y: scroll;
-    max-width: 600px;
+    max-width: 640px;
     margin: 5% auto;
 }
 .modal-wrapper h1 {
@@ -161,6 +161,10 @@ $fullscreen-color-opacity: 0.8;
 .modal-main-area {
     width: 88.3333333%; // 530/600
     max-width: 530px;
+
+    &.inset {
+        margin-left: 40px;   
+    }
 
     .column.two {
         width: 100%;
@@ -579,6 +583,7 @@ input {
 .add-yourself-login { }
 
 .login-option {
+    position: relative;
     cursor: pointer;
 
     @include antenna-medium;
@@ -598,6 +603,17 @@ input {
     &.selected,
     &:hover {
         color: $white;
+    }
+
+    .checkmark {
+        position: relative;
+        left: -40px;
+        top: 35px;
+
+        display: none;
+    }
+    &.selected .checkmark  {
+        display: inline-block;
     }
 }
 .editable.large {

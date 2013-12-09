@@ -61,7 +61,7 @@ header:hover {
   width: 80%;
   height: 90%;
   overflow-y: scroll;
-  max-width: 600px;
+  max-width: 640px;
   margin: 5% auto; }
 
 .modal-wrapper h1 {
@@ -105,6 +105,8 @@ header:hover {
 .modal-main-area {
   width: 88.3333333%;
   max-width: 530px; }
+  .modal-main-area.inset {
+    margin-left: 40px; }
   .modal-main-area .column.two {
     width: 100%; }
   .modal-main-area .column.one {
@@ -538,6 +540,7 @@ input {
   margin-right: 0; }
 
 .login-option {
+  position: relative;
   cursor: pointer;
   font-family: "Antenna Comp Medium";
   font-style: normal;
@@ -552,6 +555,13 @@ input {
     border-bottom: 0; }
   .login-option.selected, .login-option:hover {
     color: white; }
+  .login-option .checkmark {
+    position: relative;
+    left: -40px;
+    top: 35px;
+    display: none; }
+  .login-option.selected .checkmark {
+    display: inline-block; }
 
 .editable.large {
   font-family: "Antenna Comp Medium";
