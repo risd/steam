@@ -614,8 +614,7 @@ header:hover {
   bottom: 0;
   height: 100%;
   width: 100%;
-  display: none;
-  background: rgba(255, 255, 255, 0.9); }
+  display: none; }
 
 .fullscreen.active {
   display: block; }
@@ -1084,6 +1083,13 @@ network graph
   border-color: #27b4f2; }
 .info_tip.ind .avatar {
   border-color: #27b4f2; }
+
+.canvas-wrapper {
+  background: rgba(255, 255, 255, 0.9); }
+
+rect.blanket {
+  fill: transparent;
+  stroke: transparent; }
 
 /************
 form / profile

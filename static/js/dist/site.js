@@ -1359,7 +1359,8 @@ function Network (context) {
         nodes,
         force,
         node_sel,
-        info_tip_sel;
+        info_tip_sel,
+        canvas_blanket_sel;
 
     var random_around_zero = function (range) {
         var val = Math.floor(Math.random() * range);
@@ -1540,7 +1541,7 @@ function Network (context) {
 
                     // clear user data
                     if (info_tip_sel) {
-                        info_tip_sel.data([]).exit().remove();
+                        remove_info_tip();
                     }
 
                     var mouse_position =
@@ -1582,6 +1583,16 @@ function Network (context) {
                             .style(infotip_position[1].offset_reset,
                                    infotip_position[1].offset_reset_value)
                             .call(update_info_tip);
+
+                    // add blanket
+                    canvas_blanket_sel =
+                        canvas.insert('rect', 'g:first-child')
+                            .attr('class', 'blanket')
+                            .attr('height', height)
+                            .attr('width', width)
+                            .attr('x', 0)
+                            .attr('y', 0)
+                            .on('click', blanket_interaction);
                 })
                 .call(add_symbols);
 
@@ -1607,6 +1618,8 @@ function Network (context) {
 
         remove_info_tip();
 
+        canvas_blanket_sel.remove();
+
         return network;
     };
 
@@ -1628,6 +1641,15 @@ function Network (context) {
               .nodes(network_data.steamies)
               .create();
     };
+
+    function blanket_interaction () {
+        nodes_sel.transition()
+            .duration(500)
+            .style('opacity', set_opacity);
+
+        d3.select(this).remove();
+        remove_info_tip();
+    }
 
     function remove_info_tip () {
         info_tip_sel.data([])

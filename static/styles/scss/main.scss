@@ -76,8 +76,6 @@ header:hover {
     width: 100%;
 
     display: none;
-
-    background: rgba($white, 0.9);
 }
 .fullscreen.active {
     display: block;
@@ -533,6 +531,14 @@ network graph
     .avatar {
         border-color: $color-ind;
     }
+}
+
+.canvas-wrapper {
+    background: rgba($white, 0.9);
+}
+rect.blanket {
+    fill: transparent;
+    stroke: transparent;
 }
 
 
