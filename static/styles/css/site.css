@@ -1122,6 +1122,15 @@ input {
 .column.half.omega {
   margin-right: 0; }
 
+.checkmark {
+  position: absolute;
+  left: -40px;
+  bottom: 30px;
+  display: none; }
+
+.checkmark.valid {
+  display: block; }
+
 .login-option {
   position: relative;
   cursor: pointer;
@@ -1138,13 +1147,8 @@ input {
     border-bottom: 0; }
   .login-option.selected, .login-option:hover {
     color: white; }
-  .login-option .checkmark {
-    position: relative;
-    left: -40px;
-    top: 35px;
-    display: none; }
   .login-option.selected .checkmark {
-    display: inline-block; }
+    display: block; }
 
 .editable.large {
   font-family: "Antenna Comp Medium";
@@ -1153,6 +1157,7 @@ input {
   -webkit-font-smoothing: antialiased;
   font-size: 100px;
   line-height: 95px;
+  height: 95px;
   margin: 0;
   border-bottom: 1px solid white; }
 
@@ -1160,7 +1165,7 @@ input {
   color: rgba(255, 255, 255, 0.5); }
 
 .editable.focused,
-.editable.value-set {
+.editable.valid {
   color: white; }
 
 /* end form */

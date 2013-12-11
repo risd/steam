@@ -1,5 +1,6 @@
 var validator = require('./validators'),
-    editable = require('./editable');
+    zipcodeComponent = require('./formComponents/zipcode'),
+    socialAuthComponent = require('./formComponents/socialAuthSelection');
 
 module.exports = FormFlow;
 
@@ -10,8 +11,7 @@ function FormFlow (context) {
         type,               // institution/individual
         input_data,         // object that tracks input data
         child_window,       // ref to the popup window object
-        child_status,       // set interval function to check
-        login_option_sel;
+        child_status;       // set interval function to check
 
     var ui = {
         popup_window_properties: function () {
@@ -139,17 +139,6 @@ function FormFlow (context) {
             apply_state(active);
         }
     };
-
-    var login = [{
-        'name': 'twitter',
-        'url': context.api.base + '/login/twitter/'
-    },{
-        'name': 'facebook',
-        'url': context.api.base + '/login/facebook/'
-    },{
-        'name': 'google',
-        'url': context.api.base + '/login/google-oauth2/'
-    }];
 
     form.state = function (x) {
         if (!arguments.length) return state;
@@ -320,8 +309,6 @@ function FormFlow (context) {
 
     form.init = function () {
 
-        var editable_zip = editable(d3.select('#add-yourself-zip'));
-
         for (var key in el.button) {
             // setup buttons
             el.button[key]
@@ -330,32 +317,24 @@ function FormFlow (context) {
                 .call(el.button[key].append_to_el);
         }
 
-        var login_option_sel = d3.select('#add-yourself-login')
-            .selectAll('.login-option')
-            .data(login)
-            .enter()
-            .append('div')
-            .attr('class', 'login-option')
-            .attr('id', function (d) {
-                return 'add-yourself-login-' +
-                    d.name.toLowerCase();
-            })
-            .on('click', function (d) {
-                var cur = d.name;
+        // form components
+        var editable_zip =
+                zipcodeComponent(d3.select('#add-yourself-zip')),
 
-                login_option_sel.each(function (d) {
-                    var bool = (cur === d.name);
+            social_auth =
+                socialAuthComponent(context)
+                    .node(d3.select('#add-yourself-login'))
+                    .render();
 
-                    d3.select(this)
-                        .classed('selected', bool);
-
-                });
-                
-            })
-            .text(function (d) {
-                return d.name;
-            })
-            .call(add_checkmarks);
+        // how validation can propogate to this level
+        social_auth.node().on('click.form-check', function () {
+            console.log('click check');
+            console.log(social_auth.isValid());
+        });
+        editable_zip.node().on('keyup.form-check', function () {
+            console.log('blur check');
+            console.log(editable_zip.isValid());
+        });
 
         form.state('call_to_action');
 
@@ -416,38 +395,6 @@ function FormFlow (context) {
                 }
             }
         }
-    }
-
-    function add_checkmarks (sel) {
-        var size = 30;
-
-        sel.append('svg')
-            .attr('width', size)
-            .attr('height', size)
-            .attr('class', 'checkmark')
-            .selectAll('line')
-            .data([
-                { x1: 0, y1: size/2,
-                  x2: size/2, y2: size },
-                { x1: size/2, y1: size,
-                  x2: size, y2: 0 }
-            ])
-            .enter()
-            .append('line')
-                .attr('x1', function (d) {
-                    return d.x1;
-                })
-                .attr('y1', function (d) {
-                    return d.y1;
-                })
-                .attr('x2', function (d) {
-                    return d.x2;
-                })
-                .attr('y2', function (d) {
-                    return d.y2;
-                })
-                .attr('stroke-width', 1)
-                .attr('stroke', 'white');
     }
 
     return form;

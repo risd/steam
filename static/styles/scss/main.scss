@@ -582,6 +582,17 @@ input {
 
 .add-yourself-login { }
 
+.checkmark {
+    position: absolute;
+    left: -40px;
+    bottom: 30px;
+
+    display: none;
+}
+.checkmark.valid {
+    display: block;
+}
+
 .login-option {
     position: relative;
     cursor: pointer;
@@ -605,15 +616,9 @@ input {
         color: $white;
     }
 
-    .checkmark {
-        position: relative;
-        left: -40px;
-        top: 35px;
-
-        display: none;
-    }
+    
     &.selected .checkmark  {
-        display: inline-block;
+        display: block;
     }
 }
 .editable.large {
@@ -621,6 +626,7 @@ input {
 
     font-size: 100px;
     line-height: 95px;
+    height: 95px;
     margin: 0;
 
     border-bottom: 1px solid $white;
@@ -629,7 +635,7 @@ input {
     color: rgba($white ,0.5);
 }
 .editable.focused,
-.editable.value-set {
+.editable.valid {
     color: white;
 }
 /* end form */

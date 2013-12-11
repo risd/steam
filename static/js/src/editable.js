@@ -22,12 +22,13 @@ function Editable (node) {
         return editable;
     };
 
-    function set_placeholder () {
-        if (node.html() === placeholder) {
+    editable.value = function (x) {
+        return node.html();
+    };
 
-        }
-        node.html(placeholder);
-    }
+    editable.node = function () {
+        return node;
+    };
 
     function init () {
 
@@ -36,16 +37,22 @@ function Editable (node) {
             placeholder = dom_placeholder;
         }
 
-        node.on('focus', function () {
+        node.on('focus.editable', function () {
                 node.classed('focused', true);
                 if (node.html() === placeholder) {
                     node.html('');
                 }
                 focused = true;
             })
-            .on('blur', function () {
+            .on('blur.editable-internal', function () {
                 node.classed('focused', false);
-                if (node.html() === '') {
+
+                var cur_html = node.html();
+
+                // firefox will put a break tag in
+                // your input when empty.
+                if ((cur_html === '') ||
+                    (cur_html.indexOf('<br>') > -1)) {
                     node.html(placeholder);
                     node.classed('value-set', false);
                 } else {

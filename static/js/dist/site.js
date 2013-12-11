@@ -583,12 +583,13 @@ function Editable (node) {
         return editable;
     };
 
-    function set_placeholder () {
-        if (node.html() === placeholder) {
+    editable.value = function (x) {
+        return node.html();
+    };
 
-        }
-        node.html(placeholder);
-    }
+    editable.node = function () {
+        return node;
+    };
 
     function init () {
 
@@ -597,16 +598,22 @@ function Editable (node) {
             placeholder = dom_placeholder;
         }
 
-        node.on('focus', function () {
+        node.on('focus.editable', function () {
                 node.classed('focused', true);
                 if (node.html() === placeholder) {
                     node.html('');
                 }
                 focused = true;
             })
-            .on('blur', function () {
+            .on('blur.editable-internal', function () {
                 node.classed('focused', false);
-                if (node.html() === '') {
+
+                var cur_html = node.html();
+
+                // firefox will put a break tag in
+                // your input when empty.
+                if ((cur_html === '') ||
+                    (cur_html.indexOf('<br>') > -1)) {
                     node.html(placeholder);
                     node.classed('value-set', false);
                 } else {
@@ -843,8 +850,119 @@ if (typeof module !== 'undefined') {
     window.filters = filters;
 }
 },{}],12:[function(require,module,exports){
+var Checkmark = require('../ui/checkmark');
+
+module.exports = function socialAuthSelection (context) {
+    var social = {},
+        valid = false,
+        // parent node where options will be appended
+        node,
+        data = [{
+            name: 'twitter',
+            url: context.api.base + '/login/twitter/',
+            selected: false
+        },{
+            name: 'facebook',
+            url: context.api.base + '/login/facebook/',
+            selected: false
+        },{
+            name: 'google',
+            url: context.api.base + '/login/google-oauth2/',
+            selected: false
+        }],
+        login_option_sel;
+
+    social.render = function () {
+
+        login_option_sel = node
+            .selectAll('.login-option')
+            .data(data)
+            .enter()
+            .append('div')
+            .attr('class', 'login-option')
+            .attr('id', function (d) {
+                return 'add-yourself-login-' +
+                    d.name.toLowerCase();
+            })
+            .on('click.social-internal', function (d) {
+                var cur = d.name;
+
+                login_option_sel.each(function (d) {
+                    var bool = (cur === d.name);
+
+                    d.selected = bool;
+
+                    d3.select(this)
+                        .classed('selected', bool);
+
+                });
+
+                valid = true;
+            })
+            .text(function (d) {
+                return d.name;
+            })
+            .call(Checkmark());
+
+        return social;
+    };
+
+    social.node = function (x) {
+        if (!arguments.length) return node;
+        node = x;
+        return social;
+    };
+
+    social.isValid = function () {
+        return valid;
+    };
+
+    return social;
+};
+},{"../ui/checkmark":18}],13:[function(require,module,exports){
+var Editable = require('../editable'),
+    Checkmark = require('../ui/checkmark');
+
+module.exports = function zipcodeComponent (selection) {
+    var zipcode = Editable(selection),
+        parent_sel = d3.select(selection.node().parentNode),
+        valid = false;
+
+    parent_sel
+        .call(Checkmark());
+
+    var checkmark_sel = parent_sel.select('.checkmark');
+
+    // add validation visualization
+    zipcode.node()
+        .on('keyup.editable', function () {
+            validate();
+
+            zipcode.node().classed('valid', valid);
+            checkmark_sel.classed('valid', valid);
+        });
+
+    zipcode.isValid = function () {
+        return valid;
+    };
+
+    function validate () {
+        if (zipcode.value() === zipcode.placeholder() ||
+            (zipcode.value() === '')) {
+            valid = false;
+        } else {
+            valid = true;
+        }
+
+        return valid;
+    }
+
+    return zipcode;
+};
+},{"../editable":8,"../ui/checkmark":18}],14:[function(require,module,exports){
 var validator = require('./validators'),
-    editable = require('./editable');
+    zipcodeComponent = require('./formComponents/zipcode'),
+    socialAuthComponent = require('./formComponents/socialAuthSelection');
 
 module.exports = FormFlow;
 
@@ -855,8 +973,7 @@ function FormFlow (context) {
         type,               // institution/individual
         input_data,         // object that tracks input data
         child_window,       // ref to the popup window object
-        child_status,       // set interval function to check
-        login_option_sel;
+        child_status;       // set interval function to check
 
     var ui = {
         popup_window_properties: function () {
@@ -984,17 +1101,6 @@ function FormFlow (context) {
             apply_state(active);
         }
     };
-
-    var login = [{
-        'name': 'twitter',
-        'url': context.api.base + '/login/twitter/'
-    },{
-        'name': 'facebook',
-        'url': context.api.base + '/login/facebook/'
-    },{
-        'name': 'google',
-        'url': context.api.base + '/login/google-oauth2/'
-    }];
 
     form.state = function (x) {
         if (!arguments.length) return state;
@@ -1165,8 +1271,6 @@ function FormFlow (context) {
 
     form.init = function () {
 
-        var editable_zip = editable(d3.select('#add-yourself-zip'));
-
         for (var key in el.button) {
             // setup buttons
             el.button[key]
@@ -1175,32 +1279,24 @@ function FormFlow (context) {
                 .call(el.button[key].append_to_el);
         }
 
-        var login_option_sel = d3.select('#add-yourself-login')
-            .selectAll('.login-option')
-            .data(login)
-            .enter()
-            .append('div')
-            .attr('class', 'login-option')
-            .attr('id', function (d) {
-                return 'add-yourself-login-' +
-                    d.name.toLowerCase();
-            })
-            .on('click', function (d) {
-                var cur = d.name;
+        // form components
+        var editable_zip =
+                zipcodeComponent(d3.select('#add-yourself-zip')),
 
-                login_option_sel.each(function (d) {
-                    var bool = (cur === d.name);
+            social_auth =
+                socialAuthComponent(context)
+                    .node(d3.select('#add-yourself-login'))
+                    .render();
 
-                    d3.select(this)
-                        .classed('selected', bool);
-
-                });
-                
-            })
-            .text(function (d) {
-                return d.name;
-            })
-            .call(add_checkmarks);
+        // how validation can propogate to this level
+        social_auth.node().on('click.form-check', function () {
+            console.log('click check');
+            console.log(social_auth.isValid());
+        });
+        editable_zip.node().on('keyup.form-check', function () {
+            console.log('blur check');
+            console.log(editable_zip.isValid());
+        });
 
         form.state('call_to_action');
 
@@ -1263,41 +1359,9 @@ function FormFlow (context) {
         }
     }
 
-    function add_checkmarks (sel) {
-        var size = 30;
-
-        sel.append('svg')
-            .attr('width', size)
-            .attr('height', size)
-            .attr('class', 'checkmark')
-            .selectAll('line')
-            .data([
-                { x1: 0, y1: size/2,
-                  x2: size/2, y2: size },
-                { x1: size/2, y1: size,
-                  x2: size, y2: 0 }
-            ])
-            .enter()
-            .append('line')
-                .attr('x1', function (d) {
-                    return d.x1;
-                })
-                .attr('y1', function (d) {
-                    return d.y1;
-                })
-                .attr('x2', function (d) {
-                    return d.x2;
-                })
-                .attr('y2', function (d) {
-                    return d.y2;
-                })
-                .attr('stroke-width', 1)
-                .attr('stroke', 'white');
-    }
-
     return form;
 }
-},{"./editable":8,"./validators":17}],13:[function(require,module,exports){
+},{"./formComponents/socialAuthSelection":12,"./formComponents/zipcode":13,"./validators":20}],15:[function(require,module,exports){
 var filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./clone'),
@@ -1352,7 +1416,7 @@ function STEAMMap() {
 
     init();
 }
-},{"./arcs":1,"./backend":2,"./clone":3,"./clusterIconSize":4,"./clusters":5,"./colors":6,"./fakeDataGenerator":9,"./filterUI":10,"./filters":11,"./formFlow":12,"./map":14,"./network":15,"./user":16}],14:[function(require,module,exports){
+},{"./arcs":1,"./backend":2,"./clone":3,"./clusterIconSize":4,"./clusters":5,"./colors":6,"./fakeDataGenerator":9,"./filterUI":10,"./filters":11,"./formFlow":14,"./map":16,"./network":17,"./user":19}],16:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -1391,7 +1455,7 @@ function Map (context) {
 
     return map;
 }
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = Network;
 
 // Network graph
@@ -1781,7 +1845,63 @@ function Network (context) {
 
     return network;
 }
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
+module.exports = function addCheckmarks () {
+    var size = 30,
+        stroke = 'white',
+        stroke_width = 1;
+
+    function add (sel) {
+        var svg = sel.append('svg')
+            .attr('width', size)
+            .attr('height', size)
+            .attr('class', 'checkmark')
+            .selectAll('line')
+            .data([
+                { x1: 0, y1: size/2,
+                  x2: size/2, y2: size },
+                { x1: size/2, y1: size,
+                  x2: size, y2: 0 }
+            ])
+            .enter()
+            .append('line')
+                .attr('x1', function (d) {
+                    return d.x1;
+                })
+                .attr('y1', function (d) {
+                    return d.y1;
+                })
+                .attr('x2', function (d) {
+                    return d.x2;
+                })
+                .attr('y2', function (d) {
+                    return d.y2;
+                })
+                .attr('stroke-width', stroke_width)
+                .attr('stroke', stroke);
+    }
+
+    add.stroke = function (x) {
+        if (!arguments.length) return stroke;
+        stroke = x;
+        return add;
+    };
+
+    add.stroke_width = function (x) {
+        if (!arguments.length) return stroke_width;
+        stroke_width = x;
+        return add;
+    };
+
+    add.size = function (x) {
+        if (!arguments.length) return size;
+        size = x;
+        return add;
+    };
+
+    return add;
+};
+},{}],19:[function(require,module,exports){
 module.exports = User;
 
 function User (context) {
@@ -1850,7 +1970,7 @@ function User (context) {
 
     return user;
 }
-},{}],17:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports = Validators;
 
 function Validators () {
@@ -1895,5 +2015,5 @@ function Validators () {
 
     return validators;
 }
-},{}]},{},[13])
+},{}]},{},[15])
 ;
