@@ -9,7 +9,8 @@ function Arcs (context) {
         arc = d3.svg.arc(),
         τ = 2 * Math.PI,
         arc_scale = d3.scale.linear()
-            .range([0, τ]);
+            .range([0, τ]),
+        format = d3.format(',');
 
     arcs.create = function () {
         // bound to the zoom of the map
@@ -27,6 +28,8 @@ function Arcs (context) {
                     total: +node.attr('data-total'),
                     total_active:
                         +node.attr('data-total-active'),
+                    prev_total_active:
+                        +node.attr('data-prev-total-active'),
                     icon_category:
                         node.attr('data-icon-cateogry')
                 };
@@ -103,6 +106,24 @@ function Arcs (context) {
                         return context.colors[d.abbr];
                     })
                     .attr('d', arc);
+
+                if (meta.prev_total_active !== meta.total_active) {
+                    var span_sel = d3.select(node.node().parentNode)
+                                    .select('span')
+                                    .datum({
+                                        start: meta.prev_total_active,
+                                        end: meta.total_active
+                                    });
+
+                    span_sel.transition()
+                        .duration(800)
+                        .tween('text', function (d) {
+                            var i = d3.interpolateRound(d.start, d.end);
+                            return function (t) {
+                                this.textContent = format(i(t));
+                            };
+                        });
+                }
 
                 arc_sel.transition()
                     .duration(800)
@@ -351,7 +372,8 @@ function Clusters (context) {
                 edu: 0,
                 ind: 0,
                 total: 0,
-                total_active: 0
+                total_active: 0,
+                prev_total_active: 0
             };
             var children = cluster.getAllChildMarkers(),
                 child_count = cluster.getChildCount();
@@ -408,7 +430,7 @@ function Clusters (context) {
             return new L.DivIcon({
                 html: '<div>' +
                     '<span>' +
-                    format(steamie_count.total_active) +
+                    format(steamie_count.prev_total_active) +
                     '</span>' +
                     '</div>' +
                     '<div class="arc-wrapper"' +
@@ -419,6 +441,8 @@ function Clusters (context) {
                          ' data-total=' + steamie_count.total +
                          ' data-total-active=' +
                          steamie_count.total_active +
+                         ' data-prev-total-active=' +
+                         steamie_count.prev_total_active +
                          ' data-icon-cateogry="' +
                          icon_category + '"' +
                          '></div>',
@@ -524,6 +548,13 @@ function Clusters (context) {
                 d.properties[context.filters[i].abbr];
             count[context.filters[i].abbr] +=
                 d.properties[context.filters[i].abbr];
+
+            // also set prev_filters
+            // context.filters.length === context.prev_filters.length
+            if (context.prev_filters[i].active) {
+                count.prev_total_active +=
+                    d.properties[context.prev_filters[i].abbr];
+            }
         }
 
         return count;
