@@ -106,23 +106,22 @@ function Arcs (context) {
                     })
                     .attr('d', arc);
 
-                if (meta.prev_total_active !== meta.total_active) {
-                    var span_sel = d3.select(node.node().parentNode)
-                                    .select('span')
-                                    .datum({
-                                        start: meta.prev_total_active,
-                                        end: meta.total_active
-                                    });
+                
+                var span_sel = d3.select(node.node().parentNode)
+                                .select('span')
+                                .datum({
+                                    start: meta.prev_total_active,
+                                    end: meta.total_active
+                                });
 
-                    span_sel.transition()
-                        .duration(800)
-                        .tween('text', function (d) {
-                            var i = d3.interpolateRound(d.start, d.end);
-                            return function (t) {
-                                this.textContent = format(i(t));
-                            };
-                        });
-                }
+                span_sel.transition()
+                    .duration(800)
+                    .tween('text', function (d) {
+                        var i = d3.interpolateRound(d.start, d.end);
+                        return function (t) {
+                            this.textContent = format(i(t));
+                        };
+                    });
 
                 arc_sel.transition()
                     .duration(800)
