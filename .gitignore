@@ -7,3 +7,4 @@
 logfile
 
 static/js/node_modules/*
+staticfiles/*
