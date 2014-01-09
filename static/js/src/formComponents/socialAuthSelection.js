@@ -3,8 +3,10 @@ var Checkmark = require('../ui/checkmark');
 module.exports = function socialAuthSelection (context) {
     var social = {},
         valid = false,
+        selected = false,
         // parent node where options will be appended
         node,
+        dispatch = social.dispatch = d3.dispatch('valid'),
         data = [{
             name: 'twitter',
             url: context.api.base + '/login/twitter/',
@@ -32,8 +34,13 @@ module.exports = function socialAuthSelection (context) {
                 return 'add-yourself-login-' +
                     d.name.toLowerCase();
             })
-            .on('click.social-internal', function (d) {
+            .on('click.social-internal', function (d, i) {
+                // items can only be selected
+                // not unselected. any selection
+                // is a valid selection.
+
                 var cur = d.name;
+                selected = d;
 
                 login_option_sel.each(function (d) {
                     var bool = (cur === d.name);
@@ -46,6 +53,8 @@ module.exports = function socialAuthSelection (context) {
                 });
 
                 valid = true;
+
+                dispatch.valid.apply(this, arguments);
             })
             .text(function (d) {
                 return d.name;
@@ -63,6 +72,10 @@ module.exports = function socialAuthSelection (context) {
 
     social.isValid = function () {
         return valid;
+    };
+
+    social.selected = function () {
+        return selected;
     };
 
     return social;

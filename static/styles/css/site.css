@@ -624,7 +624,8 @@ header:hover {
   top: 0;
   bottom: 0;
   width: 100%;
-  height: 100%; }
+  height: 100%;
+  overflow-y: scroll; }
   .modal.active {
     display: block; }
   .modal.fullscreen {
@@ -642,8 +643,6 @@ header:hover {
 .modal-wrapper {
   position: relative;
   width: 80%;
-  height: 90%;
-  overflow-y: scroll;
   max-width: 640px;
   margin: 5% auto; }
 
@@ -1115,6 +1114,23 @@ input {
   border-radius: 2px;
   cursor: pointer; }
 
+.button.large {
+  font-family: "Antenna Comp Medium";
+  font-style: normal;
+  font-weight: normal;
+  -webkit-font-smoothing: antialiased;
+  font-size: 100px;
+  line-height: 95px;
+  border: 1px solid white;
+  background-color: transparent;
+  text-align: center;
+  color: white;
+  margin-top: 0.6em; }
+
+.button.large.enabled {
+  color: #516272;
+  background-color: white; }
+
 .column.half {
   width: 45%;
   margin-right: 5%; }
@@ -1159,7 +1175,8 @@ input {
   line-height: 95px;
   height: 95px;
   margin: 0;
-  border-bottom: 1px solid white; }
+  border-bottom: 1px solid white;
+  outline: none; }
 
 .editable {
   color: rgba(255, 255, 255, 0.5); }
@@ -1169,3 +1186,59 @@ input {
   color: white; }
 
 /* end form */
+input, label {
+  font-size: 22px;
+  font-family: 'Sentinel A', 'Sentinel B';
+  font-weight: 400;
+  font-style: normal;
+  background: none;
+  -webkit-transition: all 0.2s ease-in-out;
+  -webkit-font-smoothing: antialiased; }
+
+input:focus {
+  background: #8399AA;
+  color: #f0f0f0;
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(30, 30, 30, 0.2); }
+
+label {
+  display: block;
+  cursor: pointer;
+  position: relative;
+  /*background:orange;*/
+  margin-right: 24px;
+  float: left;
+  text-align: center;
+  color: gainsboro;
+  -webkit-font-smoothing: antialiased; }
+
+label:last-child {
+  margin-right: 0px; }
+
+input[type=radio] {
+  display: none; }
+
+label:after {
+  content: "";
+  display: block;
+  margin: 20px auto 0px auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 12px;
+  border: 2px solid #c8c8c8;
+  -webkit-transition: all 0.5s ease-in-out; }
+
+input[type=radio]:checked + label:after {
+  content: "\2022";
+  color: #f3f3f3;
+  font-size: 30px;
+  border: 2px solid #f0f0f0;
+  background: rgba(240, 240, 240, 0.3);
+  margin-top: 20px;
+  text-align: center;
+  line-height: 18px; }
+
+.radio {
+  padding: 20px 0px 30px 0px;
+  border-top: 1px solid #506472;
+  border-bottom: 1px solid #506472; }

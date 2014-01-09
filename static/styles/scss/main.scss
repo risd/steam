@@ -90,6 +90,8 @@ $fullscreen-color-opacity: 0.8;
     width: 100%;
     height: 100%;
 
+    overflow-y: scroll;
+
     &.active {
         display: block;
     }
@@ -116,8 +118,6 @@ $fullscreen-color-opacity: 0.8;
 .modal-wrapper {
     position: relative;
     width: 80%;
-    height: 90%;
-    overflow-y: scroll;
     max-width: 640px;
     margin: 5% auto;
 }
@@ -564,12 +564,32 @@ input {
     font-size: 12px;
     padding: 5px;
 }
+
 .button {
     padding: 20px;
     background: yellow;
     border-radius: 2px;
 
     cursor: pointer;
+}
+
+.button.large {
+    @include antenna-medium;
+
+    font-size: 100px;
+    line-height: 95px;
+
+    border: 1px solid $white;
+    background-color: transparent;
+    text-align: center;
+    color: $white;
+
+    margin-top: 0.6em;
+}
+
+.button.large.enabled {
+    color: $color-slate;
+    background-color: $white;
 }
 
 .column.half {
@@ -630,6 +650,7 @@ input {
     margin: 0;
 
     border-bottom: 1px solid $white;
+    outline: none;
 }
 .editable {
     color: rgba($white ,0.5);
@@ -639,3 +660,5 @@ input {
     color: white;
 }
 /* end form */
+
+@import 'from_steam_proto_github'

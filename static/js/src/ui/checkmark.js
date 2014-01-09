@@ -10,10 +10,10 @@ module.exports = function addCheckmarks () {
             .attr('class', 'checkmark')
             .selectAll('line')
             .data([
-                { x1: 0, y1: size/2,
+                { x1: (size * 0.25), y1: (size * 0.75),
                   x2: size/2, y2: size },
                 { x1: size/2, y1: size,
-                  x2: size, y2: 0 }
+                  x2: size, y2: (size * 0.4) }
             ])
             .enter()
             .append('line')

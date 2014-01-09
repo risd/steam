@@ -61,7 +61,7 @@
         
         <!-- modal for adding oneself -->
         <div id="modal" class="fullscreen z-200 hide-til-active modal">
-            <div class="modal-wrapper">
+            <div class="modal-wrapper clearfix">
 
                     <div class="modal-main-area column inset">
 
@@ -79,15 +79,32 @@
                                        <p>sign in with:</p>
                                         <div id="add-yourself-login"></div>
                                     </div>
+
+                                 </div>
+                                 <p id="add-me-button"
+                                    class="large button"
+                                    >Add me!</p>
+                             </div>
+
+                             <div id="choose-type-add-zip"
+                                  class="hide-til-active modal-content">
+                                 
+                                <p>avatar goes here.</p>
+
+                                <div class="row clearfix">
+                                    <div class="column half"
+                                         id="select-type-component">
+                                        
+                                    </div>
                                     <div class="column half omega">
                                         <p>enter your zipcode:</p>
                                         <div contenteditable="true"
-                                               class="large editable"
-                                               id="add-yourself-zip"
-                                               placeholder="00000">
-                                               00000</div>
+                                             class="large editable"
+                                             id="add-yourself-zip"
+                                             placeholder="00000"
+                                             >00000</div>
                                     </div>
-                                 </div>
+                                </div>
                              </div>
 
                             <div id="add-yourself-individual-form-wrapper"

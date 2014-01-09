@@ -1,5 +1,6 @@
 var validator = require('./validators'),
     zipcodeComponent = require('./formComponents/zipcode'),
+    typeComponent = require('./formComponents/type'),
     socialAuthComponent = require('./formComponents/socialAuthSelection');
 
 module.exports = FormFlow;
@@ -12,6 +13,27 @@ function FormFlow (context) {
         input_data,         // object that tracks input data
         child_window,       // ref to the popup window object
         child_status;       // set interval function to check
+
+    // form components
+    var social_auth =
+            socialAuthComponent(context)
+                .node(d3.select('#add-yourself-login')),
+
+        editable_zip =
+            zipcodeComponent(d3.select('#add-yourself-zip')),
+
+        select_type =
+            typeComponent()
+                .node(d3.select('#select-type-component'))
+                .data([{
+                    name: 'Individual',
+                    type: 'i',
+                    selected: false
+                }, {
+                    name: 'Institution',
+                    type: 'g',
+                    selected: false
+                }]);
 
     var ui = {
         popup_window_properties: function () {
@@ -104,6 +126,12 @@ function FormFlow (context) {
                     }
                 },
                 append_to_el: function () {}
+            },
+
+            add_me: {
+                el: d3.select('#add-me-button'),
+                on_click: function () {},
+                append_to_el: function () {}
             }
         },
         display: {
@@ -112,6 +140,9 @@ function FormFlow (context) {
             },
             call_to_action: {
                 el: d3.select('#call-to-action')
+            },
+            choose_type_add_zip: {
+                el: d3.select('#choose-type-add-zip')
             },
             form_individual: {
                 el: d3.select('#add-yourself-individual-form-wrapper')
@@ -137,7 +168,55 @@ function FormFlow (context) {
             }];
 
             apply_state(active);
+        },
+        choose_type_add_zip: function () {
+            var active = [{
+                el_type: 'display',
+                el_name: 'modal'
+            }, {
+                el_type: 'display',
+                el_name: 'choose_type_add_zip'
+            }];
+
+            apply_state(active);
         }
+    };
+
+    form.init = function () {
+
+        for (var key in el.button) {
+            // setup buttons
+            el.button[key]
+                .el
+                .on('click', el.button[key].on_click)
+                .call(el.button[key].append_to_el);
+        }
+
+        social_auth.render();
+        select_type.render();
+
+        // how validation can propogate to this level
+        social_auth
+            .dispatch
+            .on('valid.formElementCheck', function (d, i) {
+                if (authIsValid()) {
+                    enable_add_me();
+                }
+            });
+        editable_zip
+            .dispatch
+            .on('validChange.formElementCheck', function () {
+                if (zipAndTypeValid()) {
+                    enable_add_me();
+                } else {
+                    disable_add_me();
+                }
+            });
+
+        // form.state('call_to_action');
+        form.state('choose_type_add_zip');
+
+        return form;
     };
 
     form.state = function (x) {
@@ -152,79 +231,15 @@ function FormFlow (context) {
         return form;
     };
 
-    form.type = function (x) {
-        if (!arguments.length) return type;
-        type = x;
-        return form;
-    };
-
-    form.add_avatar = function (x) {
-        el.display.modal_toolbar
-            .append('div')
-            .attr('class', 'avatar rounded')
-            .append('img')
-            .attr('src', x);
-        return form;
-    };
-
-    form.grab_input_data = function () {
-        console.log('grab input data');
-
-        // clear input data
-        input_data = {};
-        input_data[type] = {};
-
-        // set id of form to grab input data from
-        var id;
-        if (type === 'individual') {
-            id = '#add-yourself-individual-form-wrapper';
-        } else {
-            id = '#add-yourself-institution-form-wrapper';
-        }
-
-        var steamie_values = [
-            'zip_code',
-            'engaged_as',
-            'work_in',
-            'tags',
-            'description',
-            'description'
-        ];
-
-        // get all of the input values
-        d3.selectAll(id + ' input')
-            .each(function () {
-                var key = d3.select(this).attr('data-mapped');
-                if (steamie_values.indexOf(key) > -1) {
-                    // save to steamie
-                    input_data[key] = this.value;
-                } else {
-                    // save to type model
-                    input_data[type][key] = this.value;
-                }
-            });
-
-        return form;
-    };
-
-    form.submit_flow = function () {
+    function submit_flow () {
         console.log('submit flow');
 
-        // data must be mapped to
-        // look like the response from
+        // data must be mapped to look
+        // like the response from the api
         // http://0.0.0.0:5000/api/v1/steamie/?format=json
-        // or else, values are turned to null
-        // so, perhaps, instead of just
-        // grabbing the data and putting it
-        // the format produced by grab_input_data
-        // this form should have an object that
-        // IS that response. the initial auth
-        // check. Then updating data in a form
-        // updates the data in the object
-        // and submitting it, just sends it back
-        // to the server. about right, yeah.
-        form.grab_input_data();
+        var data_to_submit = grab_data_for_submit();
 
+        process_authentication(data_to_submit.auth);
 
         // override input data for testing
         input_data = {
@@ -239,24 +254,16 @@ function FormFlow (context) {
                 }
             }]
         };
-        complete_submit();
-        // console.log(input_data);
-        // end override
 
-        // form
-        //     .validator()[type]  // returns LGTM obj
-        //     .validate(input_data)
-        //     .then(function (result) {
-        //         console.log(result);
-        //         if (result.valid) {
-        //             complete_submit();
-        //         } else {
-        //             show_validation_errors(result.errors);
-        //         }
-        //     });
-    };
+        complete_submit({
+            "meta": {
+                "total_count": 1
+            },
+            "objects": [data_to_submit]
+        });
+    }
 
-    function complete_submit() {
+    function complete_submit(data_to_submit) {
         console.log('complete submit');
         // submit data
 
@@ -271,7 +278,7 @@ function FormFlow (context) {
             .mimeType('application/json')
             .header('X-CSRFToken', csrf_token)
             .header('Content-type', 'application/json')
-            .send('PUT', JSON.stringify(input_data),
+            .send('PUT', JSON.stringify(data_to_submit),
                     function (err, results) {
                 console.log('results');
                 // no results are returned.
@@ -306,41 +313,6 @@ function FormFlow (context) {
         return c_value;
     }
 
-
-    form.init = function () {
-
-        for (var key in el.button) {
-            // setup buttons
-            el.button[key]
-                .el
-                .on('click', el.button[key].on_click)
-                .call(el.button[key].append_to_el);
-        }
-
-        // form components
-        var editable_zip =
-                zipcodeComponent(d3.select('#add-yourself-zip')),
-
-            social_auth =
-                socialAuthComponent(context)
-                    .node(d3.select('#add-yourself-login'))
-                    .render();
-
-        // how validation can propogate to this level
-        social_auth.node().on('click.form-check', function () {
-            console.log('click check');
-            console.log(social_auth.isValid());
-        });
-        editable_zip.node().on('keyup.form-check', function () {
-            console.log('blur check');
-            console.log(editable_zip.isValid());
-        });
-
-        form.state('call_to_action');
-
-        return form;
-    };
-
     function check_child () {
         if (child_window.closed) {
             // stop checking for the child window status
@@ -353,7 +325,7 @@ function FormFlow (context) {
         }
     }
 
-    function process_authentication () {
+    function process_authentication (d) {
         var popup = ui.popup_window_properties(),
 
             window_features =
@@ -395,6 +367,42 @@ function FormFlow (context) {
                 }
             }
         }
+    }
+
+    function zipAndTypeValid () {
+        if (editable_zip.isValid() &&
+            true) {
+            return true;
+        }
+        return false;
+    }
+
+    function authIsValid () {
+        if (social_auth.isValid()) {
+            return true;
+        }
+        return false;
+    }
+
+    function enable_add_me () {
+        el.button.add_me.el
+            .classed('enabled', true)
+            .on('click', function () {
+                submit_flow();
+            });
+    }
+
+    function disable_add_me () {
+        el.button.add_me.el
+            .classed('enabled', false)
+            .on('click', null);
+    }
+
+    function grab_data_for_submit () {
+        return {
+            zip: editable_zip.value(),
+            auth: social_auth.selected()
+        };
     }
 
     return form;
