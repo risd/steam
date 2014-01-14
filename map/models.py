@@ -54,6 +54,7 @@ class TopLevelGeo(models.Model):
     # otherwise, just the country is filled:
     country = models.CharField(
         'Country',
+        max_length=75,
         blank=True,
         null=True)
 
