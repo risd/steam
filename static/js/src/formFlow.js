@@ -67,6 +67,7 @@ function FormFlow (context) {
         }
     };
 
+    // elements that need to be turned on and off
     var el = {
         button: {
             deactivate: {
@@ -110,7 +111,7 @@ function FormFlow (context) {
             back: {
                 el: d3.select('#back-modal-add-yourself'),
                 on_click: function () {
-                    form.state(prev_state);
+                    form.state(previous_state);
                 },
                 append_to_el: function () {}
             },
@@ -122,7 +123,7 @@ function FormFlow (context) {
                         // first time through
                         form.state('call_to_action');
                     } else {
-                        form.state(prev_state);
+                        form.state(previous_state);
                     }
                 },
                 append_to_el: function () {}
@@ -132,6 +133,23 @@ function FormFlow (context) {
                 el: d3.select('#add-me-button'),
                 on_click: function () {},
                 append_to_el: function () {}
+            },
+
+            auth_me: {
+                el: d3.select('#auth-me-button'),
+                on_click: function () {},
+                append_to_el: function () {}
+            }
+        },
+        modal_header: {
+            join: {
+                el: d3.select('#modal-header-join')
+            },
+            thanks: {
+                el: d3.select('#modal-header-thanks')
+            },
+            avatar: {
+                el: d3.select('#modal-header-avatar')
             }
         },
         display: {
@@ -144,11 +162,14 @@ function FormFlow (context) {
             choose_type_add_zip: {
                 el: d3.select('#choose-type-add-zip')
             },
-            form_individual: {
-                el: d3.select('#add-yourself-individual-form-wrapper')
+            thank_you: {
+                el: d3.select('#thank-you')
             },
-            form_institution: {
-                el: d3.select('#add-yourself-institution-form-wrapper')
+            profile_individual: {
+                el: d3.select('#profile-individual')
+            },
+            profile_institution: {
+                el: d3.select('#profile-institution')
             }
         }
     };
@@ -165,6 +186,9 @@ function FormFlow (context) {
             }, {
                 el_type: 'display',
                 el_name: 'call_to_action'
+            }, {
+                el_type: 'modal_header',
+                el_name: 'join'
             }];
 
             apply_state(active);
@@ -176,6 +200,51 @@ function FormFlow (context) {
             }, {
                 el_type: 'display',
                 el_name: 'choose_type_add_zip'
+            }, {
+                el_type: 'modal_header',
+                el_name: 'join'
+            }];
+
+            apply_state(active);
+        },
+        thank_you: function () {
+            var active = [{
+                el_type: 'display',
+                el_name: 'modal'
+            }, {
+                el_type: 'display',
+                el_name: 'thank_you'
+            }, {
+                el_type: 'modal_header',
+                el_name: 'thanks'
+            }];
+
+            apply_state(active);
+        },
+        profile_individual: function () {
+            var active = [{
+                el_type: 'display',
+                el_name: 'modal'
+            }, {
+                el_type: 'display',
+                el_name: 'profile_individual'
+            }, {
+                el_type: 'modal_header',
+                el_name: 'avatar'
+            }];
+
+            apply_state(active);
+        },
+        profile_institution: function () {
+            var active = [{
+                el_type: 'display',
+                el_name: 'modal'
+            }, {
+                el_type: 'display',
+                el_name: 'profile_institution'
+            }, {
+                el_type: 'modal_header',
+                el_name: 'avatar'
             }];
 
             apply_state(active);
@@ -200,9 +269,10 @@ function FormFlow (context) {
             .dispatch
             .on('valid.formElementCheck', function (d, i) {
                 if (authIsValid()) {
-                    enable_add_me();
+                    enable_auth_me();
                 }
             });
+
         editable_zip
             .dispatch
             .on('validChange.formElementCheck', function () {
@@ -213,8 +283,69 @@ function FormFlow (context) {
                 }
             });
 
-        // form.state('call_to_action');
-        form.state('choose_type_add_zip');
+        select_type
+            .dispatch
+            .on('valid.formElementCheck', function (d) {
+                console.log('type selections');
+                console.log(d);
+                if (zipAndTypeValid()) {
+                    enable_add_me();
+                }
+            });
+
+        context.user
+               .dispatch.on('checkAuthComplete', function(err, d) {
+            // d = context.user.data
+            console.log(d);
+
+            if (d) {
+                // authenticated
+
+                form.add_avatar(d.objects[0].avatar_url);
+
+                if (d.objects[0].individual) {
+
+                    // already on map as individual
+                    form
+                        .type('individual')
+                        .state('profile');
+                } else if (d.objects[0].institution) {
+
+                    // already on map as insitution
+                    form
+                        .type('institution')
+                        .state('profile');
+
+                } else {
+
+                    // have authenticated, but no
+                    // data associated with them
+                    form
+                        .state('choose_type_add_zip');
+                }
+
+
+            } else {
+                // has not been authenticated
+                form.state('call_to_action');
+            }
+        });
+
+        form.state('call_to_action');
+
+        return form;
+    };
+
+    form.type = function (x) {
+        if (!arguments.length) return type;
+        type = x;
+        return form;
+    };
+
+    form.add_avatar = function (x) {
+
+        d3.selectAll('.avatar')
+            .attr('src', x);
 
         return form;
     };
@@ -223,7 +354,7 @@ function FormFlow (context) {
         if (!arguments.length) return state;
 
         if (x in states) {
-            prev_state = state;
+            previous_state = state;
             state = x;
             states[state]();
         }
@@ -231,39 +362,37 @@ function FormFlow (context) {
         return form;
     };
 
-    function submit_flow () {
-        console.log('submit flow');
+    function add_me_flow () {
+        // for the UI
+        form.type(select_type.selected().name.toLowerCase());
 
-        // data must be mapped to look
-        // like the response from the api
-        // http://0.0.0.0:5000/api/v1/steamie/?format=json
-        var data_to_submit = grab_data_for_submit();
+        // for the User that is stored.
+        context.user
+            .type(form.type())
+            .zip_code(editable_zip.validatedData());
 
-        process_authentication(data_to_submit.auth);
+        steamie_request(
+            context.user.data(),
+            function (err, results) {
+                if (err) {
+                    console.log('error');
+                    console.log(err);
 
-        // override input data for testing
-        input_data = {
-            "meta": {
-                "total_count": 1
-            },
-            "objects": [{
-                "description": "new description",
-                "individual": {
-                    "email": "rrr@r.me",
-                    "first_name": "ruben",
+                    // if there is an error, return
+                    // the user to the stage where
+                    // they left off, attempting to
+                    // be added.
+                    form.state('choose-type-add-zip');
                 }
-            }]
-        };
 
-        complete_submit({
-            "meta": {
-                "total_count": 1
-            },
-            "objects": [data_to_submit]
-        });
+                // update the user data based on
+                // what came back from the server
+                context.user.data(results);
+                form.state('thank-you');
+            });
     }
 
-    function complete_submit(data_to_submit) {
+    function steamie_request(data_to_submit, callback) {
         console.log('complete submit');
         // submit data
 
@@ -278,16 +407,9 @@ function FormFlow (context) {
             .mimeType('application/json')
             .header('X-CSRFToken', csrf_token)
             .header('Content-type', 'application/json')
-            .send('PUT', JSON.stringify(data_to_submit),
-                    function (err, results) {
-                console.log('results');
-                // no results are returned.
-                // so if you do get something back
-                // its likely an error?
-                // test it out.
-                console.log(results);
-            });
-
+            .send('PUT',
+                  JSON.stringify(data_to_submit),
+                  callback);
     }
 
     function show_validation_errors(errors) {
@@ -326,6 +448,7 @@ function FormFlow (context) {
     }
 
     function process_authentication (d) {
+
         var popup = ui.popup_window_properties(),
 
             window_features =
@@ -369,9 +492,10 @@ function FormFlow (context) {
         }
     }
 
+    // ensure validity of form elements
     function zipAndTypeValid () {
         if (editable_zip.isValid() &&
-            true) {
+            select_type.isValid()) {
             return true;
         }
         return false;
@@ -384,11 +508,21 @@ function FormFlow (context) {
         return false;
     }
 
+    // enable buttons to proceed through
+    // the form process
+    function enable_auth_me () {
+        el.button.auth_me.el
+            .classed('enabled', true)
+            .on('click', function () {
+                process_authentication(social_auth.selected());
+            });
+    }
+
     function enable_add_me () {
         el.button.add_me.el
             .classed('enabled', true)
             .on('click', function () {
-                submit_flow();
+                add_me_flow();
             });
     }
 
@@ -396,13 +530,6 @@ function FormFlow (context) {
         el.button.add_me.el
             .classed('enabled', false)
             .on('click', null);
-    }
-
-    function grab_data_for_submit () {
-        return {
-            zip: editable_zip.value(),
-            auth: social_auth.selected()
-        };
     }
 
     return form;

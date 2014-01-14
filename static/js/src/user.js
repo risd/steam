@@ -3,7 +3,8 @@ module.exports = User;
 function User (context) {
     var user = {},
         authed,   // true/false
-        uid;      // user id
+        data,     // obj response from server
+        dispatch = user.dispatch = d3.dispatch('checkAuthComplete');
 
     user.check_auth = function () {
         // checks the server to see if user
@@ -13,46 +14,19 @@ function User (context) {
 
         var url = context.api.steamie;
 
-        d3.json(url, function (err, status) {
+        d3.json(url, function (err, data_response) {
             if (err) {
                 // not auth'ed
                 console.log('Not authed.');
-
+                data = undefined;
+                authed = false;
                 return;
             }
 
-            // if call comes back without err,
-            // then the user is authenticated.
-            user.authed(true);
+            data = data_response;
+            authed = true;
 
-            // status.objects[0] is the result you
-            // are after.
-
-            if (status.objects[0].individual) {
-                if (status.objects[0].individual.zip_code) {
-                    // already on map
-                    // form.state('profile');
-
-                    // for now
-                    context.form.type('individual')
-                        .state('inactive');
-                } else {
-                    // not on map, fill it out
-                    context.form.type('individual')
-                        .state('fill_out_individual');
-                }
-
-            } else if (status.objects[0].institution) {
-                context.form.type('institution')
-                    .state('fill_out_institution');
-
-            } else {
-                context.form.state('fill_out_' + context.form.type());
-            }
-
-            context.form.add_avatar(status.objects[0].avatar_url);
-
-
+            dispatch.checkAuthComplete.apply(this, arguments);
         });
 
         return user;
@@ -63,6 +37,63 @@ function User (context) {
         authed = x;
         return user;
     };
+
+    // status is the response from the server
+    // about the user's authentication
+    user.data = function (x) {
+        if (!arguments.length) return data;
+        // probably don't want to overwrite the
+        // data object. may remove it.
+        // more of a getter to check state.
+        // specific useful functions for the user
+        // are below.
+        data = x;
+        return user;
+    };
+
+    // --------
+    // specific attributes to over write
+    var steamie_type;
+
+    user.zip_code = function (x) {
+        if (!arguments.length) return data.objects[0].zip_code;
+        data.objects[0].zip_code = x;
+        return user;
+    };
+
+    user.avatar_url = function () {
+        return data.objects[0].avatar_url;
+    };
+
+    // type only affects the UI.
+    // does not change the actual data structure
+    // that is going to and from the server
+    user.type = function (x) {
+        if (!arguments.length) return steamie_type;
+        if ((x === 'individual') ||
+            (x === 'i')) {
+            steamie_type = 'individual';
+        }
+        else if ((x === 'institution') ||
+                 (x === 'g')) {
+            steamie_type = 'institution';
+        }
+
+        return user;
+    };
+
+    user.individual = function (x) {
+        if (!arguments.length) return data.objects[0].individual;
+        data.objects[0].individual = x;
+        return user;
+    };
+
+    user.institution = function (x) {
+        if (!arguments.length) return data.objects[0].institution;
+        data.objects[0].institution = x;
+        return user;
+    };
+
 
     return user;
 }

@@ -66,7 +66,17 @@
                     <div class="modal-main-area column inset">
 
                         <div class="modal-header">
-                            <h1>Join the Movement</h1>
+                            <h1 id="modal-header-join"
+                                class="hide-til-active"
+                                >Join the Movement</h1>
+                            <h1 id="modal-header-thanks"
+                                class="hide-til-active"
+                                >Thank you!</h1>
+                            <div id="">
+                                <img src="" alt=""
+                                     class="avatar hide-til-active"
+                                     id="">
+                            </div>
                         </div>
 
                         <div class="modal-content">
@@ -81,15 +91,19 @@
                                     </div>
 
                                  </div>
-                                 <p id="add-me-button"
-                                    class="large button"
-                                    >Add me!</p>
+                                <p id="auth-me-button"
+                                   class="large button"
+                                   >Auth me!</p>
                              </div>
 
-                             <div id="choose-type-add-zip"
+                            <div id="choose-type-add-zip"
                                   class="hide-til-active modal-content">
                                  
-                                <p>avatar goes here.</p>
+                                <div>
+                                    <img src="" alt=""
+                                         id="choose-type-add-zip-avatar"
+                                         class="avatar">
+                                </div>
 
                                 <div class="row clearfix">
                                     <div class="column half"
@@ -105,9 +119,23 @@
                                              >00000</div>
                                     </div>
                                 </div>
-                             </div>
 
-                            <div id="add-yourself-individual-form-wrapper"
+                                <p id="add-me-button"
+                                   class="large button"
+                                   >Add me!</p>
+                            </div>
+
+                            <div id="thank-you"
+                                 class="hide-til-active modal-content">
+
+                                <div>
+                                    <img src="" alt=""
+                                         id="choose-type-add-zip-avatar"
+                                         class="avatar">
+                                </div>
+                            </div>
+
+                            <div id="profile-individual"
                                  class="hide-til-active modal-content">
 
                                 <label for="individual-first-name">First Name</label>
@@ -138,7 +166,7 @@
                                       class="button submit">Add me, I'm Steamie</div>
                             </div>
 
-                            <div id="add-yourself-institution-form-wrapper"
+                            <div id="profile-institution"
                                  class="hide-til-active modal-content">
 
                                 <label for="institution-name">Name</label>

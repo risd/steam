@@ -12,7 +12,7 @@ from tastypie.resources import ModelResource, ALL
 from tastypie.serializers import Serializer
 
 from django.contrib.auth.models import User
-from .models import Steamies, Institution, Individual
+from .models import Steamies, Institution, Individual, TopLevelGeo
 
 
 class UserObjectsOnlyAuthorization(Authorization):
@@ -105,6 +105,13 @@ class NetworkResource(ModelResource):
         queryset = Steamies.objects.all()
         resource_name = 'network'
 
+class TopLevelGeoResource(ModelResource):
+    """
+    Returns TopLevelGeo objects to AuthSteamieResource
+    """
+    class Meta(CommonOpenResourceMeta):
+        queryset = TopLevelGeo.objects.all()
+
 
 class InstitutionResource(ModelResource):
     """
@@ -148,6 +155,11 @@ class AuthSteamieResource(ModelResource):
     individual = fields.ForeignKey(
         IndividualResource,
         'individual',
+        null=True,
+        full=True)
+    top_level = fields.ForeignKey(
+        TopLevelGeoResource,
+        'top_level',
         null=True,
         full=True)
 

@@ -442,6 +442,13 @@ network graph
 .node.i circle.outter {
   stroke-width: 0; }
 
+.avatar {
+  width: 50px;
+  height: auto;
+  border-radius: 25px;
+  border-width: 1px;
+  border-style: solid; }
+
 .info_tip {
   position: fixed;
   top: 20%;
@@ -453,11 +460,6 @@ network graph
   -webkit-font-smoothing: antialiased; }
 
 .info_tip .avatar {
-  width: 50px;
-  height: auto;
-  border-radius: 25px;
-  border-width: 1px;
-  border-style: solid;
   position: absolute;
   top: 0;
   left: -65px; }

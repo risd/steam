@@ -60,6 +60,17 @@ function Editable (node) {
                 }
                 focused = false;
             })
+            .on('keydown.editable-replace', function () {
+                // do not allow 'enter' (keycode 13)
+                // do not allow more than 8 characters.
+                //   if more than 8, only allow
+                //   backspace (keycode 8)
+                if ((d3.event.keyCode === 13) ||
+                    ((d3.select(this).text().length >= 15) &&
+                     (d3.event.keyCode !== 8))) {
+                    d3.event.preventDefault();
+                }
+            })
             .html(placeholder);
     }
 

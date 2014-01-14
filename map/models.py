@@ -1,8 +1,74 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext as _
 
 from .signals.geo import Geo
+
+
+class TopLevelGeo(models.Model):
+    """
+    Represents all US districts or countries in the world.
+    GeoJSON for map markers is derived from here.
+    """
+    us_bool = models.BooleanField(blank=False, null=False)
+    lat = models.DecimalField(
+        'Latitude',
+        max_digits=7,
+        decimal_places=5,
+        blank=False,
+        null=False)
+    lon = models.DecimalField(
+        'Longitude',
+        max_digits=8,
+        decimal_places=5,
+        blank=False,
+        null=False)
+
+    # if us_bool == True, all of these are filled:
+    us_state = models.CharField(
+        'US State',
+        max_length=50,
+        blank=True,
+        null=True)
+    us_state_abbr = models.CharField(
+        'US State Abbreviation',
+        blank=True,
+        null=True,
+        max_length=4)
+    us_district = models.IntegerField(
+        'US District',
+        blank=True,
+        null=True)
+    us_district_ordinal = models.CharField(
+        'US District Ordinal',
+        blank=True,
+        null=True,
+        max_length=4)
+    us_zip_code = models.CharField(
+        "US Zipcode",
+        max_length=15,
+        blank=True,
+        null=True)
+
+    # otherwise, just the country is filled:
+    country = models.CharField(
+        'Country',
+        blank=True,
+        null=True)
+
+
+    class Meta:
+        verbose_name = _('TopLevelGeo')
+        verbose_name_plural = _('TopLevelGeos')
+
+    def __unicode__(self):
+        if (self.us_bool):
+            return '{0} {1}'.format(self.us_state,
+                                    self.us_district_ordinal) +\
+                    ' District'
+        else:
+            return self.country
 
 
 class Initiative(models.Model):
@@ -113,11 +179,13 @@ class Steamies(models.Model):
         blank=True,
         null=True)
 
-    zip_code = models.CharField(
-        "Zip code",
-        max_length=15,
+    # the text that is inputed from the User to
+    # map to a TopLevelGeo model instance
+    top_level_input = models.CharField(
+        'Top Level Input',
+        max_length=75,
         blank=True,
-        null=True)
+        null=False)
 
     avatar_url = models.URLField(
         "Avatar url",
@@ -126,11 +194,11 @@ class Steamies(models.Model):
         null=True)
 
     # captures the top level region that data
-    # will be associated with. Either a US State,
+    # will be associated with. Either a US district,
     # or a country
-    top_level = models.CharField(
-        'State_District or Country Abbreviation',
-        max_length=6,
+    top_level = models.ForeignKey(
+        TopLevelGeo,
+        related_name='top_level',
         blank=True,
         null=True)
 
@@ -154,6 +222,7 @@ class Steamies(models.Model):
         blank=True,
         null=True)
 
+    # education, research, industry, policy
     work_in = models.CharField(
         max_length=30,
         blank=True,
@@ -183,7 +252,7 @@ class Steamies(models.Model):
 
 
 def add_geo(sender, instance, created, *args, **kwargs):
-    if not isinstance(instance.zip_code, type(None)):
+    if not isinstance(instance.top_level_input, type(None)):
         # could make this a bit more efficient if, on save
         # you passed the update_fields attribute. then
         # you could simply see if update_fields includes
@@ -192,15 +261,20 @@ def add_geo(sender, instance, created, *args, **kwargs):
 
         # instance.save(update_fields=['name'])
 
-        # must have a zip_code
-
         g = Geo()
-        geo = g.geo(instance.zip_code)
-        ## these are now removed
-        # instance.longitude = float(geo['lon'])
-        # instance.latitude = float(geo['lat'])
-        # instance.us_bool = geo['us_bool']
-        instance.top_level = geo['top_level']
+        geo = g.geo(instance.top_level_input)
+
+        if 'error' in geo:
+            instance.top_level_input = None
+        else:
+            try:
+                # will raise ObjectDoesNotExist
+                # if it does not find an object
+                top_level_geo = TopLevelGeo.get(**geo)
+                instance.top_level = top_level_geo
+
+            except ObjectDoesNotExist:
+                instance.top_level_input = None
 
         print 'resaved with geo'
         print instance.top_level

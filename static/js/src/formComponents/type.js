@@ -4,8 +4,9 @@ module.exports = function typeSelection (context) {
         selected = false,
         // parent node where options will be appended
         node,
-        data = [],
-        dispatch = self.dispatch = d3.dispatch('valid');
+        data = [];
+
+    self.dispatch = d3.dispatch('valid');
 
     self.render = function () {
         // must call node(x) to
@@ -18,6 +19,16 @@ module.exports = function typeSelection (context) {
             .enter()
             .append('div')
             .attr('class', 'type-option')
+            .on('mouseup', function (d) {
+                d3.event.stopPropagation();
+                data.forEach(function (n, i) {
+                    n.selected = false;
+                });
+                d.selected = true;
+                selected = d;
+                valid = true;
+                self.dispatch.valid.apply(this, arguments);
+            })
             .call(addInput);
 
         return self;

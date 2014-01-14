@@ -1,79 +1,88 @@
 # Used as a signal on save of the Steamie models
 # Since geo data is being pushed from the user
 # to server as zip codes, this will tap into the
-# zip codes file to see if the user supplied
-# a US zip code. If so, it return lat/lon for
-# that zipcode, and the state. If not,
-# returns lat lon and the country.
+# the Sunlight Congress API or pyGeocoder (google
+# maps powered) in order to get back metadata
+# to tie that zip_code to a particular
+# instance of TopLevelGeo
 
 # lat lon will never actually be used.
 # items will be aggregated by
 #   zipcode (polygon)
 #   level_1 (point)
 
-from os import path
 from pygeocoder import Geocoder
-
-# path to file with geo data for this application
-DEFAULT_GEO_FILE = \
-    path.join(path.dirname(path.abspath(__file__)), 'geo.tsv')
+from sunlight import congress
+import us
 
 
 class Geo():
     """Construct for dealing with zipcode data"""
-    def __init__(self, filepath=DEFAULT_GEO_FILE):
-        self.by_zip = self._prep(filepath)
+    def __init__(self):
+        # ordinal works for 68 characters.
+        # we only need 1-53, so this will do
+        # http://codegolf.stackexchange.com/
+                # questions/4707/outputting-ordinal-
+                # numbers-1st-2nd-3rd#answer-4712
+        self.ordinal =\
+            lambda n: "%d%s" %\
+                (n,"tsnrhtdd"[(n/10%10!=1)*(n%10<4)*n%10::4])
 
-    def _prep(self, filepath):
-        zip_codes = {}
+    def geo(self, top_level_input):
+        """
+        Need to determine how we are going to get the 
+        verbose name "Washington 6th District". That is
+        what should be captured in top_level
 
-        count = 0
-        with open(filepath, 'r') as f:
-            raw = f.read()
-            raw_lines = raw.split('\n')
-            for line in raw_lines:
-                count += 1
-                # skip the first line
-                if count == 1:
-                    continue
+        Then points should be aggregated on top_level,
+        into representative numbers for edu, ind, pol, and
+        'res' (per fake_level_1_pnt.geojson)
 
-                # lon,lat,zip,level_1,us_bool
-                split_data = line.strip().split('\t')
-                if len(split_data) == 3:
-                    geo = {}
-                    geo['lon'] = split_data[0]
-                    geo['lat'] = split_data[1]
-                    geo['level_1'] = split_data[3]
-                    geo['us_bool'] = split_data[4]
+        @param zip_code : the zip in question
 
-                    zip_codes[split_data[2]] = geo
+        @return geo : {} **kwargs of variables to compare
+                         against TopLevelGeo.
+                           
+        """
+        district = congress.\
+                        locate_districts_by_zip(
+                            zipcode=top_level_input)
 
-        return zip_codes
-
-    def geo(self, zip_code):
-        geo = {}
-
-        if zip_code in self.by_zip.keys():
-            geo = self.by_zip[zip_code]
+        if (len(district) > 0):
+            # you got something back!
+            geo = {
+                'us_bool': True,
+                'us_state_abbr': district[0][u'state'],
+                'us_state':\
+                    getattr(us.states, district[0][u'state']).name,
+                'us_district': district[0][u'district'],
+                'us_district_ordinal':\
+                    self.ordinal(int(district[0][u'district'])),
+                'us_zip_code': top_level_input,
+            }
         else:
+            # you didn't get a response!
+            # now geocode the thing
             try:
                 geocoded = Geocoder.geocode(zip_code)
             except:
-                geo = {'error': 'could not be geocoded'}
+                geo = { 'error': 'Could not find location' }
             else:
-                geo = {}
-                geo['lon'] = geocoded[0].coordinates[1]
-                geo['lat'] = geocoded[0].coordinates[0]
-
-                if geocoded[0].country == 'United States':
-                    geo['us_bool'] = True
-                    geo['level_1'] = \
-                        geocoded[0].administrative_area_level_1
-
-                else:
-                    # should always be coming through here,
-                    # since the list has all US zip codes.
-                    geo['us_bool'] = False
-                    geo['level_1'] = geocoded[0].country
+                geo = {
+                    'us_bool': False,
+                    'country': geocoded[0].country
+                }
 
         return geo
+
+if __name__ == '__main__':
+    g = Geo()
+    ri = g.geo(zip_code='02906')
+    print ri
+    assert (ri.get(u'us_bool') == True)
+    assert (ri.get(u'us_state') == u'Rhode Island')
+    assert (ri.get(u'us_district') == 1)
+    strehla_germany = g.geo(zip_code='01616')
+    print strehla_germany
+    assert (ri.get(u'country') == u'Germany')
+    assert (ri.get(u'us_bool') == False)
