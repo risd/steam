@@ -58,7 +58,6 @@ class Geo():
                 'us_district': district[0][u'district'],
                 'us_district_ordinal':\
                     self.ordinal(int(district[0][u'district'])),
-                'us_zip_code': top_level_input,
             }
         else:
             # you didn't get a response!

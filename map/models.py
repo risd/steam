@@ -45,11 +45,6 @@ class TopLevelGeo(models.Model):
         blank=True,
         null=True,
         max_length=4)
-    us_zip_code = models.CharField(
-        "US Zipcode",
-        max_length=15,
-        blank=True,
-        null=True)
 
     # otherwise, just the country is filled:
     country = models.CharField(
@@ -182,6 +177,8 @@ class Steamies(models.Model):
 
     # the text that is inputed from the User to
     # map to a TopLevelGeo model instance
+    # either a country selected from a list,
+    # or a zipcode in the US
     top_level_input = models.CharField(
         'Top Level Input',
         max_length=75,
