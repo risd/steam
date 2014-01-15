@@ -657,7 +657,7 @@ function Editable (node) {
                 //   if more than 8, only allow
                 //   backspace (keycode 8)
                 if ((d3.event.keyCode === 13) ||
-                    ((d3.select(this).text().length >= 7) &&
+                    ((d3.select(this).text().length >= 15) &&
                      (d3.event.keyCode !== 8))) {
                     d3.event.preventDefault();
                 }
@@ -891,6 +891,92 @@ if (typeof module !== 'undefined') {
     window.filters = filters;
 }
 },{}],12:[function(require,module,exports){
+module.exports = function radioSelection (context) {
+    var self = {},
+        valid = false,
+        selected = false,
+        // parent node where options will be appended
+        node,
+        group_name,
+        data = [];
+
+    self.dispatch = d3.dispatch('valid');
+
+    self.render = function () {
+        // must call node(x) to
+        // define a node before
+        // calling .render()
+
+        var sel = node
+            .selectAll('.type-option')
+            .data(data)
+            .enter()
+            .append('div')
+            .attr('class', 'type-option')
+            .on('mouseup', function (d) {
+                d3.event.stopPropagation();
+                data.forEach(function (n, i) {
+                    n.selected = false;
+                });
+                d.selected = true;
+                selected = d;
+                valid = true;
+                self.dispatch.valid.apply(this, arguments);
+            })
+            .call(addInput);
+
+        return self;
+    };
+
+    self.node = function (x) {
+        if (!arguments.length) return node;
+        node = x;
+        return self;
+    };
+
+    self.data = function (x) {
+        if (!arguments.length) return data;
+        data = x;
+        return self;
+    };
+
+    self.groupName = function (x) {
+        if (!arguments.length) return group_name;
+        group_name = x;
+        return self;
+    };
+
+    self.isValid = function () {
+        return valid;
+    };
+
+    self.selected = function () {
+        return selected;
+    };
+
+    function addInput (sel) {
+
+        sel.append('input')
+            .attr('type', 'radio')
+            .attr('class', 'checkbox')
+            .attr('name', group_name)
+            .attr('id', function (d, i) {
+                return 'type-option-' + d.value;
+            });
+
+        sel.append('label')
+            .attr('class', 'type-option-label')
+            .attr('for', function (d, i) {
+                return 'type-option-' + d.value;
+            })
+            .text(function (d, i) {
+                return d.label;
+            });
+    }
+
+    return self;
+};
+},{}],13:[function(require,module,exports){
 var Checkmark = require('../ui/checkmark');
 
 module.exports = function socialAuthSelection (context) {
@@ -973,86 +1059,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":19}],13:[function(require,module,exports){
-module.exports = function typeSelection (context) {
-    var self = {},
-        valid = false,
-        selected = false,
-        // parent node where options will be appended
-        node,
-        data = [];
-
-    self.dispatch = d3.dispatch('valid');
-
-    self.render = function () {
-        // must call node(x) to
-        // define a node before
-        // calling .render()
-
-        var sel = node
-            .selectAll('.type-option')
-            .data(data)
-            .enter()
-            .append('div')
-            .attr('class', 'type-option')
-            .on('mouseup', function (d) {
-                d3.event.stopPropagation();
-                data.forEach(function (n, i) {
-                    n.selected = false;
-                });
-                d.selected = true;
-                selected = d;
-                valid = true;
-                self.dispatch.valid.apply(this, arguments);
-            })
-            .call(addInput);
-
-        return self;
-    };
-
-    self.node = function (x) {
-        if (!arguments.length) return node;
-        node = x;
-        return self;
-    };
-
-    self.data = function (x) {
-        if (!arguments.length) return data;
-        data = x;
-        return self;
-    };
-
-    self.isValid = function () {
-        return valid;
-    };
-
-    self.selected = function () {
-        return selected;
-    };
-
-    function addInput (sel) {
-
-        sel.append('input')
-            .attr('type', 'radio')
-            .attr('class', 'checkbox')
-            .attr('name', 'category')
-            .attr('id', function (d, i) {
-                return 'type-option-' + d.type;
-            });
-
-        sel.append('label')
-            .attr('class', 'type-option-label')
-            .attr('for', function (d, i) {
-                return 'type-option-' + d.type;
-            })
-            .text(function (d, i) {
-                return d.name;
-            });
-    }
-
-    return self;
-};
-},{}],14:[function(require,module,exports){
+},{"../ui/checkmark":19}],14:[function(require,module,exports){
 var Editable = require('../editable'),
     Checkmark = require('../ui/checkmark');
 
@@ -1108,7 +1115,7 @@ module.exports = function zipcodeComponent (selection) {
 },{"../editable":8,"../ui/checkmark":19}],15:[function(require,module,exports){
 var validator = require('./validators'),
     zipcodeComponent = require('./formComponents/zipcode'),
-    typeComponent = require('./formComponents/type'),
+    radioComponent = require('./formComponents/radio'),
     socialAuthComponent = require('./formComponents/socialAuthSelection');
 
 module.exports = FormFlow;
@@ -1131,15 +1138,38 @@ function FormFlow (context) {
             zipcodeComponent(d3.select('#add-yourself-zip')),
 
         select_type =
-            typeComponent()
+            radioComponent()
                 .node(d3.select('#select-type-component'))
+                .groupName('steamie_type')
                 .data([{
-                    name: 'Individual',
-                    type: 'i',
+                    label: 'Individual',
+                    value: 'i',
                     selected: false
                 }, {
-                    name: 'Institution',
-                    type: 'g',
+                    label: 'Institution',
+                    value: 'g',
+                    selected: false
+                }]);
+
+        select_work_in =
+            radioComponent()
+                .node(d3.select('#select-work-in-component'))
+                .groupName('steamie_work_in')
+                .data([{
+                    label: 'Research',
+                    value: 'res',
+                    selected: false
+                }, {
+                    label: 'Education',
+                    value: 'edu',
+                    selected: false
+                }, {
+                    label: 'Political',
+                    value: 'pol',
+                    selected: false
+                }, {
+                    label: 'Industry',
+                    value: 'ind',
                     selected: false
                 }]);
 
@@ -1371,6 +1401,7 @@ function FormFlow (context) {
 
         social_auth.render();
         select_type.render();
+        select_work_in.render();
 
         // how validation can propogate to this level
         social_auth
@@ -1394,8 +1425,14 @@ function FormFlow (context) {
         select_type
             .dispatch
             .on('valid.formElementCheck', function (d) {
-                console.log('type selections');
-                console.log(d);
+                if (zipAndTypeValid()) {
+                    enable_add_me();
+                }
+            });
+
+        select_work_in
+            .dispatch
+            .on('valid.formElementCheck', function (d) {
                 if (zipAndTypeValid()) {
                     enable_add_me();
                 }
@@ -1439,7 +1476,8 @@ function FormFlow (context) {
             }
         });
 
-        form.state('call_to_action');
+        // form.state('call_to_action');
+        form.state('choose_type_add_zip');
 
         return form;
     };
@@ -1603,7 +1641,8 @@ function FormFlow (context) {
     // ensure validity of form elements
     function zipAndTypeValid () {
         if (editable_zip.isValid() &&
-            select_type.isValid()) {
+            select_type.isValid() &&
+            select_work_in.isValid()) {
             return true;
         }
         return false;
@@ -1642,7 +1681,7 @@ function FormFlow (context) {
 
     return form;
 }
-},{"./formComponents/socialAuthSelection":12,"./formComponents/type":13,"./formComponents/zipcode":14,"./validators":21}],16:[function(require,module,exports){
+},{"./formComponents/radio":12,"./formComponents/socialAuthSelection":13,"./formComponents/zipcode":14,"./validators":21}],16:[function(require,module,exports){
 var filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./clone'),

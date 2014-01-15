@@ -1,6 +1,6 @@
 var validator = require('./validators'),
     zipcodeComponent = require('./formComponents/zipcode'),
-    typeComponent = require('./formComponents/type'),
+    radioComponent = require('./formComponents/radio'),
     socialAuthComponent = require('./formComponents/socialAuthSelection');
 
 module.exports = FormFlow;
@@ -23,15 +23,38 @@ function FormFlow (context) {
             zipcodeComponent(d3.select('#add-yourself-zip')),
 
         select_type =
-            typeComponent()
+            radioComponent()
                 .node(d3.select('#select-type-component'))
+                .groupName('steamie_type')
                 .data([{
-                    name: 'Individual',
-                    type: 'i',
+                    label: 'Individual',
+                    value: 'i',
                     selected: false
                 }, {
-                    name: 'Institution',
-                    type: 'g',
+                    label: 'Institution',
+                    value: 'g',
+                    selected: false
+                }]);
+
+        select_work_in =
+            radioComponent()
+                .node(d3.select('#select-work-in-component'))
+                .groupName('steamie_work_in')
+                .data([{
+                    label: 'Research',
+                    value: 'res',
+                    selected: false
+                }, {
+                    label: 'Education',
+                    value: 'edu',
+                    selected: false
+                }, {
+                    label: 'Political',
+                    value: 'pol',
+                    selected: false
+                }, {
+                    label: 'Industry',
+                    value: 'ind',
                     selected: false
                 }]);
 
@@ -263,6 +286,7 @@ function FormFlow (context) {
 
         social_auth.render();
         select_type.render();
+        select_work_in.render();
 
         // how validation can propogate to this level
         social_auth
@@ -286,8 +310,14 @@ function FormFlow (context) {
         select_type
             .dispatch
             .on('valid.formElementCheck', function (d) {
-                console.log('type selections');
-                console.log(d);
+                if (zipAndTypeValid()) {
+                    enable_add_me();
+                }
+            });
+
+        select_work_in
+            .dispatch
+            .on('valid.formElementCheck', function (d) {
                 if (zipAndTypeValid()) {
                     enable_add_me();
                 }
@@ -331,7 +361,8 @@ function FormFlow (context) {
             }
         });
 
-        form.state('call_to_action');
+        // form.state('call_to_action');
+        form.state('choose_type_add_zip');
 
         return form;
     };
@@ -495,7 +526,8 @@ function FormFlow (context) {
     // ensure validity of form elements
     function zipAndTypeValid () {
         if (editable_zip.isValid() &&
-            select_type.isValid()) {
+            select_type.isValid() &&
+            select_work_in.isValid()) {
             return true;
         }
         return false;
