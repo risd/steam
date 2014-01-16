@@ -11,70 +11,124 @@
 // the placeholder
 module.exports = Editable;
 
-function Editable (node) {
-    var editable = {},
+function Editable () {
+    var self = {},
         placeholder = '',
-        focused = false;
+        focused = false,
+        prev_valid = false,
+        valid = false,
+        editable_placeholder = '00000',
+        selection,
+        editable, // selection for editable div
+        label; // d.type, d.label
 
-    editable.placeholder = function (x) {
+    self.dispatch = d3.dispatch('validChange');
+
+    self.placeholder = function (x) {
         if (!arguments.length) return placeholder;
         placeholder = x;
-        return editable;
+        return self;
     };
 
-    editable.value = function (x) {
-        return node.html();
+    self.label = function (x) {
+        if (!arguments.length) return label;
+        label = x;
+        return self;
     };
 
-    editable.node = function () {
-        return node;
+    self.selection = function (x) {
+        if (!arguments.length) return selection;
+        selection = x;
+        return self;
     };
 
-    function init () {
+    self.value = function () {
+        return editable.html();
+    };
 
-        var dom_placeholder = node.attr('placeholder');
-        if (dom_placeholder) {
-            placeholder = dom_placeholder;
-        }
+    self.isValid = function () {
+        return valid;
+    };
 
-        node.on('focus.editable', function () {
-                node.classed('focused', true);
-                if (node.html() === placeholder) {
-                    node.html('');
+    self.render = function () {
+        selection
+            .append(label.type)
+            .text(label.label);
+
+        editable = selection
+            .append('div')
+            .attr('contenteditable', 'true')
+            .attr('class', 'large editable')
+            .attr('id', 'add-yourself-zip')
+            .attr('placeholder', editable_placeholder)
+            .html(editable_placeholder);
+
+        console.log('editable');
+        console.log(editable);
+        
+        editable
+            .on('focus.editable-internal', function () {
+                editable.classed('focused', true);
+                if (editable.html() === editable_placeholder) {
+                    editable.html('');
                 }
                 focused = true;
             })
             .on('blur.editable-internal', function () {
-                node.classed('focused', false);
+                editable.classed('focused', false);
 
-                var cur_html = node.html();
+                var cur_html = editable.html();
 
                 // firefox will put a break tag in
                 // your input when empty.
                 if ((cur_html === '') ||
                     (cur_html.indexOf('<br>') > -1)) {
-                    node.html(placeholder);
-                    node.classed('value-set', false);
+                    editable.html(placeholder);
+                    editable.classed('value-set', false);
                 } else {
-                    node.classed('value-set', true);
+                    editable.classed('value-set', true);
                 }
                 focused = false;
             })
-            .on('keydown.editable-replace', function () {
+            .on('keydown.editable-internal', function () {
                 // do not allow 'enter' (keycode 13)
                 // do not allow more than 8 characters.
                 //   if more than 8, only allow
                 //   backspace (keycode 8)
                 if ((d3.event.keyCode === 13) ||
-                    ((d3.select(this).text().length >= 15) &&
+                    ((d3.select(this).text().length >= 8) &&
                      (d3.event.keyCode !== 8))) {
                     d3.event.preventDefault();
                 }
             })
-            .html(placeholder);
+            .on('keyup.editable-internal', function () {
+                console.log('keyup');
+                validate();
+
+                editable.classed('valid', valid);
+
+                if (valid !== prev_valid) {
+                    self.dispatch
+                        .validChange.apply(this, arguments);
+                }
+
+                prev_valid = valid;
+            });
+
+        return self;
+    };
+
+    function validate () {
+        if ((editable.html() === placeholder) ||
+            (editable.html() === '')) {
+            valid = false;
+        } else {
+            valid = true;
+        }
+
+        return valid;
     }
 
-    init ();
-
-    return editable;
+    
+    return self;
 }

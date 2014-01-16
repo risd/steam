@@ -1,7 +1,13 @@
 var validator = require('./validators'),
-    zipcodeComponent = require('./formComponents/zipcode'),
-    radioComponent = require('./formComponents/radio'),
-    socialAuthComponent = require('./formComponents/socialAuthSelection');
+
+    geoComponent =
+        require('./formComponents/dropdownConditionalText'),
+
+    radioComponent =
+        require('./formComponents/radio'),
+
+    socialAuthComponent =
+        require('./formComponents/socialAuthSelection');
 
 module.exports = FormFlow;
 
@@ -19,8 +25,11 @@ function FormFlow (context) {
             socialAuthComponent(context)
                 .node(d3.select('#add-yourself-login')),
 
-        editable_zip =
-            zipcodeComponent(d3.select('#add-yourself-zip')),
+        select_geo =
+            geoComponent()
+                .rootSelection(d3.select('#add-yourself-geo'))
+                .optionsTsvUrl(context.api.base +
+                            '/static/geo/countries_geocodable.tsv'),
 
         select_type =
             radioComponent()
@@ -287,6 +296,7 @@ function FormFlow (context) {
         social_auth.render();
         select_type.render();
         select_work_in.render();
+        select_geo.render();
 
         // how validation can propogate to this level
         social_auth
@@ -297,7 +307,7 @@ function FormFlow (context) {
                 }
             });
 
-        editable_zip
+        select_geo
             .dispatch
             .on('validChange.formElementCheck', function () {
                 if (zipAndTypeValid()) {
@@ -400,7 +410,7 @@ function FormFlow (context) {
         // for the User that is stored.
         context.user
             .type(form.type())
-            .zip_code(editable_zip.validatedData());
+            .zip_code(select_geo.validatedData());
 
         steamie_request(
             context.user.data(),
@@ -525,7 +535,7 @@ function FormFlow (context) {
 
     // ensure validity of form elements
     function zipAndTypeValid () {
-        if (editable_zip.isValid() &&
+        if (select_geo.isValid() &&
             select_type.isValid() &&
             select_work_in.isValid()) {
             return true;

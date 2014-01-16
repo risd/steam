@@ -602,72 +602,126 @@ function Config (hostname) {
 // the placeholder
 module.exports = Editable;
 
-function Editable (node) {
-    var editable = {},
+function Editable () {
+    var self = {},
         placeholder = '',
-        focused = false;
+        focused = false,
+        prev_valid = false,
+        valid = false,
+        editable_placeholder = '00000',
+        selection,
+        editable, // selection for editable div
+        label; // d.type, d.label
 
-    editable.placeholder = function (x) {
+    self.dispatch = d3.dispatch('validChange');
+
+    self.placeholder = function (x) {
         if (!arguments.length) return placeholder;
         placeholder = x;
-        return editable;
+        return self;
     };
 
-    editable.value = function (x) {
-        return node.html();
+    self.label = function (x) {
+        if (!arguments.length) return label;
+        label = x;
+        return self;
     };
 
-    editable.node = function () {
-        return node;
+    self.selection = function (x) {
+        if (!arguments.length) return selection;
+        selection = x;
+        return self;
     };
 
-    function init () {
+    self.value = function () {
+        return editable.html();
+    };
 
-        var dom_placeholder = node.attr('placeholder');
-        if (dom_placeholder) {
-            placeholder = dom_placeholder;
-        }
+    self.isValid = function () {
+        return valid;
+    };
 
-        node.on('focus.editable', function () {
-                node.classed('focused', true);
-                if (node.html() === placeholder) {
-                    node.html('');
+    self.render = function () {
+        selection
+            .append(label.type)
+            .text(label.label);
+
+        editable = selection
+            .append('div')
+            .attr('contenteditable', 'true')
+            .attr('class', 'large editable')
+            .attr('id', 'add-yourself-zip')
+            .attr('placeholder', editable_placeholder)
+            .html(editable_placeholder);
+
+        console.log('editable');
+        console.log(editable);
+        
+        editable
+            .on('focus.editable-internal', function () {
+                editable.classed('focused', true);
+                if (editable.html() === editable_placeholder) {
+                    editable.html('');
                 }
                 focused = true;
             })
             .on('blur.editable-internal', function () {
-                node.classed('focused', false);
+                editable.classed('focused', false);
 
-                var cur_html = node.html();
+                var cur_html = editable.html();
 
                 // firefox will put a break tag in
                 // your input when empty.
                 if ((cur_html === '') ||
                     (cur_html.indexOf('<br>') > -1)) {
-                    node.html(placeholder);
-                    node.classed('value-set', false);
+                    editable.html(placeholder);
+                    editable.classed('value-set', false);
                 } else {
-                    node.classed('value-set', true);
+                    editable.classed('value-set', true);
                 }
                 focused = false;
             })
-            .on('keydown.editable-replace', function () {
+            .on('keydown.editable-internal', function () {
                 // do not allow 'enter' (keycode 13)
                 // do not allow more than 8 characters.
                 //   if more than 8, only allow
                 //   backspace (keycode 8)
                 if ((d3.event.keyCode === 13) ||
-                    ((d3.select(this).text().length >= 15) &&
+                    ((d3.select(this).text().length >= 8) &&
                      (d3.event.keyCode !== 8))) {
                     d3.event.preventDefault();
                 }
             })
-            .html(placeholder);
+            .on('keyup.editable-internal', function () {
+                console.log('keyup');
+                validate();
+
+                editable.classed('valid', valid);
+
+                if (valid !== prev_valid) {
+                    self.dispatch
+                        .validChange.apply(this, arguments);
+                }
+
+                prev_valid = valid;
+            });
+
+        return self;
+    };
+
+    function validate () {
+        if ((editable.html() === placeholder) ||
+            (editable.html() === '')) {
+            valid = false;
+        } else {
+            valid = true;
+        }
+
+        return valid;
     }
 
-    init ();
-
-    return editable;
+    
+    return self;
 }
 },{}],9:[function(require,module,exports){
 module.exports = {
@@ -891,6 +945,136 @@ if (typeof module !== 'undefined') {
     window.filters = filters;
 }
 },{}],12:[function(require,module,exports){
+var Editable = require('../editable'),
+    Checkmark = require('../ui/checkmark');
+
+module.exports = function dropdownConditionalText () {
+    var self = {},
+        prev_valid = false,
+        valid = false,
+        root_selection,
+        text_selection,
+        editable_text,
+        checkmark_sel,
+        options_tsv_url,
+        select_wrapper,
+        select,
+        select_options;
+
+    self.dispatch = d3.dispatch('validChange');
+
+    self.isValid = function () {
+        return valid;
+    };
+
+    self.validatedData = function () {
+        return self.value();
+    };
+
+    self.rootSelection = function (x) {
+        if (!arguments.length) return root_selection;
+        root_selection = x;
+        return self;
+    };
+
+    self.optionsTsvUrl = function (x) {
+        if (!arguments) return options_tsv_url;
+        options_tsv_url = x;
+        return self;
+    };
+
+    self.render = function () {
+        // add validation visualization
+        root_selection
+            .call(Checkmark());
+        checkmark_sel = root_selection.select('.checkmark');
+
+        select_wrapper =
+            root_selection
+                .append('div')
+                .attr('class', 'input-select');
+
+        text_selection =
+            root_selection
+                .append('div')
+                .attr('class', 'input-text hide-til-active active');
+
+
+        editable_text = Editable()
+                            .selection(text_selection)
+                            .placeholder('00000')
+                            .label({
+                                type: 'p',
+                                label: 'enter your zipcode'
+                            })
+                            .render();
+
+        editable_text
+            .dispatch
+            .on('validChange', function () {
+                validate();
+            });
+
+        d3.tsv(options_tsv_url, function (err, options_response) {
+            select = select_wrapper
+                .append('select')
+                .on('change', function () {
+                    if (select.property('value') ===
+                        'United States of America') {
+
+                        text_selection
+                            .classed('active', true);
+                    } else {
+                        text_selection
+                            .classed('active', false);
+                    }
+                    validate();
+                });
+
+            select
+                .selectAll('option')
+                .data(options_response)
+                .enter()
+                .append('option')
+                .attr('value', function(d) {
+                    return d.country;
+                })
+                .text(function(d) {
+                    return d.country;
+                });
+        });
+
+        return self;
+    };
+
+    function validate () {
+        if ((editable_text.isValid() &&
+             text_selection.classed('active')) ||
+            (text_selection.classed('active') === false)) {
+
+            valid = true;
+        } else {
+            valid = false;
+        }
+
+        checkmark_sel.classed('valid', valid);
+
+        console.log(editable_text.isValid(), ' editable text');
+        console.log(text_selection.classed('active'), ' active');
+
+        if (valid !== prev_valid) {
+            self.dispatch
+                .validChange.apply(this, arguments);
+        }
+
+        prev_valid = valid;
+
+        return valid;
+    }
+
+    return self;
+};
+},{"../editable":8,"../ui/checkmark":19}],13:[function(require,module,exports){
 module.exports = function radioSelection (context) {
     var self = {},
         valid = false,
@@ -976,7 +1160,7 @@ module.exports = function radioSelection (context) {
 
     return self;
 };
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var Checkmark = require('../ui/checkmark');
 
 module.exports = function socialAuthSelection (context) {
@@ -1059,64 +1243,17 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":19}],14:[function(require,module,exports){
-var Editable = require('../editable'),
-    Checkmark = require('../ui/checkmark');
-
-module.exports = function zipcodeComponent (selection) {
-    var zipcode = Editable(selection),
-        parent_sel = d3.select(selection.node().parentNode),
-        prev_valid = false,
-        valid = false;
-
-    zipcode.dispatch = d3.dispatch('validChange');
-
-    parent_sel
-        .call(Checkmark());
-
-    var checkmark_sel = parent_sel.select('.checkmark');
-
-    // add validation visualization
-    zipcode.node()
-        .on('keyup.editable', function () {
-            validate();
-
-            zipcode.node().classed('valid', valid);
-            checkmark_sel.classed('valid', valid);
-
-            if (valid !== prev_valid) {
-                zipcode.dispatch.validChange.apply(this, arguments);
-            }
-
-            prev_valid = valid;
-        });
-
-    zipcode.isValid = function () {
-        return valid;
-    };
-
-    zipcode.validatedData = function () {
-        return zipcode.value();
-    };
-
-    function validate () {
-        if (zipcode.value() === zipcode.placeholder() ||
-            (zipcode.value() === '')) {
-            valid = false;
-        } else {
-            valid = true;
-        }
-
-        return valid;
-    }
-
-    return zipcode;
-};
-},{"../editable":8,"../ui/checkmark":19}],15:[function(require,module,exports){
+},{"../ui/checkmark":19}],15:[function(require,module,exports){
 var validator = require('./validators'),
-    zipcodeComponent = require('./formComponents/zipcode'),
-    radioComponent = require('./formComponents/radio'),
-    socialAuthComponent = require('./formComponents/socialAuthSelection');
+
+    geoComponent =
+        require('./formComponents/dropdownConditionalText'),
+
+    radioComponent =
+        require('./formComponents/radio'),
+
+    socialAuthComponent =
+        require('./formComponents/socialAuthSelection');
 
 module.exports = FormFlow;
 
@@ -1134,8 +1271,11 @@ function FormFlow (context) {
             socialAuthComponent(context)
                 .node(d3.select('#add-yourself-login')),
 
-        editable_zip =
-            zipcodeComponent(d3.select('#add-yourself-zip')),
+        select_geo =
+            geoComponent()
+                .rootSelection(d3.select('#add-yourself-geo'))
+                .optionsTsvUrl(context.api.base +
+                            '/static/geo/countries_geocodable.tsv'),
 
         select_type =
             radioComponent()
@@ -1402,6 +1542,7 @@ function FormFlow (context) {
         social_auth.render();
         select_type.render();
         select_work_in.render();
+        select_geo.render();
 
         // how validation can propogate to this level
         social_auth
@@ -1412,7 +1553,7 @@ function FormFlow (context) {
                 }
             });
 
-        editable_zip
+        select_geo
             .dispatch
             .on('validChange.formElementCheck', function () {
                 if (zipAndTypeValid()) {
@@ -1515,7 +1656,7 @@ function FormFlow (context) {
         // for the User that is stored.
         context.user
             .type(form.type())
-            .zip_code(editable_zip.validatedData());
+            .zip_code(select_geo.validatedData());
 
         steamie_request(
             context.user.data(),
@@ -1640,7 +1781,7 @@ function FormFlow (context) {
 
     // ensure validity of form elements
     function zipAndTypeValid () {
-        if (editable_zip.isValid() &&
+        if (select_geo.isValid() &&
             select_type.isValid() &&
             select_work_in.isValid()) {
             return true;
@@ -1681,7 +1822,7 @@ function FormFlow (context) {
 
     return form;
 }
-},{"./formComponents/radio":12,"./formComponents/socialAuthSelection":13,"./formComponents/zipcode":14,"./validators":21}],16:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13,"./formComponents/socialAuthSelection":14,"./validators":21}],16:[function(require,module,exports){
 var filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./clone'),

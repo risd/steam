@@ -1187,6 +1187,21 @@ input {
 .editable.valid {
   color: white; }
 
+select {
+  font-family: "Antenna Comp Medium";
+  font-style: normal;
+  font-weight: normal;
+  -webkit-font-smoothing: antialiased;
+  font-size: 100px;
+  margin: 0;
+  border-radius: 0;
+  background-color: transparent;
+  border: 0 solid transparent;
+  border-bottom: 1px solid white;
+  outline: none;
+  -webkit-appearance: none;
+  color: white; }
+
 /* end form */
 input, label {
   font-size: 22px;

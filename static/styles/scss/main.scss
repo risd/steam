@@ -660,6 +660,21 @@ input {
 .editable.valid {
     color: white;
 }
+select {
+    @include antenna-medium;
+
+    font-size: 100px;
+    margin: 0;
+    
+    border-radius: 0;
+    background-color: transparent;
+    border: 0 solid transparent;
+    border-bottom: 1px solid $white;
+    outline: none;
+    -webkit-appearance: none;
+
+    color: $white;
+}
 /* end form */
 
 @import 'from_steam_proto_github'
