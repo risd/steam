@@ -968,7 +968,18 @@ module.exports = function dropdownConditionalText () {
     };
 
     self.validatedData = function () {
-        return self.value();
+        // if the editable text selection is
+        // active, then you are looking at
+        // something in the US, and should
+        // return the value of the text field
+
+        // otherwise, get the value from the drop down
+        // to send back to the server
+        if (text_selection.classed('active')) {
+            return editable_text.value();
+        } else {
+            select.property('value');
+        }
     };
 
     self.rootSelection = function (x) {
@@ -1058,9 +1069,6 @@ module.exports = function dropdownConditionalText () {
         }
 
         checkmark_sel.classed('valid', valid);
-
-        console.log(editable_text.isValid(), ' editable text');
-        console.log(text_selection.classed('active'), ' active');
 
         if (valid !== prev_valid) {
             self.dispatch
@@ -1261,7 +1269,6 @@ function FormFlow (context) {
     var form = {},
         state,              // current state
         previous_state,     // previous state
-        type,               // institution/individual
         input_data,         // object that tracks input data
         child_window,       // ref to the popup window object
         child_status;       // set interval function to check
@@ -1623,12 +1630,6 @@ function FormFlow (context) {
         return form;
     };
 
-    form.type = function (x) {
-        if (!arguments.length) return type;
-        type = x;
-        return form;
-    };
-
     form.add_avatar = function (x) {
 
         d3.selectAll('.avatar')
@@ -1650,13 +1651,11 @@ function FormFlow (context) {
     };
 
     function add_me_flow () {
-        // for the UI
-        form.type(select_type.selected().name.toLowerCase());
-
         // for the User that is stored.
         context.user
-            .type(form.type())
-            .zip_code(select_geo.validatedData());
+            .type(select_type.selected().label)
+            .workIn(select_work_in.selected().label)
+            .steamie_top_level_input(select_geo.validatedData());
 
         steamie_request(
             context.user.data(),
@@ -2435,15 +2434,24 @@ function User (context) {
     // that is going to and from the server
     user.type = function (x) {
         if (!arguments.length) return steamie_type;
-        if ((x === 'individual') ||
+        if ((x.toLowerCase() === 'individual') ||
             (x === 'i')) {
             steamie_type = 'individual';
         }
-        else if ((x === 'institution') ||
+        else if ((x.toLowerCase() === 'institution') ||
                  (x === 'g')) {
             steamie_type = 'institution';
         }
 
+        return user;
+    };
+
+    // steamie_geo will go to the server and be
+    // saved as part of the user's profile
+    // top_level_input = steamie_geo
+    user.top_level_input = function (x) {
+        if (!arguments.length) return top_level_input;
+        data.objects[0].top_level_input = x;
         return user;
     };
 

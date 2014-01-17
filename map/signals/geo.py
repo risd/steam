@@ -11,7 +11,8 @@
 #   zipcode (polygon)
 #   level_1 (point)
 
-from pygeocoder import Geocoder
+import re
+
 from sunlight import congress
 import us
 
@@ -24,7 +25,8 @@ class Geo():
         # http://codegolf.stackexchange.com/
                 # questions/4707/outputting-ordinal-
                 # numbers-1st-2nd-3rd#answer-4712
-        self.ordinal =\
+        self._digits = re.compile('\d')
+        self._ordinal =\
             lambda n: "%d%s" %\
                 (n,"tsnrhtdd"[(n/10%10!=1)*(n%10<4)*n%10::4])
 
@@ -44,44 +46,43 @@ class Geo():
                          against TopLevelGeo.
                            
         """
-        district = congress.\
-                        locate_districts_by_zip(
-                            zipcode=top_level_input)
 
-        if (len(district) > 0):
-            # you got something back!
-            geo = {
-                'us_bool': True,
-                'us_state_abbr': district[0][u'state'],
-                'us_state':\
-                    getattr(us.states, district[0][u'state']).name,
-                'us_district': district[0][u'district'],
-                'us_district_ordinal':\
-                    self.ordinal(int(district[0][u'district'])),
-            }
-        else:
-            # you didn't get a response!
-            # now geocode the thing
-            try:
-                geocoded = Geocoder.geocode(zip_code)
-            except:
-                geo = { 'error': 'Could not find location' }
-            else:
+        if self._digits.search(top_level_input):
+            # it has digits, presumably this is a zipcode
+
+            district = congress.\
+                            locate_districts_by_zip(
+                                zipcode=top_level_input)
+
+            if (len(district) > 0):
+                # you got something back!
                 geo = {
-                    'us_bool': False,
-                    'country': geocoded[0].country
+                    'us_bool': True,
+                    'us_state_abbr': district[0][u'state'],
+                    'us_state':\
+                        getattr(us.states, district[0][u'state']).name,
+                    'us_district': district[0][u'district'],
+                    'us_district_ordinal':\
+                        self._ordinal(int(district[0][u'district'])),
                 }
+        else:
+            geo = {
+                'us_bool': False,
+                'country': top_level_input
+            }
 
         return geo
 
 if __name__ == '__main__':
     g = Geo()
-    ri = g.geo(zip_code='02906')
+    wyoming = g.geo('82073')
+    print wyoming
+    ri = g.geo('02906')
     print ri
     assert (ri.get(u'us_bool') == True)
     assert (ri.get(u'us_state') == u'Rhode Island')
     assert (ri.get(u'us_district') == 1)
-    strehla_germany = g.geo(zip_code='01616')
+    strehla_germany = g.geo('Germany')
     print strehla_germany
     assert (ri.get(u'country') == u'Germany')
     assert (ri.get(u'us_bool') == False)

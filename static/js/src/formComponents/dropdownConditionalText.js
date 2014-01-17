@@ -21,7 +21,18 @@ module.exports = function dropdownConditionalText () {
     };
 
     self.validatedData = function () {
-        return self.value();
+        // if the editable text selection is
+        // active, then you are looking at
+        // something in the US, and should
+        // return the value of the text field
+
+        // otherwise, get the value from the drop down
+        // to send back to the server
+        if (text_selection.classed('active')) {
+            return editable_text.value();
+        } else {
+            select.property('value');
+        }
     };
 
     self.rootSelection = function (x) {
@@ -111,9 +122,6 @@ module.exports = function dropdownConditionalText () {
         }
 
         checkmark_sel.classed('valid', valid);
-
-        console.log(editable_text.isValid(), ' editable text');
-        console.log(text_selection.classed('active'), ' active');
 
         if (valid !== prev_valid) {
             self.dispatch

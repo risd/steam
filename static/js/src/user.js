@@ -70,15 +70,24 @@ function User (context) {
     // that is going to and from the server
     user.type = function (x) {
         if (!arguments.length) return steamie_type;
-        if ((x === 'individual') ||
+        if ((x.toLowerCase() === 'individual') ||
             (x === 'i')) {
             steamie_type = 'individual';
         }
-        else if ((x === 'institution') ||
+        else if ((x.toLowerCase() === 'institution') ||
                  (x === 'g')) {
             steamie_type = 'institution';
         }
 
+        return user;
+    };
+
+    // steamie_geo will go to the server and be
+    // saved as part of the user's profile
+    // top_level_input = steamie_geo
+    user.top_level_input = function (x) {
+        if (!arguments.length) return top_level_input;
+        data.objects[0].top_level_input = x;
         return user;
     };
 

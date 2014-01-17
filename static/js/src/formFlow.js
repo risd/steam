@@ -15,7 +15,6 @@ function FormFlow (context) {
     var form = {},
         state,              // current state
         previous_state,     // previous state
-        type,               // institution/individual
         input_data,         // object that tracks input data
         child_window,       // ref to the popup window object
         child_status;       // set interval function to check
@@ -377,12 +376,6 @@ function FormFlow (context) {
         return form;
     };
 
-    form.type = function (x) {
-        if (!arguments.length) return type;
-        type = x;
-        return form;
-    };
-
     form.add_avatar = function (x) {
 
         d3.selectAll('.avatar')
@@ -404,13 +397,11 @@ function FormFlow (context) {
     };
 
     function add_me_flow () {
-        // for the UI
-        form.type(select_type.selected().name.toLowerCase());
-
         // for the User that is stored.
         context.user
-            .type(form.type())
-            .zip_code(select_geo.validatedData());
+            .type(select_type.selected().label)
+            .workIn(select_work_in.selected().label)
+            .steamie_top_level_input(select_geo.validatedData());
 
         steamie_request(
             context.user.data(),

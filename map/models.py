@@ -10,6 +10,9 @@ class TopLevelGeo(models.Model):
     """
     Represents all US districts or countries in the world.
     GeoJSON for map markers is derived from here.
+
+    To add all TopLevelGeo values:
+    foreman run python manage.py populate_toplevelgeo
     """
     us_bool = models.BooleanField(blank=False, null=False)
     lat = models.DecimalField(
@@ -60,11 +63,11 @@ class TopLevelGeo(models.Model):
 
     def __unicode__(self):
         if (self.us_bool):
-            return '{0} {1}'.format(self.us_state,
+            return u'{0} {1}'.format(self.us_state,
                                     self.us_district_ordinal) +\
-                    ' District'
+                   u' District'
         else:
-            return self.country
+            return u'{0}'.format(self.country)
 
 
 class Initiative(models.Model):
