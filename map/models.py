@@ -258,7 +258,7 @@ class Steamies(models.Model):
         return unicode(self.user) or unicode(self.zip_code)
 
 
-def add_geo(sender, instance, created, *args, **kwargs):
+def add_geo(sender, instance, *args, **kwargs):
     if len(instance.top_level_input) > 0:
         # could make this a bit more efficient if, on save
         # you passed the update_fields attribute. then

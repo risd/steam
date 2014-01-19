@@ -246,7 +246,7 @@ XS_SHARING_EXEMPT_PATHS = ['/join-us/', ]
 AUTHENTICATION_BACKENDS = (
     'social.backends.google.GoogleOAuth2',
     'social.backends.twitter.TwitterOAuth',
-    'social.backends.facebook.FacebookOAuth2',
+    'social.backends.facebook.FacebookAppOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -255,7 +255,7 @@ SOCIAL_AUTH_TWITTER_SECRET = env_var('SOCIAL_AUTH_TWITTER_SECRET')
 SOCIAL_AUTH_FACEBOOK_APP_KEY = env_var('SOCIAL_AUTH_FACEBOOK_APP_KEY')
 SOCIAL_AUTH_FACEBOOK_APP_SECRET = env_var('SOCIAL_AUTH_FACEBOOK_APP_SECRET')
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env_var('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env_var('GOOGLE_OAUTH2_CLIENT_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env_var('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 
 # LOGIN_URL = '/login-form/'
 # LOGIN_REDIRECT_URL = 'http://localhost:8008/logged-in/'
@@ -275,13 +275,17 @@ SOCIAL_AUTH_ENABLED_BACKENDS = ('twitter', 'facebook', 'google')
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 
 SOCIAL_AUTH_PIPELINE = (
-    'social_auth.backends.pipeline.social.social_auth_user',
-    #'social_auth.backends.pipeline.associate.associate_by_email',
-    'social_auth.backends.pipeline.user.get_username',
-    'social_auth.backends.pipeline.user.create_user',
-    'social_auth.backends.pipeline.social.associate_user',
-    'social_auth.backends.pipeline.social.load_extra_data',
-    'social_auth.backends.pipeline.user.update_user_details',
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.get_username',
+    # 'social.pipeline.mail.mail_validation',
+    # 'social.pipeline.social_auth.associate_by_email',
+    'social.pipeline.user.create_user',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details',
     'map.pipeline.create_steamie',
     'map.pipeline.get_avatar_url',
 )

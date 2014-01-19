@@ -1,8 +1,4 @@
-import json
-
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.models import User
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from backend.urls import v1_api

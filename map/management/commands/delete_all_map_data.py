@@ -1,8 +1,15 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from django.contrib.auth.models import User
-from social_auth.db.django_models import UserSocialAuth, Association
-from ...models import Individual, Institution, Initiative, Steamies
+
+from social.apps.django_app.default.models import UserSocialAuth,\
+                                                  Association,\
+                                                  Nonce,\
+                                                  Code
+from ...models import Individual,\
+                      Institution,\
+                      Initiative,\
+                      Steamies
 
 
 class Command(BaseCommand):
@@ -26,11 +33,11 @@ class Command(BaseCommand):
             print 'Deleting Individual models'
             Individual.objects.all().delete()
 
-            print 'Deleting UserSocialAuth'
+            print 'Deleting Social Auth Business'
             UserSocialAuth.objects.all().delete()
-
-            print 'Deleting Association'
             Association.objects.all().delete()
+            Nonce.objects.all().delete()
+            Code.objects.all().delete()
 
         except CommandError as detail:
             print 'Error deleting data! ' +\
