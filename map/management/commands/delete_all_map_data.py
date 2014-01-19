@@ -29,6 +29,9 @@ class Command(BaseCommand):
             print 'Deleting UserSocialAuth'
             UserSocialAuth.objects.all().delete()
 
+            print 'Deleting Association'
+            Association.objects.all().delete()
+
         except CommandError as detail:
             print 'Error deleting data! ' +\
                 '{0}'.format(detail)

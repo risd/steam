@@ -122,7 +122,10 @@ class Institution(models.Model):
         verbose_name_plural = _('Institutions')
 
     def __unicode__(self):
-        return self.name
+        if self.name:
+            return self.name
+        else:
+            return u'Institution'
 
 
 class Individual(models.Model):
@@ -165,7 +168,10 @@ class Individual(models.Model):
         verbose_name_plural = _('Individuals')
 
     def __unicode__(self):
-        return "{0} {1}".format(self.first_name, self.last_name)
+        if self.first_name and self.last_name:
+            return u"{0} {1}".format(self.first_name, self.last_name)
+        else:
+            return 'Individual'
 
 
 class Steamies(models.Model):
@@ -253,7 +259,7 @@ class Steamies(models.Model):
 
 
 def add_geo(sender, instance, created, *args, **kwargs):
-    if not isinstance(instance.top_level_input, type(None)):
+    if len(instance.top_level_input) > 0:
         # could make this a bit more efficient if, on save
         # you passed the update_fields attribute. then
         # you could simply see if update_fields includes
@@ -271,15 +277,13 @@ def add_geo(sender, instance, created, *args, **kwargs):
             try:
                 # will raise ObjectDoesNotExist
                 # if it does not find an object
-                top_level_geo = TopLevelGeo.get(**geo)
+                top_level_geo = TopLevelGeo.objects.get(**geo)
                 instance.top_level = top_level_geo
 
             except ObjectDoesNotExist:
                 instance.top_level_input = None
 
-        print 'resaved with geo'
+        print 'populating top_level before save'
         print instance.top_level
 
-        instance.save()
-
-models.signals.post_save.connect(add_geo, sender=Steamies)
+models.signals.pre_save.connect(add_geo, sender=Steamies)

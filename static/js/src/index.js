@@ -10,8 +10,9 @@ var filters = require('./filters'),
     clusters = require('./clusters'),
     arcs = require('./arcs'),
     map = require('./map'),
+    getTSV = require('./getTSV'),
 
-    form_flow = require('./formFlow'),
+    modal_flow = require('./modalFlow'),
     user = require('./user'),
 
     fake = require('./fakeDataGenerator');
@@ -32,13 +33,16 @@ function STEAMMap() {
     context.colors = colors;
     context.icon_size = icon_size;
 
+    context.countries = getTSV(context.api.base +
+                               '/static/geo/countries_geocodable.tsv');
+
     // ui
     context.network = network(context);
     context.clusters = clusters(context);
     context.arcs = arcs(context);
     context.filterUI = filterUI(context);
     context.map = map(context);
-    context.form_flow = form_flow(context);
+    context.modal_flow = modal_flow(context);
     context.user = user(context);
 
     function init () {
@@ -46,7 +50,7 @@ function STEAMMap() {
             .bindArcs()
             .init();
         context.filterUI.init();
-        context.form_flow.init();
+        context.modal_flow.init();
         context.user.check_auth();
     }
 

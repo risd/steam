@@ -956,7 +956,7 @@ module.exports = function dropdownConditionalText () {
         text_selection,
         editable_text,
         checkmark_sel,
-        options_tsv_url,
+        options,
         select_wrapper,
         select,
         select_options;
@@ -988,9 +988,9 @@ module.exports = function dropdownConditionalText () {
         return self;
     };
 
-    self.optionsTsvUrl = function (x) {
-        if (!arguments) return options_tsv_url;
-        options_tsv_url = x;
+    self.options = function (x) {
+        if (!arguments) return options;
+        options = x;
         return self;
     };
 
@@ -1026,34 +1026,33 @@ module.exports = function dropdownConditionalText () {
                 validate();
             });
 
-        d3.tsv(options_tsv_url, function (err, options_response) {
-            select = select_wrapper
-                .append('select')
-                .on('change', function () {
-                    if (select.property('value') ===
-                        'United States of America') {
 
-                        text_selection
-                            .classed('active', true);
-                    } else {
-                        text_selection
-                            .classed('active', false);
-                    }
-                    validate();
-                });
+        select = select_wrapper
+            .append('select')
+            .on('change', function () {
+                if (select.property('value') ===
+                    'United States of America') {
 
-            select
-                .selectAll('option')
-                .data(options_response)
-                .enter()
-                .append('option')
-                .attr('value', function(d) {
-                    return d.country;
-                })
-                .text(function(d) {
-                    return d.country;
-                });
-        });
+                    text_selection
+                        .classed('active', true);
+                } else {
+                    text_selection
+                        .classed('active', false);
+                }
+                validate();
+            });
+
+        select
+            .selectAll('option')
+            .data(options)
+            .enter()
+            .append('option')
+            .attr('value', function(d) {
+                return d.country;
+            })
+            .text(function(d) {
+                return d.country;
+            });
 
         return self;
     };
@@ -1082,7 +1081,7 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../editable":8,"../ui/checkmark":19}],13:[function(require,module,exports){
+},{"../editable":8,"../ui/checkmark":21}],13:[function(require,module,exports){
 module.exports = function radioSelection (context) {
     var self = {},
         valid = false,
@@ -1251,7 +1250,130 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":19}],15:[function(require,module,exports){
+},{"../ui/checkmark":21}],15:[function(require,module,exports){
+module.exports = function dataTSV (url) {
+    var self = {},
+        data;
+
+    self.dispatch = d3.dispatch('loaded');
+
+    self.data = function (x) {
+        if (!arguments.length) return data;
+        data = x;
+        return self;
+    };
+
+    function get () {
+        d3.tsv(url, function (err, response) {
+            self.data(response);
+            self.dispatch.loaded.apply(this, arguments);
+        });
+    }
+
+    // initialize
+    get();
+
+    return self;
+};
+},{}],16:[function(require,module,exports){
+var filters = require('./filters'),
+    colors = require('./colors'),
+    clone = require('./clone'),
+    icon_size = require('./clusterIconSize')(),
+
+    api = require('./backend')(),
+
+    filterUI = require('./filterUI'),
+    network = require('./network'),
+    clusters = require('./clusters'),
+    arcs = require('./arcs'),
+    map = require('./map'),
+    getTSV = require('./getTSV'),
+
+    modal_flow = require('./modalFlow'),
+    user = require('./user'),
+
+    fake = require('./fakeDataGenerator');
+
+STEAMMap();
+
+function STEAMMap() {
+    var context = {};
+
+    // util
+    context.clone = clone;
+    context.fake = fake;
+
+    // data
+    context.api = api;
+    context.prev_filters = clone(filters);
+    context.filters = filters;
+    context.colors = colors;
+    context.icon_size = icon_size;
+
+    context.countries = getTSV(context.api.base +
+                               '/static/geo/countries_geocodable.tsv');
+
+    // ui
+    context.network = network(context);
+    context.clusters = clusters(context);
+    context.arcs = arcs(context);
+    context.filterUI = filterUI(context);
+    context.map = map(context);
+    context.modal_flow = modal_flow(context);
+    context.user = user(context);
+
+    function init () {
+        context.clusters
+            .bindArcs()
+            .init();
+        context.filterUI.init();
+        context.modal_flow.init();
+        context.user.check_auth();
+    }
+
+    init();
+}
+},{"./arcs":1,"./backend":2,"./clone":3,"./clusterIconSize":4,"./clusters":5,"./colors":6,"./fakeDataGenerator":9,"./filterUI":10,"./filters":11,"./getTSV":15,"./map":17,"./modalFlow":18,"./network":19,"./user":22}],17:[function(require,module,exports){
+module.exports = Map;
+
+// returns leaflet map object
+function Map (context) {
+
+    var zoomstart = function () {
+        // so that the zoom does make things re-filter
+        context.prev_filters = context.clone(context.filters);
+    };
+
+    var zoomend = function() {
+
+    };
+
+    var mabox_id = "",
+    // var mabox_id = "mgdevelopers.map-6m0pmhd7",
+        map = L.mapbox
+            .map('steam-map', mabox_id, {
+                'maxZoom': 12
+            })
+            .setView([39.16, -95.0], 4)
+            .on('zoomstart', zoomstart)
+            .on('zoomend', zoomend);
+
+    // define max bounds
+    // disables users ability to continually pan
+    // east/west beyond the extent of where the data
+    // actually resides
+    var max_south_west = new L.LatLng(-90, -240),
+        max_north_east = new L.LatLng(90, 240),
+        max_bounds = new L.LatLngBounds(
+            max_south_west,
+            max_north_east);
+
+    map.setMaxBounds(max_bounds);
+
+    return map;
+}
+},{}],18:[function(require,module,exports){
 var validator = require('./validators'),
 
     geoComponent =
@@ -1263,9 +1385,9 @@ var validator = require('./validators'),
     socialAuthComponent =
         require('./formComponents/socialAuthSelection');
 
-module.exports = FormFlow;
+module.exports = ModalFlow;
 
-function FormFlow (context) {
+function ModalFlow (context) {
     var form = {},
         state,              // current state
         previous_state,     // previous state
@@ -1280,9 +1402,7 @@ function FormFlow (context) {
 
         select_geo =
             geoComponent()
-                .rootSelection(d3.select('#add-yourself-geo'))
-                .optionsTsvUrl(context.api.base +
-                            '/static/geo/countries_geocodable.tsv'),
+                .rootSelection(d3.select('#add-yourself-geo')),
 
         select_type =
             radioComponent()
@@ -1296,7 +1416,7 @@ function FormFlow (context) {
                     label: 'Institution',
                     value: 'g',
                     selected: false
-                }]);
+                }]),
 
         select_work_in =
             radioComponent()
@@ -1318,7 +1438,9 @@ function FormFlow (context) {
                     label: 'Industry',
                     value: 'ind',
                     selected: false
-                }]);
+                }]),
+
+        profile_link_selection = d3.select('.profile-link');
 
     var ui = {
         popup_window_properties: function () {
@@ -1423,6 +1545,22 @@ function FormFlow (context) {
             auth_me: {
                 el: d3.select('#auth-me-button'),
                 on_click: function () {},
+                append_to_el: function () {}
+            },
+
+            go_to_profile: {
+                el: d3.select('#go-to-profile'),
+                on_click: function () {
+                    form.state('profile_' + context.user.type());
+                },
+                append_to_el: function () {}
+            },
+
+            profile_link: {
+                el: profile_link_selection,
+                on_click: function () {
+                    form.state('profile_' + context.user.type());
+                },
                 append_to_el: function () {}
             }
         },
@@ -1549,7 +1687,22 @@ function FormFlow (context) {
         social_auth.render();
         select_type.render();
         select_work_in.render();
-        select_geo.render();
+
+        if (context.countries.data()) {
+            // if the data is loaded already,
+            // populate the select_geo module
+            select_geo
+                .options(context.countries.data())
+                .render();
+        } else {
+            // wait until it is loaded, and then
+            // render based on results
+            context.countries.dispatch.on('loaded', function () {
+                select_geo
+                    .options(context.countries.data())
+                    .render();
+            });
+        }
 
         // how validation can propogate to this level
         social_auth
@@ -1624,8 +1777,11 @@ function FormFlow (context) {
             }
         });
 
-        // form.state('call_to_action');
-        form.state('choose_type_add_zip');
+        // fake some data for testing
+        
+        // end fake some data for testing
+        // form.state('thank_you');
+        form.state('call_to_action');
 
         return form;
     };
@@ -1654,12 +1810,16 @@ function FormFlow (context) {
         // for the User that is stored.
         context.user
             .type(select_type.selected().label)
-            .workIn(select_work_in.selected().label)
-            .steamie_top_level_input(select_geo.validatedData());
+            .work_in(select_work_in.selected().label)
+            .top_level_input(select_geo.validatedData());
 
         steamie_request(
             context.user.data(),
-            function (err, results) {
+            function (err, results_raw) {
+                var results = JSON.parse(results_raw.responseText);
+
+                console.log('add me flow');
+                console.log(results);
                 if (err) {
                     console.log('error');
                     console.log(err);
@@ -1668,13 +1828,21 @@ function FormFlow (context) {
                     // the user to the stage where
                     // they left off, attempting to
                     // be added.
-                    form.state('choose-type-add-zip');
+                    form.state('choose_type_add_zip');
                 }
 
                 // update the user data based on
                 // what came back from the server
-                context.user.data(results);
-                form.state('thank-you');
+                context.user
+                    .data(results)
+                    .update_profile();
+
+                // remove 'add me' modal activator
+                el.button.deactivate.el
+                    .classed('active', false);
+
+                // show thank you
+                form.state('thank_you');
             });
     }
 
@@ -1821,101 +1989,7 @@ function FormFlow (context) {
 
     return form;
 }
-},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13,"./formComponents/socialAuthSelection":14,"./validators":21}],16:[function(require,module,exports){
-var filters = require('./filters'),
-    colors = require('./colors'),
-    clone = require('./clone'),
-    icon_size = require('./clusterIconSize')(),
-
-    api = require('./backend')(),
-
-    filterUI = require('./filterUI'),
-    network = require('./network'),
-    clusters = require('./clusters'),
-    arcs = require('./arcs'),
-    map = require('./map'),
-
-    form_flow = require('./formFlow'),
-    user = require('./user'),
-
-    fake = require('./fakeDataGenerator');
-
-STEAMMap();
-
-function STEAMMap() {
-    var context = {};
-
-    // util
-    context.clone = clone;
-    context.fake = fake;
-
-    // data
-    context.api = api;
-    context.prev_filters = clone(filters);
-    context.filters = filters;
-    context.colors = colors;
-    context.icon_size = icon_size;
-
-    // ui
-    context.network = network(context);
-    context.clusters = clusters(context);
-    context.arcs = arcs(context);
-    context.filterUI = filterUI(context);
-    context.map = map(context);
-    context.form_flow = form_flow(context);
-    context.user = user(context);
-
-    function init () {
-        context.clusters
-            .bindArcs()
-            .init();
-        context.filterUI.init();
-        context.form_flow.init();
-        context.user.check_auth();
-    }
-
-    init();
-}
-},{"./arcs":1,"./backend":2,"./clone":3,"./clusterIconSize":4,"./clusters":5,"./colors":6,"./fakeDataGenerator":9,"./filterUI":10,"./filters":11,"./formFlow":15,"./map":17,"./network":18,"./user":20}],17:[function(require,module,exports){
-module.exports = Map;
-
-// returns leaflet map object
-function Map (context) {
-
-    var zoomstart = function () {
-        // so that the zoom does make things re-filter
-        context.prev_filters = context.clone(context.filters);
-    };
-
-    var zoomend = function() {
-
-    };
-
-    var mabox_id = "",
-    // var mabox_id = "mgdevelopers.map-6m0pmhd7",
-        map = L.mapbox
-            .map('steam-map', mabox_id, {
-                'maxZoom': 12
-            })
-            .setView([39.16, -95.0], 4)
-            .on('zoomstart', zoomstart)
-            .on('zoomend', zoomend);
-
-    // define max bounds
-    // disables users ability to continually pan
-    // east/west beyond the extent of where the data
-    // actually resides
-    var max_south_west = new L.LatLng(-90, -240),
-        max_north_east = new L.LatLng(90, 240),
-        max_bounds = new L.LatLngBounds(
-            max_south_west,
-            max_north_east);
-
-    map.setMaxBounds(max_bounds);
-
-    return map;
-}
-},{}],18:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13,"./formComponents/socialAuthSelection":14,"./validators":23}],19:[function(require,module,exports){
 module.exports = Network;
 
 // Network graph
@@ -2305,7 +2379,71 @@ function Network (context) {
 
     return network;
 }
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
+module.exports = function Profile (context) {
+    var self = {},
+        geo_options;
+
+    self.geoOptions = function (x) {
+        if (!arguments.length) return geo_options;
+        geo_options = x;
+        return self;
+    };
+
+    self.build = function () {
+        if (context.user.type() === 'individual') {
+            d3.select('#profile-individual')
+                .call(build_individual);
+
+        } else if (context.user.type() === 'institution') {
+            d3.select('#profile-institution')
+                .call(build_institution);
+        }
+
+        return self;
+    };
+
+    function build_individual (sel) {
+        var first_row = sel.append('div').attr('row clearfix');
+
+        var first_name = first_row
+            .append('div')
+            .attr('column one')
+                .append('input')
+                .attr('id', 'individual-first-name')
+                .attr('data-mapped', 'first_name');
+
+        var last_name = first_row
+            .append('div')
+            .attr('column one')
+                .append('input')
+                .attr('id', 'individual-last-name')
+                .attr('data-mapped', 'last_name');
+
+        var second_row = sel.append('div').attr('row clearfix');
+
+        var email = second_row
+            .append('div')
+            .attr('column one')
+                .append('input')
+                .attr('id', 'individual-email')
+                .attr('data-mapped', 'email');
+
+        var geo = second_row
+            .append('div')
+            .attr('column one')
+                .append('input')
+                .attr('id', 'individual-email')
+                .attr('data-mapped', 'email');
+    }
+
+    function build_institution (sel) {
+        var first_row = sel.append('div').attr('row clearfix');
+    }
+
+    return self;
+};
+},{}],21:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -2361,7 +2499,9 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
+var profile = require('./profile');
+
 module.exports = User;
 
 function User (context) {
@@ -2369,6 +2509,10 @@ function User (context) {
         authed,   // true/false
         data,     // obj response from server
         dispatch = user.dispatch = d3.dispatch('checkAuthComplete');
+
+    // --------
+    // steam specific variables
+    var steamie_type;
 
     user.check_auth = function () {
         // checks the server to see if user
@@ -2387,7 +2531,7 @@ function User (context) {
                 return;
             }
 
-            data = data_response;
+            user.data(data_response);
             authed = true;
 
             dispatch.checkAuthComplete.apply(this, arguments);
@@ -2406,18 +2550,41 @@ function User (context) {
     // about the user's authentication
     user.data = function (x) {
         if (!arguments.length) return data;
-        // probably don't want to overwrite the
-        // data object. may remove it.
-        // more of a getter to check state.
-        // specific useful functions for the user
-        // are below.
         data = x;
+
+        // steamie_type is otherwise set by
+        // the modal form, so it should be
+        // set and realiable when data is
+        // coming in, too.
+        if (data.objects[0].individual) {
+            user.type('individual');
+        } else if (data.objects[0].institution) {
+            user.type('institution');
+        }
+
         return user;
     };
 
     // --------
-    // specific attributes to over write
-    var steamie_type;
+    // steam specific functions
+
+    user.profile = profile(context);
+
+    if (context.countries.data()) {
+        // if the data is loaded already,
+        // populate the user profile
+        user.profile
+            .geoOptions(context.countries.data())
+            .build();
+    } else {
+        // wait until it is loaded, and then
+        // render based on results
+        context.countries.dispatch.on('loaded', function () {
+            user.profile
+                .geoOptions(context.countries.data())
+                .build();
+        });
+    }
 
     user.zip_code = function (x) {
         if (!arguments.length) return data.objects[0].zip_code;
@@ -2450,8 +2617,14 @@ function User (context) {
     // saved as part of the user's profile
     // top_level_input = steamie_geo
     user.top_level_input = function (x) {
-        if (!arguments.length) return top_level_input;
+        if (!arguments.length) return data.objects[0].top_level_input;
         data.objects[0].top_level_input = x;
+        return user;
+    };
+
+    user.work_in = function (x) {
+        if (!arguments.length) return data.objects[0].work_in;
+        data.objects[0].work_in = x;
         return user;
     };
 
@@ -2467,10 +2640,9 @@ function User (context) {
         return user;
     };
 
-
     return user;
 }
-},{}],21:[function(require,module,exports){
+},{"./profile":20}],23:[function(require,module,exports){
 module.exports = Validators;
 
 function Validators () {

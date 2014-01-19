@@ -58,6 +58,8 @@
             <h3 class="filter-by">filter by:</h3>
         </div>
 
+        <div class="profile-link z-150"></div>
+
         
         <!-- modal for adding oneself -->
         <div id="modal" class="fullscreen z-200 hide-til-active modal">
@@ -138,37 +140,15 @@
                                          id="choose-type-add-zip-avatar"
                                          class="avatar">
                                 </div>
+                                <p id="go-to-profile"
+                                   class="large button"
+                                   >Go to Profile</p>
                             </div>
 
                             <div id="profile-individual"
                                  class="hide-til-active modal-content">
 
-                                <label for="individual-first-name">First Name</label>
-                                <input type="text"
-                                       id="individual-first-name"
-                                       data-mapped="first_name">
-                                <br>
-
-                                <label for="individual-last-name">Last Name</label>
-                                <input type="text"
-                                       id="individual-last-name"
-                                       data-mapped="last_name">
-                                <br>
-
-                                <label for="individual-email">Email</label>
-                                <input type="email"
-                                       id="individual-email"
-                                       data-mapped="email">
-                                <br>
-
-                                <label for="individual-zip-code">Zip code</label>
-                                <input type="text"
-                                       id="individual-zip-code"
-                                       data-mapped="zip_code">
-                                <br>
-
-                                <div id="individual-submit-button"
-                                      class="button submit">Add me, I'm Steamie</div>
+                                 
                             </div>
 
                             <div id="profile-institution"
@@ -229,7 +209,7 @@
 
                     <div class="modal-sidebar column">
                         <div id="close-modal"
-                             class="modal-toolbar-button right"></div>
+                             class="modal-toolbar-button right hide-til-active active"></div>
                     </div>
 
             </div>

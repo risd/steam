@@ -9,7 +9,7 @@ module.exports = function dropdownConditionalText () {
         text_selection,
         editable_text,
         checkmark_sel,
-        options_tsv_url,
+        options,
         select_wrapper,
         select,
         select_options;
@@ -41,9 +41,9 @@ module.exports = function dropdownConditionalText () {
         return self;
     };
 
-    self.optionsTsvUrl = function (x) {
-        if (!arguments) return options_tsv_url;
-        options_tsv_url = x;
+    self.options = function (x) {
+        if (!arguments) return options;
+        options = x;
         return self;
     };
 
@@ -79,34 +79,33 @@ module.exports = function dropdownConditionalText () {
                 validate();
             });
 
-        d3.tsv(options_tsv_url, function (err, options_response) {
-            select = select_wrapper
-                .append('select')
-                .on('change', function () {
-                    if (select.property('value') ===
-                        'United States of America') {
 
-                        text_selection
-                            .classed('active', true);
-                    } else {
-                        text_selection
-                            .classed('active', false);
-                    }
-                    validate();
-                });
+        select = select_wrapper
+            .append('select')
+            .on('change', function () {
+                if (select.property('value') ===
+                    'United States of America') {
 
-            select
-                .selectAll('option')
-                .data(options_response)
-                .enter()
-                .append('option')
-                .attr('value', function(d) {
-                    return d.country;
-                })
-                .text(function(d) {
-                    return d.country;
-                });
-        });
+                    text_selection
+                        .classed('active', true);
+                } else {
+                    text_selection
+                        .classed('active', false);
+                }
+                validate();
+            });
+
+        select
+            .selectAll('option')
+            .data(options)
+            .enter()
+            .append('option')
+            .attr('value', function(d) {
+                return d.country;
+            })
+            .text(function(d) {
+                return d.country;
+            });
 
         return self;
     };

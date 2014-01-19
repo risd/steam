@@ -1,3 +1,5 @@
+var profile = require('./profile');
+
 module.exports = User;
 
 function User (context) {
@@ -5,6 +7,10 @@ function User (context) {
         authed,   // true/false
         data,     // obj response from server
         dispatch = user.dispatch = d3.dispatch('checkAuthComplete');
+
+    // --------
+    // steam specific variables
+    var steamie_type;
 
     user.check_auth = function () {
         // checks the server to see if user
@@ -23,7 +29,7 @@ function User (context) {
                 return;
             }
 
-            data = data_response;
+            user.data(data_response);
             authed = true;
 
             dispatch.checkAuthComplete.apply(this, arguments);
@@ -42,18 +48,41 @@ function User (context) {
     // about the user's authentication
     user.data = function (x) {
         if (!arguments.length) return data;
-        // probably don't want to overwrite the
-        // data object. may remove it.
-        // more of a getter to check state.
-        // specific useful functions for the user
-        // are below.
         data = x;
+
+        // steamie_type is otherwise set by
+        // the modal form, so it should be
+        // set and realiable when data is
+        // coming in, too.
+        if (data.objects[0].individual) {
+            user.type('individual');
+        } else if (data.objects[0].institution) {
+            user.type('institution');
+        }
+
         return user;
     };
 
     // --------
-    // specific attributes to over write
-    var steamie_type;
+    // steam specific functions
+
+    user.profile = profile(context);
+
+    if (context.countries.data()) {
+        // if the data is loaded already,
+        // populate the user profile
+        user.profile
+            .geoOptions(context.countries.data())
+            .build();
+    } else {
+        // wait until it is loaded, and then
+        // render based on results
+        context.countries.dispatch.on('loaded', function () {
+            user.profile
+                .geoOptions(context.countries.data())
+                .build();
+        });
+    }
 
     user.zip_code = function (x) {
         if (!arguments.length) return data.objects[0].zip_code;
@@ -86,8 +115,14 @@ function User (context) {
     // saved as part of the user's profile
     // top_level_input = steamie_geo
     user.top_level_input = function (x) {
-        if (!arguments.length) return top_level_input;
+        if (!arguments.length) return data.objects[0].top_level_input;
         data.objects[0].top_level_input = x;
+        return user;
+    };
+
+    user.work_in = function (x) {
+        if (!arguments.length) return data.objects[0].work_in;
+        data.objects[0].work_in = x;
         return user;
     };
 
@@ -102,7 +137,6 @@ function User (context) {
         data.objects[0].institution = x;
         return user;
     };
-
 
     return user;
 }
