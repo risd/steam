@@ -123,7 +123,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # 3rd party
-    'social_auth.middleware.SocialAuthExceptionMiddleware',
+    'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
 
     # local
     'backend.middleware.crossdomainxhr.XsSharingMiddleware',
@@ -156,7 +156,7 @@ INSTALLED_APPS = (
     # 3rd party
     'south',
     'tastypie',
-    'social_auth',
+    'social.apps.django_app.default',
 
     # primary
     'backend',
@@ -244,32 +244,30 @@ XS_SHARING_EXEMPT_PATHS = ['/join-us/', ]
 
 ### Social auth config
 AUTHENTICATION_BACKENDS = (
-    'social_auth.backends.google.GoogleOAuth2Backend',
-    'social_auth.backends.twitter.TwitterBackend',
-    'social_auth.backends.facebook.FacebookBackend',
+    'social.backends.google.GoogleOAuth2',
+    'social.backends.twitter.TwitterOAuth',
+    'social.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
-TWITTER_CONSUMER_KEY = env_var('TWITTER_CONSUMER_KEY')
-TWITTER_CONSUMER_SECRET = env_var('TWITTER_CONSUMER_SECRET')
-FACEBOOK_APP_ID = env_var('FACEBOOK_APP_ID')
-FACEBOOK_API_SECRET = env_var('FACEBOOK_API_SECRET')
-GOOGLE_OAUTH2_CLIENT_ID = env_var('GOOGLE_OAUTH2_CLIENT_ID')
-GOOGLE_OAUTH2_CLIENT_SECRET = env_var('GOOGLE_OAUTH2_CLIENT_SECRET')
+SOCIAL_AUTH_TWITTER_KEY = env_var('SOCIAL_AUTH_TWITTER_KEY')
+SOCIAL_AUTH_TWITTER_SECRET = env_var('SOCIAL_AUTH_TWITTER_SECRET')
+SOCIAL_AUTH_FACEBOOK_APP_KEY = env_var('SOCIAL_AUTH_FACEBOOK_APP_KEY')
+SOCIAL_AUTH_FACEBOOK_APP_SECRET = env_var('SOCIAL_AUTH_FACEBOOK_APP_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env_var('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env_var('GOOGLE_OAUTH2_CLIENT_SECRET')
 
 # LOGIN_URL = '/login-form/'
 # LOGIN_REDIRECT_URL = 'http://localhost:8008/logged-in/'
-LOGIN_REDIRECT_URL = '/logged-in/'
-LOGIN_ERROR_URL = '/login-error/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/logged-in/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/login-error/'
 
 SOCIAL_AUTH_DEFAULT_USERNAME = 'new_social_auth_user'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
-    'social_auth.context_processors.social_auth_by_name_backends',
-    'social_auth.context_processors.social_auth_backends',
-    'social_auth.context_processors.social_auth_by_type_backends',
-    'social_auth.context_processors.social_auth_login_redirect',
+    'social.apps.django_app.context_processors.backends',
+    'social.apps.django_app.context_processors.login_redirect',
 )
 
 SOCIAL_AUTH_ENABLED_BACKENDS = ('twitter', 'facebook', 'google')

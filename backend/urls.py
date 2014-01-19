@@ -52,7 +52,7 @@ urlpatterns = patterns(
     url(r'api/', include(v1_api.urls)),
 
     # social auth urls, used to ensure the correct ones are used in JS calls
-    url(r'', include('social_auth.urls')),
+    url(r'', include('social.apps.django_app.urls', namespace='social')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

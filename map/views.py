@@ -47,4 +47,4 @@ def login_error(request):
     Redirect after social authentication login fails.
     Used to simply close the dialog box that pops up.
     """
-    return render(request, 'map/redirected.html')
+    return render(request, 'map/redirected_err.html')
