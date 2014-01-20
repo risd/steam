@@ -51,6 +51,11 @@ function STEAMMap() {
             .init();
         context.filterUI.init();
         context.modal_flow.init();
+
+        // modal_flow dispatches on
+        // check auth being completed
+        // and sets the modal form flow
+        // to the position it should be in
         context.user.check_auth();
     }
 

@@ -21,16 +21,18 @@ function User (context) {
         var url = context.api.steamie;
 
         d3.json(url, function (err, data_response) {
-            if (err) {
+            console.log('auth check');
+            console.log(data_response);
+            if ((err) |
+                (data_response.meta.total_count === 0)) {
                 // not auth'ed
                 console.log('Not authed.');
-                data = undefined;
+                data = null;
                 authed = false;
-                return;
+            } else {
+                user.data(data_response);
+                authed = true;
             }
-
-            user.data(data_response);
-            authed = true;
 
             dispatch.checkAuthComplete.apply(this, arguments);
         });
@@ -72,15 +74,13 @@ function User (context) {
         // if the data is loaded already,
         // populate the user profile
         user.profile
-            .geoOptions(context.countries.data())
-            .build();
+            .geoOptions(context.countries.data());
     } else {
         // wait until it is loaded, and then
         // render based on results
         context.countries.dispatch.on('loaded', function () {
             user.profile
-                .geoOptions(context.countries.data())
-                .build();
+                .geoOptions(context.countries.data());
         });
     }
 
@@ -94,18 +94,48 @@ function User (context) {
         return data.objects[0].avatar_url;
     };
 
-    // type only affects the UI.
-    // does not change the actual data structure
-    // that is going to and from the server
+    // sugar over the individual and institution
+    // attributes of a user. defines a default
+    // object for institution or individual, if
+    // one is defined
+    // assumes that if user.type is being used to set
+    // a user's type, then it doesn't have any data
+    // for that yet.
     user.type = function (x) {
-        if (!arguments.length) return steamie_type;
+        if (!arguments.length) {
+            if (user.individual()) {
+                return 'individual';
+            } else if (user.institution()) {
+                return 'institution';
+            } else {
+                return null;
+            }
+        }
         if ((x.toLowerCase() === 'individual') ||
             (x === 'i')) {
-            steamie_type = 'individual';
+
+            // defaults for an individual
+            user.individual({
+                first_name: null,
+                last_name: null,
+                email: null,
+                url: null,
+                institution: null,
+                title: null,
+                email_subscription: false
+            });
         }
         else if ((x.toLowerCase() === 'institution') ||
                  (x === 'g')) {
-            steamie_type = 'institution';
+
+            // defaults for an institution
+            user.institution({
+                name: null,
+                url: null,
+                representative_first_name: null,
+                representative_last_name: null,
+                representative_email: null
+            });
         }
 
         return user;

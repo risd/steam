@@ -26,7 +26,10 @@ function ModalFlow (context) {
 
         select_geo =
             geoComponent()
-                .rootSelection(d3.select('#add-yourself-geo')),
+                .rootSelection(d3.select('#add-yourself-geo'))
+                .optionsKey(function (d) { return d.country; })
+                .placeholder('00000')
+                .initialValue(null),
 
         select_type =
             radioComponent()
@@ -45,6 +48,11 @@ function ModalFlow (context) {
         select_work_in =
             radioComponent()
                 .node(d3.select('#select-work-in-component'))
+                .label({
+                    label: 'I work in the following area',
+                    type: 'p',
+                    klass: ''
+                })
                 .groupName('steamie_work_in')
                 .data([{
                     label: 'Research',
@@ -101,10 +109,10 @@ function ModalFlow (context) {
     // elements that need to be turned on and off
     var el = {
         button: {
-            deactivate: {
+            close_modal: {
                 el: d3.select('#close-modal'),
                 on_click: function () {
-                    form.state('inactive');
+                    form.state('inactive_no_profile');
                 },
                 append_to_el: function (sel) {
                     var button_size = 45;
@@ -147,10 +155,10 @@ function ModalFlow (context) {
                 append_to_el: function () {}
             },
 
-            activate: {
+            open_modal: {
                 el: d3.select('#activate-add-yourself'),
                 on_click: function () {
-                    if (previous_state === 'inactive') {
+                    if (previous_state === 'inactive_no_profile') {
                         // first time through
                         form.state('call_to_action');
                     } else {
@@ -222,7 +230,14 @@ function ModalFlow (context) {
     };
 
     var states = {
-        inactive: function () {
+        inactive_no_profile: function () {
+            var active = [{
+                el_type: 'button',
+                el_name: 'open_modal'
+            }];
+            apply_state(active);
+        },
+        inactive_with_profile: function () {
             var active = [];
             apply_state(active);
         },
@@ -236,6 +251,9 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'join'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -250,6 +268,12 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'join'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -264,6 +288,9 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'thanks'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -278,6 +305,9 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'avatar'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -292,6 +322,9 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'avatar'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -321,7 +354,7 @@ function ModalFlow (context) {
         } else {
             // wait until it is loaded, and then
             // render based on results
-            context.countries.dispatch.on('loaded', function () {
+            context.countries.dispatch.on('loaded.modal', function () {
                 select_geo
                     .options(context.countries.data())
                     .render();
@@ -365,47 +398,42 @@ function ModalFlow (context) {
 
         context.user
                .dispatch.on('checkAuthComplete', function(err, d) {
-            // d = context.user.data
+            d = context.user.data();
+            console.log('auth check dispatch modal');
             console.log(d);
 
-            if (d) {
+            if (context.user.authed()) {
                 // authenticated
 
                 form.add_avatar(d.objects[0].avatar_url);
 
-                if (d.objects[0].individual) {
+                if ((d.objects[0].top_level) &&
+                    ((d.objects[0].individual) ||
+                     (d.objects[0].institution))) {
 
-                    // already on map as individual
-                    form
-                        .type('individual')
-                        .state('profile');
-                } else if (d.objects[0].institution) {
-
-                    // already on map as insitution
-                    form
-                        .type('institution')
-                        .state('profile');
+                    // should have given all info
+                    // to be signed up and dont have
+                    // to be sold on it
+                    form.state('inactive_with_profile');
+                    context.user
+                        .profile
+                            .build();
 
                 } else {
 
                     // have authenticated, but no
                     // data associated with them
-                    form
-                        .state('choose_type_add_zip');
+                    form.state('choose_type_add_zip');
                 }
 
 
             } else {
                 // has not been authenticated
+                // assume the user has never been
+                // and ask them to sign up
                 form.state('call_to_action');
             }
         });
-
-        // fake some data for testing
-        
-        // end fake some data for testing
-        // form.state('thank_you');
-        form.state('call_to_action');
 
         return form;
     };
@@ -457,13 +485,13 @@ function ModalFlow (context) {
 
                 // update the user data based on
                 // what came back from the server
+                // also builds out an initial profile
+                // for the user based on their new
+                // data input
                 context.user
                     .data(results)
-                    .update_profile();
-
-                // remove 'add me' modal activator
-                el.button.deactivate.el
-                    .classed('active', false);
+                    .profile
+                        .build();
 
                 // show thank you
                 form.state('thank_you');
@@ -547,7 +575,7 @@ function ModalFlow (context) {
         for (var type_key in el) {
             for (var name_key in el[type_key]) {
                 if (active.length === 0) {
-                    // set all inactive
+                    // set all hidden
                     el[type_key][name_key]
                         .el
                         .classed('active', false);
@@ -555,7 +583,7 @@ function ModalFlow (context) {
                     var status_to_set = false;
 
                     for (var i = 0; i < active.length; i++) {
-                        if ((active[i].el_type === type_key) &
+                        if ((active[i].el_type === type_key) &&
                             (active[i].el_name === name_key)) {
 
                             status_to_set = true;

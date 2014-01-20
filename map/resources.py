@@ -135,6 +135,8 @@ class UserResource(ModelResource):
     """
     class Meta(CommonOpenResourceMeta):
         queryset = User.objects.all()
+        # excludes = ['id', 'is_active', 'is_staff',
+        #             'is_superuser', 'date_joined']
 
 
 class AuthSteamieResource(ModelResource):
@@ -167,6 +169,7 @@ class AuthSteamieResource(ModelResource):
         queryset = Steamies.objects.all()
         resource_name = 'steamie'
         excludes = ['id']
+        limit = 1
 
     def obj_create(self, bundle, **kwargs):
         # sets user based on request to

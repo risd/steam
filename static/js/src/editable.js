@@ -18,6 +18,7 @@ function Editable () {
         prev_valid = false,
         valid = false,
         editable_placeholder = '00000',
+        initial_value,
         selection,
         editable, // selection for editable div
         label; // d.type, d.label
@@ -42,8 +43,17 @@ function Editable () {
         return self;
     };
 
-    self.value = function () {
-        return editable.html();
+    self.value = function (x) {
+        if (!arguments.length) return editable.html();
+
+        // if editable is defined, change the value
+        if (editable) {
+            editable.html(value);
+        } else {
+            initial_value = x;
+        }
+
+        return self;
     };
 
     self.isValid = function () {
@@ -61,7 +71,10 @@ function Editable () {
             .attr('class', 'large editable')
             .attr('id', 'add-yourself-zip')
             .attr('placeholder', editable_placeholder)
-            .html(editable_placeholder);
+            .html(
+                initial_value ?
+                initial_value :
+                editable_placeholder);
 
         console.log('editable');
         console.log(editable);

@@ -92,30 +92,34 @@ class Initiative(models.Model):
 
 class Institution(models.Model):
 
-    # required
-    name = models.CharField("Name", max_length=100)
+    # all optional
+    name = models.CharField(
+        "Name",
+        max_length=100,
+        blank=True,
+        null=True)
 
     url = models.URLField(
-        blank=False,
+        blank=True,
         null=True)
 
     representative_first_name = models.CharField(
         "First name",
         max_length=100,
-        blank=False,
-        null=False)
+        blank=True,
+        null=True)
 
     representative_last_name = models.CharField(
         "Last name",
         max_length=100,
-        blank=False,
-        null=False)
+        blank=True,
+        null=True)
 
     representative_email = models.EmailField(
         "First name",
         max_length=100,
-        blank=False,
-        null=False)
+        blank=True,
+        null=True)
 
     class Meta:
         verbose_name = _('Institution')
@@ -130,26 +134,25 @@ class Institution(models.Model):
 
 class Individual(models.Model):
 
-    # required
+    # all optional
     first_name = models.CharField(
         "First name",
         max_length=100,
-        blank=False,
-        null=False)
+        blank=True,
+        null=True)
 
     last_name = models.CharField(
         "Last name",
         max_length=100,
-        blank=False,
-        null=False)
+        blank=True,
+        null=True)
 
     email = models.EmailField(
         "Email",
         max_length=100,
-        blank=False,
-        null=False)
+        blank=True,
+        null=True)
 
-    # optional
     url = models.URLField(
         blank=True,
         null=True)
@@ -159,7 +162,11 @@ class Individual(models.Model):
         blank=True,
         null=True)
 
-    title = models.CharField("Title", max_length=100)
+    title = models.CharField(
+        "Title",
+        max_length=100,
+        blank=True,
+        null=True)
 
     email_subscription = models.BooleanField(default=False)
 

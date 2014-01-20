@@ -675,6 +675,11 @@ select {
 
     color: $white;
 }
+.profile-link {
+    position: absolute;
+    bottom: 150px;
+    left: 28px;
+}
 /* end form */
 
 @import 'from_steam_proto_github'

@@ -5,6 +5,7 @@ module.exports = function radioSelection (context) {
         // parent node where options will be appended
         node,
         group_name,
+        label,
         data = [];
 
     self.dispatch = d3.dispatch('valid');
@@ -13,6 +14,12 @@ module.exports = function radioSelection (context) {
         // must call node(x) to
         // define a node before
         // calling .render()
+
+        if (label) {
+            node.append(label.type)
+                .text(label.label)
+                .attr('class', label.klass);
+        }
 
         var sel = node
             .selectAll('.type-option')
@@ -34,6 +41,12 @@ module.exports = function radioSelection (context) {
 
         return self;
     };
+
+    self.label = function (x) {
+        if (!arguments.length) return label;
+        label = x;
+        return self;
+    }
 
     self.node = function (x) {
         if (!arguments.length) return node;
@@ -69,6 +82,12 @@ module.exports = function radioSelection (context) {
             .attr('name', group_name)
             .attr('id', function (d, i) {
                 return 'type-option-' + d.value;
+            })
+            .property('checked', function (d) {
+                if (d.selected) {
+                    valid = true;
+                }
+                return d.selected;
             });
 
         sel.append('label')

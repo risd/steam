@@ -619,6 +619,11 @@ select {
   -webkit-appearance: none;
   color: white; }
 
+.profile-link {
+  position: absolute;
+  bottom: 150px;
+  left: 28px; }
+
 /* end form */
 input, label {
   font-size: 22px;

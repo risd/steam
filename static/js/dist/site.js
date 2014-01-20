@@ -609,6 +609,7 @@ function Editable () {
         prev_valid = false,
         valid = false,
         editable_placeholder = '00000',
+        initial_value,
         selection,
         editable, // selection for editable div
         label; // d.type, d.label
@@ -633,8 +634,17 @@ function Editable () {
         return self;
     };
 
-    self.value = function () {
-        return editable.html();
+    self.value = function (x) {
+        if (!arguments.length) return editable.html();
+
+        // if editable is defined, change the value
+        if (editable) {
+            editable.html(value);
+        } else {
+            initial_value = x;
+        }
+
+        return self;
     };
 
     self.isValid = function () {
@@ -652,7 +662,10 @@ function Editable () {
             .attr('class', 'large editable')
             .attr('id', 'add-yourself-zip')
             .attr('placeholder', editable_placeholder)
-            .html(editable_placeholder);
+            .html(
+                initial_value ?
+                initial_value :
+                editable_placeholder);
 
         console.log('editable');
         console.log(editable);
@@ -957,9 +970,12 @@ module.exports = function dropdownConditionalText () {
         editable_text,
         checkmark_sel,
         options,
+        options_key,
         select_wrapper,
         select,
-        select_options;
+        select_options,
+        placeholder,
+        initial_value;
 
     self.dispatch = d3.dispatch('validChange');
 
@@ -982,19 +998,77 @@ module.exports = function dropdownConditionalText () {
         }
     };
 
+    self.initialValue = function (x) {
+        if (!arguments.length) return initial_value;
+        initial_value = x;
+        return self;
+    };
+
+
     self.rootSelection = function (x) {
         if (!arguments.length) return root_selection;
         root_selection = x;
         return self;
     };
 
+    self.placeholder = function (x) {
+        if (!arguments.length) return placeholder;
+        placeholder = x;
+        return self;
+    };
+
     self.options = function (x) {
-        if (!arguments) return options;
+        if (!arguments.length) return options;
         options = x;
         return self;
     };
 
+    // function that gets values out of the options array
+    self.optionsKey = function (x) {
+        if (!arguments.length) return options_key;
+        options_key = x;
+        return self;
+    };
+
     self.render = function () {
+        // set the initial values for rendering
+        var initial_text_selection_data,
+            initial_edtiable_text,
+            initial_value_select;
+
+        options.forEach(function (d, i) {
+            if (d.country === 'United States of America') {
+                return;
+            }
+            // to make this reusable, you would
+            // want to be able to set this function
+            // dynamically.
+            if (initial_value === d.country) {
+
+                initial_text_selection_data = [{
+                    active: false
+                }];
+
+                initial_edtiable_text = '';
+
+                initial_value_select = d.country;
+            }
+        });
+
+        // initial value is not in the options
+        // field, so the value does not need to change
+        if (!initial_text_selection_data) {
+            
+            initial_text_selection_data = [{
+                active: true
+            }];
+
+            initial_edtiable_text = initial_value;
+
+            initial_value_select = 'United States of America';
+        }
+        // end set the initial values for rendering
+
         // add validation visualization
         root_selection
             .call(Checkmark());
@@ -1007,13 +1081,20 @@ module.exports = function dropdownConditionalText () {
 
         text_selection =
             root_selection
+                .selectAll('.input-text')
+                .data(initial_text_selection_data)
+                .enter()
                 .append('div')
-                .attr('class', 'input-text hide-til-active active');
+                .attr('class', function (d) {
+                    var active = d.active ? ' active' : '';
+                    return 'input-text hide-til-active' + active;
+                });
 
 
         editable_text = Editable()
                             .selection(text_selection)
-                            .placeholder('00000')
+                            .placeholder(placeholder)
+                            .value(initial_edtiable_text)
                             .label({
                                 type: 'p',
                                 label: 'enter your zipcode'
@@ -1047,12 +1128,15 @@ module.exports = function dropdownConditionalText () {
             .data(options)
             .enter()
             .append('option')
-            .attr('value', function(d) {
-                return d.country;
-            })
-            .text(function(d) {
-                return d.country;
-            });
+            .attr('value', options_key)
+            .text(options_key)
+            .property('value', options_key);
+
+        // select initial
+        select.property('value', initial_value_select);
+
+        // set state based on render
+        validate();
 
         return self;
     };
@@ -1089,6 +1173,7 @@ module.exports = function radioSelection (context) {
         // parent node where options will be appended
         node,
         group_name,
+        label,
         data = [];
 
     self.dispatch = d3.dispatch('valid');
@@ -1097,6 +1182,12 @@ module.exports = function radioSelection (context) {
         // must call node(x) to
         // define a node before
         // calling .render()
+
+        if (label) {
+            node.append(label.type)
+                .text(label.label)
+                .attr('class', label.klass);
+        }
 
         var sel = node
             .selectAll('.type-option')
@@ -1118,6 +1209,12 @@ module.exports = function radioSelection (context) {
 
         return self;
     };
+
+    self.label = function (x) {
+        if (!arguments.length) return label;
+        label = x;
+        return self;
+    }
 
     self.node = function (x) {
         if (!arguments.length) return node;
@@ -1153,6 +1250,12 @@ module.exports = function radioSelection (context) {
             .attr('name', group_name)
             .attr('id', function (d, i) {
                 return 'type-option-' + d.value;
+            })
+            .property('checked', function (d) {
+                if (d.selected) {
+                    valid = true;
+                }
+                return d.selected;
             });
 
         sel.append('label')
@@ -1329,6 +1432,11 @@ function STEAMMap() {
             .init();
         context.filterUI.init();
         context.modal_flow.init();
+
+        // modal_flow dispatches on
+        // check auth being completed
+        // and sets the modal form flow
+        // to the position it should be in
         context.user.check_auth();
     }
 
@@ -1402,7 +1510,10 @@ function ModalFlow (context) {
 
         select_geo =
             geoComponent()
-                .rootSelection(d3.select('#add-yourself-geo')),
+                .rootSelection(d3.select('#add-yourself-geo'))
+                .optionsKey(function (d) { return d.country; })
+                .placeholder('00000')
+                .initialValue(null),
 
         select_type =
             radioComponent()
@@ -1421,6 +1532,11 @@ function ModalFlow (context) {
         select_work_in =
             radioComponent()
                 .node(d3.select('#select-work-in-component'))
+                .label({
+                    label: 'I work in the following area',
+                    type: 'p',
+                    klass: ''
+                })
                 .groupName('steamie_work_in')
                 .data([{
                     label: 'Research',
@@ -1477,10 +1593,10 @@ function ModalFlow (context) {
     // elements that need to be turned on and off
     var el = {
         button: {
-            deactivate: {
+            close_modal: {
                 el: d3.select('#close-modal'),
                 on_click: function () {
-                    form.state('inactive');
+                    form.state('inactive_no_profile');
                 },
                 append_to_el: function (sel) {
                     var button_size = 45;
@@ -1523,10 +1639,10 @@ function ModalFlow (context) {
                 append_to_el: function () {}
             },
 
-            activate: {
+            open_modal: {
                 el: d3.select('#activate-add-yourself'),
                 on_click: function () {
-                    if (previous_state === 'inactive') {
+                    if (previous_state === 'inactive_no_profile') {
                         // first time through
                         form.state('call_to_action');
                     } else {
@@ -1598,7 +1714,14 @@ function ModalFlow (context) {
     };
 
     var states = {
-        inactive: function () {
+        inactive_no_profile: function () {
+            var active = [{
+                el_type: 'button',
+                el_name: 'open_modal'
+            }];
+            apply_state(active);
+        },
+        inactive_with_profile: function () {
             var active = [];
             apply_state(active);
         },
@@ -1612,6 +1735,9 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'join'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -1626,6 +1752,12 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'join'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -1640,6 +1772,9 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'thanks'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -1654,6 +1789,9 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'avatar'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -1668,6 +1806,9 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'avatar'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -1697,7 +1838,7 @@ function ModalFlow (context) {
         } else {
             // wait until it is loaded, and then
             // render based on results
-            context.countries.dispatch.on('loaded', function () {
+            context.countries.dispatch.on('loaded.modal', function () {
                 select_geo
                     .options(context.countries.data())
                     .render();
@@ -1741,47 +1882,42 @@ function ModalFlow (context) {
 
         context.user
                .dispatch.on('checkAuthComplete', function(err, d) {
-            // d = context.user.data
+            d = context.user.data();
+            console.log('auth check dispatch modal');
             console.log(d);
 
-            if (d) {
+            if (context.user.authed()) {
                 // authenticated
 
                 form.add_avatar(d.objects[0].avatar_url);
 
-                if (d.objects[0].individual) {
+                if ((d.objects[0].top_level) &&
+                    ((d.objects[0].individual) ||
+                     (d.objects[0].institution))) {
 
-                    // already on map as individual
-                    form
-                        .type('individual')
-                        .state('profile');
-                } else if (d.objects[0].institution) {
-
-                    // already on map as insitution
-                    form
-                        .type('institution')
-                        .state('profile');
+                    // should have given all info
+                    // to be signed up and dont have
+                    // to be sold on it
+                    form.state('inactive_with_profile');
+                    context.user
+                        .profile
+                            .build();
 
                 } else {
 
                     // have authenticated, but no
                     // data associated with them
-                    form
-                        .state('choose_type_add_zip');
+                    form.state('choose_type_add_zip');
                 }
 
 
             } else {
                 // has not been authenticated
+                // assume the user has never been
+                // and ask them to sign up
                 form.state('call_to_action');
             }
         });
-
-        // fake some data for testing
-        
-        // end fake some data for testing
-        // form.state('thank_you');
-        form.state('call_to_action');
 
         return form;
     };
@@ -1833,13 +1969,13 @@ function ModalFlow (context) {
 
                 // update the user data based on
                 // what came back from the server
+                // also builds out an initial profile
+                // for the user based on their new
+                // data input
                 context.user
                     .data(results)
-                    .update_profile();
-
-                // remove 'add me' modal activator
-                el.button.deactivate.el
-                    .classed('active', false);
+                    .profile
+                        .build();
 
                 // show thank you
                 form.state('thank_you');
@@ -1923,7 +2059,7 @@ function ModalFlow (context) {
         for (var type_key in el) {
             for (var name_key in el[type_key]) {
                 if (active.length === 0) {
-                    // set all inactive
+                    // set all hidden
                     el[type_key][name_key]
                         .el
                         .classed('active', false);
@@ -1931,7 +2067,7 @@ function ModalFlow (context) {
                     var status_to_set = false;
 
                     for (var i = 0; i < active.length; i++) {
-                        if ((active[i].el_type === type_key) &
+                        if ((active[i].el_type === type_key) &&
                             (active[i].el_name === name_key)) {
 
                             status_to_set = true;
@@ -2380,9 +2516,15 @@ function Network (context) {
     return network;
 }
 },{}],20:[function(require,module,exports){
+var geoComponent =
+        require('./formComponents/dropdownConditionalText'),
+    radioComponent =
+        require('./formComponents/radio');
+
 module.exports = function Profile (context) {
     var self = {},
-        geo_options;
+        geo_options,
+        profile_selection;
 
     self.geoOptions = function (x) {
         if (!arguments.length) return geo_options;
@@ -2392,49 +2534,149 @@ module.exports = function Profile (context) {
 
     self.build = function () {
         if (context.user.type() === 'individual') {
-            d3.select('#profile-individual')
+            profile_selection = d3.select('#profile-individual')
+                .datum(context.user.data())
                 .call(build_individual);
 
         } else if (context.user.type() === 'institution') {
-            d3.select('#profile-institution')
+            profile_selection = d3.select('#profile-institution')
+                .datum(context.user.data())
                 .call(build_institution);
         }
+
+        d3.selectAll('.profile-link')
+            .classed('active', true)
+            .on('click', function () {
+                if (context.user.type() === 'individual') {
+                    context.modal_flow.state('profile_individual');
+                } else if (context.user.type() === 'institution') {
+                    context.modal_flow.state('profile_institution');
+                }
+            });
 
         return self;
     };
 
     function build_individual (sel) {
-        var first_row = sel.append('div').attr('row clearfix');
+        console.log('build individual');
+        console.log(sel);
+        var data = sel.datum();
+
+        var first_row = sel.append('div')
+                           .attr('class', 'row clearfix');
+
+        console.log(first_row);
 
         var first_name = first_row
             .append('div')
-            .attr('column one')
+            .attr('class', 'column one')
                 .append('input')
                 .attr('id', 'individual-first-name')
-                .attr('data-mapped', 'first_name');
+                .attr('data-mapped', 'first_name')
+                .property('value',
+                    data.objects[0].individual.first_name ?
+                    data.objects[0].individual.first_name : ''
+                );
 
         var last_name = first_row
             .append('div')
-            .attr('column one')
+            .attr('class', 'column one')
                 .append('input')
                 .attr('id', 'individual-last-name')
-                .attr('data-mapped', 'last_name');
+                .attr('data-mapped', 'last_name')
+                .property('value',
+                    data.objects[0].individual.last_name ?
+                    data.objects[0].individual.last_name : ''
+                );
 
-        var second_row = sel.append('div').attr('row clearfix');
+        var second_row = sel.append('div')
+                            .attr('class', 'row clearfix');
 
         var email = second_row
             .append('div')
-            .attr('column one')
+            .attr('class', 'column one')
                 .append('input')
                 .attr('id', 'individual-email')
-                .attr('data-mapped', 'email');
+                .attr('data-mapped', 'email')
+                .property('value',
+                    data.objects[0].individual.email ?
+                    data.objects[0].individual.email : ''
+                );
 
-        var geo = second_row
+        var third_row = sel.append('div')
+                           .attr('class', 'row clearfix');
+
+        var geo_sel = third_row
             .append('div')
-            .attr('column one')
-                .append('input')
-                .attr('id', 'individual-email')
-                .attr('data-mapped', 'email');
+            .attr('class', 'column two')
+            .attr('id', 'individual-email');
+
+        var geo = geoComponent()
+            .rootSelection(geo_sel)
+            .optionsKey(function (d) { return d.country; })
+            .initialValue(data.objects[0].top_level_input)
+            .placeholder('00000');
+
+        if (context.countries.data()) {
+            // if the data is loaded already,
+            // populate the select_geo module
+            geo.options(context.countries.data())
+                .render();
+        } else {
+            // wait until it is loaded, and then
+            // render based on results
+            context
+                .countries
+                    .dispatch
+                    .on('loaded.profile', function () {
+
+                geo.options(context.countries.data())
+                    .render();
+            });
+        }
+
+        var fourth_row = sel.append('div')
+                            .attr('class', 'row clearfix');
+
+        var work_in_sel = fourth_row
+            .append('div')
+            .attr('class', 'column two')
+            .attr('id', 'individual-work-in');
+
+        var work_in_options = [{
+                    label: 'Research',
+                    value: 'res',
+                    selected: false
+                }, {
+                    label: 'Education',
+                    value: 'edu',
+                    selected: false
+                }, {
+                    label: 'Political',
+                    value: 'pol',
+                    selected: false
+                }, {
+                    label: 'Industry',
+                    value: 'ind',
+                    selected: false
+                }];
+
+        work_in_options.forEach(function (d, i) {
+            if (d.label.toLowerCase() ===
+                data.objects[0].work_in.toLowerCase()) {
+                d.selected = true;
+            }
+        });
+
+        var work_in = radioComponent()
+            .node(work_in_sel)
+            .label({
+                label: 'I work in the following area',
+                type: 'p',
+                klass: ''
+            })
+            .groupName('individual-work-in-group')
+            .data(work_in_options);
     }
 
     function build_institution (sel) {
@@ -2443,7 +2685,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{}],21:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13}],21:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -2523,16 +2765,18 @@ function User (context) {
         var url = context.api.steamie;
 
         d3.json(url, function (err, data_response) {
-            if (err) {
+            console.log('auth check');
+            console.log(data_response);
+            if ((err) |
+                (data_response.meta.total_count === 0)) {
                 // not auth'ed
                 console.log('Not authed.');
-                data = undefined;
+                data = null;
                 authed = false;
-                return;
+            } else {
+                user.data(data_response);
+                authed = true;
             }
-
-            user.data(data_response);
-            authed = true;
 
             dispatch.checkAuthComplete.apply(this, arguments);
         });
@@ -2574,15 +2818,13 @@ function User (context) {
         // if the data is loaded already,
         // populate the user profile
         user.profile
-            .geoOptions(context.countries.data())
-            .build();
+            .geoOptions(context.countries.data());
     } else {
         // wait until it is loaded, and then
         // render based on results
         context.countries.dispatch.on('loaded', function () {
             user.profile
-                .geoOptions(context.countries.data())
-                .build();
+                .geoOptions(context.countries.data());
         });
     }
 
@@ -2596,18 +2838,48 @@ function User (context) {
         return data.objects[0].avatar_url;
     };
 
-    // type only affects the UI.
-    // does not change the actual data structure
-    // that is going to and from the server
+    // sugar over the individual and institution
+    // attributes of a user. defines a default
+    // object for institution or individual, if
+    // one is defined
+    // assumes that if user.type is being used to set
+    // a user's type, then it doesn't have any data
+    // for that yet.
     user.type = function (x) {
-        if (!arguments.length) return steamie_type;
+        if (!arguments.length) {
+            if (user.individual()) {
+                return 'individual';
+            } else if (user.institution()) {
+                return 'institution';
+            } else {
+                return null;
+            }
+        }
         if ((x.toLowerCase() === 'individual') ||
             (x === 'i')) {
-            steamie_type = 'individual';
+
+            // defaults for an individual
+            user.individual({
+                first_name: null,
+                last_name: null,
+                email: null,
+                url: null,
+                institution: null,
+                title: null,
+                email_subscription: false
+            });
         }
         else if ((x.toLowerCase() === 'institution') ||
                  (x === 'g')) {
-            steamie_type = 'institution';
+
+            // defaults for an institution
+            user.institution({
+                name: null,
+                url: null,
+                representative_first_name: null,
+                representative_last_name: null,
+                representative_email: null
+            });
         }
 
         return user;
