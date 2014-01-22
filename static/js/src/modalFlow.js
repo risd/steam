@@ -37,11 +37,11 @@ function ModalFlow (context) {
                 .groupName('steamie_type')
                 .data([{
                     label: 'Individual',
-                    value: 'i',
+                    value: 'individual',
                     selected: false
                 }, {
                     label: 'Institution',
-                    value: 'g',
+                    value: 'institution',
                     selected: false
                 }]),
 
@@ -56,19 +56,19 @@ function ModalFlow (context) {
                 .groupName('steamie_work_in')
                 .data([{
                     label: 'Research',
-                    value: 'res',
+                    value: 'research',
                     selected: false
                 }, {
                     label: 'Education',
-                    value: 'edu',
+                    value: 'education',
                     selected: false
                 }, {
                     label: 'Political',
-                    value: 'pol',
+                    value: 'political',
                     selected: false
                 }, {
                     label: 'Industry',
-                    value: 'ind',
+                    value: 'industry',
                     selected: false
                 }]);
 
@@ -474,9 +474,9 @@ function ModalFlow (context) {
     function add_me_flow () {
         // for the User that is stored.
         context.user
-            .type(select_type.selected().label)
+            .type(select_type.value())
             .setTypeDefaults()
-            .work_in(select_work_in.selected().label)
+            .work_in(select_work_in.value())
             .top_level_input(select_geo.validatedData());
 
         context.api.steamie_request(

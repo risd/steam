@@ -5,7 +5,9 @@ var geoComponent =
     textComponent =
         require('./formComponents/text'),
     textAreaComponent =
-        require('./formComponents/textarea');
+        require('./formComponents/textarea'),
+    updatableManager =
+        require('./formComponents/updatableManager');
 
 module.exports = function ProfileIndividual (context) {
     var self = {},
@@ -22,8 +24,7 @@ module.exports = function ProfileIndividual (context) {
         geo,
         work_in,
         description,
-        updatable = [],
-        updated = [];
+        updatable = updatableManager();
 
     self.selection = function (x) {
         if (!arguments.length) return selection;
@@ -74,12 +75,12 @@ module.exports = function ProfileIndividual (context) {
                 data.objects[0].individual.first_name : '')
             .render();
 
-        var last_name_self = row
+        var last_name_sel = row
             .append('div')
             .attr('class', 'column one');
 
         last_name = textComponent()
-            .selection(last_name_self)
+            .selection(last_name_sel)
             .placeholder('last name')
             .initialValue(
                 data.objects[0].individual.last_name ?
@@ -122,19 +123,19 @@ module.exports = function ProfileIndividual (context) {
 
         var work_in_options = [{
                     label: 'Research',
-                    value: 'res',
+                    value: 'research',
                     selected: false
                 }, {
                     label: 'Education',
-                    value: 'edu',
+                    value: 'education',
                     selected: false
                 }, {
                     label: 'Political',
-                    value: 'pol',
+                    value: 'political',
                     selected: false
                 }, {
                     label: 'Industry',
-                    value: 'ind',
+                    value: 'industry',
                     selected: false
                 }];
 
@@ -213,31 +214,31 @@ module.exports = function ProfileIndividual (context) {
             });
 
         // manage updatable items.
-        updatable.push({
+        updatable.add({
             isDifferent: first_name.isDifferent,
             value: first_name.value,
             position_in_data: ['individual', 'first_name'],
             reset_initial: first_name.initialValue
         });
-        updatable.push({
+        updatable.add({
             isDifferent: last_name.isDifferent,
             value: last_name.value,
             position_in_data: ['individual', 'last_name'],
             reset_initial: last_name.initialValue
         });
-        updatable.push({
+        updatable.add({
             isDifferent: work_in.isDifferent,
-            value: work_in.selected,
+            value: work_in.value,
             position_in_data: ['work_in'],
             reset_initial: work_in.initialSelected
         });
-        updatable.push({
+        updatable.add({
             isDifferent: geo.isDifferent,
             value: geo.validatedData,
             position_in_data: ['top_level_input'],
             reset_initial: geo.initialValue
         });
-        updatable.push({
+        updatable.add({
             isDifferent: description.isDifferent,
             value: description.value,
             position_in_data: ['description'],
@@ -262,7 +263,7 @@ module.exports = function ProfileIndividual (context) {
         // the server for saving
         var data_for_server = {};
 
-        updated.forEach(function (n, i) {
+        updatable.updated().forEach(function (n, i) {
             if (n.position_in_data.length === 1) {
 
                 data.objects[0][n.position_in_data[0]] =
@@ -297,12 +298,6 @@ module.exports = function ProfileIndividual (context) {
         return data_for_server;
     }
 
-    function reset_updatables_initial_data () {
-        updated.forEach(function (n, i) {
-            n.reset_initial(n.value());
-        });
-    }
-
     function save_flow () {
         var data_to_submit =
             decorate_for_submittal(update_user_data());
@@ -325,7 +320,7 @@ module.exports = function ProfileIndividual (context) {
             var results = JSON.parse(response.responseText);
             console.log(results);
 
-            reset_updatables_initial_data();
+            updatable.resetInitialValues();
             // will reset the save button
             validate();
         });
@@ -340,18 +335,14 @@ module.exports = function ProfileIndividual (context) {
             valid = false;
         }
 
-        // deal with updatable objects
-        updated = [];
-        updatable.forEach(function (n, i) {
-            if (n.isDifferent()) {
-                updated.push(n);
-            }
-        });
+        // check to see if any of the
+        // updatables, are updated.
+        updatable.check();
 
         // determine button functionality
         // based on validation and 
         // updatable object status
-        if (updated.length > 0) {
+        if (updatable.updated().length > 0) {
             if (valid) {
                 enable_save();
             } else {

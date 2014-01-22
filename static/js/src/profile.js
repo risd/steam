@@ -33,7 +33,7 @@ module.exports = function Profile (context) {
                 .build();
 
         } else if (type === 'institution') {
-            profile = Individual(context)
+            profile = Institution(context)
                 .selection(d3.select('#profile-institution'))
                 .geoOptions(geo_options)
                 .data(context.user.data())

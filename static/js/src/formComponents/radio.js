@@ -113,6 +113,10 @@ module.exports = function radioSelection () {
         return selected;
     };
 
+    self.value = function () {
+        return self.selected().value;
+    };
+
     function addInput (sel) {
 
         sel.append('input')
