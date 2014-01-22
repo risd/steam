@@ -6,7 +6,7 @@ function Config (hostname) {
     return {
         backend_url: local ?
             'http://localhost:5000' :
-            'http://django-steam.herokuapp.com',
+            'http://stemtosteam.herokuapp.com',
 
         version: 'v1'
     };

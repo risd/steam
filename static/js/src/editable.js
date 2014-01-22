@@ -23,7 +23,7 @@ function Editable () {
         editable, // selection for editable div
         label; // d.type, d.label
 
-    self.dispatch = d3.dispatch('validChange');
+    self.dispatch = d3.dispatch('validChange', 'valueChange');
 
     self.placeholder = function (x) {
         if (!arguments.length) return placeholder;
@@ -40,6 +40,12 @@ function Editable () {
     self.selection = function (x) {
         if (!arguments.length) return selection;
         selection = x;
+        return self;
+    };
+
+    self.initialValue = function (x) {
+        if (!arguments.length) return initial_value;
+        initial_value = x;
         return self;
     };
 
@@ -75,9 +81,6 @@ function Editable () {
                 initial_value ?
                 initial_value :
                 editable_placeholder);
-
-        console.log('editable');
-        console.log(editable);
         
         editable
             .on('focus.editable-internal', function () {
@@ -115,7 +118,6 @@ function Editable () {
                 }
             })
             .on('keyup.editable-internal', function () {
-                console.log('keyup');
                 validate();
 
                 editable.classed('valid', valid);
@@ -125,8 +127,13 @@ function Editable () {
                         .validChange.apply(this, arguments);
                 }
 
+                self.dispatch
+                    .valueChange.apply(this, arguments);
+
                 prev_valid = valid;
             });
+
+        validate();
 
         return self;
     };

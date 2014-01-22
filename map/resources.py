@@ -77,7 +77,7 @@ class CommonAuthResourceMeta:
     authorization = UserObjectsOnlyAuthorization()
 
     serializer = Serializer(formats=['json', 'jsonp'])
-    allowed_methods = ['get', 'post', 'delete', 'put']
+    allowed_methods = ['get', 'post', 'delete', 'put', 'patch']
 
     always_return_data = True
 
@@ -168,7 +168,7 @@ class AuthSteamieResource(ModelResource):
     class Meta(CommonAuthResourceMeta):
         queryset = Steamies.objects.all()
         resource_name = 'steamie'
-        excludes = ['id']
+        # excludes = ['id']
         limit = 1
 
     def obj_create(self, bundle, **kwargs):

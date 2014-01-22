@@ -1,4 +1,4 @@
-module.exports = function radioSelection (context) {
+module.exports = function radioSelection () {
     var self = {},
         valid = false,
         selected = false,
@@ -6,9 +6,10 @@ module.exports = function radioSelection (context) {
         node,
         group_name,
         label,
-        data = [];
+        data = [],
+        initial_selected;
 
-    self.dispatch = d3.dispatch('valid');
+    self.dispatch = d3.dispatch('valid', 'valueChange');
 
     self.render = function () {
         // must call node(x) to
@@ -21,21 +22,38 @@ module.exports = function radioSelection (context) {
                 .attr('class', label.klass);
         }
 
+        if (initial_selected) {
+            selected = initial_selected;
+        }
+
+        console.log('render radio');
+        console.log(initial_selected);
+        console.log(selected);
+
         var sel = node
             .selectAll('.type-option')
             .data(data)
             .enter()
             .append('div')
             .attr('class', 'type-option')
-            .on('mouseup', function (d) {
+            .on('mouseup.radio', function (d) {
                 d3.event.stopPropagation();
+
+                d3.select(this)
+                    .select('input')
+                    .node().checked = true;
+
                 data.forEach(function (n, i) {
                     n.selected = false;
                 });
                 d.selected = true;
-                selected = d;
+                self.selected(d);
                 valid = true;
                 self.dispatch.valid.apply(this, arguments);
+
+                if (self.isDifferent()) {
+                    self.dispatch.valueChange.apply(this, arguments);
+                }
             })
             .call(addInput);
 
@@ -46,7 +64,7 @@ module.exports = function radioSelection (context) {
         if (!arguments.length) return label;
         label = x;
         return self;
-    }
+    };
 
     self.node = function (x) {
         if (!arguments.length) return node;
@@ -70,7 +88,28 @@ module.exports = function radioSelection (context) {
         return valid;
     };
 
-    self.selected = function () {
+    self.isDifferent = function () {
+        if (self.initialSelected()) {
+            if (self.initialSelected().value !==
+                self.selected().value) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    };
+
+    self.initialSelected = function (x) {
+        if (!arguments.length) return initial_selected;
+        initial_selected = x;
+        return self;
+    };
+
+    self.selected = function (x) {
+        if (!arguments.length) return selected;
+        selected = x;
         return selected;
     };
 

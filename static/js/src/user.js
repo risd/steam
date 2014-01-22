@@ -23,8 +23,8 @@ function User (context) {
         d3.json(url, function (err, data_response) {
             console.log('auth check');
             console.log(data_response);
-            if ((err) |
-                (data_response.meta.total_count === 0)) {
+            if ((err) ||
+                (typeof(data_response) === 'undefined')) {
                 // not auth'ed
                 console.log('Not authed.');
                 data = null;
@@ -51,17 +51,6 @@ function User (context) {
     user.data = function (x) {
         if (!arguments.length) return data;
         data = x;
-
-        // steamie_type is otherwise set by
-        // the modal form, so it should be
-        // set and realiable when data is
-        // coming in, too.
-        if (data.objects[0].individual) {
-            user.type('individual');
-        } else if (data.objects[0].institution) {
-            user.type('institution');
-        }
-
         return user;
     };
 

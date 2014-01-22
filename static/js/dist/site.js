@@ -227,14 +227,71 @@ module.exports = Backend;
 
 function Backend () {
 
-    var api = config.backend_url + '/api/' + config.version;
+    var api = {};
 
-    return {
-        base: config.backend_url,
-        steamie: api + '/steamie/?format=json',
-        geo: api + '/geo/?format=json',
-        network: api + '/network/?format=json'
+    api.base = config.backend_url;
+
+    api.api_url = config.backend_url + '/api/' + config.version;
+
+    api.steamie = api.api_url + '/steamie/?format=json';
+    api.geo = api.api_url + '/geo/?format=json';
+    api.network = api.api_url + '/network/?format=json';
+
+    api.steamie_user = function (x) {
+        return api.api_url + '/steamie/' + x + '/?format=json';
     };
+
+    api.steamie_request = function (data_to_submit, callback) {
+        var csrf_token = get_cookie('csrftoken');
+
+        console.log('url');
+        console.log(api.steamie);
+        // api.steamie
+        // 'http://0.0.0.0:5000/api/v1/steamie/'
+        var xhr = d3.xhr(api.steamie)
+            .mimeType('application/json')
+            .header('X-CSRFToken', csrf_token)
+            .header('Content-type', 'application/json')
+            .send('PUT',
+                  JSON.stringify(data_to_submit),
+                  callback);
+    };
+
+    api.steamie_update = function (args, callback) {
+        var csrf_token = get_cookie('csrftoken');
+
+        console.log('url');
+        console.log(api.steamie);
+
+        var xhr = d3.xhr(api.steamie_user(args.steamie_id))
+            .mimeType('application/json')
+            .header('X-CSRFToken', csrf_token)
+            .header('Content-type', 'application/json')
+            .send('PATCH',
+                  JSON.stringify(args.data_to_submit),
+                  callback);
+    };
+
+    function get_cookie (c_name) {
+        var c_value = document.cookie;
+        var c_start = c_value.indexOf(" " + c_name + "=");
+        if (c_start == -1) {
+            c_start = c_value.indexOf(c_name + "=");
+        }
+        if (c_start == -1) {
+            c_value = null;
+        } else {
+            c_start = c_value.indexOf("=", c_start) + 1;
+            var c_end = c_value.indexOf(";", c_start);
+            if (c_end == -1) {
+                c_end = c_value.length;
+            }
+            c_value = unescape(c_value.substring(c_start, c_end));
+        }
+        return c_value;
+    }
+
+    return api;
 }
 },{"./config":7}],3:[function(require,module,exports){
 var clone = function clone (obj) {
@@ -583,7 +640,7 @@ function Config (hostname) {
     return {
         backend_url: local ?
             'http://localhost:5000' :
-            'http://django-steam.herokuapp.com',
+            'http://stemtosteam.herokuapp.com',
 
         version: 'v1'
     };
@@ -614,7 +671,7 @@ function Editable () {
         editable, // selection for editable div
         label; // d.type, d.label
 
-    self.dispatch = d3.dispatch('validChange');
+    self.dispatch = d3.dispatch('validChange', 'valueChange');
 
     self.placeholder = function (x) {
         if (!arguments.length) return placeholder;
@@ -631,6 +688,12 @@ function Editable () {
     self.selection = function (x) {
         if (!arguments.length) return selection;
         selection = x;
+        return self;
+    };
+
+    self.initialValue = function (x) {
+        if (!arguments.length) return initial_value;
+        initial_value = x;
         return self;
     };
 
@@ -666,9 +729,6 @@ function Editable () {
                 initial_value ?
                 initial_value :
                 editable_placeholder);
-
-        console.log('editable');
-        console.log(editable);
         
         editable
             .on('focus.editable-internal', function () {
@@ -706,7 +766,6 @@ function Editable () {
                 }
             })
             .on('keyup.editable-internal', function () {
-                console.log('keyup');
                 validate();
 
                 editable.classed('valid', valid);
@@ -716,8 +775,13 @@ function Editable () {
                         .validChange.apply(this, arguments);
                 }
 
+                self.dispatch
+                    .valueChange.apply(this, arguments);
+
                 prev_valid = valid;
             });
+
+        validate();
 
         return self;
     };
@@ -977,7 +1041,7 @@ module.exports = function dropdownConditionalText () {
         placeholder,
         initial_value;
 
-    self.dispatch = d3.dispatch('validChange');
+    self.dispatch = d3.dispatch('validChange', 'valueChange');
 
     self.isValid = function () {
         return valid;
@@ -1002,6 +1066,14 @@ module.exports = function dropdownConditionalText () {
         if (!arguments.length) return initial_value;
         initial_value = x;
         return self;
+    };
+
+    self.isDifferent = function () {
+        if (self.initialValue() === self.validatedData()){
+            return false;
+        } else {
+            return true;
+        }
     };
 
 
@@ -1103,8 +1175,11 @@ module.exports = function dropdownConditionalText () {
 
         editable_text
             .dispatch
-            .on('validChange', function () {
+            .on('validChange.dropdownConditionalText', function () {
                 validate();
+            })
+            .on('valueChange.dropdownConditionalText', function () {
+                self.dispatch.valueChange.apply(this, arguments);
             });
 
 
@@ -1121,6 +1196,8 @@ module.exports = function dropdownConditionalText () {
                         .classed('active', false);
                 }
                 validate();
+
+                self.dispatch.valueChange.apply(this, arguments);
             });
 
         select
@@ -1165,8 +1242,8 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../editable":8,"../ui/checkmark":21}],13:[function(require,module,exports){
-module.exports = function radioSelection (context) {
+},{"../editable":8,"../ui/checkmark":24}],13:[function(require,module,exports){
+module.exports = function radioSelection () {
     var self = {},
         valid = false,
         selected = false,
@@ -1174,9 +1251,10 @@ module.exports = function radioSelection (context) {
         node,
         group_name,
         label,
-        data = [];
+        data = [],
+        initial_selected;
 
-    self.dispatch = d3.dispatch('valid');
+    self.dispatch = d3.dispatch('valid', 'valueChange');
 
     self.render = function () {
         // must call node(x) to
@@ -1189,21 +1267,38 @@ module.exports = function radioSelection (context) {
                 .attr('class', label.klass);
         }
 
+        if (initial_selected) {
+            selected = initial_selected;
+        }
+
+        console.log('render radio');
+        console.log(initial_selected);
+        console.log(selected);
+
         var sel = node
             .selectAll('.type-option')
             .data(data)
             .enter()
             .append('div')
             .attr('class', 'type-option')
-            .on('mouseup', function (d) {
+            .on('mouseup.radio', function (d) {
                 d3.event.stopPropagation();
+
+                d3.select(this)
+                    .select('input')
+                    .node().checked = true;
+
                 data.forEach(function (n, i) {
                     n.selected = false;
                 });
                 d.selected = true;
-                selected = d;
+                self.selected(d);
                 valid = true;
                 self.dispatch.valid.apply(this, arguments);
+
+                if (self.isDifferent()) {
+                    self.dispatch.valueChange.apply(this, arguments);
+                }
             })
             .call(addInput);
 
@@ -1214,7 +1309,7 @@ module.exports = function radioSelection (context) {
         if (!arguments.length) return label;
         label = x;
         return self;
-    }
+    };
 
     self.node = function (x) {
         if (!arguments.length) return node;
@@ -1238,7 +1333,28 @@ module.exports = function radioSelection (context) {
         return valid;
     };
 
-    self.selected = function () {
+    self.isDifferent = function () {
+        if (self.initialSelected()) {
+            if (self.initialSelected().value !==
+                self.selected().value) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    };
+
+    self.initialSelected = function (x) {
+        if (!arguments.length) return initial_selected;
+        initial_selected = x;
+        return self;
+    };
+
+    self.selected = function (x) {
+        if (!arguments.length) return selected;
+        selected = x;
         return selected;
     };
 
@@ -1353,7 +1469,70 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":21}],15:[function(require,module,exports){
+},{"../ui/checkmark":24}],15:[function(require,module,exports){
+// text input, with placeholder
+// dispatches when the value changes
+// against the initial value
+
+// there is no idea of validity,
+// just whether or not a value
+// has changed.
+module.exports = function TextInput () {
+    var self = {},
+        selection,
+        input_selection,
+        placeholder,
+        value,
+        initial_value;
+
+    self.dispatch = d3.dispatch('valueChange');
+
+    self.render = function () {
+
+        input_selection = selection
+            .append('input')
+            .attr('placeholder', placeholder)
+            .property('value', initial_value)
+            .on('keyup.internal-text', function (d) {
+                self.dispatch.valueChange.apply(this, arguments);
+            });
+
+        return self;
+    };
+
+    self.placeholder = function (x) {
+        if (!arguments.length) return placeholder;
+        placeholder = x;
+        return self;
+    };
+
+    self.selection = function (x) {
+        if (!arguments.length) return selection;
+        selection = x;
+        return self;
+    };
+
+    self.initialValue = function (x) {
+        if (!arguments.length) return initial_value;
+        initial_value = x;
+        return self;
+    };
+
+    self.value = function (x) {
+        return input_selection.node().value;
+    };
+
+    self.isDifferent = function () {
+        if (self.value() !== initial_value) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    return self;
+};
+},{}],16:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
         data;
@@ -1378,7 +1557,7 @@ module.exports = function dataTSV (url) {
 
     return self;
 };
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./clone'),
@@ -1442,7 +1621,7 @@ function STEAMMap() {
 
     init();
 }
-},{"./arcs":1,"./backend":2,"./clone":3,"./clusterIconSize":4,"./clusters":5,"./colors":6,"./fakeDataGenerator":9,"./filterUI":10,"./filters":11,"./getTSV":15,"./map":17,"./modalFlow":18,"./network":19,"./user":22}],17:[function(require,module,exports){
+},{"./arcs":1,"./backend":2,"./clone":3,"./clusterIconSize":4,"./clusters":5,"./colors":6,"./fakeDataGenerator":9,"./filterUI":10,"./filters":11,"./getTSV":16,"./map":18,"./modalFlow":19,"./network":20,"./user":25}],18:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -1481,7 +1660,7 @@ function Map (context) {
 
     return map;
 }
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var validator = require('./validators'),
 
     geoComponent =
@@ -1554,9 +1733,7 @@ function ModalFlow (context) {
                     label: 'Industry',
                     value: 'ind',
                     selected: false
-                }]),
-
-        profile_link_selection = d3.select('.profile-link');
+                }]);
 
     var ui = {
         popup_window_properties: function () {
@@ -1596,7 +1773,11 @@ function ModalFlow (context) {
             close_modal: {
                 el: d3.select('#close-modal'),
                 on_click: function () {
-                    form.state('inactive_no_profile');
+                    if (context.user.profile.built()) {
+                        form.state('inactive_with_profile');
+                    } else {
+                        form.state('inactive_no_profile');
+                    }
                 },
                 append_to_el: function (sel) {
                     var button_size = 45;
@@ -1673,7 +1854,7 @@ function ModalFlow (context) {
             },
 
             profile_link: {
-                el: profile_link_selection,
+                el: d3.select('.profile-link'),
                 on_click: function () {
                     form.state('profile_' + context.user.type());
                 },
@@ -1722,7 +1903,10 @@ function ModalFlow (context) {
             apply_state(active);
         },
         inactive_with_profile: function () {
-            var active = [];
+            var active = [{
+                el_type: 'button',
+                el_name: 'profile_link'
+            }];
             apply_state(active);
         },
         call_to_action: function () {
@@ -1949,7 +2133,7 @@ function ModalFlow (context) {
             .work_in(select_work_in.selected().label)
             .top_level_input(select_geo.validatedData());
 
-        steamie_request(
+        context.api.steamie_request(
             context.user.data(),
             function (err, results_raw) {
                 var results = JSON.parse(results_raw.responseText);
@@ -1982,47 +2166,8 @@ function ModalFlow (context) {
             });
     }
 
-    function steamie_request(data_to_submit, callback) {
-        console.log('complete submit');
-        // submit data
-
-        var csrf_token = get_cookie('csrftoken');
-        console.log(csrf_token);
-
-        console.log('url');
-        console.log(context.api.steamie);
-        // api.steamie
-        // 'http://0.0.0.0:5000/api/v1/steamie/'
-        var xhr = d3.xhr(context.api.steamie)
-            .mimeType('application/json')
-            .header('X-CSRFToken', csrf_token)
-            .header('Content-type', 'application/json')
-            .send('PUT',
-                  JSON.stringify(data_to_submit),
-                  callback);
-    }
-
     function show_validation_errors(errors) {
         console.log('show validation errors');
-    }
-
-    function get_cookie (c_name) {
-        var c_value = document.cookie;
-        var c_start = c_value.indexOf(" " + c_name + "=");
-        if (c_start == -1) {
-            c_start = c_value.indexOf(c_name + "=");
-        }
-        if (c_start == -1) {
-            c_value = null;
-        } else {
-            c_start = c_value.indexOf("=", c_start) + 1;
-            var c_end = c_value.indexOf(";", c_start);
-            if (c_end == -1) {
-                c_end = c_value.length;
-            }
-            c_value = unescape(c_value.substring(c_start, c_end));
-        }
-        return c_value;
     }
 
     function check_child () {
@@ -2125,7 +2270,7 @@ function ModalFlow (context) {
 
     return form;
 }
-},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13,"./formComponents/socialAuthSelection":14,"./validators":23}],19:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13,"./formComponents/socialAuthSelection":14,"./validators":26}],20:[function(require,module,exports){
 module.exports = Network;
 
 // Network graph
@@ -2515,16 +2660,24 @@ function Network (context) {
 
     return network;
 }
-},{}],20:[function(require,module,exports){
-var geoComponent =
-        require('./formComponents/dropdownConditionalText'),
-    radioComponent =
-        require('./formComponents/radio');
+},{}],21:[function(require,module,exports){
+var Individual = require('./profile_individual'),
+    Institution = require('./profile_institution');
 
 module.exports = function Profile (context) {
     var self = {},
         geo_options,
-        profile_selection;
+        profile,
+        type,
+        built = false;
+
+    self.built = function (x) {
+        // tell the world whether or not
+        // this jam has been built
+        if (!arguments.length) return built;
+        built = x;
+        return self;
+    };
 
     self.geoOptions = function (x) {
         if (!arguments.length) return geo_options;
@@ -2533,85 +2686,121 @@ module.exports = function Profile (context) {
     };
 
     self.build = function () {
-        if (context.user.type() === 'individual') {
-            profile_selection = d3.select('#profile-individual')
-                .datum(context.user.data())
-                .call(build_individual);
+        type = context.user.type();
 
-        } else if (context.user.type() === 'institution') {
-            profile_selection = d3.select('#profile-institution')
-                .datum(context.user.data())
-                .call(build_institution);
+        if ( type === 'individual') {
+            profile = Individual(context)
+                .selection(d3.select('#profile-individual'))
+                .geoOptions(geo_options)
+                .data(context.user.data())
+                .build();
+
+        } else if (type === 'institution') {
+            profile = Individual(context)
+                .selection(d3.select('#profile-institution'))
+                .geoOptions(geo_options)
+                .data(context.user.data())
+                .build();
         }
 
-        d3.selectAll('.profile-link')
-            .classed('active', true)
-            .on('click', function () {
-                if (context.user.type() === 'individual') {
-                    context.modal_flow.state('profile_individual');
-                } else if (context.user.type() === 'institution') {
-                    context.modal_flow.state('profile_institution');
-                }
-            });
+        self.built(true);
 
         return self;
     };
 
-    function build_individual (sel) {
-        console.log('build individual');
-        console.log(sel);
+    return self;
+};
+},{"./profile_individual":22,"./profile_institution":23}],22:[function(require,module,exports){
+var geoComponent =
+        require('./formComponents/dropdownConditionalText'),
+    radioComponent =
+        require('./formComponents/radio'),
+    textComponent =
+        require('./formComponents/text');
+
+module.exports = function ProfileIndividual (context) {
+    var self = {},
+        selection,
+        save_button,
+        geo_options,
+        data,
+        prev_valid,
+        valid;
+
+    var first_name,
+        last_name,
+        email,
+        geo,
+        work_in;
+
+    self.selection = function (x) {
+        if (!arguments.length) return selection;
+        selection = x;
+        return self;
+    };
+
+    self.geoOptions = function (x) {
+        if (!arguments.length) return geo_options;
+        geo_options = x;
+        return self;
+    };
+
+    self.data = function (x) {
+        if (!arguments.length) return data;
+        data = x;
+        return self;
+    };
+
+    self.build = function () {
+        selection.datum(data).call(build);
+
+        // they start with the same value,
+        // depend on futher validation
+        // or changes to the dom to enable
+        // the save button.
+        prev_valid = valid = true;
+
+        validate();
+
+        return self;
+    };
+
+    function build (sel) {
         var data = sel.datum();
 
-        var first_row = sel.append('div')
+        var row = sel.append('div')
                            .attr('class', 'row clearfix');
 
-        console.log(first_row);
-
-        var first_name = first_row
+        var first_name_sel = row
             .append('div')
-            .attr('class', 'column one')
-                .append('input')
-                .attr('id', 'individual-first-name')
-                .attr('data-mapped', 'first_name')
-                .property('value',
-                    data.objects[0].individual.first_name ?
-                    data.objects[0].individual.first_name : ''
-                );
+            .attr('class', 'column one');
+        
+        first_name = textComponent()
+            .selection(first_name_sel)
+            .placeholder('first name')
+            .initialValue(
+                data.objects[0].individual.first_name ?
+                data.objects[0].individual.first_name : '')
+            .render();
 
-        var last_name = first_row
+        var last_name_self = row
             .append('div')
-            .attr('class', 'column one')
-                .append('input')
-                .attr('id', 'individual-last-name')
-                .attr('data-mapped', 'last_name')
-                .property('value',
-                    data.objects[0].individual.last_name ?
-                    data.objects[0].individual.last_name : ''
-                );
+            .attr('class', 'column one');
 
-        var second_row = sel.append('div')
-                            .attr('class', 'row clearfix');
+        last_name = textComponent()
+            .selection(last_name_self)
+            .placeholder('last name')
+            .initialValue(
+                data.objects[0].individual.last_name ?
+                data.objects[0].individual.last_name : '')
+            .render();
 
-        var email = second_row
-            .append('div')
-            .attr('class', 'column one')
-                .append('input')
-                .attr('id', 'individual-email')
-                .attr('data-mapped', 'email')
-                .property('value',
-                    data.objects[0].individual.email ?
-                    data.objects[0].individual.email : ''
-                );
-
-        var third_row = sel.append('div')
-                           .attr('class', 'row clearfix');
-
-        var geo_sel = third_row
+        var geo_sel = row
             .append('div')
             .attr('class', 'column two')
-            .attr('id', 'individual-email');
+            .attr('id', 'individual-geo');
 
-        var geo = geoComponent()
+        geo = geoComponent()
             .rootSelection(geo_sel)
             .optionsKey(function (d) { return d.country; })
             .initialValue(data.objects[0].top_level_input)
@@ -2635,10 +2824,7 @@ module.exports = function Profile (context) {
             });
         }
 
-        var fourth_row = sel.append('div')
-                            .attr('class', 'row clearfix');
-
-        var work_in_sel = fourth_row
+        var work_in_sel = row
             .append('div')
             .attr('class', 'column two')
             .attr('id', 'individual-work-in');
@@ -2661,14 +2847,16 @@ module.exports = function Profile (context) {
                     selected: false
                 }];
 
+        var work_in_initial;
         work_in_options.forEach(function (d, i) {
             if (d.label.toLowerCase() ===
                 data.objects[0].work_in.toLowerCase()) {
                 d.selected = true;
+                work_in_initial = d;
             }
         });
 
-        var work_in = radioComponent()
+        work_in = radioComponent()
             .node(work_in_sel)
             .label({
                 label: 'I work in the following area',
@@ -2676,16 +2864,210 @@ module.exports = function Profile (context) {
                 klass: ''
             })
             .groupName('individual-work-in-group')
-            .data(work_in_options);
+            .initialSelected(work_in_initial)
+            .data(work_in_options)
+            .render();
+
+        save_button =
+            row.append('div')
+                .attr('class', 'column two')
+                .append('p')
+                .attr('class', 'large button')
+                .text('Save');
+
+        // turn on dispatch validation
+        geo.dispatch
+            .on('validChange.profile', function () {
+                validate();
+            })
+            .on('valueChange.profile', function () {
+                validate();
+            });
+
+        work_in.dispatch
+            .on('valid.profile', function () {
+                validate();
+            });
+
+        first_name.dispatch
+            .on('valueChange.profile', function () {
+                validate();
+            });
+
+        last_name.dispatch
+            .on('valueChange.profile', function () {
+                validate();
+            });
     }
 
-    function build_institution (sel) {
+    function get_data_from_dom () {
+        // updates the data attribute to be sent
+        // back to the server
+
+        // individual not implemented:
+        // url
+        // institution
+        // title
+        // email
+        // email subscription boolean
+
+        data.objects[0].individual.first_name =
+            first_name.value();
+
+        data.objects[0].individual.last_name =
+            last_name.value();
+
+        data.objects[0].top_level_input =
+            geo.validatedData();
+
+        data.objects[0].work_in =
+            work_in.selected();
+    }
+
+    function save_flow () {
+        get_data_from_dom();
+        context.user.data(data);
+
+        // this works. need to figure
+        // out how to actually implement.
+        // what data needs to be sent?
+        // just the updated data? can the
+        // entire object be sent? just to the
+        // using the PATCH attr?
+        // looks do you have to call out specifically
+        // the user and their resource URI?
+        var test_user_data = context.user.data();
+
+        test_user_data = {
+            id: 23,
+            resource_uri: '/api/v1/steamie/23',
+            individual: {
+                id: 6,
+                first_name: 'Ruben'
+            }
+        };
+
+        var test_data = {
+            data_to_submit: test_user_data,
+            steamie_id: 23
+        };
+
+        context
+            .api
+            .steamie_update(test_data,
+                             function (err, response) {
+            if (err){
+                console.log('err');
+                console.log(err);
+            }
+            
+            console.log('do something with');
+            console.log(response);
+
+            console.log(JSON.parse(response.responseText));
+
+            // will reset the save button
+            validate();
+        });
+
+        first_name.initialValue(first_name.value());
+        last_name.initialValue(last_name.value());
+        work_in.initialSelected(work_in.selected());
+        geo.initialValue(geo.validatedData());
+    }
+
+    function validate () {
+        if (work_in.isValid() &&
+            geo.isValid()) {
+            valid = true;
+        } else {
+            valid = false;
+        }
+
+        if (first_name.isDifferent() ||
+            last_name.isDifferent() ||
+            work_in.isDifferent() ||
+            geo.isDifferent()) {
+
+            if (valid) {
+                enable_save();
+            } else {
+                disable_save();
+            }
+        } else {
+            disable_save();
+        }
+
+        prev_valid = valid;
+
+        return valid;
+    }
+
+    function enable_save() {
+        save_button
+            .classed('enabled', true)
+            .on('click', function () {
+                save_flow();
+            });
+    }
+
+    function disable_save () {
+        save_button
+            .classed('enabled', false)
+            .on('click', null);
+    }
+
+    return self;
+};
+},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13,"./formComponents/text":15}],23:[function(require,module,exports){
+var geoComponent =
+        require('./formComponents/dropdownConditionalText'),
+    radioComponent =
+        require('./formComponents/radio');
+
+module.exports = function ProfileInstitution (context) {
+    var self = {},
+        selection,
+        geo_options,
+        data;
+
+    self.selection = function (x) {
+        if (!arguments.length) return selection;
+        selection = x;
+        return self;
+    };
+
+    self.data = function (x) {
+        if (!arguments.length) return data;
+        data = x;
+        return self;
+    };
+
+    self.geoOptions = function (x) {
+        if (!arguments.length) return geo_options;
+        geo_options = x;
+        return self;
+    };
+
+    self.build = function () {
+        selection.datum(data).call(build);
+
+        d3.selectAll('.profile-link')
+            .classed('active', true)
+            .on('click', function () {
+                context.modal_flow.state('profile_institution');
+            });
+
+        return self;
+    };
+
+    function build (sel) {
         var first_row = sel.append('div').attr('row clearfix');
     }
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13}],21:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13}],24:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -2741,7 +3123,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],22:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -2767,8 +3149,8 @@ function User (context) {
         d3.json(url, function (err, data_response) {
             console.log('auth check');
             console.log(data_response);
-            if ((err) |
-                (data_response.meta.total_count === 0)) {
+            if ((err) ||
+                (typeof(data_response) === 'undefined')) {
                 // not auth'ed
                 console.log('Not authed.');
                 data = null;
@@ -2795,17 +3177,6 @@ function User (context) {
     user.data = function (x) {
         if (!arguments.length) return data;
         data = x;
-
-        // steamie_type is otherwise set by
-        // the modal form, so it should be
-        // set and realiable when data is
-        // coming in, too.
-        if (data.objects[0].individual) {
-            user.type('individual');
-        } else if (data.objects[0].institution) {
-            user.type('institution');
-        }
-
         return user;
     };
 
@@ -2914,7 +3285,7 @@ function User (context) {
 
     return user;
 }
-},{"./profile":20}],23:[function(require,module,exports){
+},{"./profile":21}],26:[function(require,module,exports){
 module.exports = Validators;
 
 function Validators () {
@@ -2959,5 +3330,5 @@ function Validators () {
 
     return validators;
 }
-},{}]},{},[16])
+},{}]},{},[17])
 ;

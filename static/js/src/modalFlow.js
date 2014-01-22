@@ -70,9 +70,7 @@ function ModalFlow (context) {
                     label: 'Industry',
                     value: 'ind',
                     selected: false
-                }]),
-
-        profile_link_selection = d3.select('.profile-link');
+                }]);
 
     var ui = {
         popup_window_properties: function () {
@@ -112,7 +110,11 @@ function ModalFlow (context) {
             close_modal: {
                 el: d3.select('#close-modal'),
                 on_click: function () {
-                    form.state('inactive_no_profile');
+                    if (context.user.profile.built()) {
+                        form.state('inactive_with_profile');
+                    } else {
+                        form.state('inactive_no_profile');
+                    }
                 },
                 append_to_el: function (sel) {
                     var button_size = 45;
@@ -189,7 +191,7 @@ function ModalFlow (context) {
             },
 
             profile_link: {
-                el: profile_link_selection,
+                el: d3.select('.profile-link'),
                 on_click: function () {
                     form.state('profile_' + context.user.type());
                 },
@@ -238,7 +240,10 @@ function ModalFlow (context) {
             apply_state(active);
         },
         inactive_with_profile: function () {
-            var active = [];
+            var active = [{
+                el_type: 'button',
+                el_name: 'profile_link'
+            }];
             apply_state(active);
         },
         call_to_action: function () {
@@ -465,7 +470,7 @@ function ModalFlow (context) {
             .work_in(select_work_in.selected().label)
             .top_level_input(select_geo.validatedData());
 
-        steamie_request(
+        context.api.steamie_request(
             context.user.data(),
             function (err, results_raw) {
                 var results = JSON.parse(results_raw.responseText);
@@ -498,47 +503,8 @@ function ModalFlow (context) {
             });
     }
 
-    function steamie_request(data_to_submit, callback) {
-        console.log('complete submit');
-        // submit data
-
-        var csrf_token = get_cookie('csrftoken');
-        console.log(csrf_token);
-
-        console.log('url');
-        console.log(context.api.steamie);
-        // api.steamie
-        // 'http://0.0.0.0:5000/api/v1/steamie/'
-        var xhr = d3.xhr(context.api.steamie)
-            .mimeType('application/json')
-            .header('X-CSRFToken', csrf_token)
-            .header('Content-type', 'application/json')
-            .send('PUT',
-                  JSON.stringify(data_to_submit),
-                  callback);
-    }
-
     function show_validation_errors(errors) {
         console.log('show validation errors');
-    }
-
-    function get_cookie (c_name) {
-        var c_value = document.cookie;
-        var c_start = c_value.indexOf(" " + c_name + "=");
-        if (c_start == -1) {
-            c_start = c_value.indexOf(c_name + "=");
-        }
-        if (c_start == -1) {
-            c_value = null;
-        } else {
-            c_start = c_value.indexOf("=", c_start) + 1;
-            var c_end = c_value.indexOf(";", c_start);
-            if (c_end == -1) {
-                c_end = c_value.length;
-            }
-            c_value = unescape(c_value.substring(c_start, c_end));
-        }
-        return c_value;
     }
 
     function check_child () {

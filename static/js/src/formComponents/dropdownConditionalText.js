@@ -17,7 +17,7 @@ module.exports = function dropdownConditionalText () {
         placeholder,
         initial_value;
 
-    self.dispatch = d3.dispatch('validChange');
+    self.dispatch = d3.dispatch('validChange', 'valueChange');
 
     self.isValid = function () {
         return valid;
@@ -42,6 +42,14 @@ module.exports = function dropdownConditionalText () {
         if (!arguments.length) return initial_value;
         initial_value = x;
         return self;
+    };
+
+    self.isDifferent = function () {
+        if (self.initialValue() === self.validatedData()){
+            return false;
+        } else {
+            return true;
+        }
     };
 
 
@@ -143,8 +151,11 @@ module.exports = function dropdownConditionalText () {
 
         editable_text
             .dispatch
-            .on('validChange', function () {
+            .on('validChange.dropdownConditionalText', function () {
                 validate();
+            })
+            .on('valueChange.dropdownConditionalText', function () {
+                self.dispatch.valueChange.apply(this, arguments);
             });
 
 
@@ -161,6 +172,8 @@ module.exports = function dropdownConditionalText () {
                         .classed('active', false);
                 }
                 validate();
+
+                self.dispatch.valueChange.apply(this, arguments);
             });
 
         select
