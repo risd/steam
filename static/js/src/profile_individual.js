@@ -3,7 +3,9 @@ var geoComponent =
     radioComponent =
         require('./formComponents/radio'),
     textComponent =
-        require('./formComponents/text');
+        require('./formComponents/text'),
+    textAreaComponent =
+        require('./formComponents/textarea');
 
 module.exports = function ProfileIndividual (context) {
     var self = {},
@@ -18,7 +20,10 @@ module.exports = function ProfileIndividual (context) {
         last_name,
         email,
         geo,
-        work_in;
+        work_in,
+        description,
+        updatable = [],
+        updated = [];
 
     self.selection = function (x) {
         if (!arguments.length) return selection;
@@ -33,6 +38,7 @@ module.exports = function ProfileIndividual (context) {
     };
 
     self.data = function (x) {
+        // local copy of user data
         if (!arguments.length) return data;
         data = x;
         return self;
@@ -53,8 +59,6 @@ module.exports = function ProfileIndividual (context) {
     };
 
     function build (sel) {
-        var data = sel.datum();
-
         var row = sel.append('div')
                            .attr('class', 'row clearfix');
 
@@ -155,6 +159,23 @@ module.exports = function ProfileIndividual (context) {
             .data(work_in_options)
             .render();
 
+        var description_sel = row
+            .append('div')
+            .attr('class', 'column two')
+            .attr('id', 'individual-description');
+
+        description = textAreaComponent()
+            .selection(description_sel)
+            .label({
+                label: 'Why does STEAM matter to you?',
+                type: 'p',
+                klass: ''
+            })
+            .initialValue(
+                data.objects[0].description ?
+                data.objects[0].description : '')
+            .render();
+
         save_button =
             row.append('div')
                 .attr('class', 'column two')
@@ -185,85 +206,133 @@ module.exports = function ProfileIndividual (context) {
             .on('valueChange.profile', function () {
                 validate();
             });
+
+        description.dispatch
+            .on('valueChange.profile', function () {
+                validate();
+            });
+
+        // manage updatable items.
+        updatable.push({
+            isDifferent: first_name.isDifferent,
+            value: first_name.value,
+            position_in_data: ['individual', 'first_name'],
+            reset_initial: first_name.initialValue
+        });
+        updatable.push({
+            isDifferent: last_name.isDifferent,
+            value: last_name.value,
+            position_in_data: ['individual', 'last_name'],
+            reset_initial: last_name.initialValue
+        });
+        updatable.push({
+            isDifferent: work_in.isDifferent,
+            value: work_in.selected,
+            position_in_data: ['work_in'],
+            reset_initial: work_in.initialSelected
+        });
+        updatable.push({
+            isDifferent: geo.isDifferent,
+            value: geo.validatedData,
+            position_in_data: ['top_level_input'],
+            reset_initial: geo.initialValue
+        });
+        updatable.push({
+            isDifferent: description.isDifferent,
+            value: description.value,
+            position_in_data: ['description'],
+            reset_initial: description.initialValue
+        });
     }
 
-    function get_data_from_dom () {
-        // updates the data attribute to be sent
-        // back to the server
+    function decorate_for_submittal (x) {
+        x.id = data.objects[0].id;
+        x.resource_uri = data.objects[0].resource_uri;
+        if (x.individual) {
+            x.individual.id = data.objects[0].individual.id;
+        }
 
-        // individual not implemented:
-        // url
-        // institution
-        // title
-        // email
-        // email subscription boolean
+        return x;
+    }
 
-        data.objects[0].individual.first_name =
-            first_name.value();
+    function update_user_data () {
+        // something should be updated
 
-        data.objects[0].individual.last_name =
-            last_name.value();
+        // updated data to be sent to
+        // the server for saving
+        var data_for_server = {};
 
-        data.objects[0].top_level_input =
-            geo.validatedData();
+        updated.forEach(function (n, i) {
+            if (n.position_in_data.length === 1) {
 
-        data.objects[0].work_in =
-            work_in.selected();
+                data.objects[0][n.position_in_data[0]] =
+                    n.value();
+
+                data_for_server[n.position_in_data[0]] =
+                    n.value();
+
+            } else if (n.position_in_data.length === 2) {
+
+                data.objects[0][n.position_in_data[0]]
+                               [n.position_in_data[1]] =
+                    n.value();
+
+                // data for server may not have the correct
+                // nested object to save against
+                if (!data_for_server[n.position_in_data[0]]) {
+                    data_for_server[n.position_in_data[0]] =
+                        data.objects[0][n.position_in_data[0]];
+                }
+
+                data_for_server[n.position_in_data[0]]
+                               [n.position_in_data[1]] =
+                    n.value();
+            }
+            
+        });
+        // make those changes out
+        // to the context.user module
+        context.user.data(data);
+
+        return data_for_server;
+    }
+
+    function reset_updatables_initial_data () {
+        updated.forEach(function (n, i) {
+            n.reset_initial(n.value());
+        });
     }
 
     function save_flow () {
-        get_data_from_dom();
-        context.user.data(data);
+        var data_to_submit =
+            decorate_for_submittal(update_user_data());
 
-        // this works. need to figure
-        // out how to actually implement.
-        // what data needs to be sent?
-        // just the updated data? can the
-        // entire object be sent? just to the
-        // using the PATCH attr?
-        // looks do you have to call out specifically
-        // the user and their resource URI?
-        var test_user_data = context.user.data();
-
-        test_user_data = {
-            id: 23,
-            resource_uri: '/api/v1/steamie/23',
-            individual: {
-                id: 6,
-                first_name: 'Ruben'
-            }
-        };
-
-        var test_data = {
-            data_to_submit: test_user_data,
-            steamie_id: 23
-        };
+        // todo: stop editability
 
         context
             .api
-            .steamie_update(test_data,
+            .steamie_update(data_to_submit,
                              function (err, response) {
             if (err){
                 console.log('err');
                 console.log(err);
+                return;
             }
             
             console.log('do something with');
             console.log(response);
 
-            console.log(JSON.parse(response.responseText));
+            var results = JSON.parse(response.responseText);
+            console.log(results);
 
+            reset_updatables_initial_data();
             // will reset the save button
             validate();
         });
-
-        first_name.initialValue(first_name.value());
-        last_name.initialValue(last_name.value());
-        work_in.initialSelected(work_in.selected());
-        geo.initialValue(geo.validatedData());
     }
 
     function validate () {
+        // deal with validation
         if (work_in.isValid() &&
             geo.isValid()) {
             valid = true;
@@ -271,11 +340,18 @@ module.exports = function ProfileIndividual (context) {
             valid = false;
         }
 
-        if (first_name.isDifferent() ||
-            last_name.isDifferent() ||
-            work_in.isDifferent() ||
-            geo.isDifferent()) {
+        // deal with updatable objects
+        updated = [];
+        updatable.forEach(function (n, i) {
+            if (n.isDifferent()) {
+                updated.push(n);
+            }
+        });
 
+        // determine button functionality
+        // based on validation and 
+        // updatable object status
+        if (updated.length > 0) {
             if (valid) {
                 enable_save();
             } else {

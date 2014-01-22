@@ -257,18 +257,21 @@ function Backend () {
                   callback);
     };
 
-    api.steamie_update = function (args, callback) {
+    api.steamie_update = function (data_to_submit, callback) {
         var csrf_token = get_cookie('csrftoken');
 
+        console.log('data');
+        console.log(data_to_submit);
         console.log('url');
-        console.log(api.steamie);
+        console.log(api.steamie_user(data_to_submit.id));
 
-        var xhr = d3.xhr(api.steamie_user(args.steamie_id))
+        // submit this data against the steamie endpoint
+        var xhr = d3.xhr(api.steamie_user(data_to_submit.id))
             .mimeType('application/json')
             .header('X-CSRFToken', csrf_token)
             .header('Content-type', 'application/json')
             .send('PATCH',
-                  JSON.stringify(args.data_to_submit),
+                  JSON.stringify(data_to_submit),
                   callback);
     };
 
@@ -1242,7 +1245,7 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../editable":8,"../ui/checkmark":24}],13:[function(require,module,exports){
+},{"../editable":8,"../ui/checkmark":25}],13:[function(require,module,exports){
 module.exports = function radioSelection () {
     var self = {},
         valid = false,
@@ -1469,7 +1472,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":24}],15:[function(require,module,exports){
+},{"../ui/checkmark":25}],15:[function(require,module,exports){
 // text input, with placeholder
 // dispatches when the value changes
 // against the initial value
@@ -1533,6 +1536,82 @@ module.exports = function TextInput () {
     return self;
 };
 },{}],16:[function(require,module,exports){
+// textarea, with placeholder, and label
+// dispatches when the value changes
+// against the initial value
+
+// there is no idea of validity,
+// just whether or not a value
+// has changed.
+module.exports = function TextArea () {
+    var self = {},
+        selection,
+        area_selection,
+        placeholder = '',
+        label,
+        value,
+        initial_value = '';
+
+    self.dispatch = d3.dispatch('valueChange');
+
+    self.render = function () {
+
+        if (label) {
+            selection.append(label.type)
+                .text(label.label)
+                .attr('class', label.klass);
+        }
+
+        area_selection = selection
+            .append('textarea')
+            .attr('placeholder', placeholder)
+            .property('value', initial_value)
+            .on('keyup.internal-text', function (d) {
+                self.dispatch.valueChange.apply(this, arguments);
+            });
+
+        return self;
+    };
+
+    self.label = function (x) {
+        if (!arguments.length) return label;
+        label = x;
+        return self;
+    };
+
+    self.placeholder = function (x) {
+        if (!arguments.length) return placeholder;
+        placeholder = x;
+        return self;
+    };
+
+    self.selection = function (x) {
+        if (!arguments.length) return selection;
+        selection = x;
+        return self;
+    };
+
+    self.initialValue = function (x) {
+        if (!arguments.length) return initial_value;
+        initial_value = x;
+        return self;
+    };
+
+    self.value = function (x) {
+        return area_selection.node().value;
+    };
+
+    self.isDifferent = function () {
+        if (self.value() !== initial_value) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    return self;
+};
+},{}],17:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
         data;
@@ -1557,7 +1636,7 @@ module.exports = function dataTSV (url) {
 
     return self;
 };
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./clone'),
@@ -1621,7 +1700,7 @@ function STEAMMap() {
 
     init();
 }
-},{"./arcs":1,"./backend":2,"./clone":3,"./clusterIconSize":4,"./clusters":5,"./colors":6,"./fakeDataGenerator":9,"./filterUI":10,"./filters":11,"./getTSV":16,"./map":18,"./modalFlow":19,"./network":20,"./user":25}],18:[function(require,module,exports){
+},{"./arcs":1,"./backend":2,"./clone":3,"./clusterIconSize":4,"./clusters":5,"./colors":6,"./fakeDataGenerator":9,"./filterUI":10,"./filters":11,"./getTSV":17,"./map":19,"./modalFlow":20,"./network":21,"./user":26}],19:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -1660,7 +1739,7 @@ function Map (context) {
 
     return map;
 }
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var validator = require('./validators'),
 
     geoComponent =
@@ -2083,6 +2162,14 @@ function ModalFlow (context) {
                     // to be signed up and dont have
                     // to be sold on it
                     form.state('inactive_with_profile');
+
+                    if (d.objects[0].individual) {
+                        context.user.type('individual');
+                    }
+                    else if (d.objects[0].institution) {
+                        context.user.type('institution');
+                    }
+
                     context.user
                         .profile
                             .build();
@@ -2130,6 +2217,7 @@ function ModalFlow (context) {
         // for the User that is stored.
         context.user
             .type(select_type.selected().label)
+            .setTypeDefaults()
             .work_in(select_work_in.selected().label)
             .top_level_input(select_geo.validatedData());
 
@@ -2158,6 +2246,7 @@ function ModalFlow (context) {
                 // data input
                 context.user
                     .data(results)
+                    .setUpdateObject()
                     .profile
                         .build();
 
@@ -2270,7 +2359,7 @@ function ModalFlow (context) {
 
     return form;
 }
-},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13,"./formComponents/socialAuthSelection":14,"./validators":26}],20:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13,"./formComponents/socialAuthSelection":14,"./validators":27}],21:[function(require,module,exports){
 module.exports = Network;
 
 // Network graph
@@ -2660,7 +2749,7 @@ function Network (context) {
 
     return network;
 }
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution');
 
@@ -2710,13 +2799,15 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./profile_individual":22,"./profile_institution":23}],22:[function(require,module,exports){
+},{"./profile_individual":23,"./profile_institution":24}],23:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
         require('./formComponents/radio'),
     textComponent =
-        require('./formComponents/text');
+        require('./formComponents/text'),
+    textAreaComponent =
+        require('./formComponents/textarea');
 
 module.exports = function ProfileIndividual (context) {
     var self = {},
@@ -2731,7 +2822,10 @@ module.exports = function ProfileIndividual (context) {
         last_name,
         email,
         geo,
-        work_in;
+        work_in,
+        description,
+        updatable = [],
+        updated = [];
 
     self.selection = function (x) {
         if (!arguments.length) return selection;
@@ -2746,6 +2840,7 @@ module.exports = function ProfileIndividual (context) {
     };
 
     self.data = function (x) {
+        // local copy of user data
         if (!arguments.length) return data;
         data = x;
         return self;
@@ -2766,8 +2861,6 @@ module.exports = function ProfileIndividual (context) {
     };
 
     function build (sel) {
-        var data = sel.datum();
-
         var row = sel.append('div')
                            .attr('class', 'row clearfix');
 
@@ -2868,6 +2961,23 @@ module.exports = function ProfileIndividual (context) {
             .data(work_in_options)
             .render();
 
+        var description_sel = row
+            .append('div')
+            .attr('class', 'column two')
+            .attr('id', 'individual-description');
+
+        description = textAreaComponent()
+            .selection(description_sel)
+            .label({
+                label: 'Why does STEAM matter to you?',
+                type: 'p',
+                klass: ''
+            })
+            .initialValue(
+                data.objects[0].description ?
+                data.objects[0].description : '')
+            .render();
+
         save_button =
             row.append('div')
                 .attr('class', 'column two')
@@ -2898,85 +3008,133 @@ module.exports = function ProfileIndividual (context) {
             .on('valueChange.profile', function () {
                 validate();
             });
+
+        description.dispatch
+            .on('valueChange.profile', function () {
+                validate();
+            });
+
+        // manage updatable items.
+        updatable.push({
+            isDifferent: first_name.isDifferent,
+            value: first_name.value,
+            position_in_data: ['individual', 'first_name'],
+            reset_initial: first_name.initialValue
+        });
+        updatable.push({
+            isDifferent: last_name.isDifferent,
+            value: last_name.value,
+            position_in_data: ['individual', 'last_name'],
+            reset_initial: last_name.initialValue
+        });
+        updatable.push({
+            isDifferent: work_in.isDifferent,
+            value: work_in.selected,
+            position_in_data: ['work_in'],
+            reset_initial: work_in.initialSelected
+        });
+        updatable.push({
+            isDifferent: geo.isDifferent,
+            value: geo.validatedData,
+            position_in_data: ['top_level_input'],
+            reset_initial: geo.initialValue
+        });
+        updatable.push({
+            isDifferent: description.isDifferent,
+            value: description.value,
+            position_in_data: ['description'],
+            reset_initial: description.initialValue
+        });
     }
 
-    function get_data_from_dom () {
-        // updates the data attribute to be sent
-        // back to the server
+    function decorate_for_submittal (x) {
+        x.id = data.objects[0].id;
+        x.resource_uri = data.objects[0].resource_uri;
+        if (x.individual) {
+            x.individual.id = data.objects[0].individual.id;
+        }
 
-        // individual not implemented:
-        // url
-        // institution
-        // title
-        // email
-        // email subscription boolean
+        return x;
+    }
 
-        data.objects[0].individual.first_name =
-            first_name.value();
+    function update_user_data () {
+        // something should be updated
 
-        data.objects[0].individual.last_name =
-            last_name.value();
+        // updated data to be sent to
+        // the server for saving
+        var data_for_server = {};
 
-        data.objects[0].top_level_input =
-            geo.validatedData();
+        updated.forEach(function (n, i) {
+            if (n.position_in_data.length === 1) {
 
-        data.objects[0].work_in =
-            work_in.selected();
+                data.objects[0][n.position_in_data[0]] =
+                    n.value();
+
+                data_for_server[n.position_in_data[0]] =
+                    n.value();
+
+            } else if (n.position_in_data.length === 2) {
+
+                data.objects[0][n.position_in_data[0]]
+                               [n.position_in_data[1]] =
+                    n.value();
+
+                // data for server may not have the correct
+                // nested object to save against
+                if (!data_for_server[n.position_in_data[0]]) {
+                    data_for_server[n.position_in_data[0]] =
+                        data.objects[0][n.position_in_data[0]];
+                }
+
+                data_for_server[n.position_in_data[0]]
+                               [n.position_in_data[1]] =
+                    n.value();
+            }
+            
+        });
+        // make those changes out
+        // to the context.user module
+        context.user.data(data);
+
+        return data_for_server;
+    }
+
+    function reset_updatables_initial_data () {
+        updated.forEach(function (n, i) {
+            n.reset_initial(n.value());
+        });
     }
 
     function save_flow () {
-        get_data_from_dom();
-        context.user.data(data);
+        var data_to_submit =
+            decorate_for_submittal(update_user_data());
 
-        // this works. need to figure
-        // out how to actually implement.
-        // what data needs to be sent?
-        // just the updated data? can the
-        // entire object be sent? just to the
-        // using the PATCH attr?
-        // looks do you have to call out specifically
-        // the user and their resource URI?
-        var test_user_data = context.user.data();
-
-        test_user_data = {
-            id: 23,
-            resource_uri: '/api/v1/steamie/23',
-            individual: {
-                id: 6,
-                first_name: 'Ruben'
-            }
-        };
-
-        var test_data = {
-            data_to_submit: test_user_data,
-            steamie_id: 23
-        };
+        // todo: stop editability
 
         context
             .api
-            .steamie_update(test_data,
+            .steamie_update(data_to_submit,
                              function (err, response) {
             if (err){
                 console.log('err');
                 console.log(err);
+                return;
             }
             
             console.log('do something with');
             console.log(response);
 
-            console.log(JSON.parse(response.responseText));
+            var results = JSON.parse(response.responseText);
+            console.log(results);
 
+            reset_updatables_initial_data();
             // will reset the save button
             validate();
         });
-
-        first_name.initialValue(first_name.value());
-        last_name.initialValue(last_name.value());
-        work_in.initialSelected(work_in.selected());
-        geo.initialValue(geo.validatedData());
     }
 
     function validate () {
+        // deal with validation
         if (work_in.isValid() &&
             geo.isValid()) {
             valid = true;
@@ -2984,11 +3142,18 @@ module.exports = function ProfileIndividual (context) {
             valid = false;
         }
 
-        if (first_name.isDifferent() ||
-            last_name.isDifferent() ||
-            work_in.isDifferent() ||
-            geo.isDifferent()) {
+        // deal with updatable objects
+        updated = [];
+        updatable.forEach(function (n, i) {
+            if (n.isDifferent()) {
+                updated.push(n);
+            }
+        });
 
+        // determine button functionality
+        // based on validation and 
+        // updatable object status
+        if (updated.length > 0) {
             if (valid) {
                 enable_save();
             } else {
@@ -3019,7 +3184,7 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13,"./formComponents/text":15}],23:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13,"./formComponents/text":15,"./formComponents/textarea":16}],24:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3067,7 +3232,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13}],24:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":12,"./formComponents/radio":13}],25:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -3123,7 +3288,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -3180,6 +3345,63 @@ function User (context) {
         return user;
     };
 
+    user.setUpdateObject = function () {
+        // used to update the user data on the server
+
+        // relies on user.data as the source of data
+        // takes user.data, and extracts the necessary
+        // bits of information in order to send
+        // more requests to the server that will
+        // update the users' state.
+
+        update_object = {
+            id: data.objects[0].id,
+            resource_uri: '/api/v1/steamie/' + 23
+        };
+
+        if (steamie_type === 'individual') {
+            update_object.individual = {
+                id: data.objects[0].individual.id
+            };
+        }
+        else if (steamie_type === 'institution') {
+            update_object.institution = {
+                id: data.objects[0].institution.id
+            };
+        }
+
+        return user;
+    };
+
+    user.setTypeDefaults = function () {
+        if (steamie_type === 'individual') {
+
+            // defaults for an individual
+            user.individual({
+                first_name: null,
+                last_name: null,
+                email: null,
+                url: null,
+                institution: null,
+                title: null,
+                email_subscription: false
+            });
+        }
+        else if (steamie_type === 'institution') {
+
+            // defaults for an institution
+            user.institution({
+                name: null,
+                url: null,
+                representative_first_name: null,
+                representative_last_name: null,
+                representative_email: null
+            });
+        }
+
+        return user;
+    };
+
     // --------
     // steam specific functions
 
@@ -3209,50 +3431,9 @@ function User (context) {
         return data.objects[0].avatar_url;
     };
 
-    // sugar over the individual and institution
-    // attributes of a user. defines a default
-    // object for institution or individual, if
-    // one is defined
-    // assumes that if user.type is being used to set
-    // a user's type, then it doesn't have any data
-    // for that yet.
     user.type = function (x) {
-        if (!arguments.length) {
-            if (user.individual()) {
-                return 'individual';
-            } else if (user.institution()) {
-                return 'institution';
-            } else {
-                return null;
-            }
-        }
-        if ((x.toLowerCase() === 'individual') ||
-            (x === 'i')) {
-
-            // defaults for an individual
-            user.individual({
-                first_name: null,
-                last_name: null,
-                email: null,
-                url: null,
-                institution: null,
-                title: null,
-                email_subscription: false
-            });
-        }
-        else if ((x.toLowerCase() === 'institution') ||
-                 (x === 'g')) {
-
-            // defaults for an institution
-            user.institution({
-                name: null,
-                url: null,
-                representative_first_name: null,
-                representative_last_name: null,
-                representative_email: null
-            });
-        }
-
+        if (!arguments.length) return steamie_type;
+        steamie_type = x;
         return user;
     };
 
@@ -3285,7 +3466,7 @@ function User (context) {
 
     return user;
 }
-},{"./profile":21}],26:[function(require,module,exports){
+},{"./profile":22}],27:[function(require,module,exports){
 module.exports = Validators;
 
 function Validators () {
@@ -3330,5 +3511,5 @@ function Validators () {
 
     return validators;
 }
-},{}]},{},[17])
+},{}]},{},[18])
 ;

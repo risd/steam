@@ -420,6 +420,14 @@ function ModalFlow (context) {
                     // to be signed up and dont have
                     // to be sold on it
                     form.state('inactive_with_profile');
+
+                    if (d.objects[0].individual) {
+                        context.user.type('individual');
+                    }
+                    else if (d.objects[0].institution) {
+                        context.user.type('institution');
+                    }
+
                     context.user
                         .profile
                             .build();
@@ -467,6 +475,7 @@ function ModalFlow (context) {
         // for the User that is stored.
         context.user
             .type(select_type.selected().label)
+            .setTypeDefaults()
             .work_in(select_work_in.selected().label)
             .top_level_input(select_geo.validatedData());
 
@@ -495,6 +504,7 @@ function ModalFlow (context) {
                 // data input
                 context.user
                     .data(results)
+                    .setUpdateObject()
                     .profile
                         .build();
 

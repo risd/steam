@@ -34,18 +34,21 @@ function Backend () {
                   callback);
     };
 
-    api.steamie_update = function (args, callback) {
+    api.steamie_update = function (data_to_submit, callback) {
         var csrf_token = get_cookie('csrftoken');
 
+        console.log('data');
+        console.log(data_to_submit);
         console.log('url');
-        console.log(api.steamie);
+        console.log(api.steamie_user(data_to_submit.id));
 
-        var xhr = d3.xhr(api.steamie_user(args.steamie_id))
+        // submit this data against the steamie endpoint
+        var xhr = d3.xhr(api.steamie_user(data_to_submit.id))
             .mimeType('application/json')
             .header('X-CSRFToken', csrf_token)
             .header('Content-type', 'application/json')
             .send('PATCH',
-                  JSON.stringify(args.data_to_submit),
+                  JSON.stringify(data_to_submit),
                   callback);
     };
 

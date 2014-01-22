@@ -248,7 +248,7 @@ class Steamies(models.Model):
         null=True)
 
     description = models.TextField(
-        "Describe STEAMaffiliation",
+        "Describe STEAM affiliation",
         blank=True,
         null=True)
 

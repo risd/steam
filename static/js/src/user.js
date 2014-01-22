@@ -54,6 +54,63 @@ function User (context) {
         return user;
     };
 
+    user.setUpdateObject = function () {
+        // used to update the user data on the server
+
+        // relies on user.data as the source of data
+        // takes user.data, and extracts the necessary
+        // bits of information in order to send
+        // more requests to the server that will
+        // update the users' state.
+
+        update_object = {
+            id: data.objects[0].id,
+            resource_uri: '/api/v1/steamie/' + 23
+        };
+
+        if (steamie_type === 'individual') {
+            update_object.individual = {
+                id: data.objects[0].individual.id
+            };
+        }
+        else if (steamie_type === 'institution') {
+            update_object.institution = {
+                id: data.objects[0].institution.id
+            };
+        }
+
+        return user;
+    };
+
+    user.setTypeDefaults = function () {
+        if (steamie_type === 'individual') {
+
+            // defaults for an individual
+            user.individual({
+                first_name: null,
+                last_name: null,
+                email: null,
+                url: null,
+                institution: null,
+                title: null,
+                email_subscription: false
+            });
+        }
+        else if (steamie_type === 'institution') {
+
+            // defaults for an institution
+            user.institution({
+                name: null,
+                url: null,
+                representative_first_name: null,
+                representative_last_name: null,
+                representative_email: null
+            });
+        }
+
+        return user;
+    };
+
     // --------
     // steam specific functions
 
@@ -83,50 +140,9 @@ function User (context) {
         return data.objects[0].avatar_url;
     };
 
-    // sugar over the individual and institution
-    // attributes of a user. defines a default
-    // object for institution or individual, if
-    // one is defined
-    // assumes that if user.type is being used to set
-    // a user's type, then it doesn't have any data
-    // for that yet.
     user.type = function (x) {
-        if (!arguments.length) {
-            if (user.individual()) {
-                return 'individual';
-            } else if (user.institution()) {
-                return 'institution';
-            } else {
-                return null;
-            }
-        }
-        if ((x.toLowerCase() === 'individual') ||
-            (x === 'i')) {
-
-            // defaults for an individual
-            user.individual({
-                first_name: null,
-                last_name: null,
-                email: null,
-                url: null,
-                institution: null,
-                title: null,
-                email_subscription: false
-            });
-        }
-        else if ((x.toLowerCase() === 'institution') ||
-                 (x === 'g')) {
-
-            // defaults for an institution
-            user.institution({
-                name: null,
-                url: null,
-                representative_first_name: null,
-                representative_last_name: null,
-                representative_email: null
-            });
-        }
-
+        if (!arguments.length) return steamie_type;
+        steamie_type = x;
         return user;
     };
 
