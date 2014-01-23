@@ -14,7 +14,8 @@ def map(request):
         'map/map.html',
         {
             'backend': request.get_host(),
-            'api_version': v1_api.api_name
+            'api_version': v1_api.api_name,
+            'frontend': 'http://risd.github.io/steam-proto',
         })
 
 

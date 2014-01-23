@@ -36,9 +36,7 @@
 
         <!-- Add your site or application content here -->
         <header class="z-100 row clearfix">
-            <h1>steam</h1>
-            <nav>
-            </nav>
+            {% include 'steam/main-nav.html' with frontend=frontend %}
         </header>
 
         <!-- humble host of the button to add oneself -->
@@ -177,18 +175,6 @@
 
             </div>
         </div>
-    
-        <script>
-        // var DEBUG = true;
-
-        // mapped object holds all map.
-        // var mapped = window.mapped = {};
-
-        // mapped.data = {};
-        // mapped.data.backend = 'http://{{ backend }}';
-        // mapped.data.api_version = '{{ api_version }}';
-
-        </script>
 
         <script src="{% static "js/lib/Faker.js" %}"></script>
         <script src="{% static "js/dist/libs.js" %}"></script>

@@ -1,10 +1,8 @@
 ### left off
 
 - profile work
-    - build out how the DOM should look
-    - consider how data will update the DOM, and how data will be pulled from DOM and sent to server. (elaborate d3 select's, I'd think)
+    - disable editing while requests are being made
 
-- add yourself to map workflow.
-    - save data to db
-    - return confirmation, and info about which network cluster they are a part of
-    - animate a circle from the form into the network the individual is joining
+- consider transition between states. particularly while requests are being made. what kind of animation do you want?
+
+- integrate the grid that micah made for the news and the rest of the site, on the map
