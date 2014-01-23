@@ -1,4 +1,4 @@
-var Editable = require('../editable'),
+var textComponent = require('./text'),
     Checkmark = require('../ui/checkmark');
 
 module.exports = function dropdownConditionalText () {
@@ -9,6 +9,7 @@ module.exports = function dropdownConditionalText () {
         text_selection,
         editable_text,
         checkmark_sel,
+        checkmark_bool = true,
         options,
         options_key,
         select_wrapper,
@@ -20,7 +21,13 @@ module.exports = function dropdownConditionalText () {
     self.dispatch = d3.dispatch('validChange', 'valueChange');
 
     self.isValid = function () {
-        return valid;
+        return validate();
+    };
+
+    self.validationVisual = function (x) {
+        if (!arguments.length) return checkmark_bool;
+        checkmark_bool = x;
+        return self;
     };
 
     self.validatedData = function () {
@@ -118,9 +125,11 @@ module.exports = function dropdownConditionalText () {
         // end set the initial values for rendering
 
         // add validation visualization
-        root_selection
-            .call(Checkmark());
-        checkmark_sel = root_selection.select('.checkmark');
+        if (checkmark_bool) {
+            root_selection
+                .call(Checkmark());
+            checkmark_sel = root_selection.select('.checkmark');
+        }
 
         select_wrapper =
             root_selection
@@ -139,21 +148,14 @@ module.exports = function dropdownConditionalText () {
                 });
 
 
-        editable_text = Editable()
+        editable_text = textComponent()
                             .selection(text_selection)
                             .placeholder(placeholder)
-                            .value(initial_edtiable_text)
-                            .label({
-                                type: 'p',
-                                label: 'enter your zipcode'
-                            })
+                            .initialValue(initial_edtiable_text)
                             .render();
 
         editable_text
             .dispatch
-            .on('validChange.dropdownConditionalText', function () {
-                validate();
-            })
             .on('valueChange.dropdownConditionalText', function () {
                 self.dispatch.valueChange.apply(this, arguments);
             });
@@ -195,7 +197,7 @@ module.exports = function dropdownConditionalText () {
     };
 
     function validate () {
-        if ((editable_text.isValid() &&
+        if ((editable_text.isNotEmpty() &&
              text_selection.classed('active')) ||
             (text_selection.classed('active') === false)) {
 
@@ -204,7 +206,9 @@ module.exports = function dropdownConditionalText () {
             valid = false;
         }
 
-        checkmark_sel.classed('valid', valid);
+        if (checkmark_bool) {
+            checkmark_sel.classed('valid', valid);
+        }
 
         if (valid !== prev_valid) {
             self.dispatch

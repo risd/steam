@@ -35,7 +35,7 @@ module.exports = function radioSelection () {
             .data(data)
             .enter()
             .append('div')
-            .attr('class', 'type-option')
+            .attr('class', 'type-option ')
             .on('mouseup.radio', function (d) {
                 d3.event.stopPropagation();
 

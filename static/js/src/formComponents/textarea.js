@@ -12,7 +12,8 @@ module.exports = function TextArea () {
         placeholder = '',
         label,
         value,
-        initial_value = '';
+        initial_value = '',
+        name = '';
 
     self.dispatch = d3.dispatch('valueChange');
 
@@ -21,12 +22,14 @@ module.exports = function TextArea () {
         if (label) {
             selection.append(label.type)
                 .text(label.label)
-                .attr('class', label.klass);
+                .attr('class', label.klass)
+                .attr('for', name);
         }
 
         area_selection = selection
             .append('textarea')
             .attr('placeholder', placeholder)
+            .attr('name', name)
             .property('value', initial_value)
             .on('keyup.internal-text', function (d) {
                 self.dispatch.valueChange.apply(this, arguments);
@@ -38,6 +41,12 @@ module.exports = function TextArea () {
     self.label = function (x) {
         if (!arguments.length) return label;
         label = x;
+        return self;
+    };
+
+    self.name = function (x) {
+        if (!arguments.length) return name;
+        name = x;
         return self;
     };
 

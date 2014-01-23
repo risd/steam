@@ -62,11 +62,11 @@ module.exports = function ProfileInstitution (context) {
 
     function build (sel) {
         var row = sel.append('div')
-                           .attr('class', 'row clearfix');
+                           .attr('class', 'profile-wrapper');
 
         var name_sel = row
             .append('div')
-            .attr('class', 'column one');
+            .attr('class', 'four-column-two');
         
         name = textComponent()
             .selection(name_sel)
@@ -78,7 +78,7 @@ module.exports = function ProfileInstitution (context) {
 
         var representative_email_sel = row
             .append('div')
-            .attr('class', 'column one');
+            .attr('class', 'four-column-two omega');
 
         representative_email = textComponent()
             .selection(representative_email_sel)
@@ -94,7 +94,7 @@ module.exports = function ProfileInstitution (context) {
 
         var representative_first_name_sel = row
             .append('div')
-            .attr('class', 'column one');
+            .attr('class', 'four-column-two');
 
         representative_first_name = textComponent()
             .selection(representative_first_name_sel)
@@ -110,7 +110,7 @@ module.exports = function ProfileInstitution (context) {
 
         var representative_last_name_sel = row
             .append('div')
-            .attr('class', 'column one');
+            .attr('class', 'four-column-two omega');
 
         representative_last_name = textComponent()
             .selection(representative_last_name_sel)
@@ -126,14 +126,15 @@ module.exports = function ProfileInstitution (context) {
 
         var geo_sel = row
             .append('div')
-            .attr('class', 'column two')
+            .attr('class', 'four-column-four sel-geo')
             .attr('id', 'individual-geo');
 
         geo = geoComponent()
             .rootSelection(geo_sel)
+            .validationVisual(false)
             .optionsKey(function (d) { return d.country; })
             .initialValue(data.objects[0].top_level_input)
-            .placeholder('00000');
+            .placeholder('zipcode');
 
         if (context.countries.data()) {
             // if the data is loaded already,
@@ -155,7 +156,7 @@ module.exports = function ProfileInstitution (context) {
 
         var work_in_sel = row
             .append('div')
-            .attr('class', 'column two')
+            .attr('class', 'four-column-four sel-work-in')
             .attr('id', 'individual-work-in');
 
         var work_in_options = [{
@@ -216,7 +217,7 @@ module.exports = function ProfileInstitution (context) {
 
         save_button =
             row.append('div')
-                .attr('class', 'column two')
+                .attr('class', 'four-column-four')
                 .append('p')
                 .attr('class', 'large button')
                 .text('Save');

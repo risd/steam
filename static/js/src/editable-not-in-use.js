@@ -67,9 +67,11 @@ function Editable () {
     };
 
     self.render = function () {
-        selection
-            .append(label.type)
-            .text(label.label);
+        if (label) {
+            selection
+                .append(label.type)
+                .text(label.label);
+        }
 
         editable = selection
             .append('div')

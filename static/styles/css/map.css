@@ -1,6 +1,3 @@
-/* ==========================================================================
-   Author's custom styles
-   ========================================================================== */
 html, body {
   margin: 0;
   padding: 0;
@@ -48,22 +45,24 @@ header:hover {
   .modal.fullscreen {
     color: white;
     background-color: rgba(81, 98, 114, 0.8); }
-    .modal.fullscreen.res {
+    .modal.fullscreen.research {
       background-color: rgba(105, 230, 64, 0.8); }
-    .modal.fullscreen.pol {
+    .modal.fullscreen.politics {
       background-color: rgba(255, 97, 127, 0.8); }
-    .modal.fullscreen.edu {
+    .modal.fullscreen.education {
       background-color: rgba(255, 137, 49, 0.8); }
-    .modal.fullscreen.ind {
+    .modal.fullscreen.industry {
       background-color: rgba(39, 180, 242, 0.8); }
 
 .modal-wrapper {
-  position: relative;
-  width: 80%;
-  max-width: 640px;
-  margin: 5% auto; }
+  margin-top: 80px;
+  margin-bottom: 80px; }
 
-.modal-wrapper h1 {
+.modal-button {
+  cursor: pointer;
+  padding: 5px; }
+
+.modal h1 {
   font-family: "Antenna Comp Medium";
   font-style: normal;
   font-weight: normal;
@@ -72,7 +71,7 @@ header:hover {
   line-height: 95px;
   margin: 0; }
 
-.modal-wrapper p {
+.modal p {
   font-family: 'Sentinel SSm A', 'Sentinel SSm B';
   font-weight: 400;
   font-style: normal;
@@ -82,16 +81,6 @@ header:hover {
   margin-top: 1.5em;
   margin-bottom: 0; }
 
-.modal-toolbar-button {
-  padding: 10px;
-  cursor: pointer; }
-
-.modal-nav-button.left {
-  float: left; }
-
-.modal-nav-button.right {
-  float: right; }
-
 .hide-til-active {
   display: none; }
 
@@ -100,23 +89,6 @@ header:hover {
 
 .clickable {
   cursor: pointer; }
-
-.modal-main-area {
-  width: 88.3333333%;
-  max-width: 530px; }
-  .modal-main-area.inset {
-    margin-left: 40px; }
-  .modal-main-area .column.two {
-    width: 100%; }
-  .modal-main-area .column.one {
-    width: 45%;
-    margin-right: 5%; }
-  .modal-main-area .column.one:nth-child(2) {
-    margin-right: 0%; }
-
-.modal-sidebar {
-  width: 11.6666667%;
-  max-width: 70px; }
 
 .z-0 {
   z-index: 0;
@@ -525,7 +497,8 @@ form / profile
 
 input {
   font-size: 12px;
-  padding: 5px; }
+  padding: 5px;
+  width: 100%; }
 
 .button {
   padding: 20px;
@@ -605,23 +578,61 @@ input {
   color: white; }
 
 select {
-  font-family: "Antenna Comp Medium";
+  font-size: 16px;
+  background: none;
+  -webkit-transition: all 0.2s ease-in-out;
+  font-family: 'Sentinel SSm A', 'Sentinel SSm B';
+  font-weight: 400;
   font-style: normal;
-  font-weight: normal;
   -webkit-font-smoothing: antialiased;
-  font-size: 100px;
-  margin: 0;
+  width: 100%;
+  margin: 0 0 20px 0;
   border-radius: 0;
   background-color: transparent;
   border: 0 solid transparent;
-  border-bottom: 1px solid white;
+  border-bottom: 1px dotted #c8c8c8;
   outline: none;
   -webkit-appearance: none;
-  color: white; }
+  color: white;
+  padding: 10px 0; }
 
 .profile-link {
   position: absolute;
   bottom: 150px;
   left: 28px; }
+
+.type-option {
+  margin: 0 auto;
+  float: left;
+  width: 22.9%; }
+
+.type-option-label {
+  width: 100%; }
+
+textarea {
+  width: 100%;
+  height: 130px;
+  background: transparent;
+  color: white;
+  border: 0; }
+
+textarea:focus {
+  background: white;
+  color: #1e1e1e;
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(30, 30, 30, 0.2);
+  -webkit-transition: all 0.2s ease-in-out;
+  -webkit-font-smoothing: antialiased; }
+
+.input-text,
+.input-select {
+  float: left;
+  width: 48.611111111111%; }
+
+.input-select {
+  margin-right: 2.779862674784%; }
+
+.input-text {
+  margin-right: 0; }
 
 /* end form */

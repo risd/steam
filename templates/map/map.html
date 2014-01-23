@@ -36,7 +36,7 @@
 
         <!-- Add your site or application content here -->
         <header class="z-100 row clearfix">
-            {% include 'steam/main-nav.html' with frontend=frontend %}
+            {% include 'steam/main-nav.html' %}
         </header>
 
         <!-- humble host of the button to add oneself -->
@@ -63,9 +63,9 @@
         
         <!-- modal for adding oneself -->
         <div id="modal" class="fullscreen z-200 hide-til-active modal">
-            <div class="modal-wrapper clearfix">
+            <div class="grid full-width clearfix modal-wrapper">
 
-                    <div class="modal-main-area column inset">
+                    <div class="four-column offset-one clearfix">
 
                         <div class="modal-header">
                             <h1 id="modal-header-join"
@@ -158,21 +158,12 @@
                             
                         </div>
 
-                        <div class="clearfix row"
-                             id="modal-nav">
-                            <div id="back-modal-add-yourself"
-                                 class="modal-nav-button left hide-til-active">
-                                < Back
-                            </div>
-                        </div>
-
                     </div>
 
-                    <div class="modal-sidebar column">
+                    <div class="one-column omega">
                         <div id="close-modal"
-                             class="modal-toolbar-button right hide-til-active active"></div>
+                             class="modal-button hide-til-active active"></div>    
                     </div>
-
             </div>
         </div>
 

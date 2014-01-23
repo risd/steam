@@ -149,14 +149,6 @@ function ModalFlow (context) {
                 }
             },
 
-            back: {
-                el: d3.select('#back-modal-add-yourself'),
-                on_click: function () {
-                    form.state(previous_state);
-                },
-                append_to_el: function () {}
-            },
-
             open_modal: {
                 el: d3.select('#activate-add-yourself'),
                 on_click: function () {

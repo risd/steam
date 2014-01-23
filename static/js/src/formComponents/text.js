@@ -28,6 +28,8 @@ module.exports = function TextInput () {
         return self;
     };
 
+
+
     self.placeholder = function (x) {
         if (!arguments.length) return placeholder;
         placeholder = x;
@@ -57,6 +59,14 @@ module.exports = function TextInput () {
             return false;
         }
     };
+
+    self.isNotEmpty = function () {
+        if (self.value().length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     return self;
 };

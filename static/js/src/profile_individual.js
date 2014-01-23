@@ -61,11 +61,11 @@ module.exports = function ProfileIndividual (context) {
 
     function build (sel) {
         var row = sel.append('div')
-                           .attr('class', 'row clearfix');
+                           .attr('class', 'profile-wrapper');
 
         var first_name_sel = row
             .append('div')
-            .attr('class', 'column one');
+            .attr('class', 'four-column-two');
         
         first_name = textComponent()
             .selection(first_name_sel)
@@ -77,7 +77,7 @@ module.exports = function ProfileIndividual (context) {
 
         var last_name_sel = row
             .append('div')
-            .attr('class', 'column one');
+            .attr('class', 'four-column-two omega');
 
         last_name = textComponent()
             .selection(last_name_sel)
@@ -89,14 +89,15 @@ module.exports = function ProfileIndividual (context) {
 
         var geo_sel = row
             .append('div')
-            .attr('class', 'column two')
+            .attr('class', 'four-column-four sel-geo')
             .attr('id', 'individual-geo');
 
         geo = geoComponent()
             .rootSelection(geo_sel)
+            .validationVisual(false)
             .optionsKey(function (d) { return d.country; })
             .initialValue(data.objects[0].top_level_input)
-            .placeholder('00000');
+            .placeholder('zipcode');
 
         if (context.countries.data()) {
             // if the data is loaded already,
@@ -118,7 +119,7 @@ module.exports = function ProfileIndividual (context) {
 
         var work_in_sel = row
             .append('div')
-            .attr('class', 'column two')
+            .attr('class', 'four-column-four sel-work-in')
             .attr('id', 'individual-work-in');
 
         var work_in_options = [{
@@ -162,7 +163,7 @@ module.exports = function ProfileIndividual (context) {
 
         var description_sel = row
             .append('div')
-            .attr('class', 'column two')
+            .attr('class', 'four-column-four')
             .attr('id', 'individual-description');
 
         description = textAreaComponent()
@@ -172,6 +173,7 @@ module.exports = function ProfileIndividual (context) {
                 type: 'p',
                 klass: ''
             })
+            .name('steamie-description')
             .initialValue(
                 data.objects[0].description ?
                 data.objects[0].description : '')
@@ -179,7 +181,7 @@ module.exports = function ProfileIndividual (context) {
 
         save_button =
             row.append('div')
-                .attr('class', 'column two')
+                .attr('class', 'four-column-four')
                 .append('p')
                 .attr('class', 'large button')
                 .text('Save');
