@@ -76,7 +76,7 @@ header:hover {
   font-weight: 400;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
-  font-size: 1.2em;
+  font-size: 24px;
   line-height: 1.8em;
   margin-top: 1.5em;
   margin-bottom: 0; }
@@ -415,9 +415,9 @@ network graph
   stroke-width: 0; }
 
 .avatar {
-  width: 50px;
+  width: 60px;
   height: auto;
-  border-radius: 25px;
+  border-radius: 30px;
   border-width: 1px;
   border-style: solid; }
 
@@ -495,11 +495,6 @@ form / profile
   width: 26px;
   cursor: pointer; }
 
-input {
-  font-size: 12px;
-  padding: 5px;
-  width: 100%; }
-
 .button {
   padding: 20px;
   background: yellow;
@@ -558,27 +553,15 @@ input {
   .login-option.selected .checkmark {
     display: block; }
 
-.editable.large {
-  font-family: "Antenna Comp Medium";
-  font-style: normal;
-  font-weight: normal;
-  -webkit-font-smoothing: antialiased;
-  font-size: 100px;
-  line-height: 95px;
-  height: 95px;
-  margin: 0;
-  border-bottom: 1px solid white;
-  outline: none; }
+input {
+  font-size: 24px;
+  width: 100%; }
 
-.editable {
-  color: rgba(255, 255, 255, 0.5); }
-
-.editable.focused,
-.editable.valid {
-  color: white; }
+label {
+  font-size: 24px; }
 
 select {
-  font-size: 16px;
+  font-size: 24px;
   background: none;
   -webkit-transition: all 0.2s ease-in-out;
   font-family: 'Sentinel SSm A', 'Sentinel SSm B';
@@ -594,7 +577,39 @@ select {
   outline: none;
   -webkit-appearance: none;
   color: white;
-  padding: 10px 0; }
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-right: 0; }
+
+textarea {
+  width: 100%;
+  height: 4em;
+  background: transparent;
+  color: white;
+  border: 0;
+  outline: none;
+  -webkit-appearance: none;
+  font-size: 24px;
+  background: none;
+  -webkit-transition: all 0.2s ease-in-out;
+  font-family: 'Sentinel SSm A', 'Sentinel SSm B';
+  font-weight: 400;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased; }
+
+textarea:focus {
+  background: white;
+  color: #1e1e1e;
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(30, 30, 30, 0.2);
+  -webkit-transition: all 0.2s ease-in-out;
+  -webkit-font-smoothing: antialiased; }
+
+input,
+select,
+textarea {
+  box-sizing: border-box;
+  padding-left: 10px; }
 
 .profile-link {
   position: absolute;
@@ -609,21 +624,6 @@ select {
 .type-option-label {
   width: 100%; }
 
-textarea {
-  width: 100%;
-  height: 130px;
-  background: transparent;
-  color: white;
-  border: 0; }
-
-textarea:focus {
-  background: white;
-  color: #1e1e1e;
-  outline: none;
-  box-shadow: 0px 0px 5px rgba(30, 30, 30, 0.2);
-  -webkit-transition: all 0.2s ease-in-out;
-  -webkit-font-smoothing: antialiased; }
-
 .input-text,
 .input-select {
   float: left;
@@ -634,5 +634,32 @@ textarea:focus {
 
 .input-text {
   margin-right: 0; }
+
+.input-text input,
+.input-select select {
+  margin-bottom: 10px; }
+
+.modal-header-avatar {
+  text-align: center;
+  margin-bottom: 25px; }
+
+.sel-work-in {
+  border-bottom: 1px dotted #c8c8c8;
+  padding-bottom: 30px;
+  margin-bottom: 10px; }
+
+.sel-work-in p,
+.individual-description p {
+  margin-bottom: 1.1em; }
+
+.steamie-description p {
+  border-bottom: 1px dotted #c8c8c8;
+  margin-bottom: 10px; }
+
+.sel-work-in p,
+.individual-description p,
+.steamie-description p {
+  box-sizing: border-box;
+  padding-left: 10px; }
 
 /* end form */

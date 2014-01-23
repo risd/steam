@@ -163,7 +163,7 @@ module.exports = function ProfileIndividual (context) {
 
         var description_sel = row
             .append('div')
-            .attr('class', 'four-column-four')
+            .attr('class', 'four-column-four steamie-description')
             .attr('id', 'individual-description');
 
         description = textAreaComponent()
@@ -198,6 +198,15 @@ module.exports = function ProfileIndividual (context) {
         work_in.dispatch
             .on('valid.profile', function () {
                 validate();
+            });
+
+        work_in.dispatch
+            .on('valueChange.profile', function () {
+                // have this change the modal background
+                // color. add the appropriate class to the
+                // modal DOM el.
+                // eg research, political, education, research
+                // context.modal_flow.type()
             });
 
         first_name.dispatch

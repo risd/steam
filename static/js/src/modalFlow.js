@@ -12,7 +12,7 @@ var validator = require('./validators'),
 module.exports = ModalFlow;
 
 function ModalFlow (context) {
-    var form = {},
+    var self = {},
         state,              // current state
         previous_state,     // previous state
         input_data,         // object that tracks input data
@@ -111,9 +111,9 @@ function ModalFlow (context) {
                 el: d3.select('#close-modal'),
                 on_click: function () {
                     if (context.user.profile.built()) {
-                        form.state('inactive_with_profile');
+                        self.state('inactive_with_profile');
                     } else {
-                        form.state('inactive_no_profile');
+                        self.state('inactive_no_profile');
                     }
                 },
                 append_to_el: function (sel) {
@@ -154,9 +154,9 @@ function ModalFlow (context) {
                 on_click: function () {
                     if (previous_state === 'inactive_no_profile') {
                         // first time through
-                        form.state('call_to_action');
+                        self.state('call_to_action');
                     } else {
-                        form.state(previous_state);
+                        self.state(previous_state);
                     }
                 },
                 append_to_el: function () {}
@@ -177,7 +177,7 @@ function ModalFlow (context) {
             go_to_profile: {
                 el: d3.select('#go-to-profile'),
                 on_click: function () {
-                    form.state('profile_' + context.user.type());
+                    self.state('profile_' + context.user.type());
                 },
                 append_to_el: function () {}
             },
@@ -185,7 +185,7 @@ function ModalFlow (context) {
             profile_link: {
                 el: d3.select('.profile-link'),
                 on_click: function () {
-                    form.state('profile_' + context.user.type());
+                    self.state('profile_' + context.user.type());
                 },
                 append_to_el: function () {}
             }
@@ -328,7 +328,7 @@ function ModalFlow (context) {
         }
     };
 
-    form.init = function () {
+    self.init = function () {
 
         for (var key in el.button) {
             // setup buttons
@@ -402,7 +402,7 @@ function ModalFlow (context) {
             if (context.user.authed()) {
                 // authenticated
 
-                form.add_avatar(d.objects[0].avatar_url);
+                self.add_avatar(d.objects[0].avatar_url);
 
                 if ((d.objects[0].top_level) &&
                     ((d.objects[0].individual) ||
@@ -411,7 +411,7 @@ function ModalFlow (context) {
                     // should have given all info
                     // to be signed up and dont have
                     // to be sold on it
-                    form.state('inactive_with_profile');
+                    self.state('inactive_with_profile');
 
                     if (d.objects[0].individual) {
                         context.user.type('individual');
@@ -428,7 +428,7 @@ function ModalFlow (context) {
 
                     // have authenticated, but no
                     // data associated with them
-                    form.state('choose_type_add_zip');
+                    self.state('choose_type_add_zip');
                 }
 
 
@@ -436,22 +436,22 @@ function ModalFlow (context) {
                 // has not been authenticated
                 // assume the user has never been
                 // and ask them to sign up
-                form.state('call_to_action');
+                self.state('call_to_action');
             }
         });
 
-        return form;
+        return self;
     };
 
-    form.add_avatar = function (x) {
+    self.add_avatar = function (x) {
 
         d3.selectAll('.avatar')
             .attr('src', x);
 
-        return form;
+        return self;
     };
 
-    form.state = function (x) {
+    self.state = function (x) {
         if (!arguments.length) return state;
 
         if (x in states) {
@@ -460,7 +460,7 @@ function ModalFlow (context) {
             states[state]();
         }
 
-        return form;
+        return self;
     };
 
     function add_me_flow () {
@@ -486,7 +486,7 @@ function ModalFlow (context) {
                     // the user to the stage where
                     // they left off, attempting to
                     // be added.
-                    form.state('choose_type_add_zip');
+                    self.state('choose_type_add_zip');
                 }
 
                 // update the user data based on
@@ -501,7 +501,7 @@ function ModalFlow (context) {
                         .build();
 
                 // show thank you
-                form.state('thank_you');
+                self.state('thank_you');
             });
     }
 
@@ -607,5 +607,5 @@ function ModalFlow (context) {
             .on('click', null);
     }
 
-    return form;
+    return self;
 }

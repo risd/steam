@@ -40,6 +40,9 @@ input:nth-child(odd) {
   margin-right: 0px;
   /*background:orange;*/ }
 
+input[type=radio] {
+  display: none; }
+
 label {
   display: block;
   cursor: pointer;
@@ -53,9 +56,6 @@ label {
 
 label:last-child {
   margin-right: 0px; }
-
-input[type=radio] {
-  display: none; }
 
 label:after {
   content: "";

@@ -127,7 +127,7 @@ module.exports = function ProfileInstitution (context) {
         var geo_sel = row
             .append('div')
             .attr('class', 'four-column-four sel-geo')
-            .attr('id', 'individual-geo');
+            .attr('id', 'institution-geo');
 
         geo = geoComponent()
             .rootSelection(geo_sel)
@@ -157,7 +157,7 @@ module.exports = function ProfileInstitution (context) {
         var work_in_sel = row
             .append('div')
             .attr('class', 'four-column-four sel-work-in')
-            .attr('id', 'individual-work-in');
+            .attr('id', 'institution-work-in');
 
         var work_in_options = [{
                     label: 'Research',
@@ -193,15 +193,15 @@ module.exports = function ProfileInstitution (context) {
                 type: 'p',
                 klass: ''
             })
-            .groupName('individual-work-in-group')
+            .groupName('institution-work-in-group')
             .initialSelected(work_in_initial)
             .data(work_in_options)
             .render();
 
         var description_sel = row
             .append('div')
-            .attr('class', 'column two')
-            .attr('id', 'individual-description');
+            .attr('class', 'four-column-four steamie-description')
+            .attr('id', 'institution-description');
 
         description = textAreaComponent()
             .selection(description_sel)
