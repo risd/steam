@@ -296,42 +296,7 @@ function Backend () {
 
     return api;
 }
-},{"./config":7}],3:[function(require,module,exports){
-var clone = function clone (obj) {
-    // Thanks to stackoverflow:
-    // http://stackoverflow.com/questions/
-    // 728360/most-elegant-way-to-clone-a-javascript-object
-
-    // Handle the 3 simple types, and null or undefined
-    if (null == obj || "object" != typeof obj) return obj;
-
-    // Handle Array
-    if (obj instanceof Array) {
-        var copy = [];
-        for (var i = 0, len = obj.length; i < len; i++) {
-            copy[i] = clone(obj[i]);
-        }
-        return copy;
-    }
-
-    // Handle Object
-    if (obj instanceof Object) {
-        var copy = {};
-        for (var attr in obj) {
-            if (obj.hasOwnProperty(attr)) {
-                copy[attr] = clone(obj[attr]);
-            }
-        }
-        return copy;
-    }
-};
-
-if (typeof module !== 'undefined') {
-    exports = module.exports = clone;
-} else {
-    window.clone = clone;
-}
-},{}],4:[function(require,module,exports){
+},{"./config":6}],3:[function(require,module,exports){
 module.exports = ClusterIconSize;
 
 // Defines cluster sizes, for both
@@ -393,7 +358,7 @@ function ClusterIconSize () {
 
     return size;
 }
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 module.exports = Clusters;
 
 function Clusters (context) {
@@ -621,7 +586,7 @@ function Clusters (context) {
 
     return clusters;
 }
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var colors = {
     res: 'rgb(105,230,64)',
     pol: 'rgb(255,97,127)',
@@ -634,7 +599,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.colors = colors;
 }
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = Config;
 
 function Config (hostname) {
@@ -648,7 +613,7 @@ function Config (hostname) {
         version: 'v1'
     };
 }
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = {
     network: function (args) {
         // pass in geojson properties, return
@@ -718,7 +683,7 @@ module.exports = {
         return network_data;
     }
 };
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = filterUI;
 
 // UI for manipulating data
@@ -845,7 +810,7 @@ function filterUI (context) {
 
     return ui;
 }
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var filters = [{
         abbr: 'res',
         display: 'research',
@@ -869,13 +834,12 @@ if (typeof module !== 'undefined') {
 } else {
     window.filters = filters;
 }
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var textComponent = require('./text'),
     Checkmark = require('../ui/checkmark');
 
 module.exports = function dropdownConditionalText () {
     var self = {},
-        prev_valid = false,
         valid = false,
         root_selection,
         text_selection,
@@ -890,7 +854,7 @@ module.exports = function dropdownConditionalText () {
         placeholder,
         initial_value;
 
-    self.dispatch = d3.dispatch('validChange', 'valueChange');
+    self.dispatch = d3.dispatch('valueChange');
 
     self.isValid = function () {
         return validate();
@@ -963,6 +927,9 @@ module.exports = function dropdownConditionalText () {
             initial_edtiable_text,
             initial_value_select;
 
+        if (options[options.length-1].country === '') {
+            options.pop();
+        }
         options.forEach(function (d, i) {
             if (d.country === 'United States of America') {
                 return;
@@ -1082,19 +1049,12 @@ module.exports = function dropdownConditionalText () {
             checkmark_sel.classed('valid', valid);
         }
 
-        if (valid !== prev_valid) {
-            self.dispatch
-                .validChange.apply(this, arguments);
-        }
-
-        prev_valid = valid;
-
         return valid;
     }
 
     return self;
 };
-},{"../ui/checkmark":25,"./text":14}],12:[function(require,module,exports){
+},{"../ui/checkmark":23,"./text":13}],11:[function(require,module,exports){
 module.exports = function radioSelection () {
     var self = {},
         valid = false,
@@ -1140,11 +1100,8 @@ module.exports = function radioSelection () {
                     .select('input')
                     .node().checked = true;
 
-                data.forEach(function (n, i) {
-                    n.selected = false;
-                });
-                d.selected = true;
                 self.selected(d);
+                
                 valid = true;
                 self.dispatch.valid.apply(this, arguments);
 
@@ -1186,9 +1143,16 @@ module.exports = function radioSelection () {
     };
 
     self.isDifferent = function () {
+        console.log('initial ', self.initialSelected());
+        console.log('selected ', self.selected());
+        // compare initial_selected (entire object)
+        // against the selected() function,
+        // which manages the data objects
+        // and only returns the .value attr of
+        // the selected item
         if (self.initialSelected()) {
-            if (self.initialSelected().value !==
-                self.selected().value) {
+            if (self.initialSelected() !==
+                self.selected()) {
                 return true;
             } else {
                 return false;
@@ -1199,19 +1163,52 @@ module.exports = function radioSelection () {
     };
 
     self.initialSelected = function (x) {
-        if (!arguments.length) return initial_selected;
-        initial_selected = x;
+        // must have a data object to reference
+        if (!arguments.length) return initial_selected.value;
+
+        if (typeof(x) === 'string') {
+            data.forEach(function (n, i) {
+                if (x === n.value) {
+                    initial_selected = n;
+                }
+            });
+        } else if (typeof(x) === 'object') {
+            // its an object?
+            data.forEach(function (n, i) {
+                if (x.value === n.value) {
+                    initial_selected = n;
+                }
+            });
+        }
+
         return self;
     };
 
     self.selected = function (x) {
-        if (!arguments.length) return selected;
-        selected = x;
-        return selected;
-    };
+        // must have a data object to reference
+        if (!arguments.length) return selected.value;
 
-    self.value = function () {
-        return self.selected().value;
+        if (typeof(x) === 'string') {
+            data.forEach(function (n, i) {
+                if (x === n.value) {
+                    selected = n;
+                    n.selected = true;
+                } else {
+                    n.selected = false;
+                }
+            });
+        } else if (typeof(x) === 'object') {
+            data.forEach(function (n, i) {
+                if (x.value === n.value) {
+                    selected = n;
+                    n.selected = true;
+                } else {
+                    n.selected = false;
+                }
+            });
+        }
+
+        return selected;
     };
 
     function addInput (sel) {
@@ -1242,7 +1239,7 @@ module.exports = function radioSelection () {
 
     return self;
 };
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var Checkmark = require('../ui/checkmark');
 
 module.exports = function socialAuthSelection (context) {
@@ -1325,7 +1322,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":25}],14:[function(require,module,exports){
+},{"../ui/checkmark":23}],13:[function(require,module,exports){
 // text input, with placeholder
 // dispatches when the value changes
 // against the initial value
@@ -1348,7 +1345,9 @@ module.exports = function TextInput () {
         input_selection = selection
             .append('input')
             .attr('placeholder', placeholder)
-            .property('value', initial_value)
+            .property('value', initial_value);
+
+        input_selection
             .on('keyup.internal-text', function (d) {
                 self.dispatch.valueChange.apply(this, arguments);
             });
@@ -1377,7 +1376,7 @@ module.exports = function TextInput () {
     };
 
     self.value = function (x) {
-        return input_selection.node().value;
+        return input_selection.property('value');
     };
 
     self.isDifferent = function () {
@@ -1389,16 +1388,17 @@ module.exports = function TextInput () {
     };
 
     self.isNotEmpty = function () {
-        if (self.value().length > 0) {
+        if (self.value() &&
+            self.value().length > 0) {
             return true;
         } else {
             return false;
         }
-    }
+    };
 
     return self;
 };
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 // textarea, with placeholder, and label
 // dispatches when the value changes
 // against the initial value
@@ -1483,13 +1483,23 @@ module.exports = function TextArea () {
 
     return self;
 };
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = function UpdatableComponentManager () {
     var self = {},
         updatable = [],
         updated = [];
 
     self.add = function (x) {
+        // add objects that include links to functions
+        // and arrays that describe the component,
+        // and its relationship to the data structu
+        // it comes from
+        // {
+        //     isDifferent: function
+        //     value: function
+        //     position_in_data: []
+        //     reset_initial: function
+        // }
         updatable.push(x);
         return self;
     };
@@ -1527,35 +1537,10 @@ module.exports = function UpdatableComponentManager () {
 
     return self;
 };
-},{}],17:[function(require,module,exports){
-module.exports = function dataTSV (url) {
-    var self = {},
-        data;
-
-    self.dispatch = d3.dispatch('loaded');
-
-    self.data = function (x) {
-        if (!arguments.length) return data;
-        data = x;
-        return self;
-    };
-
-    function get () {
-        d3.tsv(url, function (err, response) {
-            self.data(response);
-            self.dispatch.loaded.apply(this, arguments);
-        });
-    }
-
-    // initialize
-    get();
-
-    return self;
-};
-},{}],18:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var filters = require('./filters'),
     colors = require('./colors'),
-    clone = require('./clone'),
+    clone = require('./util/clone'),
     icon_size = require('./clusterIconSize')(),
 
     api = require('./backend')(),
@@ -1565,7 +1550,7 @@ var filters = require('./filters'),
     clusters = require('./clusters'),
     arcs = require('./arcs'),
     map = require('./map'),
-    getTSV = require('./getTSV'),
+    getTSV = require('./util/getTSV'),
 
     modal_flow = require('./modalFlow'),
     user = require('./user'),
@@ -1616,7 +1601,7 @@ function STEAMMap() {
 
     init();
 }
-},{"./arcs":1,"./backend":2,"./clone":3,"./clusterIconSize":4,"./clusters":5,"./colors":6,"./fakeDataGenerator":8,"./filterUI":9,"./filters":10,"./getTSV":17,"./map":19,"./modalFlow":20,"./network":21,"./user":26}],19:[function(require,module,exports){
+},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./fakeDataGenerator":7,"./filterUI":8,"./filters":9,"./map":17,"./modalFlow":18,"./network":19,"./user":24,"./util/clone":25,"./util/getTSV":26}],17:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -1655,10 +1640,8 @@ function Map (context) {
 
     return map;
 }
-},{}],20:[function(require,module,exports){
-var validator = require('./validators'),
-
-    geoComponent =
+},{}],18:[function(require,module,exports){
+var geoComponent =
         require('./formComponents/dropdownConditionalText'),
 
     radioComponent =
@@ -1687,8 +1670,8 @@ function ModalFlow (context) {
                 .rootSelection(d3.select('#add-yourself-geo'))
                 .validationVisual(false)
                 .optionsKey(function (d) { return d.country; })
-                .placeholder('00000')
-                .initialValue(null),
+                .placeholder('zipcode')
+                .initialValue(''),
 
         select_type =
             radioComponent()
@@ -2028,28 +2011,20 @@ function ModalFlow (context) {
 
         select_geo
             .dispatch
-            .on('validChange.formElementCheck', function () {
-                if (zipAndTypeValid()) {
-                    enable_add_me();
-                } else {
-                    disable_add_me();
-                }
+            .on('valueChange.formElementCheck', function () {
+                validate_add_me();
             });
 
         select_type
             .dispatch
             .on('valid.formElementCheck', function (d) {
-                if (zipAndTypeValid()) {
-                    enable_add_me();
-                }
+                validate_add_me();
             });
 
         select_work_in
             .dispatch
             .on('valid.formElementCheck', function (d) {
-                if (zipAndTypeValid()) {
-                    enable_add_me();
-                }
+                validate_add_me();
             })
             .on('valueChange.formElementCheck', function () {
                 set_modal_color();
@@ -2229,13 +2204,18 @@ function ModalFlow (context) {
     }
 
     // ensure validity of form elements
-    function zipAndTypeValid () {
+    function validate_add_me () {
         if (select_geo.isValid() &&
             select_type.isValid() &&
             select_work_in.isValid()) {
+            
+            enable_add_me();
             return true;
+        } else {
+            console.log('not');
+            disable_add_me();
+            return false;
         }
-        return false;
     }
 
     function authIsValid () {
@@ -2280,7 +2260,7 @@ function ModalFlow (context) {
 
     return self;
 }
-},{"./formComponents/dropdownConditionalText":11,"./formComponents/radio":12,"./formComponents/socialAuthSelection":13,"./validators":27}],21:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":10,"./formComponents/radio":11,"./formComponents/socialAuthSelection":12}],19:[function(require,module,exports){
 module.exports = Network;
 
 // Network graph
@@ -2673,7 +2653,7 @@ function Network (context) {
 
     return network;
 }
-},{}],22:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution');
 
@@ -2743,7 +2723,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./profile_individual":23,"./profile_institution":24}],23:[function(require,module,exports){
+},{"./profile_individual":21,"./profile_institution":22}],21:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -2901,8 +2881,8 @@ module.exports = function ProfileIndividual (context) {
                 klass: ''
             })
             .groupName('individual-work-in-group')
-            .initialSelected(work_in_initial)
             .data(work_in_options)
+            .initialSelected(work_in_initial)
             .render();
         
 
@@ -2933,30 +2913,27 @@ module.exports = function ProfileIndividual (context) {
 
         // turn on dispatch validation
         geo.dispatch
-            .on('validChange.profile', function () {
-                validate();
-            })
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileIndividual', function () {
                 validate();
             });
 
         work_in.dispatch
-            .on('valid.profile', function () {
+            .on('valid.profileIndividual', function () {
                 validate();
             });
 
         first_name.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileIndividual', function () {
                 validate();
             });
 
         last_name.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileIndividual', function () {
                 validate();
             });
 
         description.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileIndividual', function () {
                 validate();
             });
 
@@ -2975,7 +2952,7 @@ module.exports = function ProfileIndividual (context) {
         });
         updatable.add({
             isDifferent: work_in.isDifferent,
-            value: work_in.value,
+            value: work_in.selected,
             position_in_data: ['work_in'],
             reset_initial: work_in.initialSelected
         });
@@ -3121,7 +3098,7 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":11,"./formComponents/radio":12,"./formComponents/text":14,"./formComponents/textarea":15,"./formComponents/updatableManager":16}],24:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":10,"./formComponents/radio":11,"./formComponents/text":13,"./formComponents/textarea":14,"./formComponents/updatableManager":15}],22:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3269,7 +3246,7 @@ module.exports = function ProfileInstitution (context) {
             context
                 .countries
                     .dispatch
-                    .on('loaded.profile', function () {
+                    .on('loaded.profileInstitution', function () {
 
                 geo.options(context.countries.data())
                     .render();
@@ -3316,8 +3293,8 @@ module.exports = function ProfileInstitution (context) {
                 klass: ''
             })
             .groupName('institution-work-in-group')
-            .initialSelected(work_in_initial)
             .data(work_in_options)
+            .initialSelected(work_in_initial)
             .render();
 
         var description_sel = sel
@@ -3346,40 +3323,37 @@ module.exports = function ProfileInstitution (context) {
 
         // turn on dispatch validation
         geo.dispatch
-            .on('validChange.profile', function () {
-                validate();
-            })
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileInstitution', function () {
                 validate();
             });
 
         work_in.dispatch
-            .on('valid.profile', function () {
+            .on('valid.profileInstitution', function () {
                 validate();
             });
 
         name.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileInstitution', function () {
                 validate();
             });
 
         representative_first_name.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileInstitution', function () {
                 validate();
             });
 
         representative_last_name.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileInstitution', function () {
                 validate();
             });
 
         representative_email.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileInstitution', function () {
                 validate();
             });
 
         description.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileInstitution', function () {
                 validate();
             });
 
@@ -3414,7 +3388,7 @@ module.exports = function ProfileInstitution (context) {
         });
         updatable.add({
             isDifferent: work_in.isDifferent,
-            value: work_in.value,
+            value: work_in.selected,
             position_in_data: ['work_in'],
             reset_initial: work_in.initialSelected
         });
@@ -3559,7 +3533,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":11,"./formComponents/radio":12,"./formComponents/text":14,"./formComponents/textarea":15,"./formComponents/updatableManager":16}],25:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":10,"./formComponents/radio":11,"./formComponents/text":13,"./formComponents/textarea":14,"./formComponents/updatableManager":15}],23:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -3615,7 +3589,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],26:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -3793,50 +3767,65 @@ function User (context) {
 
     return user;
 }
-},{"./profile":22}],27:[function(require,module,exports){
-module.exports = Validators;
+},{"./profile":20}],25:[function(require,module,exports){
+var clone = function clone (obj) {
+    // Thanks to stackoverflow:
+    // http://stackoverflow.com/questions/
+    // 728360/most-elegant-way-to-clone-a-javascript-object
 
-function Validators () {
-    var validators = {};
+    // Handle the 3 simple types, and null or undefined
+    if (null == obj || "object" != typeof obj) return obj;
 
-    var regex = {
-        email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
-    };
-    
+    // Handle Array
+    if (obj instanceof Array) {
+        var copy = [];
+        for (var i = 0, len = obj.length; i < len; i++) {
+            copy[i] = clone(obj[i]);
+        }
+        return copy;
+    }
 
-    validators.individual = LGTM.validator()
-        .validates('first_name')
-            .using(function (value, attr, object) {
-                if (object.individual.first_name) {
-                    return true;
-                }
-                return false;
-            }, 'You must enter a first name')
-        .validates('last_name')
-            .using(function (value, attr, object) {
-                if (object.individual.last_name) {
-                    return true;
-                }
-                return false;
-            }, 'You must enter a last name')
-        .validates('email')
-            .using(function (value, attr, object) {
-                if (object.individual.email
-                        .match(regex.email)) {
-                    return true;
-                }
-                return false;
-            }, 'You must enter an email')
-        .validates('zip_code')
-            .required('You must eneter a zip code')
-        .build();
+    // Handle Object
+    if (obj instanceof Object) {
+        var copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) {
+                copy[attr] = clone(obj[attr]);
+            }
+        }
+        return copy;
+    }
+};
 
-    validators.institution = LGTM.validator()
-        .validates('name')
-            .required('You must enter a name')
-        .build();
-
-    return validators;
+if (typeof module !== 'undefined') {
+    exports = module.exports = clone;
+} else {
+    window.clone = clone;
 }
-},{}]},{},[18])
+},{}],26:[function(require,module,exports){
+module.exports = function dataTSV (url) {
+    var self = {},
+        data;
+
+    self.dispatch = d3.dispatch('loaded');
+
+    self.data = function (x) {
+        if (!arguments.length) return data;
+        data = x;
+        return self;
+    };
+
+    function get () {
+        d3.tsv(url, function (err, response) {
+            self.data(response);
+            self.dispatch.loaded.apply(this, arguments);
+        });
+    }
+
+    // initialize
+    get();
+
+    return self;
+};
+},{}]},{},[16])
 ;

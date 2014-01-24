@@ -12,8 +12,7 @@ dist:
 dist/libs.js: dist
 	cat lib/d3.v3.js \
 		lib/leaflet-src.js \
-		lib/leaflet.markercluster-src.js \
-		lib/lgtm-standalone.js > dist/libs.js
+		lib/leaflet.markercluster-src.js > dist/libs.js
 
 
 dist/site.js: dist

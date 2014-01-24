@@ -3,7 +3,6 @@ var textComponent = require('./text'),
 
 module.exports = function dropdownConditionalText () {
     var self = {},
-        prev_valid = false,
         valid = false,
         root_selection,
         text_selection,
@@ -18,7 +17,7 @@ module.exports = function dropdownConditionalText () {
         placeholder,
         initial_value;
 
-    self.dispatch = d3.dispatch('validChange', 'valueChange');
+    self.dispatch = d3.dispatch('valueChange');
 
     self.isValid = function () {
         return validate();
@@ -91,6 +90,9 @@ module.exports = function dropdownConditionalText () {
             initial_edtiable_text,
             initial_value_select;
 
+        if (options[options.length-1].country === '') {
+            options.pop();
+        }
         options.forEach(function (d, i) {
             if (d.country === 'United States of America') {
                 return;
@@ -209,13 +211,6 @@ module.exports = function dropdownConditionalText () {
         if (checkmark_bool) {
             checkmark_sel.classed('valid', valid);
         }
-
-        if (valid !== prev_valid) {
-            self.dispatch
-                .validChange.apply(this, arguments);
-        }
-
-        prev_valid = valid;
 
         return valid;
     }

@@ -20,7 +20,9 @@ module.exports = function TextInput () {
         input_selection = selection
             .append('input')
             .attr('placeholder', placeholder)
-            .property('value', initial_value)
+            .property('value', initial_value);
+
+        input_selection
             .on('keyup.internal-text', function (d) {
                 self.dispatch.valueChange.apply(this, arguments);
             });
@@ -49,7 +51,7 @@ module.exports = function TextInput () {
     };
 
     self.value = function (x) {
-        return input_selection.node().value;
+        return input_selection.property('value');
     };
 
     self.isDifferent = function () {
@@ -61,12 +63,13 @@ module.exports = function TextInput () {
     };
 
     self.isNotEmpty = function () {
-        if (self.value().length > 0) {
+        if (self.value() &&
+            self.value().length > 0) {
             return true;
         } else {
             return false;
         }
-    }
+    };
 
     return self;
 };

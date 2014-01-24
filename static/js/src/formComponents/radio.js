@@ -43,11 +43,8 @@ module.exports = function radioSelection () {
                     .select('input')
                     .node().checked = true;
 
-                data.forEach(function (n, i) {
-                    n.selected = false;
-                });
-                d.selected = true;
                 self.selected(d);
+                
                 valid = true;
                 self.dispatch.valid.apply(this, arguments);
 
@@ -89,9 +86,16 @@ module.exports = function radioSelection () {
     };
 
     self.isDifferent = function () {
+        console.log('initial ', self.initialSelected());
+        console.log('selected ', self.selected());
+        // compare initial_selected (entire object)
+        // against the selected() function,
+        // which manages the data objects
+        // and only returns the .value attr of
+        // the selected item
         if (self.initialSelected()) {
-            if (self.initialSelected().value !==
-                self.selected().value) {
+            if (self.initialSelected() !==
+                self.selected()) {
                 return true;
             } else {
                 return false;
@@ -102,19 +106,52 @@ module.exports = function radioSelection () {
     };
 
     self.initialSelected = function (x) {
-        if (!arguments.length) return initial_selected;
-        initial_selected = x;
+        // must have a data object to reference
+        if (!arguments.length) return initial_selected.value;
+
+        if (typeof(x) === 'string') {
+            data.forEach(function (n, i) {
+                if (x === n.value) {
+                    initial_selected = n;
+                }
+            });
+        } else if (typeof(x) === 'object') {
+            // its an object?
+            data.forEach(function (n, i) {
+                if (x.value === n.value) {
+                    initial_selected = n;
+                }
+            });
+        }
+
         return self;
     };
 
     self.selected = function (x) {
-        if (!arguments.length) return selected;
-        selected = x;
-        return selected;
-    };
+        // must have a data object to reference
+        if (!arguments.length) return selected.value;
 
-    self.value = function () {
-        return self.selected().value;
+        if (typeof(x) === 'string') {
+            data.forEach(function (n, i) {
+                if (x === n.value) {
+                    selected = n;
+                    n.selected = true;
+                } else {
+                    n.selected = false;
+                }
+            });
+        } else if (typeof(x) === 'object') {
+            data.forEach(function (n, i) {
+                if (x.value === n.value) {
+                    selected = n;
+                    n.selected = true;
+                } else {
+                    n.selected = false;
+                }
+            });
+        }
+
+        return selected;
     };
 
     function addInput (sel) {

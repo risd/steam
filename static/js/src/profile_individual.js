@@ -155,8 +155,8 @@ module.exports = function ProfileIndividual (context) {
                 klass: ''
             })
             .groupName('individual-work-in-group')
-            .initialSelected(work_in_initial)
             .data(work_in_options)
+            .initialSelected(work_in_initial)
             .render();
         
 
@@ -187,30 +187,27 @@ module.exports = function ProfileIndividual (context) {
 
         // turn on dispatch validation
         geo.dispatch
-            .on('validChange.profile', function () {
-                validate();
-            })
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileIndividual', function () {
                 validate();
             });
 
         work_in.dispatch
-            .on('valid.profile', function () {
+            .on('valid.profileIndividual', function () {
                 validate();
             });
 
         first_name.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileIndividual', function () {
                 validate();
             });
 
         last_name.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileIndividual', function () {
                 validate();
             });
 
         description.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileIndividual', function () {
                 validate();
             });
 
@@ -229,7 +226,7 @@ module.exports = function ProfileIndividual (context) {
         });
         updatable.add({
             isDifferent: work_in.isDifferent,
-            value: work_in.value,
+            value: work_in.selected,
             position_in_data: ['work_in'],
             reset_initial: work_in.initialSelected
         });

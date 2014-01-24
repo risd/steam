@@ -4,6 +4,16 @@ module.exports = function UpdatableComponentManager () {
         updated = [];
 
     self.add = function (x) {
+        // add objects that include links to functions
+        // and arrays that describe the component,
+        // and its relationship to the data structu
+        // it comes from
+        // {
+        //     isDifferent: function
+        //     value: function
+        //     position_in_data: []
+        //     reset_initial: function
+        // }
         updatable.push(x);
         return self;
     };

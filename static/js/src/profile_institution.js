@@ -145,7 +145,7 @@ module.exports = function ProfileInstitution (context) {
             context
                 .countries
                     .dispatch
-                    .on('loaded.profile', function () {
+                    .on('loaded.profileInstitution', function () {
 
                 geo.options(context.countries.data())
                     .render();
@@ -192,8 +192,8 @@ module.exports = function ProfileInstitution (context) {
                 klass: ''
             })
             .groupName('institution-work-in-group')
-            .initialSelected(work_in_initial)
             .data(work_in_options)
+            .initialSelected(work_in_initial)
             .render();
 
         var description_sel = sel
@@ -222,40 +222,37 @@ module.exports = function ProfileInstitution (context) {
 
         // turn on dispatch validation
         geo.dispatch
-            .on('validChange.profile', function () {
-                validate();
-            })
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileInstitution', function () {
                 validate();
             });
 
         work_in.dispatch
-            .on('valid.profile', function () {
+            .on('valid.profileInstitution', function () {
                 validate();
             });
 
         name.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileInstitution', function () {
                 validate();
             });
 
         representative_first_name.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileInstitution', function () {
                 validate();
             });
 
         representative_last_name.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileInstitution', function () {
                 validate();
             });
 
         representative_email.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileInstitution', function () {
                 validate();
             });
 
         description.dispatch
-            .on('valueChange.profile', function () {
+            .on('valueChange.profileInstitution', function () {
                 validate();
             });
 
@@ -290,7 +287,7 @@ module.exports = function ProfileInstitution (context) {
         });
         updatable.add({
             isDifferent: work_in.isDifferent,
-            value: work_in.value,
+            value: work_in.selected,
             position_in_data: ['work_in'],
             reset_initial: work_in.initialSelected
         });

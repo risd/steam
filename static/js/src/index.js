@@ -1,6 +1,6 @@
 var filters = require('./filters'),
     colors = require('./colors'),
-    clone = require('./clone'),
+    clone = require('./util/clone'),
     icon_size = require('./clusterIconSize')(),
 
     api = require('./backend')(),
@@ -10,7 +10,7 @@ var filters = require('./filters'),
     clusters = require('./clusters'),
     arcs = require('./arcs'),
     map = require('./map'),
-    getTSV = require('./getTSV'),
+    getTSV = require('./util/getTSV'),
 
     modal_flow = require('./modalFlow'),
     user = require('./user'),

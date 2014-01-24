@@ -1,6 +1,4 @@
-var validator = require('./validators'),
-
-    geoComponent =
+var geoComponent =
         require('./formComponents/dropdownConditionalText'),
 
     radioComponent =
@@ -29,8 +27,8 @@ function ModalFlow (context) {
                 .rootSelection(d3.select('#add-yourself-geo'))
                 .validationVisual(false)
                 .optionsKey(function (d) { return d.country; })
-                .placeholder('00000')
-                .initialValue(null),
+                .placeholder('zipcode')
+                .initialValue(''),
 
         select_type =
             radioComponent()
@@ -370,28 +368,20 @@ function ModalFlow (context) {
 
         select_geo
             .dispatch
-            .on('validChange.formElementCheck', function () {
-                if (zipAndTypeValid()) {
-                    enable_add_me();
-                } else {
-                    disable_add_me();
-                }
+            .on('valueChange.formElementCheck', function () {
+                validate_add_me();
             });
 
         select_type
             .dispatch
             .on('valid.formElementCheck', function (d) {
-                if (zipAndTypeValid()) {
-                    enable_add_me();
-                }
+                validate_add_me();
             });
 
         select_work_in
             .dispatch
             .on('valid.formElementCheck', function (d) {
-                if (zipAndTypeValid()) {
-                    enable_add_me();
-                }
+                validate_add_me();
             })
             .on('valueChange.formElementCheck', function () {
                 set_modal_color();
@@ -571,13 +561,18 @@ function ModalFlow (context) {
     }
 
     // ensure validity of form elements
-    function zipAndTypeValid () {
+    function validate_add_me () {
         if (select_geo.isValid() &&
             select_type.isValid() &&
             select_work_in.isValid()) {
+            
+            enable_add_me();
             return true;
+        } else {
+            console.log('not');
+            disable_add_me();
+            return false;
         }
-        return false;
     }
 
     function authIsValid () {
