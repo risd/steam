@@ -1014,6 +1014,9 @@ header:hover {
   cursor: pointer;
   padding: 5px; }
 
+.modal-header {
+  margin-bottom: 25px; }
+
 .modal h1 {
   font-family: "Antenna Comp Medium";
   font-style: normal;
@@ -1568,10 +1571,34 @@ textarea {
   bottom: 150px;
   left: 28px; }
 
-.type-option {
-  margin: 0 auto;
+.sel-work-in,
+.sel-type {
+  border-bottom: 1px dotted #c8c8c8;
+  padding-bottom: 30px;
+  margin-bottom: 10px; }
+
+.choose-type-add-zip .sel-type {
+  margin-bottom: 35px; }
+
+.sel-type .type-option,
+.sel-work-in .type-option {
+  margin: 0 auto; }
+
+.sel-type .type-option {
   float: left;
-  width: 22.9%; }
+  width: 22.9%;
+  margin-right: 2.779862674784%;
+  margin-left: 25.679862674784%; }
+
+.sel-work-in .type-option {
+  float: left;
+  width: 22.9%;
+  margin-right: 2.779862674784%; }
+
+.sel-type .type-option:last-child,
+.sel-work-in .type-option:last-child {
+  margin-right: 0;
+  margin-left: 0; }
 
 .type-option-label {
   width: 100%; }
@@ -1594,11 +1621,6 @@ textarea {
 .modal-header-avatar {
   text-align: center;
   margin-bottom: 25px; }
-
-.sel-work-in {
-  border-bottom: 1px dotted #c8c8c8;
-  padding-bottom: 30px;
-  margin-bottom: 10px; }
 
 .sel-work-in p,
 .individual-description p {

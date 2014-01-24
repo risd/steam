@@ -1685,6 +1685,7 @@ function ModalFlow (context) {
         select_geo =
             geoComponent()
                 .rootSelection(d3.select('#add-yourself-geo'))
+                .validationVisual(false)
                 .optionsKey(function (d) { return d.country; })
                 .placeholder('00000')
                 .initialValue(null),
@@ -1763,7 +1764,7 @@ function ModalFlow (context) {
     };
 
     // elements that need to be turned on and off
-    var el = {
+    var el = self.el = {
         button: {
             close_modal: {
                 el: d3.select('#close-modal'),
@@ -2049,6 +2050,9 @@ function ModalFlow (context) {
                 if (zipAndTypeValid()) {
                     enable_add_me();
                 }
+            })
+            .on('valueChange.formElementCheck', function () {
+                set_modal_color();
             });
 
         context.user
@@ -2263,6 +2267,15 @@ function ModalFlow (context) {
         el.button.add_me.el
             .classed('enabled', false)
             .on('click', null);
+    }
+
+    function set_modal_color () {
+        select_work_in.data().forEach(function (d, i) {
+            el.display
+                .modal
+                .el
+                .classed(d.value, d.selected);
+        });
     }
 
     return self;
@@ -2698,12 +2711,32 @@ module.exports = function Profile (context) {
                 .geoOptions(geo_options)
                 .data(context.user.data())
                 .build();
+        } else {
+            return self.built(false);
         }
+
+        set_modal_color();
+
+        profile.work_in.dispatch
+            .on('valueChange.profile', function () {
+                set_modal_color();
+            });
 
         self.built(true);
 
         return self;
     };
+
+    function set_modal_color () {
+        work_in.data().forEach(function (d, i) {
+            context.modal_flow
+                .el
+                .display
+                .modal
+                .el
+                .classed(d.value, d.selected);
+        });
+    }
 
     return self;
 };
@@ -2770,10 +2803,8 @@ module.exports = function ProfileIndividual (context) {
     };
 
     function build (sel) {
-        var row = sel.append('div')
-                           .attr('class', 'profile-wrapper');
 
-        var first_name_sel = row
+        var first_name_sel = sel
             .append('div')
             .attr('class', 'four-column-two');
         
@@ -2785,7 +2816,7 @@ module.exports = function ProfileIndividual (context) {
                 data.objects[0].individual.first_name : '')
             .render();
 
-        var last_name_sel = row
+        var last_name_sel = sel
             .append('div')
             .attr('class', 'four-column-two omega');
 
@@ -2797,7 +2828,7 @@ module.exports = function ProfileIndividual (context) {
                 data.objects[0].individual.last_name : '')
             .render();
 
-        var geo_sel = row
+        var geo_sel = sel
             .append('div')
             .attr('class', 'four-column-four sel-geo')
             .attr('id', 'individual-geo');
@@ -2827,7 +2858,7 @@ module.exports = function ProfileIndividual (context) {
             });
         }
 
-        var work_in_sel = row
+        var work_in_sel = sel
             .append('div')
             .attr('class', 'four-column-four sel-work-in')
             .attr('id', 'individual-work-in');
@@ -2859,7 +2890,7 @@ module.exports = function ProfileIndividual (context) {
             }
         });
 
-        work_in = radioComponent()
+        work_in = self.work_in = radioComponent()
             .node(work_in_sel)
             .label({
                 label: 'I work in the following area',
@@ -2870,8 +2901,9 @@ module.exports = function ProfileIndividual (context) {
             .initialSelected(work_in_initial)
             .data(work_in_options)
             .render();
+        
 
-        var description_sel = row
+        var description_sel = sel
             .append('div')
             .attr('class', 'four-column-four steamie-description')
             .attr('id', 'individual-description');
@@ -2890,7 +2922,7 @@ module.exports = function ProfileIndividual (context) {
             .render();
 
         save_button =
-            row.append('div')
+            sel.append('div')
                 .attr('class', 'four-column-four')
                 .append('p')
                 .attr('class', 'large button')
@@ -2908,15 +2940,6 @@ module.exports = function ProfileIndividual (context) {
         work_in.dispatch
             .on('valid.profile', function () {
                 validate();
-            });
-
-        work_in.dispatch
-            .on('valueChange.profile', function () {
-                // have this change the modal background
-                // color. add the appropriate class to the
-                // modal DOM el.
-                // eg research, political, education, research
-                // context.modal_flow.type()
             });
 
         first_name.dispatch
@@ -2966,6 +2989,7 @@ module.exports = function ProfileIndividual (context) {
             reset_initial: description.initialValue
         });
     }
+    
 
     function decorate_for_submittal (x) {
         x.id = data.objects[0].id;
@@ -3158,10 +3182,8 @@ module.exports = function ProfileInstitution (context) {
     };
 
     function build (sel) {
-        var row = sel.append('div')
-                           .attr('class', 'profile-wrapper');
 
-        var name_sel = row
+        var name_sel = sel
             .append('div')
             .attr('class', 'four-column-two');
         
@@ -3173,7 +3195,7 @@ module.exports = function ProfileInstitution (context) {
                 data.objects[0].institution.name : '')
             .render();
 
-        var representative_email_sel = row
+        var representative_email_sel = sel
             .append('div')
             .attr('class', 'four-column-two omega');
 
@@ -3189,7 +3211,7 @@ module.exports = function ProfileInstitution (context) {
                     .representative_email : '')
             .render();
 
-        var representative_first_name_sel = row
+        var representative_first_name_sel = sel
             .append('div')
             .attr('class', 'four-column-two');
 
@@ -3205,7 +3227,7 @@ module.exports = function ProfileInstitution (context) {
                     .representative_first_name : '')
             .render();
 
-        var representative_last_name_sel = row
+        var representative_last_name_sel = sel
             .append('div')
             .attr('class', 'four-column-two omega');
 
@@ -3221,7 +3243,7 @@ module.exports = function ProfileInstitution (context) {
                     .representative_last_name : '')
             .render();
 
-        var geo_sel = row
+        var geo_sel = sel
             .append('div')
             .attr('class', 'four-column-four sel-geo')
             .attr('id', 'institution-geo');
@@ -3251,7 +3273,7 @@ module.exports = function ProfileInstitution (context) {
             });
         }
 
-        var work_in_sel = row
+        var work_in_sel = sel
             .append('div')
             .attr('class', 'four-column-four sel-work-in')
             .attr('id', 'institution-work-in');
@@ -3283,7 +3305,7 @@ module.exports = function ProfileInstitution (context) {
             }
         });
 
-        work_in = radioComponent()
+        work_in = self.work_in = radioComponent()
             .node(work_in_sel)
             .label({
                 label: 'My institution works in the following area',
@@ -3295,7 +3317,7 @@ module.exports = function ProfileInstitution (context) {
             .data(work_in_options)
             .render();
 
-        var description_sel = row
+        var description_sel = sel
             .append('div')
             .attr('class', 'four-column-four steamie-description')
             .attr('id', 'institution-description');
@@ -3313,7 +3335,7 @@ module.exports = function ProfileInstitution (context) {
             .render();
 
         save_button =
-            row.append('div')
+            sel.append('div')
                 .attr('class', 'four-column-four')
                 .append('p')
                 .attr('class', 'large button')

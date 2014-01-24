@@ -61,10 +61,8 @@ module.exports = function ProfileInstitution (context) {
     };
 
     function build (sel) {
-        var row = sel.append('div')
-                           .attr('class', 'profile-wrapper');
 
-        var name_sel = row
+        var name_sel = sel
             .append('div')
             .attr('class', 'four-column-two');
         
@@ -76,7 +74,7 @@ module.exports = function ProfileInstitution (context) {
                 data.objects[0].institution.name : '')
             .render();
 
-        var representative_email_sel = row
+        var representative_email_sel = sel
             .append('div')
             .attr('class', 'four-column-two omega');
 
@@ -92,7 +90,7 @@ module.exports = function ProfileInstitution (context) {
                     .representative_email : '')
             .render();
 
-        var representative_first_name_sel = row
+        var representative_first_name_sel = sel
             .append('div')
             .attr('class', 'four-column-two');
 
@@ -108,7 +106,7 @@ module.exports = function ProfileInstitution (context) {
                     .representative_first_name : '')
             .render();
 
-        var representative_last_name_sel = row
+        var representative_last_name_sel = sel
             .append('div')
             .attr('class', 'four-column-two omega');
 
@@ -124,7 +122,7 @@ module.exports = function ProfileInstitution (context) {
                     .representative_last_name : '')
             .render();
 
-        var geo_sel = row
+        var geo_sel = sel
             .append('div')
             .attr('class', 'four-column-four sel-geo')
             .attr('id', 'institution-geo');
@@ -154,7 +152,7 @@ module.exports = function ProfileInstitution (context) {
             });
         }
 
-        var work_in_sel = row
+        var work_in_sel = sel
             .append('div')
             .attr('class', 'four-column-four sel-work-in')
             .attr('id', 'institution-work-in');
@@ -186,7 +184,7 @@ module.exports = function ProfileInstitution (context) {
             }
         });
 
-        work_in = radioComponent()
+        work_in = self.work_in = radioComponent()
             .node(work_in_sel)
             .label({
                 label: 'My institution works in the following area',
@@ -198,7 +196,7 @@ module.exports = function ProfileInstitution (context) {
             .data(work_in_options)
             .render();
 
-        var description_sel = row
+        var description_sel = sel
             .append('div')
             .attr('class', 'four-column-four steamie-description')
             .attr('id', 'institution-description');
@@ -216,7 +214,7 @@ module.exports = function ProfileInstitution (context) {
             .render();
 
         save_button =
-            row.append('div')
+            sel.append('div')
                 .attr('class', 'four-column-four')
                 .append('p')
                 .attr('class', 'large button')

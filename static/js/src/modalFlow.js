@@ -27,6 +27,7 @@ function ModalFlow (context) {
         select_geo =
             geoComponent()
                 .rootSelection(d3.select('#add-yourself-geo'))
+                .validationVisual(false)
                 .optionsKey(function (d) { return d.country; })
                 .placeholder('00000')
                 .initialValue(null),
@@ -105,7 +106,7 @@ function ModalFlow (context) {
     };
 
     // elements that need to be turned on and off
-    var el = {
+    var el = self.el = {
         button: {
             close_modal: {
                 el: d3.select('#close-modal'),
@@ -391,6 +392,9 @@ function ModalFlow (context) {
                 if (zipAndTypeValid()) {
                     enable_add_me();
                 }
+            })
+            .on('valueChange.formElementCheck', function () {
+                set_modal_color();
             });
 
         context.user
@@ -605,6 +609,15 @@ function ModalFlow (context) {
         el.button.add_me.el
             .classed('enabled', false)
             .on('click', null);
+    }
+
+    function set_modal_color () {
+        select_work_in.data().forEach(function (d, i) {
+            el.display
+                .modal
+                .el
+                .classed(d.value, d.selected);
+        });
     }
 
     return self;

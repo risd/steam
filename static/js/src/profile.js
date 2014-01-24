@@ -38,12 +38,32 @@ module.exports = function Profile (context) {
                 .geoOptions(geo_options)
                 .data(context.user.data())
                 .build();
+        } else {
+            return self.built(false);
         }
+
+        set_modal_color();
+
+        profile.work_in.dispatch
+            .on('valueChange.profile', function () {
+                set_modal_color();
+            });
 
         self.built(true);
 
         return self;
     };
+
+    function set_modal_color () {
+        work_in.data().forEach(function (d, i) {
+            context.modal_flow
+                .el
+                .display
+                .modal
+                .el
+                .classed(d.value, d.selected);
+        });
+    }
 
     return self;
 };
