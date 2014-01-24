@@ -5,4 +5,4 @@
 
 - consider transition between states. particularly while requests are being made. what kind of animation do you want?
 
-- integrate the grid that micah made for the news and the rest of the site, on the map
+- go through a clean sign up.

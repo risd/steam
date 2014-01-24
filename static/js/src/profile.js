@@ -55,7 +55,7 @@ module.exports = function Profile (context) {
     };
 
     function set_modal_color () {
-        work_in.data().forEach(function (d, i) {
+        profile.work_in.data().forEach(function (d, i) {
             context.modal_flow
                 .el
                 .display

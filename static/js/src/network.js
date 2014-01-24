@@ -4,8 +4,8 @@ module.exports = Network;
 function Network (context) {
 
     var network = {},
-        height = window.innerHeight,
-        width = window.innerWidth,
+        height,
+        width,
         canvas_wrapper = d3.select('#steamie-network'),
         canvas,
         nodes,
@@ -127,6 +127,9 @@ function Network (context) {
             // greater than 2000
             gravity = 0.6;
         }
+
+        height = window.innerHeight;
+        width = window.innerWidth;
 
         canvas = canvas_wrapper
                     .classed('active', true)
