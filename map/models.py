@@ -61,6 +61,30 @@ class TopLevelGeo(models.Model):
         verbose_name = _('TopLevelGeo')
         verbose_name_plural = _('TopLevelGeos')
 
+    def as_feature(self, **kwargs):
+        return {
+            'geometry': self.as_geometry(),
+            'id': self.pk,
+            'properties': {
+                'tlg_id': self.pk,
+                'name': unicode(self),
+                'education': kwargs.get('education', 0),
+                'research': kwargs.get('research', 0),
+                'political': kwargs.get('political', 0),
+                'industry': kwargs.get('industry', 0),
+            },
+            'type': 'Feature',
+        }
+
+    def as_geometry(self):
+        return self.__geo_interface__()
+
+    def __geo_interface__(self):
+        return {
+            'type': 'Point',
+            'coordinates': (float(self.lon), float(self.lat)),
+        }
+
     def __unicode__(self):
         if (self.us_bool):
             return u'{0} {1}'.format(self.us_state,

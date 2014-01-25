@@ -18,20 +18,16 @@ from faker import Faker
 
 
 class Command(BaseCommand):
-    args = 'No arguments.'
-    help = 'Populate fake STEAMie data.'
+    args = '<scope: us/world>'
+    help = 'Populate fake STEAMie data. '
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **options):
+        print args
+
         f = Faker()
         TLGs = TopLevelGeo.objects.all()
 
         for tlg in TLGs:
-
-            # stash steamies for bulk save
-            # pre_ and post_save signals will
-            # not be called, which is fine, since
-            # we are doing or own TLG attatchment.
-            steamies_for_tlg = []
 
             for count in range(random.randint(5, 10)):
                 steamie = Steamies()
@@ -50,6 +46,8 @@ class Command(BaseCommand):
                     work_in_options[\
                         random.randint(0, len(work_in_options)-1)]
 
+                print steamie.work_in
+
                 # half institution/half individual
                 if random.random() > 0.5:
                     # half empty profiles, half populated
@@ -67,18 +65,22 @@ class Command(BaseCommand):
                     if random.random() > 0.5:
                         institution = {
                             'name': f.company(),
-
+                            'representative_first_name':\
+                                f.first_name(),
+                            'representative_last_name':\
+                                f.last_name(),
+                            'representative_email':\
+                                f.email(),
                         }
                     else:
                         institution = {}
 
                     steamie.institution = Institution(**institution)
 
-                steamies_for_tlg.append(steamie)
+                try:
+                    steamie.tags = 'fake'
+                    steamie.save()
 
-            try:
-                Steamies.objects.builk_create(steamies_for_tlg)
-
-            except CommandError as detail:
-                print 'Error creating data! ' +\
-                        '{0}'.format(detail)
+                except CommandError as detail:
+                    print 'Error creating data! ' +\
+                            '{0}'.format(detail)
