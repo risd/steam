@@ -113,7 +113,7 @@ function Network (context) {
     network.title = function (x) {
         if(!arguments.length) return title;
         if (x.us_bool) {
-            title = x.us_state + '<span>' +
+            title = x.us_state + ' <span>' +
                 x.us_district_ordinal +
                 '</span>';
         } else {
@@ -185,7 +185,7 @@ function Network (context) {
             .append('div')
                 .attr('class', 'four-column clearfix offset-one')
             .append('h3')
-                .text(title);
+                .html(title);
 
         force = d3.layout.force()
             .friction(friction)
