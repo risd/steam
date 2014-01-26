@@ -9,6 +9,7 @@ STEAMie to. Run to set that up:
 python manage.py populate_toplevelgeo.py
 """
 
+from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
 
 from ...models import TopLevelGeo
@@ -25,7 +26,11 @@ class Command(BaseCommand):
         features = []
         try:
             print "get all features for feature collection"
-            tlgs = TopLevelGeo.objects.all()
+            tlgs = TopLevelGeo.objects.get(
+                Q(work_in_education__gt=0) |
+                Q(work_in_research__gt=0) |
+                Q(work_in_industry__gt=0) |
+                Q(work_in_political__gt=0))
             for tlg in tlgs:
                 features.append(tlg.as_feature())
 

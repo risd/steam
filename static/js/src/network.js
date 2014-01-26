@@ -271,11 +271,15 @@ function Network (context) {
                                 return 'info_tip z-200 ' + d.work_in;
                             })
                             .style('left', mouse_position[0] + 'px')
-                            .style(infotip_position[1].offset_from,
-                                   infotip_position[1].offset_distance +
+                            .style(infotip_position[1]
+                                            .offset_from,
+                                   infotip_position[1]
+                                            .offset_distance +
                                    'px')
-                            .style(infotip_position[1].offset_reset,
-                                   infotip_position[1].offset_reset_value)
+                            .style(infotip_position[1]
+                                            .offset_reset,
+                                   infotip_position[1]
+                                            .offset_reset_value)
                             .call(update_info_tip);
 
                     // add blanket
