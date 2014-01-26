@@ -9,7 +9,8 @@ from social.apps.django_app.default.models import UserSocialAuth,\
 from ...models import Individual,\
                       Institution,\
                       Initiative,\
-                      Steamies
+                      Steamies,\
+                      TopLevelGeo
 
 
 class Command(BaseCommand):
@@ -38,6 +39,15 @@ class Command(BaseCommand):
             Association.objects.all().delete()
             Nonce.objects.all().delete()
             Code.objects.all().delete()
+
+            print "Resetting TopLevelGeo Counts"
+            tlgs = TopLevelGeo.objects.all()
+            for tlg in tlgs:
+              tlg.work_in_education = 0
+              tlg.work_in_research = 0
+              tlg.work_in_industry = 0
+              tlg.work_in_political = 0
+              tlg.save()
 
         except CommandError as detail:
             print 'Error deleting data! ' +\

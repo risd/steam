@@ -38,17 +38,17 @@ function Arcs (context) {
                 // in order to draw the arcs.
                 var data = [
                     {
-                        'abbr': 'res',
-                        'count': +node.attr('data-res')
+                        'value': 'research',
+                        'count': +node.attr('data-research')
                     }, {
-                        'abbr': 'pol',
-                        'count': +node.attr('data-pol')
+                        'value': 'political',
+                        'count': +node.attr('data-political')
                     }, {
-                        'abbr': 'edu',
-                        'count': +node.attr('data-edu')
+                        'value': 'education',
+                        'count': +node.attr('data-education')
                     }, {
-                        'abbr': 'ind',
-                        'count': +node.attr('data-ind')
+                        'value': 'industry',
+                        'count': +node.attr('data-industry')
                     }
                 ];
 
@@ -103,7 +103,7 @@ function Arcs (context) {
                     .append('path')
                     .attr('class', 'arc-segment')
                     .style('fill', function (d) {
-                        return context.colors[d.abbr];
+                        return context.colors[d.value];
                     })
                     .attr('d', arc);
 
@@ -175,12 +175,15 @@ function Arcs (context) {
             // check for all being active
             var active_count = 0;
             for (var i = context.filters.length - 1; i >= 0; i--) {
+
                 var cur_active = false;
                 if(context.filters[i].active) {
                     active_count += 1;
                     cur_active = true;
                 }
-                if(context.filters[i].abbr === node_data[j].abbr) {
+                if(context.filters[i].value ===
+                   node_data[j].value) {
+
                     if (cur_active) {
                         node_data[j].status = 'selected';
                     } else {
@@ -191,13 +194,18 @@ function Arcs (context) {
 
             // check for all being active
             var prev_active_count = 0;
-            for (var i = context.prev_filters.length - 1; i >= 0; i--) {
+            for (var i = context.prev_filters.length - 1;
+                 i >= 0;
+                 i--) {
+
                 var cur_active = false;
                 if(context.prev_filters[i].active) {
                     prev_active_count += 1;
                     cur_active = true;
                 }
-                if(context.prev_filters[i].abbr === node_data[j].abbr) {
+                if(context.prev_filters[i].value ===
+                   node_data[j].value) {
+
                     if (cur_active) {
                         node_data[j].prev_status = 'selected';
                     } else {
@@ -239,6 +247,14 @@ function Backend () {
 
     api.steamie_user = function (x) {
         return api.api_url + '/steamie/' + x + '/?format=json';
+    };
+
+    api.network_url = function (x) {
+        return api.api_url + '/network/' + x + '/?format=json';
+    };
+
+    api.network_request = function (network_id, callback) {
+        d3.json(api.network_url(network_id), callback);
     };
 
     api.steamie_request = function (data_to_submit, callback) {
@@ -391,10 +407,10 @@ function Clusters (context) {
         iconCreateFunction: function (cluster) {
 
             var steamie_count = {
-                res: 0,
-                pol: 0,
-                edu: 0,
-                ind: 0,
+                research: 0,
+                political: 0,
+                education: 0,
+                industry: 0,
                 total: 0,
                 total_active: 0,
                 prev_total_active: 0
@@ -458,18 +474,18 @@ function Clusters (context) {
                     '</span>' +
                     '</div>' +
                     '<div class="arc-wrapper"' +
-                         ' data-res=' + steamie_count.res +
-                         ' data-pol=' + steamie_count.pol +
-                         ' data-edu=' + steamie_count.edu +
-                         ' data-ind=' + steamie_count.ind +
-                         ' data-total=' + steamie_count.total +
-                         ' data-total-active=' +
-                         steamie_count.total_active +
-                         ' data-prev-total-active=' +
-                         steamie_count.prev_total_active +
-                         ' data-icon-cateogry="' +
-                         icon_category + '"' +
-                         '></div>',
+                        ' data-research=' + steamie_count.research +
+                        ' data-political=' + steamie_count.political +
+                        ' data-education=' + steamie_count.education +
+                        ' data-industry=' + steamie_count.industry +
+                        ' data-total=' + steamie_count.total +
+                        ' data-total-active=' +
+                        steamie_count.total_active +
+                        ' data-prev-total-active=' +
+                        steamie_count.prev_total_active +
+                        ' data-icon-cateogry="' +
+                        icon_category + '"' +
+                        '></div>',
                 className: 'marker-cluster' + c,
                 iconSize: new L.Point(
                              context.icon_size[icon_category].total,
@@ -543,7 +559,8 @@ function Clusters (context) {
 
     clusters.init = function () {
         // show initial map data
-        d3.json('/static/geo/fake_level_1_pnt.geojson',
+        // d3.json('/static/geo/fake_level_1_pnt.geojson',
+        d3.json('/static/geo/fake_top_level_geo.geojson',
                 clusters.data);
 
         return clusters;
@@ -566,18 +583,18 @@ function Clusters (context) {
         for (var i = 0; i < context.filters.length; i++) {
             if (context.filters[i].active) {
                 count.total_active +=
-                    d.properties[context.filters[i].abbr];
+                    d.properties[context.filters[i].value];
             }
             count.total +=
-                d.properties[context.filters[i].abbr];
-            count[context.filters[i].abbr] +=
-                d.properties[context.filters[i].abbr];
+                d.properties[context.filters[i].value];
+            count[context.filters[i].value] +=
+                d.properties[context.filters[i].value];
 
             // also set prev_filters
             // context.filters.length === context.prev_filters.length
             if (context.prev_filters[i].active) {
                 count.prev_total_active +=
-                    d.properties[context.prev_filters[i].abbr];
+                    d.properties[context.prev_filters[i].value];
             }
         }
 
@@ -588,10 +605,10 @@ function Clusters (context) {
 }
 },{}],5:[function(require,module,exports){
 var colors = {
-    res: 'rgb(105,230,64)',
-    pol: 'rgb(255,97,127)',
-    edu: 'rgb(255,137,49)',
-    ind: 'rgb(39,180,242)'
+    research: 'rgb(105,230,64)',
+    political: 'rgb(255,97,127)',
+    education: 'rgb(255,137,49)',
+    industry: 'rgb(39,180,242)'
 };
 
 if (typeof module !== 'undefined') {
@@ -644,7 +661,7 @@ module.exports = {
                     engaged_as: '',
                     work_in: work_in,
                     description: '',
-                    type: 'i'
+                    type: 'individual'
                 };
             } else {
                 // g, institutions/groups
@@ -660,24 +677,24 @@ module.exports = {
                     engaged_as: '',
                     work_in: work_in,
                     description: '',
-                    type: 'g'
+                    type: 'institution'
                 };
             }
 
             return current;
         };
 
-        for (var i = 0; i < args.edu; i++) {
-            network_data.steamies.push(fake_data('edu'));
+        for (var i = 0; i < args.education; i++) {
+            network_data.steamies.push(fake_data('education'));
         }
-        for (var i = 0; i < args.res; i++) {
-            network_data.steamies.push(fake_data('res'));
+        for (var i = 0; i < args.research; i++) {
+            network_data.steamies.push(fake_data('research'));
         }
-        for (var i = 0; i < args.pol; i++) {
-            network_data.steamies.push(fake_data('pol'));
+        for (var i = 0; i < args.political; i++) {
+            network_data.steamies.push(fake_data('political'));
         }
-        for (var i = 0; i < args.ind; i++) {
-            network_data.steamies.push(fake_data('ind'));
+        for (var i = 0; i < args.industry; i++) {
+            network_data.steamies.push(fake_data('industry'));
         }
 
         return network_data;
@@ -706,7 +723,7 @@ function filterUI (context) {
             .enter()
             .append('div')
             .attr('class', function (d) {
-                return 'button active ' + d.abbr;
+                return 'button active ' + d.value;
             })
             .text(function (d) {
                 return d.display;
@@ -714,7 +731,6 @@ function filterUI (context) {
             .on('click', function (d) {
 
                 prev_active_count = active_count;
-                // context.arcs.prevFilters(context.clone(context.filters));
                 context.prev_filters = context.clone(context.filters);
 
                 if (prev_active_count === 4) {
@@ -727,14 +743,14 @@ function filterUI (context) {
                     for (i=0; i < context.filters.length; i++) {
                         // set the active attribute
                         // of filters based on click
-                        if (context.filters[i].abbr === d.abbr) {
+                        if (context.filters[i].value === d.value) {
                             context.filters[i].active = 1;
                             active_count += 1;
                         } else {
                             context.filters[i].active = 0;
                             filter_bar
                                 .select('.button.' +
-                                        context.filters[i].abbr)
+                                        context.filters[i].value)
                                 .classed('active', false);
                         }
                     }
@@ -766,7 +782,7 @@ function filterUI (context) {
                         var i;
                         for (i=0; i < context.filters.length; i++) {
 
-                            if (context.filters[i].abbr === d.abbr) {
+                            if (context.filters[i].value === d.value) {
                                 context.filters[i].active = 1;
                                 active_count += 1;
                             }
@@ -812,19 +828,19 @@ function filterUI (context) {
 }
 },{}],9:[function(require,module,exports){
 var filters = [{
-        abbr: 'res',
+        value: 'research',
         display: 'research',
         active: 1
     }, {
-        abbr: 'edu',
+        value: 'education',
         display: 'education',
         active: 1
     }, {
-        abbr: 'pol',
+        value: 'political',
         display: 'political',
         active: 1
     }, {
-        abbr: 'ind',
+        value: 'industry',
         display: 'industry',
         active: 1
     }];
@@ -2275,7 +2291,10 @@ function Network (context) {
         force,
         node_sel,
         info_tip_sel,
-        canvas_blanket_sel;
+        canvas_blanket_sel,
+        // name of the overlay
+        title,
+        title_wrapper_sel;
 
     var random_around_zero = function (range) {
         var val = Math.floor(Math.random() * range);
@@ -2356,9 +2375,29 @@ function Network (context) {
             d.y = height/2 + random_around_zero(30);
             d.dx = width/2 + random_around_zero(30);
             d.dy = height/2 + random_around_zero(30);
+
+            // also setup type
+            if (d.indiviual) {
+                d.type = 'indiviual';
+            } else {
+                d.type = 'institution';
+            }
         });
 
         nodes = x;
+
+        return network;
+    };
+
+    network.title = function (x) {
+        if(!arguments.length) return title;
+        if (x.us_bool) {
+            title = x.us_state + '<span>' +
+                x.us_district_ordinal +
+                '</span>';
+        } else {
+            title = x.country;
+        }
 
         return network;
     };
@@ -2414,6 +2453,18 @@ function Network (context) {
             .on('click', function (d) {
                 d.f();
             });
+
+        title_wrapper_sel = canvas_wrapper
+            .append('div')
+                .attr('class', 'header-wrapper');
+
+        title_wrapper_sel
+            .append('div')
+                .attr('class', 'grid full-width clearfix')
+            .append('div')
+                .attr('class', 'four-column clearfix offset-one')
+            .append('h3')
+                .text(title);
 
         force = d3.layout.force()
             .friction(friction)
@@ -2534,9 +2585,17 @@ function Network (context) {
             .exit()
             .remove();
 
-        remove_info_tip();
+        // these wont be set until after
+        // a network has been initialized
+        // and a node has been clicked
+        if (info_tip_sel) {
+            remove_info_tip();
+        }
+        if (canvas_blanket_sel) {
+            canvas_blanket_sel.remove();
+        }
 
-        canvas_blanket_sel.remove();
+        title_wrapper_sel.remove();
 
         return network;
     };
@@ -2546,18 +2605,25 @@ function Network (context) {
         // data is passed in from the cluster
         // group that is clicked.
 
-        // var data_url =
-            // mapped.data.backend + '/api/' + uid + '/';
-        // d3.json(data_url, function (err, network_data) {
-        //     mapped.network
-        //           .nodes(network_data)
-        //           .create();
-        // });
-        var network_data = context.fake.network(data);
-
-        network
-              .nodes(network_data.steamies)
-              .create();
+        context.api
+            .network_request(data.tlg_id, function (err, results) {
+                console.log('returned data');
+                console.log(results);
+                network
+                      .nodes(results.steamies)
+                      .title((results.us_bool ?
+                              {
+                                us_bool: results.us_bool,
+                                us_state: results.us_state,
+                                us_district_ordinal:
+                                    results.us_district_ordinal
+                              } :
+                              {
+                                us_bool: results.us_bool,
+                                country: results.country
+                              }))
+                      .create();
+            });
     };
 
     function blanket_interaction () {
@@ -2590,7 +2656,7 @@ function Network (context) {
 
         var industry = sel.filter(function (d) {
             // looking for groups/industries
-            return d.type === 'g';
+            return d.type === 'institution';
         });
 
         // all g.node elements.
@@ -2614,7 +2680,7 @@ function Network (context) {
             i;
 
         for (i=0; i < context.filters.length; i++) {
-            if (context.filters[i].abbr === d.work_in) {
+            if (context.filters[i].value === d.work_in) {
 
                 if (context.filters[i].active) {
 
@@ -2640,7 +2706,8 @@ function Network (context) {
         inner_div.append('p')
             .attr('class', 'name')
             .text(function (d) {
-                return d.first_name + ' ' + d.last_name;
+                return (d.first_name || '') + ' ' +
+                       (d.last_name || '');
             });
 
         inner_div.append('p')

@@ -24,10 +24,10 @@
 
 // colors
 
-$color-res: rgb(105,230,64);
-$color-pol: rgb(255,97,127);
-$color-edu: rgb(255,137,49);
-$color-ind: rgb(39,180,242);
+$color-research: rgb(105,230,64);
+$color-political: rgb(255,97,127);
+$color-education: rgb(255,137,49);
+$color-industry: rgb(39,180,242);
 $color-slate: rgb(81,98,114);
 $white: rgb(255,255,255);
 $off-white: rgb(200,200,200);
@@ -101,16 +101,16 @@ $fullscreen-color-opacity: 0.8;
         background-color: rgba($color-slate, $fullscreen-color-opacity);
 
         &.research {
-            background-color: rgba($color-res, $fullscreen-color-opacity);
+            background-color: rgba($color-research, $fullscreen-color-opacity);
         }
-        &.politics {
-            background-color: rgba($color-pol, $fullscreen-color-opacity);
+        &.political {
+            background-color: rgba($color-political, $fullscreen-color-opacity);
         }
         &.education {
-            background-color: rgba($color-edu, $fullscreen-color-opacity);
+            background-color: rgba($color-education, $fullscreen-color-opacity);
         }
         &.industry {
-            background-color: rgba($color-ind, $fullscreen-color-opacity);
+            background-color: rgba($color-industry, $fullscreen-color-opacity);
         }
     }
 }
@@ -211,17 +211,17 @@ Global filters
     color: $white;
     opacity: 1.0;
 }
-.filter_bar .button.active.res {
-    background-color: $color-res;
+.filter_bar .button.active.research {
+    background-color: $color-research;
 }
-.filter_bar .button.active.edu {
-    background-color: $color-edu;
+.filter_bar .button.active.education {
+    background-color: $color-education;
 }
-.filter_bar .button.active.pol {
-    background-color: $color-pol;
+.filter_bar .button.active.political {
+    background-color: $color-political;
 }
-.filter_bar .button.active.ind {
-    background-color: $color-ind;
+.filter_bar .button.active.industry {
+    background-color: $color-industry;
 }
 .filter_bar.all-active .button.active {
     background-color: transparent;
@@ -257,17 +257,17 @@ h3.filter-by {
 .filter_bar .button:before {
     border-color: $white;
 }
-.filter_bar.all-active .button.res:before {
-    border-color: $color-res;
+.filter_bar.all-active .button.research:before {
+    border-color: $color-research;
 }
-.filter_bar.all-active .button.pol:before {
-    border-color: $color-pol;
+.filter_bar.all-active .button.political:before {
+    border-color: $color-political;
 }
-.filter_bar.all-active .button.edu:before {
-    border-color: $color-edu;
+.filter_bar.all-active .button.education:before {
+    border-color: $color-education;
 }
-.filter_bar.all-active .button.ind:before {
-    border-color: $color-ind;
+.filter_bar.all-active .button.industry:before {
+    border-color: $color-industry;
 }
 /* end global filters */
 
@@ -403,32 +403,32 @@ network graph
     cursor: pointer;
 }
 
-.node.res {
-    fill: $color-res;
-    stroke: $color-res;
+.node.research {
+    fill: $color-research;
+    stroke: $color-research;
 }
-.node.pol {
-    fill: $color-pol;
-    stroke: $color-pol;
+.node.political {
+    fill: $color-political;
+    stroke: $color-political;
 }
-.node.edu {
-    fill: $color-edu;
-    stroke: $color-edu;
+.node.education {
+    fill: $color-education;
+    stroke: $color-education;
 }
-.node.ind {
-    fill: $color-ind;
-    stroke: $color-ind;
+.node.industry {
+    fill: $color-industry;
+    stroke: $color-industry;
 }
 /* network nodes representing institutions  */
-.node.g circle.outter {
+.node.institution circle.outter {
     stroke-width: 1;
     fill: none;   
 }
-.node.g circle.inner {
+.node.institution circle.inner {
     stroke-width: 0;
 }
 /* network nodes representing individuals  */
-.node.i circle.outter {
+.node.individual circle.outter {
     stroke-width: 0;
 }
 .avatar {
@@ -446,6 +446,8 @@ network graph
     width: 250px;
 
     @include sentinel;
+
+    text-align: left;
 }
 .info_tip .avatar {
     position: absolute;
@@ -465,53 +467,72 @@ network graph
     border-left-width: 1px;
     border-left-style: solid;
 }
-.info_tip.res {
+.info_tip.research {
     p.name {
-        color: $color-res;   
+        color: $color-research;   
     }
     p.description {
-        border-left-color: $color-res;
+        border-left-color: $color-research;
     }
     .avatar {
-        border-color: $color-res;
+        border-color: $color-research;
     }
 }
-.info_tip.pol {
+.info_tip.political {
     p.name {
-        color: $color-pol;
+        color: $color-political;
     }
     p.description {
-        border-color: $color-pol;
+        border-color: $color-political;
     }
     .avatar {
-        border-color: $color-pol;
+        border-color: $color-political;
     }
 }
-.info_tip.edu {
+.info_tip.education {
     p.name {
-        color: $color-edu;
+        color: $color-education;
     }
     p.description {
-        border-color: $color-edu;
+        border-color: $color-education;
     }
     .avatar {
-        border-color: $color-edu;
+        border-color: $color-education;
     }
 }
-.info_tip.ind {
+.info_tip.industry {
     p.name {
-        color: $color-ind;
+        color: $color-industry;
     }
     p.description {
-        border-color: $color-ind;
+        border-color: $color-industry;
     }
     .avatar {
-        border-color: $color-ind;
+        border-color: $color-industry;
     }
 }
 
 .canvas-wrapper {
     background: rgba($white, 0.9);
+    
+}
+.header-wrapper {
+    text-align: center;
+    position: absolute;
+    top: 36px;
+    width: 100%;
+
+    h3 {
+        text-align: center;
+        font-size: 26px;
+        @include sentinel;
+
+        padding: 0 30px 10px 30px;
+        border-bottom: 1px solid $color-slate;
+    }
+    em {
+        text-style: italic; 
+    }
 }
 rect.blanket {
     fill: transparent;

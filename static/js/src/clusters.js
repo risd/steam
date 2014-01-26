@@ -30,10 +30,10 @@ function Clusters (context) {
         iconCreateFunction: function (cluster) {
 
             var steamie_count = {
-                res: 0,
-                pol: 0,
-                edu: 0,
-                ind: 0,
+                research: 0,
+                political: 0,
+                education: 0,
+                industry: 0,
                 total: 0,
                 total_active: 0,
                 prev_total_active: 0
@@ -97,18 +97,18 @@ function Clusters (context) {
                     '</span>' +
                     '</div>' +
                     '<div class="arc-wrapper"' +
-                         ' data-res=' + steamie_count.res +
-                         ' data-pol=' + steamie_count.pol +
-                         ' data-edu=' + steamie_count.edu +
-                         ' data-ind=' + steamie_count.ind +
-                         ' data-total=' + steamie_count.total +
-                         ' data-total-active=' +
-                         steamie_count.total_active +
-                         ' data-prev-total-active=' +
-                         steamie_count.prev_total_active +
-                         ' data-icon-cateogry="' +
-                         icon_category + '"' +
-                         '></div>',
+                        ' data-research=' + steamie_count.research +
+                        ' data-political=' + steamie_count.political +
+                        ' data-education=' + steamie_count.education +
+                        ' data-industry=' + steamie_count.industry +
+                        ' data-total=' + steamie_count.total +
+                        ' data-total-active=' +
+                        steamie_count.total_active +
+                        ' data-prev-total-active=' +
+                        steamie_count.prev_total_active +
+                        ' data-icon-cateogry="' +
+                        icon_category + '"' +
+                        '></div>',
                 className: 'marker-cluster' + c,
                 iconSize: new L.Point(
                              context.icon_size[icon_category].total,
@@ -182,7 +182,8 @@ function Clusters (context) {
 
     clusters.init = function () {
         // show initial map data
-        d3.json('/static/geo/fake_level_1_pnt.geojson',
+        // d3.json('/static/geo/fake_level_1_pnt.geojson',
+        d3.json('/static/geo/fake_top_level_geo.geojson',
                 clusters.data);
 
         return clusters;
@@ -205,18 +206,18 @@ function Clusters (context) {
         for (var i = 0; i < context.filters.length; i++) {
             if (context.filters[i].active) {
                 count.total_active +=
-                    d.properties[context.filters[i].abbr];
+                    d.properties[context.filters[i].value];
             }
             count.total +=
-                d.properties[context.filters[i].abbr];
-            count[context.filters[i].abbr] +=
-                d.properties[context.filters[i].abbr];
+                d.properties[context.filters[i].value];
+            count[context.filters[i].value] +=
+                d.properties[context.filters[i].value];
 
             // also set prev_filters
             // context.filters.length === context.prev_filters.length
             if (context.prev_filters[i].active) {
                 count.prev_total_active +=
-                    d.properties[context.prev_filters[i].abbr];
+                    d.properties[context.prev_filters[i].value];
             }
         }
 

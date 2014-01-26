@@ -88,11 +88,51 @@ class GeoResource(ModelResource):
     steaminess is the count of individual
     and institution steamies. Broken down
     by their 'work in' field
+
+    Currently generating a static file for this.
     """
     class Meta(CommonOpenResourceMeta):
 
         queryset = Steamies.objects.all()
         resource_name = 'geo'
+
+
+class TopLevelGeoResource(ModelResource):
+    """
+    Returns TopLevelGeo objects to AuthSteamieResource
+    to fill out a users profile
+    """
+    class Meta(CommonOpenResourceMeta):
+        queryset = TopLevelGeo.objects.all()
+
+
+class InstitutionResource(ModelResource):
+    """
+    Returns Institution objects to SteamiesResource
+    to fill out network diagram
+    """
+    # steamies = fields.ToManyField(
+    #     'map.resources.SteamiesResource',
+    #     'institution',
+    #     related_name='institution')
+    class Meta(CommonOpenResourceMeta):
+        queryset = Institution.objects.all()
+        fields = ['name']
+
+
+class IndividualResource(ModelResource):
+    """
+    Returns Institution objects to SteamiesResource
+    to fill out network diagram
+    """
+    # steamies = fields.ToManyField(
+    #     'map.resources.SteamiesResource',
+    #     'individual',
+    #     related_name='individual')
+    class Meta(CommonOpenResourceMeta):
+        queryset = Individual.objects.all()
+        fields = ['first_name',
+                  'last_name']
 
 
 class NetworkResource(ModelResource):
@@ -101,29 +141,60 @@ class NetworkResource(ModelResource):
     that are associated with a particular
     top level uid
     """
-    class Meta(CommonOpenResourceMeta):
-        queryset = Steamies.objects.all()
-        resource_name = 'network'
-
-class TopLevelGeoResource(ModelResource):
-    """
-    Returns TopLevelGeo objects to AuthSteamieResource
-    """
+    steamies = fields.ToManyField(
+        'map.resources.SteamiesResource',
+        'top_level',
+        related_name='top_level',
+        full=True)
     class Meta(CommonOpenResourceMeta):
         queryset = TopLevelGeo.objects.all()
+        resource_name = 'network'
+        fields = ['us_state',
+                  'us_district_ordinal',
+                  'us_bool',
+                  'country',
+                  'steamies']
 
 
-class InstitutionResource(ModelResource):
+class SteamiesResource(ModelResource):
+    """
+    Returns Steamie objects to NetworkResource
+    to fill out the network diagram with user
+    information.
+    """   
+    institution = fields.ForeignKey(
+        InstitutionResource,
+        'institution',
+        null=True,
+        full=True)
+    individual = fields.ForeignKey(
+        IndividualResource,
+        'individual',
+        null=True,
+        full=True)
+
+    class Meta(CommonOpenResourceMeta):
+        queryset = Steamies.objects.all()
+        fields = ['description',
+                  'institution',
+                  'individual',
+                  'avatar_url',
+                  'work_in',]
+
+
+class AuthedInstitutionResource(ModelResource):
     """
     Returns Institution objects to AuthSteamieResource
+    to fill out a users profile
     """
     class Meta(CommonOpenResourceMeta):
         queryset = Institution.objects.all()
 
 
-class IndividualResource(ModelResource):
+class AuthedIndividualResource(ModelResource):
     """
     Returns Institution objects to AuthSteamieResource
+    to fill out a users profile
     """
     class Meta(CommonOpenResourceMeta):
         queryset = Individual.objects.all()
@@ -150,12 +221,12 @@ class AuthSteamieResource(ModelResource):
         null=True,
         full=True)
     institution = fields.ForeignKey(
-        InstitutionResource,
+        AuthedInstitutionResource,
         'institution',
         null=True,
         full=True)
     individual = fields.ForeignKey(
-        IndividualResource,
+        AuthedIndividualResource,
         'individual',
         null=True,
         full=True)

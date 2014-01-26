@@ -47,7 +47,7 @@ header:hover {
     background-color: rgba(81, 98, 114, 0.8); }
     .modal.fullscreen.research {
       background-color: rgba(105, 230, 64, 0.8); }
-    .modal.fullscreen.politics {
+    .modal.fullscreen.political {
       background-color: rgba(255, 97, 127, 0.8); }
     .modal.fullscreen.education {
       background-color: rgba(255, 137, 49, 0.8); }
@@ -141,16 +141,16 @@ Global filters
   color: white;
   opacity: 1.0; }
 
-.filter_bar .button.active.res {
+.filter_bar .button.active.research {
   background-color: #69e640; }
 
-.filter_bar .button.active.edu {
+.filter_bar .button.active.education {
   background-color: #ff8931; }
 
-.filter_bar .button.active.pol {
+.filter_bar .button.active.political {
   background-color: #ff617f; }
 
-.filter_bar .button.active.ind {
+.filter_bar .button.active.industry {
   background-color: #27b4f2; }
 
 .filter_bar.all-active .button.active {
@@ -183,16 +183,16 @@ h3.filter-by {
 .filter_bar .button:before {
   border-color: white; }
 
-.filter_bar.all-active .button.res:before {
+.filter_bar.all-active .button.research:before {
   border-color: #69e640; }
 
-.filter_bar.all-active .button.pol:before {
+.filter_bar.all-active .button.political:before {
   border-color: #ff617f; }
 
-.filter_bar.all-active .button.edu:before {
+.filter_bar.all-active .button.education:before {
   border-color: #ff8931; }
 
-.filter_bar.all-active .button.ind:before {
+.filter_bar.all-active .button.industry:before {
   border-color: #27b4f2; }
 
 /* end global filters */
@@ -389,32 +389,32 @@ network graph
 .node {
   cursor: pointer; }
 
-.node.res {
+.node.research {
   fill: #69e640;
   stroke: #69e640; }
 
-.node.pol {
+.node.political {
   fill: #ff617f;
   stroke: #ff617f; }
 
-.node.edu {
+.node.education {
   fill: #ff8931;
   stroke: #ff8931; }
 
-.node.ind {
+.node.industry {
   fill: #27b4f2;
   stroke: #27b4f2; }
 
 /* network nodes representing institutions  */
-.node.g circle.outter {
+.node.institution circle.outter {
   stroke-width: 1;
   fill: none; }
 
-.node.g circle.inner {
+.node.institution circle.inner {
   stroke-width: 0; }
 
 /* network nodes representing individuals  */
-.node.i circle.outter {
+.node.individual circle.outter {
   stroke-width: 0; }
 
 .avatar {
@@ -432,7 +432,8 @@ network graph
   font-family: 'Sentinel SSm A', 'Sentinel SSm B';
   font-weight: 400;
   font-style: normal;
-  -webkit-font-smoothing: antialiased; }
+  -webkit-font-smoothing: antialiased;
+  text-align: left; }
 
 .info_tip .avatar {
   position: absolute;
@@ -451,36 +452,53 @@ network graph
   border-left-width: 1px;
   border-left-style: solid; }
 
-.info_tip.res p.name {
+.info_tip.research p.name {
   color: #69e640; }
-.info_tip.res p.description {
+.info_tip.research p.description {
   border-left-color: #69e640; }
-.info_tip.res .avatar {
+.info_tip.research .avatar {
   border-color: #69e640; }
 
-.info_tip.pol p.name {
+.info_tip.political p.name {
   color: #ff617f; }
-.info_tip.pol p.description {
+.info_tip.political p.description {
   border-color: #ff617f; }
-.info_tip.pol .avatar {
+.info_tip.political .avatar {
   border-color: #ff617f; }
 
-.info_tip.edu p.name {
+.info_tip.education p.name {
   color: #ff8931; }
-.info_tip.edu p.description {
+.info_tip.education p.description {
   border-color: #ff8931; }
-.info_tip.edu .avatar {
+.info_tip.education .avatar {
   border-color: #ff8931; }
 
-.info_tip.ind p.name {
+.info_tip.industry p.name {
   color: #27b4f2; }
-.info_tip.ind p.description {
+.info_tip.industry p.description {
   border-color: #27b4f2; }
-.info_tip.ind .avatar {
+.info_tip.industry .avatar {
   border-color: #27b4f2; }
 
 .canvas-wrapper {
   background: rgba(255, 255, 255, 0.9); }
+
+.header-wrapper {
+  text-align: center;
+  position: absolute;
+  top: 36px;
+  width: 100%; }
+  .header-wrapper h3 {
+    text-align: center;
+    font-size: 26px;
+    font-family: 'Sentinel SSm A', 'Sentinel SSm B';
+    font-weight: 400;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 30px 10px 30px;
+    border-bottom: 1px solid #516272; }
+  .header-wrapper em {
+    text-style: italic; }
 
 rect.blanket {
   fill: transparent;

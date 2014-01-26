@@ -1,9 +1,15 @@
+import logging
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext as _
 
 from .signals.geo import Geo
+
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 
 class TopLevelGeo(models.Model):
@@ -56,6 +62,30 @@ class TopLevelGeo(models.Model):
         blank=True,
         null=True)
 
+    work_in_education = models.IntegerField(
+        'Work in Education count',
+        default=0,
+        blank=False,
+        null=False)
+
+    work_in_research = models.IntegerField(
+        'Work in Research count',
+        default=0,
+        blank=False,
+        null=False)
+
+    work_in_political = models.IntegerField(
+        'Work in Political count',
+        default=0,
+        blank=False,
+        null=False)
+
+    work_in_industry = models.IntegerField(
+        'Work in Industry count',
+        default=0,
+        blank=False,
+        null=False)
+
 
     class Meta:
         verbose_name = _('TopLevelGeo')
@@ -68,10 +98,10 @@ class TopLevelGeo(models.Model):
             'properties': {
                 'tlg_id': self.pk,
                 'name': unicode(self),
-                'education': kwargs.get('education', 0),
-                'research': kwargs.get('research', 0),
-                'political': kwargs.get('political', 0),
-                'industry': kwargs.get('industry', 0),
+                'education': self.work_in_education,
+                'research': self.work_in_research,
+                'political': self.work_in_political,
+                'industry': self.work_in_industry,
             },
             'type': 'Feature',
         }
@@ -285,36 +315,78 @@ class Steamies(models.Model):
         verbose_name = _('Steamies')
         verbose_name_plural = _("Steamies'")
 
-    def __unicode__(self):
-        return unicode(self.user) or unicode(self.zip_code)
+    def change_work_in_count(self, amount=1):
+        setattr(
+            self.top_level,
+            'work_in_{0}'.format(self.work_in),
+            getattr(
+                self.top_level,
+                'work_in_{0}'.format(self.work_in)
+                ) + amount
+            )
+        self.top_level.save()
 
+        logger.info('Updated work_in count')
 
-def add_geo(sender, instance, *args, **kwargs):
-    if len(instance.top_level_input) > 0:
-        # could make this a bit more efficient if, on save
-        # you passed the update_fields attribute. then
-        # you could simply see if update_fields includes
-        # zip_code, and then, and only then, would the
-        # top_level be re-assessed.
-
-        # instance.save(update_fields=['name'])
-
+    def set_geo(self):
         g = Geo()
-        geo = g.geo(instance.top_level_input)
+        geo = g.geo(self.top_level_input)
 
         if 'error' in geo:
-            instance.top_level_input = None
+            self.top_level_input = None
         else:
             try:
                 # will raise ObjectDoesNotExist
                 # if it does not find an object
                 top_level_geo = TopLevelGeo.objects.get(**geo)
-                instance.top_level = top_level_geo
+                self.top_level = top_level_geo
+
+                logger.info('Set top_level_geo')
 
             except ObjectDoesNotExist:
-                instance.top_level_input = None
+                logger.error(
+                    'Setting TopLevelGeo relationship to' +\
+                    'Steamie\ntop_level_input: ' +\
+                    '{0}'.format(self.top_level_input))
 
-        print 'populating top_level before save'
-        print instance.top_level
+                self.top_level_input = None
 
-models.signals.pre_save.connect(add_geo, sender=Steamies)
+    def __unicode__(self):
+        return unicode(self.user) or unicode(self.zip_code)
+
+
+def update_steamie_related(sender, instance, *args, **kwargs):
+    """
+    TopLevelGeo and the work_in counts are
+    based on user input, which can change. If 
+    it does update the relationship and the
+    count associated with it.
+    """
+
+    if instance.pk:
+        old = Steamies.objects.get(pk=instance.pk)
+    else:
+        # fake, or computer generated STEAMies
+        # will not have a top_level_input
+        if instance.tags != 'fake':
+            instance.set_geo()
+        instance.change_work_in_count(amount=1)
+        # work here is done for new STEAMies
+        return
+    
+    top_level_input_change = False
+
+    if old.top_level_input != instance.top_level_input:
+
+        top_level_input_change = True
+        instance.set_geo()
+
+    if (old.work_in != instance.work_in) or\
+        top_level_input_change:
+
+        old.change_work_in_count(amount=-1)
+        instance.change_work_in_count(amount=1)
+        
+
+models.signals.pre_save.connect(update_steamie_related,
+                                sender=Steamies)

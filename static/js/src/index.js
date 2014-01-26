@@ -13,9 +13,7 @@ var filters = require('./filters'),
     getTSV = require('./util/getTSV'),
 
     modal_flow = require('./modalFlow'),
-    user = require('./user'),
-
-    fake = require('./fakeDataGenerator');
+    user = require('./user');
 
 STEAMMap();
 
@@ -24,7 +22,6 @@ function STEAMMap() {
 
     // util
     context.clone = clone;
-    context.fake = fake;
 
     // data
     context.api = api;

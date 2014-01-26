@@ -18,6 +18,14 @@ function Backend () {
         return api.api_url + '/steamie/' + x + '/?format=json';
     };
 
+    api.network_url = function (x) {
+        return api.api_url + '/network/' + x + '/?format=json';
+    };
+
+    api.network_request = function (network_id, callback) {
+        d3.json(api.network_url(network_id), callback);
+    };
+
     api.steamie_request = function (data_to_submit, callback) {
         var csrf_token = get_cookie('csrftoken');
 

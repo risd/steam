@@ -20,7 +20,7 @@ function filterUI (context) {
             .enter()
             .append('div')
             .attr('class', function (d) {
-                return 'button active ' + d.abbr;
+                return 'button active ' + d.value;
             })
             .text(function (d) {
                 return d.display;
@@ -28,7 +28,6 @@ function filterUI (context) {
             .on('click', function (d) {
 
                 prev_active_count = active_count;
-                // context.arcs.prevFilters(context.clone(context.filters));
                 context.prev_filters = context.clone(context.filters);
 
                 if (prev_active_count === 4) {
@@ -41,14 +40,14 @@ function filterUI (context) {
                     for (i=0; i < context.filters.length; i++) {
                         // set the active attribute
                         // of filters based on click
-                        if (context.filters[i].abbr === d.abbr) {
+                        if (context.filters[i].value === d.value) {
                             context.filters[i].active = 1;
                             active_count += 1;
                         } else {
                             context.filters[i].active = 0;
                             filter_bar
                                 .select('.button.' +
-                                        context.filters[i].abbr)
+                                        context.filters[i].value)
                                 .classed('active', false);
                         }
                     }
@@ -80,7 +79,7 @@ function filterUI (context) {
                         var i;
                         for (i=0; i < context.filters.length; i++) {
 
-                            if (context.filters[i].abbr === d.abbr) {
+                            if (context.filters[i].value === d.value) {
                                 context.filters[i].active = 1;
                                 active_count += 1;
                             }

@@ -37,17 +37,17 @@ function Arcs (context) {
                 // in order to draw the arcs.
                 var data = [
                     {
-                        'abbr': 'res',
-                        'count': +node.attr('data-res')
+                        'value': 'research',
+                        'count': +node.attr('data-research')
                     }, {
-                        'abbr': 'pol',
-                        'count': +node.attr('data-pol')
+                        'value': 'political',
+                        'count': +node.attr('data-political')
                     }, {
-                        'abbr': 'edu',
-                        'count': +node.attr('data-edu')
+                        'value': 'education',
+                        'count': +node.attr('data-education')
                     }, {
-                        'abbr': 'ind',
-                        'count': +node.attr('data-ind')
+                        'value': 'industry',
+                        'count': +node.attr('data-industry')
                     }
                 ];
 
@@ -102,7 +102,7 @@ function Arcs (context) {
                     .append('path')
                     .attr('class', 'arc-segment')
                     .style('fill', function (d) {
-                        return context.colors[d.abbr];
+                        return context.colors[d.value];
                     })
                     .attr('d', arc);
 
@@ -174,12 +174,15 @@ function Arcs (context) {
             // check for all being active
             var active_count = 0;
             for (var i = context.filters.length - 1; i >= 0; i--) {
+
                 var cur_active = false;
                 if(context.filters[i].active) {
                     active_count += 1;
                     cur_active = true;
                 }
-                if(context.filters[i].abbr === node_data[j].abbr) {
+                if(context.filters[i].value ===
+                   node_data[j].value) {
+
                     if (cur_active) {
                         node_data[j].status = 'selected';
                     } else {
@@ -190,13 +193,18 @@ function Arcs (context) {
 
             // check for all being active
             var prev_active_count = 0;
-            for (var i = context.prev_filters.length - 1; i >= 0; i--) {
+            for (var i = context.prev_filters.length - 1;
+                 i >= 0;
+                 i--) {
+
                 var cur_active = false;
                 if(context.prev_filters[i].active) {
                     prev_active_count += 1;
                     cur_active = true;
                 }
-                if(context.prev_filters[i].abbr === node_data[j].abbr) {
+                if(context.prev_filters[i].value ===
+                   node_data[j].value) {
+
                     if (cur_active) {
                         node_data[j].prev_status = 'selected';
                     } else {

@@ -1,17 +1,17 @@
 var filters = [{
-        abbr: 'res',
+        value: 'research',
         display: 'research',
         active: 1
     }, {
-        abbr: 'edu',
+        value: 'education',
         display: 'education',
         active: 1
     }, {
-        abbr: 'pol',
+        value: 'political',
         display: 'political',
         active: 1
     }, {
-        abbr: 'ind',
+        value: 'industry',
         display: 'industry',
         active: 1
     }];

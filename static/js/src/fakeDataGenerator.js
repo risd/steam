@@ -28,7 +28,7 @@ module.exports = {
                     engaged_as: '',
                     work_in: work_in,
                     description: '',
-                    type: 'i'
+                    type: 'individual'
                 };
             } else {
                 // g, institutions/groups
@@ -44,24 +44,24 @@ module.exports = {
                     engaged_as: '',
                     work_in: work_in,
                     description: '',
-                    type: 'g'
+                    type: 'institution'
                 };
             }
 
             return current;
         };
 
-        for (var i = 0; i < args.edu; i++) {
-            network_data.steamies.push(fake_data('edu'));
+        for (var i = 0; i < args.education; i++) {
+            network_data.steamies.push(fake_data('education'));
         }
-        for (var i = 0; i < args.res; i++) {
-            network_data.steamies.push(fake_data('res'));
+        for (var i = 0; i < args.research; i++) {
+            network_data.steamies.push(fake_data('research'));
         }
-        for (var i = 0; i < args.pol; i++) {
-            network_data.steamies.push(fake_data('pol'));
+        for (var i = 0; i < args.political; i++) {
+            network_data.steamies.push(fake_data('political'));
         }
-        for (var i = 0; i < args.ind; i++) {
-            network_data.steamies.push(fake_data('ind'));
+        for (var i = 0; i < args.industry; i++) {
+            network_data.steamies.push(fake_data('industry'));
         }
 
         return network_data;

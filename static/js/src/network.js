@@ -12,7 +12,10 @@ function Network (context) {
         force,
         node_sel,
         info_tip_sel,
-        canvas_blanket_sel;
+        canvas_blanket_sel,
+        // name of the overlay
+        title,
+        title_wrapper_sel;
 
     var random_around_zero = function (range) {
         var val = Math.floor(Math.random() * range);
@@ -93,9 +96,29 @@ function Network (context) {
             d.y = height/2 + random_around_zero(30);
             d.dx = width/2 + random_around_zero(30);
             d.dy = height/2 + random_around_zero(30);
+
+            // also setup type
+            if (d.indiviual) {
+                d.type = 'indiviual';
+            } else {
+                d.type = 'institution';
+            }
         });
 
         nodes = x;
+
+        return network;
+    };
+
+    network.title = function (x) {
+        if(!arguments.length) return title;
+        if (x.us_bool) {
+            title = x.us_state + '<span>' +
+                x.us_district_ordinal +
+                '</span>';
+        } else {
+            title = x.country;
+        }
 
         return network;
     };
@@ -151,6 +174,18 @@ function Network (context) {
             .on('click', function (d) {
                 d.f();
             });
+
+        title_wrapper_sel = canvas_wrapper
+            .append('div')
+                .attr('class', 'header-wrapper');
+
+        title_wrapper_sel
+            .append('div')
+                .attr('class', 'grid full-width clearfix')
+            .append('div')
+                .attr('class', 'four-column clearfix offset-one')
+            .append('h3')
+                .text(title);
 
         force = d3.layout.force()
             .friction(friction)
@@ -271,9 +306,17 @@ function Network (context) {
             .exit()
             .remove();
 
-        remove_info_tip();
+        // these wont be set until after
+        // a network has been initialized
+        // and a node has been clicked
+        if (info_tip_sel) {
+            remove_info_tip();
+        }
+        if (canvas_blanket_sel) {
+            canvas_blanket_sel.remove();
+        }
 
-        canvas_blanket_sel.remove();
+        title_wrapper_sel.remove();
 
         return network;
     };
@@ -283,18 +326,25 @@ function Network (context) {
         // data is passed in from the cluster
         // group that is clicked.
 
-        // var data_url =
-            // mapped.data.backend + '/api/' + uid + '/';
-        // d3.json(data_url, function (err, network_data) {
-        //     mapped.network
-        //           .nodes(network_data)
-        //           .create();
-        // });
-        var network_data = context.fake.network(data);
-
-        network
-              .nodes(network_data.steamies)
-              .create();
+        context.api
+            .network_request(data.tlg_id, function (err, results) {
+                console.log('returned data');
+                console.log(results);
+                network
+                      .nodes(results.steamies)
+                      .title((results.us_bool ?
+                              {
+                                us_bool: results.us_bool,
+                                us_state: results.us_state,
+                                us_district_ordinal:
+                                    results.us_district_ordinal
+                              } :
+                              {
+                                us_bool: results.us_bool,
+                                country: results.country
+                              }))
+                      .create();
+            });
     };
 
     function blanket_interaction () {
@@ -327,7 +377,7 @@ function Network (context) {
 
         var industry = sel.filter(function (d) {
             // looking for groups/industries
-            return d.type === 'g';
+            return d.type === 'institution';
         });
 
         // all g.node elements.
@@ -351,7 +401,7 @@ function Network (context) {
             i;
 
         for (i=0; i < context.filters.length; i++) {
-            if (context.filters[i].abbr === d.work_in) {
+            if (context.filters[i].value === d.work_in) {
 
                 if (context.filters[i].active) {
 
@@ -377,7 +427,8 @@ function Network (context) {
         inner_div.append('p')
             .attr('class', 'name')
             .text(function (d) {
-                return d.first_name + ' ' + d.last_name;
+                return (d.first_name || '') + ' ' +
+                       (d.last_name || '');
             });
 
         inner_div.append('p')
