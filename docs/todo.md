@@ -1,8 +1,5 @@
 ### left off
 
-- how does geojson get made?
-    - clock.py should intermittenly make a new geojson file
-
 - profile work
     - give indicator of number of steps in each portion
     - move between forms. object can you have that represents the user's movement between each of the form's?

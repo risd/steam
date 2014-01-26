@@ -43,6 +43,11 @@ class Command(BaseCommand):
 
                 gj_out.write(geojson.dumps(gj))
 
+            with open('staticfiles/geo/top_level_geo.geojson',
+                      'w') as gj_out:
+
+                gj_out.write(geojson.dumps(gj))
+
         except CommandError as detail:
             print 'Error writing data! ' +\
                     '{0}'.format(detail)
