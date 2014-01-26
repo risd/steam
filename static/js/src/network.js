@@ -113,9 +113,13 @@ function Network (context) {
     network.title = function (x) {
         if(!arguments.length) return title;
         if (x.us_bool) {
-            title = x.us_state + ' <em>' +
-                x.us_district_ordinal +
-                ' District</em>';
+            if (x.us_district_ordinal.indexOf('0th') > -1) {
+                title = x.us_state;
+            } else {
+                title = x.us_state + ' <em>' +
+                    x.us_district_ordinal +
+                    ' District</em>';
+            }
         } else {
             title = x.country;
         }
