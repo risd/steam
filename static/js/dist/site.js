@@ -2319,9 +2319,9 @@ function Network (context) {
     network.title = function (x) {
         if(!arguments.length) return title;
         if (x.us_bool) {
-            title = x.us_state + ' <span>' +
+            title = x.us_state + ' <em>' +
                 x.us_district_ordinal +
-                '</span>';
+                ' District</em>';
         } else {
             title = x.country;
         }
