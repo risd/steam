@@ -195,7 +195,7 @@ function Network (context) {
             .friction(friction)
             .charge(charge)
             .gravity(gravity)
-            .size([window.innerWidth, window.innerHeight])
+            .size([width, height])
             .links([])
             .nodes(nodes)
             .start();

@@ -1000,7 +1000,82 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../ui/checkmark":22,"./text":12}],10:[function(require,module,exports){
+},{"../ui/checkmark":23,"./text":13}],10:[function(require,module,exports){
+module.exports = function flowAnimation () {
+    var self = {},
+        selection,
+        force,
+        rendered = false;
+
+    self.selection = function (x) {
+        if(!arguments.length) return selection;
+        selection = x;
+        return self;
+    };
+
+    self.render = function () {
+        if (rendered) {
+            force.alpha(10);
+            return;
+        }
+        rendered = true;
+        console.log('rendering');
+        console.log(selection);
+        var random = d3.random.normal(0, 15);
+
+        var data = d3.range(10).map(function () {
+            var d = {
+                x: random(),
+                y: random(),
+                r: 10
+            };
+            d.dx = d.x;
+            d.dy = d.y;
+
+            return d;
+        });
+
+        console.log(data);
+
+        var height = window.innerHeight,
+            width = window.innerWidth;
+
+        force = d3.layout.force()
+            .gravity(0.1)
+            .friction(0.9)
+            .charge(-30)
+            .size([width/2, height/2])
+            .links([])
+            .nodes(data)
+            .start();
+
+        var canvas_sel = selection
+            .append('svg')
+            .attr('height', height)
+            .attr('width', width)
+            .append('g')
+            .attr('transform',
+                  'translate(' + width/2 + ',' +
+                                 height/2 +')');
+
+        var nodes = canvas_sel.selectAll('.movement')
+            .data(data)
+            .enter()
+            .append('circle')
+            .attr('class', 'movement')
+            .attr('cx', function (d) { return d.x; })
+            .attr('cy', function (d) { return d.y; })
+            .attr('r', function (d) { return d.r; });
+
+        force.on('tick', function () {
+            nodes.attr('cx', function (d) { return d.x; })
+                .attr('cy', function (d) { return d.y; });
+        });
+    };
+
+    return self;
+};
+},{}],11:[function(require,module,exports){
 module.exports = function radioSelection () {
     var self = {},
         valid = false,
@@ -1185,7 +1260,7 @@ module.exports = function radioSelection () {
 
     return self;
 };
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var Checkmark = require('../ui/checkmark');
 
 module.exports = function socialAuthSelection (context) {
@@ -1268,7 +1343,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":22}],12:[function(require,module,exports){
+},{"../ui/checkmark":23}],13:[function(require,module,exports){
 // text input, with placeholder
 // dispatches when the value changes
 // against the initial value
@@ -1344,7 +1419,7 @@ module.exports = function TextInput () {
 
     return self;
 };
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 // textarea, with placeholder, and label
 // dispatches when the value changes
 // against the initial value
@@ -1429,7 +1504,7 @@ module.exports = function TextArea () {
 
     return self;
 };
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = function UpdatableComponentManager () {
     var self = {},
         updatable = [],
@@ -1483,7 +1558,7 @@ module.exports = function UpdatableComponentManager () {
 
     return self;
 };
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./util/clone'),
@@ -1544,7 +1619,7 @@ function STEAMMap() {
 
     init();
 }
-},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./filterUI":7,"./filters":8,"./map":16,"./modalFlow":17,"./network":18,"./user":23,"./util/clone":24,"./util/getTSV":25}],16:[function(require,module,exports){
+},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./filterUI":7,"./filters":8,"./map":17,"./modalFlow":18,"./network":19,"./user":24,"./util/clone":25,"./util/getTSV":26}],17:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -1583,7 +1658,7 @@ function Map (context) {
 
     return map;
 }
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
 
@@ -1591,7 +1666,9 @@ var geoComponent =
         require('./formComponents/radio'),
 
     socialAuthComponent =
-        require('./formComponents/socialAuthSelection');
+        require('./formComponents/socialAuthSelection'),
+
+    modalAnimation = require('./formComponents/modalAnimation');
 
 module.exports = ModalFlow;
 
@@ -1602,6 +1679,8 @@ function ModalFlow (context) {
         input_data,         // object that tracks input data
         child_window,       // ref to the popup window object
         child_status;       // set interval function to check
+
+    self.dispatch = d3.dispatch('ApplyStateCallToAction');
 
     // form components
     var social_auth =
@@ -1655,7 +1734,9 @@ function ModalFlow (context) {
                     label: 'Industry',
                     value: 'industry',
                     selected: false
-                }]);
+                }]),
+
+        modal_animation = modalAnimation();
 
     var ui = {
         popup_window_properties: function () {
@@ -1839,6 +1920,7 @@ function ModalFlow (context) {
             }];
 
             apply_state(active);
+            self.dispatch.ApplyStateCallToAction();
         },
         choose_type_add_zip: function () {
             var active = [{
@@ -1942,6 +2024,16 @@ function ModalFlow (context) {
                     .render();
             });
         }
+
+        modal_animation.selection(d3.select('#modal-animation'));
+
+        self.dispatch
+            .on('ApplyStateCallToAction.modalNetwork',
+                function () {
+                    console.log('state of module is now calltoaction');
+                    modal_animation
+                        .render();
+                });
 
         // how validation can propogate to this level
         social_auth
@@ -2203,7 +2295,7 @@ function ModalFlow (context) {
 
     return self;
 }
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":10,"./formComponents/socialAuthSelection":11}],18:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/modalAnimation":10,"./formComponents/radio":11,"./formComponents/socialAuthSelection":12}],19:[function(require,module,exports){
 module.exports = Network;
 
 // Network graph
@@ -2401,7 +2493,7 @@ function Network (context) {
             .friction(friction)
             .charge(charge)
             .gravity(gravity)
-            .size([window.innerWidth, window.innerHeight])
+            .size([width, height])
             .links([])
             .nodes(nodes)
             .start();
@@ -2477,11 +2569,15 @@ function Network (context) {
                                 return 'info_tip z-200 ' + d.work_in;
                             })
                             .style('left', mouse_position[0] + 'px')
-                            .style(infotip_position[1].offset_from,
-                                   infotip_position[1].offset_distance +
+                            .style(infotip_position[1]
+                                            .offset_from,
+                                   infotip_position[1]
+                                            .offset_distance +
                                    'px')
-                            .style(infotip_position[1].offset_reset,
-                                   infotip_position[1].offset_reset_value)
+                            .style(infotip_position[1]
+                                            .offset_reset,
+                                   infotip_position[1]
+                                            .offset_reset_value)
                             .call(update_info_tip);
 
                     // add blanket
@@ -2651,7 +2747,7 @@ function Network (context) {
 
     return network;
 }
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution');
 
@@ -2721,7 +2817,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./profile_individual":20,"./profile_institution":21}],20:[function(require,module,exports){
+},{"./profile_individual":21,"./profile_institution":22}],21:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3096,7 +3192,7 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":10,"./formComponents/text":12,"./formComponents/textarea":13,"./formComponents/updatableManager":14}],21:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":13,"./formComponents/textarea":14,"./formComponents/updatableManager":15}],22:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3531,7 +3627,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":10,"./formComponents/text":12,"./formComponents/textarea":13,"./formComponents/updatableManager":14}],22:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":13,"./formComponents/textarea":14,"./formComponents/updatableManager":15}],23:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -3587,7 +3683,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -3765,7 +3861,7 @@ function User (context) {
 
     return user;
 }
-},{"./profile":19}],24:[function(require,module,exports){
+},{"./profile":20}],25:[function(require,module,exports){
 var clone = function clone (obj) {
     // Thanks to stackoverflow:
     // http://stackoverflow.com/questions/
@@ -3800,7 +3896,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.clone = clone;
 }
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
         data;
@@ -3825,5 +3921,5 @@ module.exports = function dataTSV (url) {
 
     return self;
 };
-},{}]},{},[15])
+},{}]},{},[16])
 ;

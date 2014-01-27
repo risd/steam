@@ -33,6 +33,10 @@ $white: rgb(255,255,255);
 $off-white: rgb(200,200,200);
 $off-black: rgb(30,30,30);
 
+// overlay colors
+$fullscreen-color-opacity: 0.8;
+
+
 html, body {
     margin: 0;
     padding: 0;
@@ -48,24 +52,6 @@ header {
 
     background: transparent;
 }
-header:hover {
-    background: rgba(0,0,0,0.5);
-}
-
-// .full-width {
-//     width: 100%;
-// }
-
-.row {
-    width: 100%;
-    position: relative;
-}
-
-.column {
-    float: left;
-    position: relative;
-    display: inline;
-}
 
 .fullscreen {
     position: absolute;
@@ -79,8 +65,6 @@ header:hover {
 .fullscreen.active {
     display: block;
 }
-// overlay colors
-$fullscreen-color-opacity: 0.8;
 
 .modal {
     position: absolute;
@@ -98,19 +82,24 @@ $fullscreen-color-opacity: 0.8;
     &.fullscreen {
         color: $white;
 
-        background-color: rgba($color-slate, $fullscreen-color-opacity);
+        background-color: rgba($color-slate,
+                               $fullscreen-color-opacity);
 
         &.research {
-            background-color: rgba($color-research, $fullscreen-color-opacity);
+            background-color: rgba($color-research,
+                                   $fullscreen-color-opacity);
         }
         &.political {
-            background-color: rgba($color-political, $fullscreen-color-opacity);
+            background-color: rgba($color-political,
+                                   $fullscreen-color-opacity);
         }
         &.education {
-            background-color: rgba($color-education, $fullscreen-color-opacity);
+            background-color: rgba($color-education,
+                                   $fullscreen-color-opacity);
         }
         &.industry {
-            background-color: rgba($color-industry, $fullscreen-color-opacity);
+            background-color: rgba($color-industry,
+                                   $fullscreen-color-opacity);
         }
     }
 }
@@ -170,6 +159,9 @@ $fullscreen-color-opacity: 0.8;
 }
 .z-200 {
     z-index: 200;
+}
+.z-250 {
+    z-index: 250;
 }
 
 #steamie-network .button {
@@ -768,3 +760,12 @@ textarea {
     padding-left: 10px;
 }
 /* end form */
+
+.modal-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+}

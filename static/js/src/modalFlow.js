@@ -5,7 +5,9 @@ var geoComponent =
         require('./formComponents/radio'),
 
     socialAuthComponent =
-        require('./formComponents/socialAuthSelection');
+        require('./formComponents/socialAuthSelection'),
+
+    modalAnimation = require('./formComponents/modalAnimation');
 
 module.exports = ModalFlow;
 
@@ -16,6 +18,8 @@ function ModalFlow (context) {
         input_data,         // object that tracks input data
         child_window,       // ref to the popup window object
         child_status;       // set interval function to check
+
+    self.dispatch = d3.dispatch('ApplyStateCallToAction');
 
     // form components
     var social_auth =
@@ -69,7 +73,9 @@ function ModalFlow (context) {
                     label: 'Industry',
                     value: 'industry',
                     selected: false
-                }]);
+                }]),
+
+        modal_animation = modalAnimation();
 
     var ui = {
         popup_window_properties: function () {
@@ -253,6 +259,7 @@ function ModalFlow (context) {
             }];
 
             apply_state(active);
+            self.dispatch.ApplyStateCallToAction();
         },
         choose_type_add_zip: function () {
             var active = [{
@@ -356,6 +363,16 @@ function ModalFlow (context) {
                     .render();
             });
         }
+
+        modal_animation.selection(d3.select('#modal-animation'));
+
+        self.dispatch
+            .on('ApplyStateCallToAction.modalNetwork',
+                function () {
+                    console.log('state of module is now calltoaction');
+                    modal_animation
+                        .render();
+                });
 
         // how validation can propogate to this level
         social_auth

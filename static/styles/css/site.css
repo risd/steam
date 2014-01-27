@@ -962,18 +962,6 @@ header {
   padding: 0;
   background: transparent; }
 
-header:hover {
-  background: rgba(0, 0, 0, 0.5); }
-
-.row {
-  width: 100%;
-  position: relative; }
-
-.column {
-  float: left;
-  position: relative;
-  display: inline; }
-
 .fullscreen {
   position: absolute;
   top: 0;
@@ -1060,6 +1048,9 @@ header:hover {
 
 .z-200 {
   z-index: 200; }
+
+.z-250 {
+  z-index: 250; }
 
 #steamie-network .button {
   position: absolute;
@@ -1655,3 +1646,9 @@ textarea {
   padding-left: 10px; }
 
 /* end form */
+.modal-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; }

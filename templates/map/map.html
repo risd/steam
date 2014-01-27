@@ -35,20 +35,20 @@
         <![endif]-->
 
         <!-- Add your site or application content here -->
-        <header class="z-100 row clearfix">
+        <nav class="z-100 row clearfix">
             {% include 'steam/main-nav.html' %}
-        </header>
+        </nav>
 
         <!-- humble host of the button to add oneself -->
         <div id="activate-add-yourself" class="z-10 hide-til-active active">+</div>
 
 
         <!-- home of the map -->
-        <div id="steam-map" class="fullscreen z-0 active"></div>
+        <section id="steam-map" class="fullscreen z-0 active"></section>
 
 
         <!-- home of the network graph -->
-        <div id="steamie-network" class="fullscreen z-100 canvas-wrapper"></div>
+        <section id="steamie-network" class="fullscreen z-100 canvas-wrapper"></section>
 
 
         <!-- houses buttons for filtering map and network -->
@@ -62,12 +62,14 @@
 
         
         <!-- modal for adding oneself -->
-        <div id="modal" class="fullscreen z-200 hide-til-active modal">
+        <section id="modal" class="fullscreen z-200 hide-til-active modal">
+            <div id="modal-animation"
+                 class="modal-animation"></div>
             <div class="grid full-width clearfix modal-wrapper">
 
                     <div class="four-column offset-one clearfix">
 
-                        <div class="modal-header">
+                        <header class="modal-header">
                             <h1 id="modal-header-join"
                                 class="hide-til-active"
                                 >Join the Movement</h1>
@@ -79,11 +81,11 @@
                                 <img src="" alt=""
                                      class="avatar">
                             </div>
-                        </div>
+                        </header>
 
                         <div class="modal-content">
                             
-                            <div id="call-to-action"
+                            <section id="call-to-action"
                                  class="hide-til-active clearfix">
                                 <p>Add yourself to the map to show members of congress that people in their districts think art and design education is critical to innovation in the 21st century.</p>
                                 
@@ -94,10 +96,10 @@
                                 
                                 <p id="auth-me-button"
                                    class="large button four-column-four"
-                                   >Auth me!</p>
-                             </div>
+                                   >Next</p>
+                             </section>
 
-                            <div id="choose-type-add-zip"
+                            <section id="choose-type-add-zip"
                                   class="hide-til-active clearfix choose-type-add-zip">
                                  
                                 <div class="four-column-four modal-header-avatar">
@@ -123,9 +125,9 @@
                                 <p id="add-me-button"
                                    class="large button four-column-four"
                                    >Add me!</p>
-                            </div>
+                            </section>
 
-                            <div id="thank-you"
+                            <section id="thank-you"
                                  class="hide-til-active clearfix">
 
                                 <div class="four-column-four modal-header-avatar">
@@ -136,18 +138,18 @@
                                 <p id="go-to-profile"
                                    class="large button four-column-four"
                                    >Go to Profile</p>
-                            </div>
+                            </section>
 
-                            <div id="profile-individual"
+                            <section id="profile-individual"
                                  class="hide-til-active clearfix">
 
                                  
-                            </div>
+                            </section>
 
-                            <div id="profile-institution"
+                            <section id="profile-institution"
                                  class="hide-til-active clearfix">
 
-                            </div>
+                            </section>
                             
                         </div>
 
@@ -158,7 +160,7 @@
                              class="modal-button hide-til-active active"></div>    
                     </div>
             </div>
-        </div>
+        </section>
 
         <script src="{% static "js/lib/Faker.js" %}"></script>
         <script src="{% static "js/dist/libs.js" %}"></script>
