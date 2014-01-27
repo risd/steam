@@ -1647,8 +1647,14 @@ textarea {
 
 /* end form */
 .modal-animation {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%; }
+  .modal-animation circle {
+    fill: transparent;
+    stroke: #c8c8c8;
+    stroke-width: 1; }
+  .modal-animation circle.highlight {
+    fill: #c8c8c8; }

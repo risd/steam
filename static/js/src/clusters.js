@@ -129,14 +129,29 @@ function Clusters (context) {
     });
 
     // on click of individual clusters
-    clusters_group.on('click', function (item) {
+    clusters_group.on('click', function (event) {
         // click cluster
 
-        context.network.init(item.layer.feature.properties);
+        console.log('cluster click');
+        console.log(event);
+
+        var zoom_to,
+            cur_zoom = context.map.getZoom();
+        if (cur_zoom < 10) {
+            zoom_to = 10;
+        } else {
+            zoom_to = cur_zoom;
+        }
+
+        // try clicking canada, or russia. you get zoomed
+        // much futher than you would have liked to.
+        context.map.setView(event.latlng, zoom_to);
+        context.network.init(event.layer.feature.properties);
     });
 
     clusters_group.on('clusterclick', function (d) {
         var bounds = d.layer.getBounds().pad(0.5);
+
         context.map.fitBounds(bounds);
 
         // remove all svg references.

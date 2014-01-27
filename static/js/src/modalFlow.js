@@ -378,6 +378,7 @@ function ModalFlow (context) {
         social_auth
             .dispatch
             .on('valid.formElementCheck', function (d, i) {
+                modal_animation.addHighlight();
                 if (authIsValid()) {
                     enable_auth_me();
                 }
@@ -448,6 +449,9 @@ function ModalFlow (context) {
                 // assume the user has never been
                 // and ask them to sign up
                 self.state('call_to_action');
+
+                
+                // self.state('choose_type_add_zip');
             }
         });
 

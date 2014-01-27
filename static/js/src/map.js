@@ -9,16 +9,17 @@ function Map (context) {
     };
 
     var zoomend = function() {
-
+        // console.log('zoomlevel: ', map.getZoom());
     };
 
-    var mabox_id = "",
-    // var mabox_id = "mgdevelopers.map-6m0pmhd7",
+    // var mabox_id = "",
+    var mabox_id = "mgdevelopers.map-6m0pmhd7",
         map = L.mapbox
             .map('steam-map', mabox_id, {
                 'maxZoom': 12
             })
-            .setView([39.16, -95.0], 4)
+            // .setView([39.16, -95.0], 4)
+            .setView([41.87, -87.74], 12)
             .on('zoomstart', zoomstart)
             .on('zoomend', zoomend);
 

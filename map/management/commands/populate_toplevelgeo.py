@@ -7,6 +7,10 @@ from ...models import TopLevelGeo
 DATA_DIR = join(dirname(abspath(__file__)), 'data')
 
 COUNTRIES = join(DATA_DIR, 'countries_geocoded.tsv')
+
+# manually changed illinois 7th district:
+#   from:   [-87.73754, 41.87350]
+#   to:     [-87.78754, 41.87900]
 DISTRICTS = join(DATA_DIR, 'districts_geocoded.tsv')
 
 
