@@ -4,6 +4,7 @@ module.exports = function socialAuthSelection (context) {
     var social = {},
         valid = false,
         selected = false,
+        visualize_validation = false,
         // parent node where options will be appended
         node,
         dispatch = social.dispatch = d3.dispatch('valid'),
@@ -58,8 +59,11 @@ module.exports = function socialAuthSelection (context) {
             })
             .text(function (d) {
                 return d.name;
-            })
-            .call(Checkmark());
+            });
+
+        if (visualize_validation) {
+            login_option_sel.call(Checkmark());
+        }
 
         return social;
     };

@@ -22,6 +22,13 @@
     -webkit-font-smoothing: antialiased;
 }
 
+
+.center-in-parent {
+    position: relative;
+    margin: 0 auto;
+    width: 80%;
+}
+
 // colors
 
 $color-research: rgb(105,230,64);
@@ -537,13 +544,18 @@ form / profile
 */
 #activate-add-yourself {
     position: absolute;
-    top: 97px;
-    right: 10px;
-    background-color: red;
-    height: 26px;
-    width: 26px;
+    top: 100px;
+    right: 30px;
 
     cursor: pointer;
+}
+
+.add-me {
+    @include antenna-medium;
+    font-size: 35px;
+    color: $color-slate;
+    margin: 0;
+    padding: 20px;
 }
 
 .button {
@@ -596,20 +608,20 @@ form / profile
 
 .login-option {
     position: relative;
+    display: inline-block;
+
     cursor: pointer;
 
     @include antenna-medium;
 
     font-size: 100px;
     line-height: 95px;
-    margin: 0;
-
-    border-bottom: 1px solid $white;
+    margin: 0 20px 0 0;
 
     color: rgba($white ,0.5);
 
     &:last-child {
-        border-bottom: 0;
+        margin-right: 0;
     }
 
     &.selected,
@@ -621,6 +633,22 @@ form / profile
     &.selected .checkmark  {
         display: block;
     }
+}
+.login-option:after {
+    content: "";
+    position: absolute;
+    
+    height: 110px;
+    width: 1px;
+
+    top: -5px;
+    right: -10px;
+    border-right: 1px solid $off-white;
+    -webkit-transform: rotate(10deg);
+}
+.login-option:last-child:after {
+    border-right: 0;
+    -webkit-transform: rotate(0deg);
 }
 
 input {

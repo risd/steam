@@ -113,9 +113,6 @@ module.exports = function flowAnimation () {
     }
 
     function tick () {
-        if (force.alpha() < 0.2) {
-            force.alpha(3);
-        }
         nodes_sel.attr('cx', function (d) { return d.x; })
             .attr('cy', function (d) { return d.y; });
     }

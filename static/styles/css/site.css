@@ -950,6 +950,11 @@ input[type="submit"]:hover {
   border-top: 1px solid #506472;
   border-bottom: 1px solid #506472; }
 
+.center-in-parent {
+  position: relative;
+  margin: 0 auto;
+  width: 80%; }
+
 html, body {
   margin: 0;
   padding: 0;
@@ -1452,12 +1457,19 @@ form / profile
 */
 #activate-add-yourself {
   position: absolute;
-  top: 97px;
-  right: 10px;
-  background-color: red;
-  height: 26px;
-  width: 26px;
+  top: 100px;
+  right: 30px;
   cursor: pointer; }
+
+.add-me {
+  font-family: "Antenna Comp Medium";
+  font-style: normal;
+  font-weight: normal;
+  -webkit-font-smoothing: antialiased;
+  font-size: 35px;
+  color: #516272;
+  margin: 0;
+  padding: 20px; }
 
 .button {
   padding: 20px;
@@ -1500,6 +1512,7 @@ form / profile
 
 .login-option {
   position: relative;
+  display: inline-block;
   cursor: pointer;
   font-family: "Antenna Comp Medium";
   font-style: normal;
@@ -1507,15 +1520,28 @@ form / profile
   -webkit-font-smoothing: antialiased;
   font-size: 100px;
   line-height: 95px;
-  margin: 0;
-  border-bottom: 1px solid white;
+  margin: 0 20px 0 0;
   color: rgba(255, 255, 255, 0.5); }
   .login-option:last-child {
-    border-bottom: 0; }
+    margin-right: 0; }
   .login-option.selected, .login-option:hover {
     color: white; }
   .login-option.selected .checkmark {
     display: block; }
+
+.login-option:after {
+  content: "";
+  position: absolute;
+  height: 110px;
+  width: 1px;
+  top: -5px;
+  right: -10px;
+  border-right: 1px solid #c8c8c8;
+  -webkit-transform: rotate(10deg); }
+
+.login-option:last-child:after {
+  border-right: 0;
+  -webkit-transform: rotate(0deg); }
 
 input {
   font-size: 24px;
