@@ -254,6 +254,8 @@ SOCIAL_AUTH_TWITTER_KEY = env_var('SOCIAL_AUTH_TWITTER_KEY')
 SOCIAL_AUTH_TWITTER_SECRET = env_var('SOCIAL_AUTH_TWITTER_SECRET')
 SOCIAL_AUTH_FACEBOOK_APP_KEY = env_var('SOCIAL_AUTH_FACEBOOK_APP_KEY')
 SOCIAL_AUTH_FACEBOOK_APP_SECRET = env_var('SOCIAL_AUTH_FACEBOOK_APP_SECRET')
+
+# https://cloud.google.com/console/project
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env_var('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env_var('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 
@@ -287,7 +289,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.load_extra_data',
     'social.pipeline.user.user_details',
     'map.pipeline.create_steamie',
-    'map.pipeline.get_avatar_url',
+    'map.pipeline.extra_data',
 )
 ### end Social auth config
 
