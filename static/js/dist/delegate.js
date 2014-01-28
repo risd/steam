@@ -160,7 +160,7 @@ var bowser = require('bowser').browser;
 
 if (bowser.android || bowser.iphone || bowser.ipad || bowser.touchpad) {
     var hash = window.location.hash;
-    window.location.href = '/map/mobile/' + hash;
+    window.location.href = '/map/' + hash;
 }
 
 if (bowser.msie && parseFloat(bowser.version) < 10) {
