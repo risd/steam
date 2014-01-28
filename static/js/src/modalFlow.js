@@ -414,21 +414,21 @@ function ModalFlow (context) {
             if (context.user.authed()) {
                 // authenticated
 
-                self.add_avatar(d.objects[0].avatar_url);
+                self.add_avatar(d.avatar_url);
 
-                if ((d.objects[0].top_level) &&
-                    ((d.objects[0].individual) ||
-                     (d.objects[0].institution))) {
+                if ((d.top_level) &&
+                    ((d.individual) ||
+                     (d.institution))) {
 
                     // should have given all info
                     // to be signed up and dont have
                     // to be sold on it
                     self.state('inactive_with_profile');
 
-                    if (d.objects[0].individual) {
+                    if (d.individual) {
                         context.user.type('individual');
                     }
-                    else if (d.objects[0].institution) {
+                    else if (d.institution) {
                         context.user.type('institution');
                     }
 
@@ -450,7 +450,7 @@ function ModalFlow (context) {
                 // and ask them to sign up
                 self.state('call_to_action');
 
-                
+
                 // self.state('choose_type_add_zip');
             }
         });
@@ -481,13 +481,16 @@ function ModalFlow (context) {
     function add_me_flow () {
         // for the User that is stored.
         context.user
-            .type(select_type.value())
+            .type(select_type.selected())
             .setTypeDefaults()
-            .work_in(select_work_in.value())
+            .work_in(select_work_in.selected())
             .top_level_input(select_geo.validatedData());
 
-        context.api.steamie_request(
-            context.user.data(),
+        console.log('context.user.data()');
+        console.log(context.user.data());
+
+        context.api.steamie_update(
+            context.user.data().objects[0],
             function (err, results_raw) {
                 var results = JSON.parse(results_raw.responseText);
 

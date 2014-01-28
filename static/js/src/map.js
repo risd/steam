@@ -18,8 +18,7 @@ function Map (context) {
             .map('steam-map', mabox_id, {
                 'maxZoom': 12
             })
-            // .setView([39.16, -95.0], 4)
-            .setView([41.87, -87.74], 12)
+            .setView([39.16, -95.0], 4)
             .on('zoomstart', zoomstart)
             .on('zoomend', zoomend);
 

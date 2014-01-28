@@ -257,22 +257,6 @@ function Backend () {
         d3.json(api.network_url(network_id), callback);
     };
 
-    api.steamie_request = function (data_to_submit, callback) {
-        var csrf_token = get_cookie('csrftoken');
-
-        console.log('url');
-        console.log(api.steamie);
-        // api.steamie
-        // 'http://0.0.0.0:5000/api/v1/steamie/'
-        var xhr = d3.xhr(api.steamie)
-            .mimeType('application/json')
-            .header('X-CSRFToken', csrf_token)
-            .header('Content-type', 'application/json')
-            .send('PUT',
-                  JSON.stringify(data_to_submit),
-                  callback);
-    };
-
     api.steamie_update = function (data_to_submit, callback) {
         var csrf_token = get_cookie('csrftoken');
 
@@ -1147,7 +1131,11 @@ module.exports = function radioSelection () {
         group_name,
         label,
         data = [],
-        initial_selected;
+        initial_selected = {
+            value: undefined,
+            selected: undefined,
+            label: undefined
+        };
 
     self.dispatch = d3.dispatch('valid', 'valueChange');
 
@@ -1706,8 +1694,7 @@ function Map (context) {
             .map('steam-map', mabox_id, {
                 'maxZoom': 12
             })
-            // .setView([39.16, -95.0], 4)
-            .setView([41.87, -87.74], 12)
+            .setView([39.16, -95.0], 4)
             .on('zoomstart', zoomstart)
             .on('zoomend', zoomend);
 
@@ -2142,21 +2129,21 @@ function ModalFlow (context) {
             if (context.user.authed()) {
                 // authenticated
 
-                self.add_avatar(d.objects[0].avatar_url);
+                self.add_avatar(d.avatar_url);
 
-                if ((d.objects[0].top_level) &&
-                    ((d.objects[0].individual) ||
-                     (d.objects[0].institution))) {
+                if ((d.top_level) &&
+                    ((d.individual) ||
+                     (d.institution))) {
 
                     // should have given all info
                     // to be signed up and dont have
                     // to be sold on it
                     self.state('inactive_with_profile');
 
-                    if (d.objects[0].individual) {
+                    if (d.individual) {
                         context.user.type('individual');
                     }
-                    else if (d.objects[0].institution) {
+                    else if (d.institution) {
                         context.user.type('institution');
                     }
 
@@ -2178,7 +2165,7 @@ function ModalFlow (context) {
                 // and ask them to sign up
                 self.state('call_to_action');
 
-                
+
                 // self.state('choose_type_add_zip');
             }
         });
@@ -2209,13 +2196,16 @@ function ModalFlow (context) {
     function add_me_flow () {
         // for the User that is stored.
         context.user
-            .type(select_type.value())
+            .type(select_type.selected())
             .setTypeDefaults()
-            .work_in(select_work_in.value())
+            .work_in(select_work_in.selected())
             .top_level_input(select_geo.validatedData());
 
-        context.api.steamie_request(
-            context.user.data(),
+        console.log('context.user.data()');
+        console.log(context.user.data());
+
+        context.api.steamie_update(
+            context.user.data().objects[0],
             function (err, results_raw) {
                 var results = JSON.parse(results_raw.responseText);
 
@@ -2960,8 +2950,8 @@ module.exports = function ProfileIndividual (context) {
             .selection(first_name_sel)
             .placeholder('first name')
             .initialValue(
-                data.objects[0].individual.first_name ?
-                data.objects[0].individual.first_name : '')
+                data.individual.first_name ?
+                data.individual.first_name : '')
             .render();
 
         var last_name_sel = sel
@@ -2972,8 +2962,8 @@ module.exports = function ProfileIndividual (context) {
             .selection(last_name_sel)
             .placeholder('last name')
             .initialValue(
-                data.objects[0].individual.last_name ?
-                data.objects[0].individual.last_name : '')
+                data.individual.last_name ?
+                data.individual.last_name : '')
             .render();
 
         var geo_sel = sel
@@ -2985,7 +2975,7 @@ module.exports = function ProfileIndividual (context) {
             .rootSelection(geo_sel)
             .validationVisual(false)
             .optionsKey(function (d) { return d.country; })
-            .initialValue(data.objects[0].top_level_input)
+            .initialValue(data.top_level_input)
             .placeholder('zipcode');
 
         if (context.countries.data()) {
@@ -3032,7 +3022,7 @@ module.exports = function ProfileIndividual (context) {
         var work_in_initial;
         work_in_options.forEach(function (d, i) {
             if (d.label.toLowerCase() ===
-                data.objects[0].work_in.toLowerCase()) {
+                data.work_in.toLowerCase()) {
                 d.selected = true;
                 work_in_initial = d;
             }
@@ -3065,8 +3055,8 @@ module.exports = function ProfileIndividual (context) {
             })
             .name('steamie-description')
             .initialValue(
-                data.objects[0].description ?
-                data.objects[0].description : '')
+                data.description ?
+                data.description : '')
             .render();
 
         save_button =
@@ -3137,10 +3127,10 @@ module.exports = function ProfileIndividual (context) {
     
 
     function decorate_for_submittal (x) {
-        x.id = data.objects[0].id;
-        x.resource_uri = data.objects[0].resource_uri;
+        x.id = data.id;
+        x.resource_uri = data.resource_uri;
         if (x.individual) {
-            x.individual.id = data.objects[0].individual.id;
+            x.individual.id = data.individual.id;
         }
 
         return x;
@@ -3156,7 +3146,7 @@ module.exports = function ProfileIndividual (context) {
         updatable.updated().forEach(function (n, i) {
             if (n.position_in_data.length === 1) {
 
-                data.objects[0][n.position_in_data[0]] =
+                data[n.position_in_data[0]] =
                     n.value();
 
                 data_for_server[n.position_in_data[0]] =
@@ -3164,7 +3154,7 @@ module.exports = function ProfileIndividual (context) {
 
             } else if (n.position_in_data.length === 2) {
 
-                data.objects[0][n.position_in_data[0]]
+                data[n.position_in_data[0]]
                                [n.position_in_data[1]] =
                     n.value();
 
@@ -3172,7 +3162,7 @@ module.exports = function ProfileIndividual (context) {
                 // nested object to save against
                 if (!data_for_server[n.position_in_data[0]]) {
                     data_for_server[n.position_in_data[0]] =
-                        data.objects[0][n.position_in_data[0]];
+                        data[n.position_in_data[0]];
                 }
 
                 data_for_server[n.position_in_data[0]]
@@ -3336,8 +3326,8 @@ module.exports = function ProfileInstitution (context) {
             .selection(name_sel)
             .placeholder('institution name')
             .initialValue(
-                data.objects[0].institution.name ?
-                data.objects[0].institution.name : '')
+                data.institution.name ?
+                data.institution.name : '')
             .render();
 
         var representative_email_sel = sel
@@ -3348,11 +3338,9 @@ module.exports = function ProfileInstitution (context) {
             .selection(representative_email_sel)
             .placeholder("representative's email")
             .initialValue(
-                data.objects[0]
-                    .institution
+                data.institution
                     .representative_email ?
-                data.objects[0]
-                    .institution
+                data.institution
                     .representative_email : '')
             .render();
 
@@ -3364,11 +3352,9 @@ module.exports = function ProfileInstitution (context) {
             .selection(representative_first_name_sel)
             .placeholder("representative's first name")
             .initialValue(
-                data.objects[0]
-                    .institution
+                data.institution
                     .representative_first_name ?
-                data.objects[0]
-                    .institution
+                data.institution
                     .representative_first_name : '')
             .render();
 
@@ -3380,11 +3366,9 @@ module.exports = function ProfileInstitution (context) {
             .selection(representative_last_name_sel)
             .placeholder("representative's last name")
             .initialValue(
-                data.objects[0]
-                    .institution
+                data.institution
                     .representative_last_name ?
-                data.objects[0]
-                    .institution
+                data.institution
                     .representative_last_name : '')
             .render();
 
@@ -3397,7 +3381,7 @@ module.exports = function ProfileInstitution (context) {
             .rootSelection(geo_sel)
             .validationVisual(false)
             .optionsKey(function (d) { return d.country; })
-            .initialValue(data.objects[0].top_level_input)
+            .initialValue(data.top_level_input)
             .placeholder('zipcode');
 
         if (context.countries.data()) {
@@ -3444,7 +3428,7 @@ module.exports = function ProfileInstitution (context) {
         var work_in_initial;
         work_in_options.forEach(function (d, i) {
             if (d.label.toLowerCase() ===
-                data.objects[0].work_in.toLowerCase()) {
+                data.work_in.toLowerCase()) {
                 d.selected = true;
                 work_in_initial = d;
             }
@@ -3475,8 +3459,8 @@ module.exports = function ProfileInstitution (context) {
                 klass: ''
             })
             .initialValue(
-                data.objects[0].description ?
-                data.objects[0].description : '')
+                data.description ?
+                data.description : '')
             .render();
 
         save_button =
@@ -3572,10 +3556,10 @@ module.exports = function ProfileInstitution (context) {
     }
 
     function decorate_for_submittal (x) {
-        x.id = data.objects[0].id;
-        x.resource_uri = data.objects[0].resource_uri;
+        x.id = data.id;
+        x.resource_uri = data.resource_uri;
         if (x.institution) {
-            x.institution.id = data.objects[0].institution.id;
+            x.institution.id = data.institution.id;
         }
 
         return x;
@@ -3591,7 +3575,7 @@ module.exports = function ProfileInstitution (context) {
         updatable.updated().forEach(function (n, i) {
             if (n.position_in_data.length === 1) {
 
-                data.objects[0][n.position_in_data[0]] =
+                data[n.position_in_data[0]] =
                     n.value();
 
                 data_for_server[n.position_in_data[0]] =
@@ -3599,7 +3583,7 @@ module.exports = function ProfileInstitution (context) {
 
             } else if (n.position_in_data.length === 2) {
 
-                data.objects[0][n.position_in_data[0]]
+                data[n.position_in_data[0]]
                                [n.position_in_data[1]] =
                     n.value();
 
@@ -3607,7 +3591,7 @@ module.exports = function ProfileInstitution (context) {
                 // nested object to save against
                 if (!data_for_server[n.position_in_data[0]]) {
                     data_for_server[n.position_in_data[0]] =
-                        data.objects[0][n.position_in_data[0]];
+                        data[n.position_in_data[0]];
                 }
 
                 data_for_server[n.position_in_data[0]]
@@ -3781,7 +3765,8 @@ function User (context) {
             console.log('auth check');
             console.log(data_response);
             if ((err) ||
-                (typeof(data_response) === 'undefined')) {
+                (typeof(data_response) === 'undefined') ||
+                (data_response.meta.total_count === 0)) {
                 // not auth'ed
                 console.log('Not authed.');
                 data = null;
@@ -3807,7 +3792,11 @@ function User (context) {
     // about the user's authentication
     user.data = function (x) {
         if (!arguments.length) return data;
-        data = x;
+        if ('objects' in x) {
+            data = x.objects[0];
+        } else {
+            data = x;
+        }
         return user;
     };
 
@@ -3821,18 +3810,18 @@ function User (context) {
         // update the users' state.
 
         update_object = {
-            id: data.objects[0].id,
+            id: data.id,
             resource_uri: '/api/v1/steamie/' + 23
         };
 
         if (steamie_type === 'individual') {
             update_object.individual = {
-                id: data.objects[0].individual.id
+                id: data.individual.id
             };
         }
         else if (steamie_type === 'institution') {
             update_object.institution = {
-                id: data.objects[0].institution.id
+                id: data.institution.id
             };
         }
 
@@ -3888,13 +3877,13 @@ function User (context) {
     }
 
     user.zip_code = function (x) {
-        if (!arguments.length) return data.objects[0].zip_code;
-        data.objects[0].zip_code = x;
+        if (!arguments.length) return data.zip_code;
+        data.zip_code = x;
         return user;
     };
 
     user.avatar_url = function () {
-        return data.objects[0].avatar_url;
+        return data.avatar_url;
     };
 
     user.type = function (x) {
@@ -3907,26 +3896,26 @@ function User (context) {
     // saved as part of the user's profile
     // top_level_input = steamie_geo
     user.top_level_input = function (x) {
-        if (!arguments.length) return data.objects[0].top_level_input;
-        data.objects[0].top_level_input = x;
+        if (!arguments.length) return data.top_level_input;
+        data.top_level_input = x;
         return user;
     };
 
     user.work_in = function (x) {
-        if (!arguments.length) return data.objects[0].work_in;
-        data.objects[0].work_in = x;
+        if (!arguments.length) return data.work_in;
+        data.work_in = x;
         return user;
     };
 
     user.individual = function (x) {
-        if (!arguments.length) return data.objects[0].individual;
-        data.objects[0].individual = x;
+        if (!arguments.length) return data.individual;
+        data.individual = x;
         return user;
     };
 
     user.institution = function (x) {
-        if (!arguments.length) return data.objects[0].institution;
-        data.objects[0].institution = x;
+        if (!arguments.length) return data.institution;
+        data.institution = x;
         return user;
     };
 

@@ -69,8 +69,8 @@ module.exports = function ProfileIndividual (context) {
             .selection(first_name_sel)
             .placeholder('first name')
             .initialValue(
-                data.objects[0].individual.first_name ?
-                data.objects[0].individual.first_name : '')
+                data.individual.first_name ?
+                data.individual.first_name : '')
             .render();
 
         var last_name_sel = sel
@@ -81,8 +81,8 @@ module.exports = function ProfileIndividual (context) {
             .selection(last_name_sel)
             .placeholder('last name')
             .initialValue(
-                data.objects[0].individual.last_name ?
-                data.objects[0].individual.last_name : '')
+                data.individual.last_name ?
+                data.individual.last_name : '')
             .render();
 
         var geo_sel = sel
@@ -94,7 +94,7 @@ module.exports = function ProfileIndividual (context) {
             .rootSelection(geo_sel)
             .validationVisual(false)
             .optionsKey(function (d) { return d.country; })
-            .initialValue(data.objects[0].top_level_input)
+            .initialValue(data.top_level_input)
             .placeholder('zipcode');
 
         if (context.countries.data()) {
@@ -141,7 +141,7 @@ module.exports = function ProfileIndividual (context) {
         var work_in_initial;
         work_in_options.forEach(function (d, i) {
             if (d.label.toLowerCase() ===
-                data.objects[0].work_in.toLowerCase()) {
+                data.work_in.toLowerCase()) {
                 d.selected = true;
                 work_in_initial = d;
             }
@@ -174,8 +174,8 @@ module.exports = function ProfileIndividual (context) {
             })
             .name('steamie-description')
             .initialValue(
-                data.objects[0].description ?
-                data.objects[0].description : '')
+                data.description ?
+                data.description : '')
             .render();
 
         save_button =
@@ -246,10 +246,10 @@ module.exports = function ProfileIndividual (context) {
     
 
     function decorate_for_submittal (x) {
-        x.id = data.objects[0].id;
-        x.resource_uri = data.objects[0].resource_uri;
+        x.id = data.id;
+        x.resource_uri = data.resource_uri;
         if (x.individual) {
-            x.individual.id = data.objects[0].individual.id;
+            x.individual.id = data.individual.id;
         }
 
         return x;
@@ -265,7 +265,7 @@ module.exports = function ProfileIndividual (context) {
         updatable.updated().forEach(function (n, i) {
             if (n.position_in_data.length === 1) {
 
-                data.objects[0][n.position_in_data[0]] =
+                data[n.position_in_data[0]] =
                     n.value();
 
                 data_for_server[n.position_in_data[0]] =
@@ -273,7 +273,7 @@ module.exports = function ProfileIndividual (context) {
 
             } else if (n.position_in_data.length === 2) {
 
-                data.objects[0][n.position_in_data[0]]
+                data[n.position_in_data[0]]
                                [n.position_in_data[1]] =
                     n.value();
 
@@ -281,7 +281,7 @@ module.exports = function ProfileIndividual (context) {
                 // nested object to save against
                 if (!data_for_server[n.position_in_data[0]]) {
                     data_for_server[n.position_in_data[0]] =
-                        data.objects[0][n.position_in_data[0]];
+                        data[n.position_in_data[0]];
                 }
 
                 data_for_server[n.position_in_data[0]]

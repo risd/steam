@@ -239,7 +239,6 @@ class AuthSteamieResource(ModelResource):
     class Meta(CommonAuthResourceMeta):
         queryset = Steamies.objects.all()
         resource_name = 'steamie'
-        # excludes = ['id']
         limit = 1
 
     def obj_create(self, bundle, **kwargs):

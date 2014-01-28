@@ -9,6 +9,7 @@ from .models import Steamies
 
 def create_steamie(request, user, *args, **kwargs):
     """Create Steamie. Depends on create_user"""
+    print "create steamie"
 
     if user is None:
         # for unauthed requests

@@ -7,7 +7,11 @@ module.exports = function radioSelection () {
         group_name,
         label,
         data = [],
-        initial_selected;
+        initial_selected = {
+            value: undefined,
+            selected: undefined,
+            label: undefined
+        };
 
     self.dispatch = d3.dispatch('valid', 'valueChange');
 

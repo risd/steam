@@ -24,7 +24,8 @@ function User (context) {
             console.log('auth check');
             console.log(data_response);
             if ((err) ||
-                (typeof(data_response) === 'undefined')) {
+                (typeof(data_response) === 'undefined') ||
+                (data_response.meta.total_count === 0)) {
                 // not auth'ed
                 console.log('Not authed.');
                 data = null;
@@ -50,7 +51,11 @@ function User (context) {
     // about the user's authentication
     user.data = function (x) {
         if (!arguments.length) return data;
-        data = x;
+        if ('objects' in x) {
+            data = x.objects[0];
+        } else {
+            data = x;
+        }
         return user;
     };
 
@@ -64,18 +69,18 @@ function User (context) {
         // update the users' state.
 
         update_object = {
-            id: data.objects[0].id,
+            id: data.id,
             resource_uri: '/api/v1/steamie/' + 23
         };
 
         if (steamie_type === 'individual') {
             update_object.individual = {
-                id: data.objects[0].individual.id
+                id: data.individual.id
             };
         }
         else if (steamie_type === 'institution') {
             update_object.institution = {
-                id: data.objects[0].institution.id
+                id: data.institution.id
             };
         }
 
@@ -131,13 +136,13 @@ function User (context) {
     }
 
     user.zip_code = function (x) {
-        if (!arguments.length) return data.objects[0].zip_code;
-        data.objects[0].zip_code = x;
+        if (!arguments.length) return data.zip_code;
+        data.zip_code = x;
         return user;
     };
 
     user.avatar_url = function () {
-        return data.objects[0].avatar_url;
+        return data.avatar_url;
     };
 
     user.type = function (x) {
@@ -150,26 +155,26 @@ function User (context) {
     // saved as part of the user's profile
     // top_level_input = steamie_geo
     user.top_level_input = function (x) {
-        if (!arguments.length) return data.objects[0].top_level_input;
-        data.objects[0].top_level_input = x;
+        if (!arguments.length) return data.top_level_input;
+        data.top_level_input = x;
         return user;
     };
 
     user.work_in = function (x) {
-        if (!arguments.length) return data.objects[0].work_in;
-        data.objects[0].work_in = x;
+        if (!arguments.length) return data.work_in;
+        data.work_in = x;
         return user;
     };
 
     user.individual = function (x) {
-        if (!arguments.length) return data.objects[0].individual;
-        data.objects[0].individual = x;
+        if (!arguments.length) return data.individual;
+        data.individual = x;
         return user;
     };
 
     user.institution = function (x) {
-        if (!arguments.length) return data.objects[0].institution;
-        data.objects[0].institution = x;
+        if (!arguments.length) return data.institution;
+        data.institution = x;
         return user;
     };
 

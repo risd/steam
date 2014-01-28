@@ -253,7 +253,7 @@ class Steamies(models.Model):
         'Top Level Input',
         max_length=75,
         blank=True,
-        null=False)
+        null=True)
 
     avatar_url = models.URLField(
         "Avatar url",
@@ -316,40 +316,42 @@ class Steamies(models.Model):
         verbose_name_plural = _("Steamies'")
 
     def change_work_in_count(self, amount=1):
-        setattr(
-            self.top_level,
-            'work_in_{0}'.format(self.work_in),
-            getattr(
+        if (self.work_in and self.top_level):
+            setattr(
                 self.top_level,
-                'work_in_{0}'.format(self.work_in)
-                ) + amount
-            )
-        self.top_level.save()
+                'work_in_{0}'.format(self.work_in),
+                getattr(
+                    self.top_level,
+                    'work_in_{0}'.format(self.work_in)
+                    ) + amount
+                )
+            self.top_level.save()
 
         logger.info('Updated work_in count')
 
     def set_geo(self):
-        g = Geo()
-        geo = g.geo(self.top_level_input)
+        if self.top_level_input:
+            g = Geo()
+            geo = g.geo(self.top_level_input)
 
-        if 'error' in geo:
-            self.top_level_input = None
-        else:
-            try:
-                # will raise ObjectDoesNotExist
-                # if it does not find an object
-                top_level_geo = TopLevelGeo.objects.get(**geo)
-                self.top_level = top_level_geo
-
-                logger.info('Set top_level_geo')
-
-            except ObjectDoesNotExist:
-                logger.error(
-                    'Setting TopLevelGeo relationship to' +\
-                    'Steamie\ntop_level_input: ' +\
-                    '{0}'.format(self.top_level_input))
-
+            if 'error' in geo:
                 self.top_level_input = None
+            else:
+                try:
+                    # will raise ObjectDoesNotExist
+                    # if it does not find an object
+                    top_level_geo = TopLevelGeo.objects.get(**geo)
+                    self.top_level = top_level_geo
+
+                except ObjectDoesNotExist:
+                    logger.error(
+                        'Setting TopLevelGeo relationship to' +\
+                        'Steamie\ntop_level_input: ' +\
+                        '{0}'.format(self.top_level_input))
+
+                    self.top_level_input = None
+
+        logger.info('Set top_level_geo')
 
     def __unicode__(self):
         return unicode(self.user) or unicode(self.zip_code)

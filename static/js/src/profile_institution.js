@@ -70,8 +70,8 @@ module.exports = function ProfileInstitution (context) {
             .selection(name_sel)
             .placeholder('institution name')
             .initialValue(
-                data.objects[0].institution.name ?
-                data.objects[0].institution.name : '')
+                data.institution.name ?
+                data.institution.name : '')
             .render();
 
         var representative_email_sel = sel
@@ -82,11 +82,9 @@ module.exports = function ProfileInstitution (context) {
             .selection(representative_email_sel)
             .placeholder("representative's email")
             .initialValue(
-                data.objects[0]
-                    .institution
+                data.institution
                     .representative_email ?
-                data.objects[0]
-                    .institution
+                data.institution
                     .representative_email : '')
             .render();
 
@@ -98,11 +96,9 @@ module.exports = function ProfileInstitution (context) {
             .selection(representative_first_name_sel)
             .placeholder("representative's first name")
             .initialValue(
-                data.objects[0]
-                    .institution
+                data.institution
                     .representative_first_name ?
-                data.objects[0]
-                    .institution
+                data.institution
                     .representative_first_name : '')
             .render();
 
@@ -114,11 +110,9 @@ module.exports = function ProfileInstitution (context) {
             .selection(representative_last_name_sel)
             .placeholder("representative's last name")
             .initialValue(
-                data.objects[0]
-                    .institution
+                data.institution
                     .representative_last_name ?
-                data.objects[0]
-                    .institution
+                data.institution
                     .representative_last_name : '')
             .render();
 
@@ -131,7 +125,7 @@ module.exports = function ProfileInstitution (context) {
             .rootSelection(geo_sel)
             .validationVisual(false)
             .optionsKey(function (d) { return d.country; })
-            .initialValue(data.objects[0].top_level_input)
+            .initialValue(data.top_level_input)
             .placeholder('zipcode');
 
         if (context.countries.data()) {
@@ -178,7 +172,7 @@ module.exports = function ProfileInstitution (context) {
         var work_in_initial;
         work_in_options.forEach(function (d, i) {
             if (d.label.toLowerCase() ===
-                data.objects[0].work_in.toLowerCase()) {
+                data.work_in.toLowerCase()) {
                 d.selected = true;
                 work_in_initial = d;
             }
@@ -209,8 +203,8 @@ module.exports = function ProfileInstitution (context) {
                 klass: ''
             })
             .initialValue(
-                data.objects[0].description ?
-                data.objects[0].description : '')
+                data.description ?
+                data.description : '')
             .render();
 
         save_button =
@@ -306,10 +300,10 @@ module.exports = function ProfileInstitution (context) {
     }
 
     function decorate_for_submittal (x) {
-        x.id = data.objects[0].id;
-        x.resource_uri = data.objects[0].resource_uri;
+        x.id = data.id;
+        x.resource_uri = data.resource_uri;
         if (x.institution) {
-            x.institution.id = data.objects[0].institution.id;
+            x.institution.id = data.institution.id;
         }
 
         return x;
@@ -325,7 +319,7 @@ module.exports = function ProfileInstitution (context) {
         updatable.updated().forEach(function (n, i) {
             if (n.position_in_data.length === 1) {
 
-                data.objects[0][n.position_in_data[0]] =
+                data[n.position_in_data[0]] =
                     n.value();
 
                 data_for_server[n.position_in_data[0]] =
@@ -333,7 +327,7 @@ module.exports = function ProfileInstitution (context) {
 
             } else if (n.position_in_data.length === 2) {
 
-                data.objects[0][n.position_in_data[0]]
+                data[n.position_in_data[0]]
                                [n.position_in_data[1]] =
                     n.value();
 
@@ -341,7 +335,7 @@ module.exports = function ProfileInstitution (context) {
                 // nested object to save against
                 if (!data_for_server[n.position_in_data[0]]) {
                     data_for_server[n.position_in_data[0]] =
-                        data.objects[0][n.position_in_data[0]];
+                        data[n.position_in_data[0]];
                 }
 
                 data_for_server[n.position_in_data[0]]

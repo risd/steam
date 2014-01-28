@@ -26,22 +26,6 @@ function Backend () {
         d3.json(api.network_url(network_id), callback);
     };
 
-    api.steamie_request = function (data_to_submit, callback) {
-        var csrf_token = get_cookie('csrftoken');
-
-        console.log('url');
-        console.log(api.steamie);
-        // api.steamie
-        // 'http://0.0.0.0:5000/api/v1/steamie/'
-        var xhr = d3.xhr(api.steamie)
-            .mimeType('application/json')
-            .header('X-CSRFToken', csrf_token)
-            .header('Content-type', 'application/json')
-            .send('PUT',
-                  JSON.stringify(data_to_submit),
-                  callback);
-    };
-
     api.steamie_update = function (data_to_submit, callback) {
         var csrf_token = get_cookie('csrftoken');
 
