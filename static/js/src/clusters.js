@@ -91,7 +91,7 @@ function Clusters (context) {
             }
 
             return new L.DivIcon({
-                html: '<div>' +
+                html: '<div class="span-wrapper">' +
                     '<span>' +
                     format(steamie_count.prev_total_active) +
                     '</span>' +
@@ -131,21 +131,6 @@ function Clusters (context) {
     // on click of individual clusters
     clusters_group.on('click', function (event) {
         // click cluster
-
-        console.log('cluster click');
-        console.log(event);
-
-        var zoom_to,
-            cur_zoom = context.map.getZoom();
-        if (cur_zoom < 10) {
-            zoom_to = 10;
-        } else {
-            zoom_to = cur_zoom;
-        }
-
-        // try clicking canada, or russia. you get zoomed
-        // much futher than you would have liked to.
-        context.map.setView(event.latlng, zoom_to);
         context.network.init(event.layer.feature.properties);
     });
 

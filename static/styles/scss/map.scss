@@ -340,6 +340,7 @@ $cluster-fill: rgba(78,91,109,0.8);
         height: $diameter;
         width: $diameter;
         border-radius: $diameter/2;
+        background-size: $diameter $diameter;
     }
 
     span {
@@ -365,12 +366,26 @@ $cluster-fill: rgba(78,91,109,0.8);
     }
 }
 
-.marker-cluster {
-    // background: blue;
-}
-
-.marker-cluster div {
+.marker-cluster .span-wrapper {
     background-color: $cluster-fill;
+    background-image: none;
+    background-repeat: no-repeat;
+}
+.represents-one-entity:hover {
+    span {
+        display: none;
+    }
+    div.span-wrapper {
+        background-image: url('/static/svg/magnifyingglass.svg');   
+    }
+}
+.represents-multiple-entities:hover {
+    span {
+        display: none;
+    }
+    div.span-wrapper {
+        background-image: url('/static/svg/fullscreen.svg');
+    }
 }
 
 .mc-2-digit {

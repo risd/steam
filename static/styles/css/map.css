@@ -239,8 +239,20 @@ a.leaflet-control-zoom-out {
 /************
 Leaflet Marker Cluster Styles
 */
-.marker-cluster div {
-  background-color: rgba(78, 91, 109, 0.8); }
+.marker-cluster .span-wrapper {
+  background-color: rgba(78, 91, 109, 0.8);
+  background-image: none;
+  background-repeat: no-repeat; }
+
+.represents-one-entity:hover span {
+  display: none; }
+.represents-one-entity:hover div.span-wrapper {
+  background-image: url("/static/svg/magnifyingglass.svg"); }
+
+.represents-multiple-entities:hover span {
+  display: none; }
+.represents-multiple-entities:hover div.span-wrapper {
+  background-image: url("/static/svg/fullscreen.svg"); }
 
 .mc-2-digit {
   border-radius: 29px; }
@@ -248,7 +260,8 @@ Leaflet Marker Cluster Styles
     margin: 11px;
     height: 36px;
     width: 36px;
-    border-radius: 18px; }
+    border-radius: 18px;
+    background-size: 36px 36px; }
   .mc-2-digit span {
     line-height: 36px;
     font-family: "Antenna Comp Medium";
@@ -275,7 +288,8 @@ Leaflet Marker Cluster Styles
     margin: 11px;
     height: 42px;
     width: 42px;
-    border-radius: 21px; }
+    border-radius: 21px;
+    background-size: 42px 42px; }
   .mc-3-digit span {
     line-height: 42px;
     font-family: "Antenna Comp Medium";
@@ -302,7 +316,8 @@ Leaflet Marker Cluster Styles
     margin: 11px;
     height: 50px;
     width: 50px;
-    border-radius: 25px; }
+    border-radius: 25px;
+    background-size: 50px 50px; }
   .mc-4-digit span {
     line-height: 50px;
     font-family: "Antenna Comp Medium";
@@ -329,7 +344,8 @@ Leaflet Marker Cluster Styles
     margin: 11px;
     height: 54px;
     width: 54px;
-    border-radius: 27px; }
+    border-radius: 27px;
+    background-size: 54px 54px; }
   .mc-5-digit span {
     line-height: 54px;
     font-family: "Antenna Comp Medium";
@@ -356,7 +372,8 @@ Leaflet Marker Cluster Styles
     margin: 11px;
     height: 61px;
     width: 61px;
-    border-radius: 30.5px; }
+    border-radius: 30.5px;
+    background-size: 61px 61px; }
   .mc-6-digit span {
     line-height: 61px;
     font-family: "Antenna Comp Medium";
