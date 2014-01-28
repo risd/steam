@@ -13,7 +13,9 @@ module.exports = function radioSelection () {
             label: undefined
         };
 
-    self.dispatch = d3.dispatch('valid', 'valueChange');
+    self.dispatch = d3.dispatch('valid',
+                                'valueChange',
+                                'valueDifferent');
 
     self.render = function () {
         // must call node(x) to
@@ -51,9 +53,12 @@ module.exports = function radioSelection () {
                 
                 valid = true;
                 self.dispatch.valid.apply(this, arguments);
+                self.dispatch.valueChange.apply(this, arguments);
 
                 if (self.isDifferent()) {
-                    self.dispatch.valueChange.apply(this, arguments);
+                    self.dispatch
+                        .valueDifferent.apply(this, arguments);
+                    
                 }
             })
             .call(addInput);

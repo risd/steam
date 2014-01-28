@@ -1137,7 +1137,9 @@ module.exports = function radioSelection () {
             label: undefined
         };
 
-    self.dispatch = d3.dispatch('valid', 'valueChange');
+    self.dispatch = d3.dispatch('valid',
+                                'valueChange',
+                                'valueDifferent');
 
     self.render = function () {
         // must call node(x) to
@@ -1175,9 +1177,12 @@ module.exports = function radioSelection () {
                 
                 valid = true;
                 self.dispatch.valid.apply(this, arguments);
+                self.dispatch.valueChange.apply(this, arguments);
 
                 if (self.isDifferent()) {
-                    self.dispatch.valueChange.apply(this, arguments);
+                    self.dispatch
+                        .valueDifferent.apply(this, arguments);
+                    
                 }
             })
             .call(addInput);
@@ -2229,7 +2234,7 @@ function ModalFlow (context) {
                 // data input
                 context.user
                     .data(results)
-                    .setUpdateObject()
+                    // .setUpdateObject()
                     .profile
                         .build();
 
@@ -3797,34 +3802,6 @@ function User (context) {
         } else {
             data = x;
         }
-        return user;
-    };
-
-    user.setUpdateObject = function () {
-        // used to update the user data on the server
-
-        // relies on user.data as the source of data
-        // takes user.data, and extracts the necessary
-        // bits of information in order to send
-        // more requests to the server that will
-        // update the users' state.
-
-        update_object = {
-            id: data.id,
-            resource_uri: '/api/v1/steamie/' + 23
-        };
-
-        if (steamie_type === 'individual') {
-            update_object.individual = {
-                id: data.individual.id
-            };
-        }
-        else if (steamie_type === 'institution') {
-            update_object.institution = {
-                id: data.institution.id
-            };
-        }
-
         return user;
     };
 

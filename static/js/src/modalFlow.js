@@ -514,7 +514,7 @@ function ModalFlow (context) {
                 // data input
                 context.user
                     .data(results)
-                    .setUpdateObject()
+                    // .setUpdateObject()
                     .profile
                         .build();
 
