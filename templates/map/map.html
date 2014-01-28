@@ -18,11 +18,7 @@
         <link href="//cloud.webtype.com/css/016ff586-7e05-4ccb-9549-e0a02162d01c.css" rel="stylesheet" type="text/css" />
         <!-- Sentinel -->
         <link rel="stylesheet" type="text/css" href="//cloud.typography.com/641934/792222/css/fonts.css" />
-
-        <link rel="stylesheet" href="{% static "js/lib/leaflet-0.6.4/leaflet.css" %}">
-        <link rel="stylesheet" href="{% static "js/lib/leaflet.markercluster/MarkerCluster.css" %}">
-        <link rel="stylesheet" href="{% static "js/lib/leaflet.markercluster/MarkerCluster.Default.css" %}">
-
+        <!-- MapBox -->
         <link href='//api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.css' rel='stylesheet' />
 
         <link rel="stylesheet" href="{% static "styles/css/site.css" %}">
@@ -30,7 +26,7 @@
         <script src="{% static "js/lib/modernizr-2.6.2.min.js"%}"></script>
     </head>
     <body>
-        <!--[if lt IE 7]>
+        <!--[if lt IE 9]>
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
 
@@ -164,17 +160,9 @@
             </div>
         </section>
 
-        <script src="{% static "js/lib/Faker.js" %}"></script>
+        <script src="{% static "js/dist/delegate.js" %}"></script>
         <script src="{% static "js/dist/libs.js" %}"></script>
         <script src='//api.tiles.mapbox.com/mapbox.js/v1.5.1/mapbox.standalone.js'></script>
         <script src="{% static "js/dist/site.js" %}"></script>
-
-        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-        <script>
-            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-            g.src='//www.google-analytics.com/ga.js';
-            s.parentNode.insertBefore(g,s)}(document,'script'));
-        </script>
     </body>
 </html>

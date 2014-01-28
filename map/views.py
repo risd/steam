@@ -1,7 +1,6 @@
 from django.shortcuts import render
+from django.shortcuts import redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
-
-from backend.urls import v1_api
 
 
 @ensure_csrf_cookie
@@ -9,39 +8,20 @@ def map(request):
     """
     Directs request to the map application.
     """
-    return render(
-        request,
-        'map/map.html',
-        {
-            'backend': request.get_host(),
-            'api_version': v1_api.api_name,
-            'frontend': 'http://risd.github.io/steam-proto',
-        })
+    return render(request, 'map/map.html', {})
 
 
 def logged_in(request):
     """
-    Redirect after social authentication login.
-    Used to simply close the dialog box that pops up.
+    Redirect to map. Subsequent call will determine
+    state of the application.
     """
-    print '\n\n session'
-    print request.session
-    print request.session.keys()
-
-    print '\n\n Cookies'
-    print request.COOKIES
-
-    print '\n\n request.user'
-    print request.user
-    print request.user.id
-    print request.user.is_authenticated()
-
-    return render(request, 'map/redirected.html')
+    return redirect('map')
 
 
 def login_error(request):
     """
-    Redirect after social authentication login fails.
-    Used to simply close the dialog box that pops up.
+    Redirect to map. Subsequent call will determine
+    state of the application.
     """
-    return render(request, 'map/redirected_err.html')
+    return redirect('map.views.map')

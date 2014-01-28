@@ -1720,9 +1720,7 @@ function ModalFlow (context) {
     var self = {},
         state,              // current state
         previous_state,     // previous state
-        input_data,         // object that tracks input data
-        child_window,       // ref to the popup window object
-        child_status;       // set interval function to check
+        input_data;         // object that tracks input data
 
     self.dispatch = d3.dispatch('ApplyStateCallToAction');
 
@@ -1781,38 +1779,6 @@ function ModalFlow (context) {
                 }]),
 
         modal_animation = modalAnimation();
-
-    var ui = {
-        popup_window_properties: function () {
-            var cur_window = {};
-            if (window.screenX) {
-                cur_window.x = window.screenX;
-                cur_window.y = window.screenY;
-            } else {
-                cur_window.x = window.screenLeft;
-                cur_window.y = window.screenTop;
-            }
-
-            if (document.documentElement.clientHeight) {
-                cur_window.height = document
-                                    .documentElement
-                                    .clientHeight;
-                cur_window.width = document
-                                    .documentElement
-                                    .clientWidth;
-            } else {
-                cur_window.height = window.innerHeight;
-                cur_window.width = window.innerWidth;
-            }
-
-            cur_window.x += 50;
-            cur_window.y += 50;
-            cur_window.height -= 100;
-            cur_window.width -= 100;
-
-            return cur_window;
-        }
-    };
 
     // elements that need to be turned on and off
     var el = self.el = {
@@ -2232,32 +2198,9 @@ function ModalFlow (context) {
         console.log('show validation errors');
     }
 
-    function check_child () {
-        if (child_window.closed) {
-            // stop checking for the child window status
-            clearInterval(child_status);
-
-            // check to see if auth occured
-            context.user.check_auth();
-        } else {
-            // console.log('child open');
-        }
-    }
-
     function process_authentication (d) {
 
-        var popup = ui.popup_window_properties(),
-
-            window_features =
-                'width=' + popup.width + ',' +
-                'height=' + popup.height + ',' +
-                'left=' + popup.x + ',' +
-                'top=' + popup.y;
-
-        child_window =
-            window.open(d.url, '',  window_features);
-
-        child_status = setInterval(check_child, 1000);
+        window.location = d.url;
     }
 
     function apply_state (active) {
