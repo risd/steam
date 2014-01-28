@@ -1,8 +1,5 @@
 ### left off
 
-- pipeline
-    - pull in first/last/email (if possible) from different providers
-
 - profile work
     -sign out of profile
 

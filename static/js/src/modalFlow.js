@@ -414,10 +414,10 @@ function ModalFlow (context) {
                 // has not been authenticated
                 // assume the user has never been
                 // and ask them to sign up
-                self.state('call_to_action');
+                // self.state('call_to_action');
 
 
-                // self.state('choose_type_add_zip');
+                self.state('choose_type_add_zip');
             }
         });
 

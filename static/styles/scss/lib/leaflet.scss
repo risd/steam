@@ -196,71 +196,71 @@
 
 /* general toolbar styles */
 
-.leaflet-bar {
-	box-shadow: 0 1px 7px rgba(0,0,0,0.65);
-	-webkit-border-radius: 4px;
-	        border-radius: 4px;
-	}
-.leaflet-bar a, .leaflet-bar a:hover {
-	background-color: #fff;
-	border-bottom: 1px solid #ccc;
-	width: 26px;
-	height: 26px;
-	line-height: 26px;
-	display: block;
-	text-align: center;
-	text-decoration: none;
-	color: black;
-	}
-.leaflet-bar a,
-.leaflet-control-layers-toggle {
-	background-position: 50% 50%;
-	background-repeat: no-repeat;
-	display: block;
-	}
-.leaflet-bar a:hover {
-	background-color: #f4f4f4;
-	}
-.leaflet-bar a:first-child {
-	-webkit-border-top-left-radius: 4px;
-	        border-top-left-radius: 4px;
-	-webkit-border-top-right-radius: 4px;
-	        border-top-right-radius: 4px;
-	}
-.leaflet-bar a:last-child {
-	-webkit-border-bottom-left-radius: 4px;
-	        border-bottom-left-radius: 4px;
-	-webkit-border-bottom-right-radius: 4px;
-	        border-bottom-right-radius: 4px;
-	border-bottom: none;
-	}
-.leaflet-bar a.leaflet-disabled {
-	cursor: default;
-	background-color: #f4f4f4;
-	color: #bbb;
-	}
+// .leaflet-bar {
+// 	box-shadow: 0 1px 7px rgba(0,0,0,0.65);
+// 	-webkit-border-radius: 4px;
+// 	        border-radius: 4px;
+// 	}
+// .leaflet-bar a, .leaflet-bar a:hover {
+// 	background-color: #fff;
+// 	border-bottom: 1px solid #ccc;
+// 	width: 26px;
+// 	height: 26px;
+// 	line-height: 26px;
+// 	display: block;
+// 	text-align: center;
+// 	text-decoration: none;
+// 	color: black;
+// 	}
+// .leaflet-bar a,
+// .leaflet-control-layers-toggle {
+// 	background-position: 50% 50%;
+// 	background-repeat: no-repeat;
+// 	display: block;
+// 	}
+// .leaflet-bar a:hover {
+// 	background-color: #f4f4f4;
+// 	}
+// .leaflet-bar a:first-child {
+// 	-webkit-border-top-left-radius: 4px;
+// 	        border-top-left-radius: 4px;
+// 	-webkit-border-top-right-radius: 4px;
+// 	        border-top-right-radius: 4px;
+// 	}
+// .leaflet-bar a:last-child {
+// 	-webkit-border-bottom-left-radius: 4px;
+// 	        border-bottom-left-radius: 4px;
+// 	-webkit-border-bottom-right-radius: 4px;
+// 	        border-bottom-right-radius: 4px;
+// 	border-bottom: none;
+// 	}
+// .leaflet-bar a.leaflet-disabled {
+// 	cursor: default;
+// 	background-color: #f4f4f4;
+// 	color: #bbb;
+// 	}
 
-.leaflet-touch .leaflet-bar {
-	-webkit-border-radius: 10px;
-	        border-radius: 10px;
-	}
-.leaflet-touch .leaflet-bar a {
-	width: 30px;
-	height: 30px;
-	}
-.leaflet-touch .leaflet-bar a:first-child {
-	-webkit-border-top-left-radius: 7px;
-	        border-top-left-radius: 7px;
-	-webkit-border-top-right-radius: 7px;
-	        border-top-right-radius: 7px;
-	}
-.leaflet-touch .leaflet-bar a:last-child {
-	-webkit-border-bottom-left-radius: 7px;
-	        border-bottom-left-radius: 7px;
-	-webkit-border-bottom-right-radius: 7px;
-	        border-bottom-right-radius: 7px;
-	border-bottom: none;
-	}
+// .leaflet-touch .leaflet-bar {
+// 	-webkit-border-radius: 10px;
+// 	        border-radius: 10px;
+// 	}
+// .leaflet-touch .leaflet-bar a {
+// 	width: 30px;
+// 	height: 30px;
+// 	}
+// .leaflet-touch .leaflet-bar a:first-child {
+// 	-webkit-border-top-left-radius: 7px;
+// 	        border-top-left-radius: 7px;
+// 	-webkit-border-top-right-radius: 7px;
+// 	        border-top-right-radius: 7px;
+// 	}
+// .leaflet-touch .leaflet-bar a:last-child {
+// 	-webkit-border-bottom-left-radius: 7px;
+// 	        border-bottom-left-radius: 7px;
+// 	-webkit-border-bottom-right-radius: 7px;
+// 	        border-bottom-right-radius: 7px;
+// 	border-bottom: none;
+// 	}
 
 
 /* zoom control */
@@ -287,8 +287,8 @@
 .leaflet-control-layers {
 	box-shadow: 0 1px 7px rgba(0,0,0,0.4);
 	background: #f8f8f9;
-	-webkit-border-radius: 5px;
-	        border-radius: 5px;
+	// -webkit-border-radius: 5px;
+	//         border-radius: 5px;
 	}
 .leaflet-control-layers-toggle {
 	background-image: url(images/layers.png);

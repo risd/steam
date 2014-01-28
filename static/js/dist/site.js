@@ -1288,14 +1288,24 @@ module.exports = function radioSelection () {
                 return d.selected;
             });
 
-        sel.append('label')
+        var label_sel = sel.append('label')
             .attr('class', 'type-option-label')
             .attr('for', function (d, i) {
                 return 'type-option-' + d.value;
-            })
+            });
+
+        label_sel
+            .append('span')
+            .attr('class', 'text')
             .text(function (d, i) {
                 return d.label;
             });
+
+        label_sel
+            .append('span')
+            .attr('class', 'indicator')
+            .append('span')
+            .attr('class', 'fill');
     }
 
     return self;
@@ -2119,10 +2129,10 @@ function ModalFlow (context) {
                 // has not been authenticated
                 // assume the user has never been
                 // and ask them to sign up
-                self.state('call_to_action');
+                // self.state('call_to_action');
 
 
-                // self.state('choose_type_add_zip');
+                self.state('choose_type_add_zip');
             }
         });
 

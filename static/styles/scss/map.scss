@@ -1,4 +1,20 @@
-@mixin transition($what: all, $length: 1s, $easing: ease-in-out) {
+@mixin transformOrigin($perX, $perY) {
+    -webkit-transform-origin: $perX $perY;
+    -moz-transform-origin: $perX $perY;
+    -ms-transform-origin: $perX $perY;
+    -o-transform-origin: $perX $perY;
+    transform-origin: $perX $perY;
+}
+
+@mixin scale($size) {
+    -webkit-transform: scale($size);
+    -moz-transform: scale($size);
+    -ms-transform: scale($size);
+    -o-transform: scale($size);
+    transform: scale($size);
+}
+
+@mixin transition($what, $length, $easing) {
     -moz-transition:    $what $length $easing;
     -o-transition:      $what $length $easing;
     -webkit-transition: $what $length $easing;
@@ -696,8 +712,8 @@ label {
 }
 select {
     font-size: 24px;
-    background:none;
-    @include transition(all 0.2s ease-in-out);
+    background: none;
+    @include transition(all, 0.2s, ease-in-out);
     @include sentinel;
 
     width: 100%;
@@ -729,7 +745,7 @@ textarea {
     font-size: 24px;
     background:none;
     
-    @include transition(all 0.2s ease-in-out);
+    @include transition(all, 0.2s, ease-in-out);
     @include sentinel;
 }
 textarea:focus {
@@ -738,7 +754,7 @@ textarea:focus {
     outline: none;
     box-shadow:0px 0px 5px rgba(30,30,30,0.2);
 
-    @include transition(all 0.2s ease-in-out);
+    @include transition(all, 0.2s, ease-in-out);
     -webkit-font-smoothing:antialiased;
 }
 input,
@@ -786,6 +802,51 @@ textarea {
 }
 .type-option-label {
     width: 100%;
+    display: block;
+
+    .indicator {
+        display: block;
+        height: 20px;
+        width: 20px;
+        margin: 20px auto 0 auto;
+        border-radius: 12px;
+        border: 2px solid $off-white;
+        background: transparent;
+        position: relative;
+
+        @include transition(all, 0.2s, cubic-bezier(.95, .05, .795, .035));
+
+        .fill {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+            background: $white;
+
+            @include transformOrigin(50%, 50%);
+            @include scale(0);
+            @include transition(all, 0.2s, cubic-bezier(.95, .05, .795, .035));
+        }
+    }
+}
+input[type=radio] {
+    opacity: 0;
+    position: absolute;
+    margin-left: 2.4em;
+    margin-top: 0.6em;
+}
+.type-option input[type="radio"]:checked + label {
+    .indicator {
+        @include transition(all, 0.3s, cubic-bezier(.95, .05, .795, .035));
+        border-color: $white;
+    }
+    .fill {
+        @include transition(all, 0.3s, cubic-bezier(.95, .05, .795, .035));
+        @include scale(0.7);
+    }
+
 }
 ::-webkit-resizer {
     // color: $white;

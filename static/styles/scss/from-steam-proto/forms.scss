@@ -49,9 +49,9 @@ input:nth-child(odd) {
 	/*background:orange;*/
 }
 
-input[type=radio] {
-	display: none;
-}
+// input[type=radio] {
+// 	display: none;
+// }
 
 label {
 	display: block;
@@ -69,29 +69,29 @@ label:last-child {
 	margin-right:0px;
 }
 
-label:after {
-	content: "";
-	display: block;
-	margin:20px auto 0px auto;
-	width: 20px;
-	height: 20px;
-	border-radius:12px;
-	border:2px solid rgb(200,200,200);
-	-webkit-transition: all 0.5s ease-in-out;
-}
+// label:after {
+// 	content: "";
+// 	display: block;
+// 	margin:20px auto 0px auto;
+// 	width: 20px;
+// 	height: 20px;
+// 	border-radius:12px;
+// 	border:2px solid rgb(200,200,200);
+// 	-webkit-transition: all 0.5s ease-in-out;
+// }
 
 
 
-input[type=radio]:checked + label:after {
-    content: "\2022";
-    color: #f3f3f3;
-    font-size: 30px;
-    border:2px solid rgb(240,240,240);
-    background:rgba(240,240,240,0.3);
-    margin-top:20px;
-    text-align: center;
-    line-height: 18px;
-}
+// input[type=radio]:checked + label:after {
+//     content: "\2022";
+//     color: #f3f3f3;
+//     font-size: 30px;
+//     border:2px solid rgb(240,240,240);
+//     background:rgba(240,240,240,0.3);
+//     margin-top:20px;
+//     text-align: center;
+//     line-height: 18px;
+// }
 
 
 input[type="submit"] {

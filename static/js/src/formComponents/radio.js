@@ -179,14 +179,24 @@ module.exports = function radioSelection () {
                 return d.selected;
             });
 
-        sel.append('label')
+        var label_sel = sel.append('label')
             .attr('class', 'type-option-label')
             .attr('for', function (d, i) {
                 return 'type-option-' + d.value;
-            })
+            });
+
+        label_sel
+            .append('span')
+            .attr('class', 'text')
             .text(function (d, i) {
                 return d.label;
             });
+
+        label_sel
+            .append('span')
+            .attr('class', 'indicator')
+            .append('span')
+            .attr('class', 'fill');
     }
 
     return self;
