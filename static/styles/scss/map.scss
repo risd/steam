@@ -1,3 +1,23 @@
+@mixin transition($what: all, $length: 1s, $easing: ease-in-out) {
+    -moz-transition:    $what $length $easing;
+    -o-transition:      $what $length $easing;
+    -webkit-transition: $what $length $easing;
+    -ms-transition:     $what $length $easing;
+    transition:         $what $length $easing;
+
+}
+
+@mixin rotate($deg: 0, $m11: 0, $m12: 0, $m21: 0, $m22: 0) {
+     -moz-transform: rotate($deg + deg);
+       -o-transform: rotate($deg + deg);
+  -webkit-transform: rotate($deg + deg);
+      -ms-transform: rotate($deg + deg);
+          transform: rotate($deg + deg);
+             filter: progid:DXImageTransform.Microsoft.Matrix(
+                     M11=#{$m11}, M12=#{$m12}, M21=#{$m21}, M22=#{$m22}, sizingMethod='auto expand');
+               zoom: 1;
+}
+
 @mixin sentinel {
     font-family: 'Sentinel SSm A', 'Sentinel SSm B';
     font-weight: 400;
@@ -659,11 +679,12 @@ form / profile
     top: -5px;
     right: -10px;
     border-right: 1px solid $off-white;
-    -webkit-transform: rotate(10deg);
+    
+    @include rotate(10);
 }
 .login-option:last-child:after {
     border-right: 0;
-    -webkit-transform: rotate(0deg);
+    @include rotate(10);
 }
 
 input {
@@ -676,7 +697,7 @@ label {
 select {
     font-size: 24px;
     background:none;
-    -webkit-transition:all 0.2s ease-in-out;
+    @include transition(all 0.2s ease-in-out);
     @include sentinel;
 
     width: 100%;
@@ -707,7 +728,8 @@ textarea {
 
     font-size: 24px;
     background:none;
-    -webkit-transition:all 0.2s ease-in-out;
+    
+    @include transition(all 0.2s ease-in-out);
     @include sentinel;
 }
 textarea:focus {
@@ -716,7 +738,7 @@ textarea:focus {
     outline: none;
     box-shadow:0px 0px 5px rgba(30,30,30,0.2);
 
-    -webkit-transition:all 0.2s ease-in-out;
+    @include transition(all 0.2s ease-in-out);
     -webkit-font-smoothing:antialiased;
 }
 input,
