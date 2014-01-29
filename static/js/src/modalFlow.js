@@ -5,9 +5,7 @@ var geoComponent =
         require('./formComponents/radio'),
 
     socialAuthComponent =
-        require('./formComponents/socialAuthSelection'),
-
-    modalAnimation = require('./formComponents/modalAnimation');
+        require('./formComponents/socialAuthSelection');
 
 module.exports = ModalFlow;
 
@@ -71,9 +69,7 @@ function ModalFlow (context) {
                     label: 'Industry',
                     value: 'industry',
                     selected: false
-                }]),
-
-        modal_animation = modalAnimation();
+                }]);
 
     // elements that need to be turned on and off
     var el = self.el = {
@@ -330,21 +326,10 @@ function ModalFlow (context) {
             });
         }
 
-        modal_animation.selection(d3.select('#modal-animation'));
-
-        self.dispatch
-            .on('ApplyStateCallToAction.modalNetwork',
-                function () {
-                    console.log('state of module is now calltoaction');
-                    modal_animation
-                        .render();
-                });
-
         // how validation can propogate to this level
         social_auth
             .dispatch
             .on('valid.formElementCheck', function (d, i) {
-                modal_animation.addHighlight();
                 if (authIsValid()) {
                     enable_auth_me();
                 }
@@ -414,10 +399,10 @@ function ModalFlow (context) {
                 // has not been authenticated
                 // assume the user has never been
                 // and ask them to sign up
-                // self.state('call_to_action');
+                self.state('call_to_action');
 
 
-                self.state('choose_type_add_zip');
+                // self.state('choose_type_add_zip');
             }
         });
 

@@ -247,12 +247,12 @@ Leaflet Marker Cluster Styles
 .represents-one-entity:hover span {
   display: none; }
 .represents-one-entity:hover div.span-wrapper {
-  background-image: url("/static/svg/magnifyingglass.svg"); }
+  background-image: url("/static/svg/fullscreen.svg"); }
 
 .represents-multiple-entities:hover span {
   display: none; }
 .represents-multiple-entities:hover div.span-wrapper {
-  background-image: url("/static/svg/fullscreen.svg"); }
+  background-image: url("/static/svg/magnifyingglass.svg"); }
 
 .mc-2-digit {
   border-radius: 29px; }
