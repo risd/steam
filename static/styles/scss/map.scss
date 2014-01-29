@@ -122,28 +122,28 @@ header {
         display: block;
     }
 
-    &.fullscreen {
-        color: $white;
+    color: $white;
+    @include transition(background-color,
+                        0.3s,
+                        cubic-bezier(.95, .05, .795, .035));
+    background-color: rgba($color-slate,
+                           $fullscreen-color-opacity);
 
-        background-color: rgba($color-slate,
+    &.research {
+        background-color: rgba($color-research,
                                $fullscreen-color-opacity);
-
-        &.research {
-            background-color: rgba($color-research,
-                                   $fullscreen-color-opacity);
-        }
-        &.political {
-            background-color: rgba($color-political,
-                                   $fullscreen-color-opacity);
-        }
-        &.education {
-            background-color: rgba($color-education,
-                                   $fullscreen-color-opacity);
-        }
-        &.industry {
-            background-color: rgba($color-industry,
-                                   $fullscreen-color-opacity);
-        }
+    }
+    &.political {
+        background-color: rgba($color-political,
+                               $fullscreen-color-opacity);
+    }
+    &.education {
+        background-color: rgba($color-education,
+                               $fullscreen-color-opacity);
+    }
+    &.industry {
+        background-color: rgba($color-industry,
+                               $fullscreen-color-opacity);
     }
 }
 

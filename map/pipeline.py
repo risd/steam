@@ -18,7 +18,6 @@ def create_steamie(request,
                    *args,
                    **kwargs):
     """Create Steamie. Depends on create_user"""
-    print "create steamie"
 
     if user is None:
         # for unauthed requests
@@ -29,24 +28,15 @@ def create_steamie(request,
 
     if created:
         avatar_url = ''
-        details = {
-            'first_name': '',
-            'last_name': '',
-            'email': '',
-        }
 
         if isinstance(backend, FacebookAppOAuth2):
             avatar_url = 'http://graph.facebook.com/%s/picture?type=small' \
                 % response['id']
 
-            details = FacebookAppOAuth2.get_user_details(response)
-
             logger.info("Authenticated. Facebook.")
 
         elif isinstance(backend, TwitterOAuth):
             avatar_url = response.get('profile_image_url', '')
-
-            details = TwitterOAuth.get_user_details(response)
 
             logger.info("Authenticated. Twitter.")
 
@@ -56,14 +46,7 @@ def create_steamie(request,
             avatar_url = "http://profiles.google.com/s2/photos/profile/" +\
                 response['id'] + "?sz=" + size;
 
-            details = GoogleOAuth2.get_user_details(response)
-
             logger.info("Authenticated. Google.")
-
-        steamie.user.first_name = details['first_name']
-        steamie.user.last_name = details['last_name']
-        steamie.user.email = details['email']
-        steamie.user.save()
 
         steamie.avatar_url = avatar_url
         steamie.save()

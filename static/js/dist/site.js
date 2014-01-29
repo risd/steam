@@ -2034,7 +2034,7 @@ function ModalFlow (context) {
         console.log(context.user.data());
 
         context.api.steamie_update(
-            context.user.data().objects[0],
+            context.user.data(),
             function (err, results_raw) {
                 var results = JSON.parse(results_raw.responseText);
 
