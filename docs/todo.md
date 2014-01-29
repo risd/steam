@@ -18,3 +18,6 @@
             - could also use that for while "check_auth" is running, so you don't see "add me!" unless its relevant.
 
     - go through a clean sign up.
+
+@babette, ask about what kind of links you want to send out?
+    - WA state? WA 8th district? both?

@@ -1,34 +1,21 @@
 /*
-Syntax error: Undefined variable: "$white".
-        on line 50 of static/styles/scss/map.scss
+Syntax error: Undefined variable: "$color-slate".
+        on line 3 of static/styles/scss/from-steam-proto/platonic.scss
 
-45: 
-46:     &.active {
-47:         display: block;
-48:     }
-49: 
-50:     color: $white;
-51:     @include transition(background-color,
-52:                         0.3s,
-53:                         cubic-bezier(.95, .05, .795, .035));
-54:     background-color: rgba($color-slate,
-55:                            $fullscreen-color-opacity);
+1: @import '../css3';
+2: 
+3: $orb: $color-slate;;
+4: 
+5: .platonic .orb{
+6: 	fill: rgba($orb, 1);
+7: 	stroke: rgba($orb, 1);
+8: 	@include transformOrigin(50%, 50%);
 
 Backtrace:
-static/styles/scss/map.scss:50
+static/styles/scss/from-steam-proto/platonic.scss:3
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/script/tree/variable.rb:48:in `_perform'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/script/tree/node.rb:50:in `perform'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/perform.rb:301:in `visit_prop'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/base.rb:37:in `visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/perform.rb:100:in `visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/base.rb:53:in `map'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/base.rb:53:in `visit_children'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/perform.rb:109:in `block in visit_children'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/perform.rb:121:in `with_environment'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/perform.rb:108:in `visit_children'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/base.rb:37:in `block in visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/perform.rb:325:in `visit_rule'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/perform.rb:332:in `visit_variable'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/base.rb:37:in `visit'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/perform.rb:100:in `visit'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
@@ -61,4 +48,4 @@ static/styles/scss/map.scss:50
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Undefined variable: \"$white\".\A         on line 50 of static/styles/scss/map.scss\A \A 45: \A 46:     &.active {\A 47:         display: block;\A 48:     }\A 49: \A 50:     color: $white;\A 51:     @include transition(background-color,\A 52:                         0.3s,\A 53:                         cubic-bezier(.95, .05, .795, .035));\A 54:     background-color: rgba($color-slate,\A 55:                            $fullscreen-color-opacity);"; }
+  content: "Syntax error: Undefined variable: \"$color-slate\".\A         on line 3 of static/styles/scss/from-steam-proto/platonic.scss\A \A 1: @import '../css3';\A 2: \A 3: $orb: $color-slate;;\A 4: \A 5: .platonic .orb{\A 6: 	fill: rgba($orb, 1);\A 7: 	stroke: rgba($orb, 1);\A 8: 	@include transformOrigin(50%, 50%);"; }

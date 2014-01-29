@@ -3,6 +3,7 @@ module.exports = function flowAnimation () {
         selection,
         force,
         data,
+        canvas_sel,
         nodes_sel,
         initial = 10,
         node_count,
@@ -19,12 +20,20 @@ module.exports = function flowAnimation () {
         return self;
     };
 
+    self.remove = function () {
+        if (rendered) {
+            force.stop();
+            force = undefined;
+            canvas_sel.remove();
+        }
+        return self;
+    };
+
     self.render = function () {
         if (rendered) {
             force.alpha(10);
             return;
         }
-        rendered = true;
         console.log('rendering');
         console.log(selection);
         var random = d3.random.normal(0, 15);
@@ -59,7 +68,7 @@ module.exports = function flowAnimation () {
             .nodes(data)
             .on('tick', tick);
 
-        var canvas_sel = selection
+        canvas_sel = selection
             .append('svg')
             .attr('height', height)
             .attr('width', width)
@@ -68,6 +77,7 @@ module.exports = function flowAnimation () {
         nodes_sel = canvas_sel.selectAll('.movement');
 
         start();
+        rendered = true;
     };
 
     function add_highlight (x, y) {

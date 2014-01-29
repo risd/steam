@@ -985,7 +985,139 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../ui/checkmark":22,"./text":12}],10:[function(require,module,exports){
+},{"../ui/checkmark":23,"./text":13}],10:[function(require,module,exports){
+module.exports = function flowAnimation () {
+    var self = {},
+        selection,
+        force,
+        data,
+        canvas_sel,
+        nodes_sel,
+        initial = 10,
+        node_count,
+        rendered = false;
+
+    self.selection = function (x) {
+        if(!arguments.length) return selection;
+        selection = x;
+        return self;
+    };
+
+    self.addHighlight = function (x, y) {
+        add_highlight(x, y);
+        return self;
+    };
+
+    self.remove = function () {
+        if (rendered) {
+            force.stop();
+            force = undefined;
+            canvas_sel.remove();
+        }
+        return self;
+    };
+
+    self.render = function () {
+        if (rendered) {
+            force.alpha(10);
+            return;
+        }
+        console.log('rendering');
+        console.log(selection);
+        var random = d3.random.normal(0, 15);
+
+        var height = window.innerHeight,
+            width = window.innerWidth;
+
+        data = d3.range(initial).map(function (i) {
+            var d = {
+                id: i,
+                x: random() + (width/2),
+                y: random() + (height/2),
+                r: 8,
+                highlight: false
+            };
+            d.dx = d.x;
+            d.dy = d.y;
+
+            console.log(d.x, d.y);
+
+            return d;
+        });
+
+        console.log(data);
+
+        force = d3.layout.force()
+            .gravity(0.1)
+            .friction(0.9)
+            .charge(-30)
+            .size([width, height])
+            .links([])
+            .nodes(data)
+            .on('tick', tick);
+
+        canvas_sel = selection
+            .append('svg')
+            .attr('height', height)
+            .attr('width', width)
+            .append('g');
+
+        nodes_sel = canvas_sel.selectAll('.movement');
+
+        start();
+        rendered = true;
+    };
+
+    function add_highlight (x, y) {
+        var prev_highlight;
+        if ((data.length - 1) >= (initial)) {
+            prev_highlight = data.pop();
+        }
+
+        data.push({
+            id: (prev_highlight ? prev_highlight.id : data.length),
+            x: x,
+            y: y,
+            dx: x,
+            dy: y,
+            r: 10,
+            highlight: true
+        });
+        start();
+    }
+
+    function start() {
+        nodes_sel = nodes_sel
+            .data(force.nodes(), function (d) { return d.id; });
+
+        nodes_sel
+            .enter()
+            .append('circle')
+            .attr('class', function (d) {
+                return 'movement ' + (d.highlight ? 'highlight' : '');
+            })
+            .attr('cx', function (d) { return d.x; })
+            .attr('cy', function (d) { return d.y; })
+            .attr('r', function (d) { return d.r; });
+
+        nodes_sel
+            .exit()
+            .transition()
+            .duration(800)
+            .attr('r', 0)
+            .remove();
+
+        force.start();
+    }
+
+    function tick () {
+        nodes_sel.attr('cx', function (d) { return d.x; })
+            .attr('cy', function (d) { return d.y; });
+    }
+
+    return self;
+};
+},{}],11:[function(require,module,exports){
 module.exports = function radioSelection () {
     var self = {},
         valid = false,
@@ -1189,7 +1321,7 @@ module.exports = function radioSelection () {
 
     return self;
 };
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var Checkmark = require('../ui/checkmark');
 
 module.exports = function socialAuthSelection (context) {
@@ -1276,7 +1408,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":22}],12:[function(require,module,exports){
+},{"../ui/checkmark":23}],13:[function(require,module,exports){
 // text input, with placeholder
 // dispatches when the value changes
 // against the initial value
@@ -1352,7 +1484,7 @@ module.exports = function TextInput () {
 
     return self;
 };
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 // textarea, with placeholder, and label
 // dispatches when the value changes
 // against the initial value
@@ -1437,7 +1569,7 @@ module.exports = function TextArea () {
 
     return self;
 };
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = function UpdatableComponentManager () {
     var self = {},
         updatable = [],
@@ -1491,7 +1623,7 @@ module.exports = function UpdatableComponentManager () {
 
     return self;
 };
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./util/clone'),
@@ -1552,7 +1684,7 @@ function STEAMMap() {
 
     init();
 }
-},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./filterUI":7,"./filters":8,"./map":16,"./modalFlow":17,"./network":18,"./user":23,"./util/clone":24,"./util/getTSV":25}],16:[function(require,module,exports){
+},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./filterUI":7,"./filters":8,"./map":17,"./modalFlow":18,"./network":19,"./user":24,"./util/clone":25,"./util/getTSV":26}],17:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -1591,7 +1723,7 @@ function Map (context) {
 
     return map;
 }
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
 
@@ -1599,7 +1731,10 @@ var geoComponent =
         require('./formComponents/radio'),
 
     socialAuthComponent =
-        require('./formComponents/socialAuthSelection');
+        require('./formComponents/socialAuthSelection'),
+
+    modalAnimation =
+        require('./formComponents/modalAnimation');
 
 module.exports = ModalFlow;
 
@@ -1609,7 +1744,9 @@ function ModalFlow (context) {
         previous_state,     // previous state
         input_data;         // object that tracks input data
 
-    self.dispatch = d3.dispatch('ApplyStateCallToAction');
+    self.dispatch = d3.dispatch('ApplyStateWaitingForAddMeFlow',
+                                'ApplyStateProfile',
+                                'ApplyStateChooseTypeAddZip');
 
     // form components
     var social_auth =
@@ -1663,7 +1800,9 @@ function ModalFlow (context) {
                     label: 'Industry',
                     value: 'industry',
                     selected: false
-                }]);
+                }]),
+
+        modal_animation = modalAnimation();
 
     // elements that need to be turned on and off
     var el = self.el = {
@@ -1815,7 +1954,6 @@ function ModalFlow (context) {
             }];
 
             apply_state(active);
-            self.dispatch.ApplyStateCallToAction();
         },
         choose_type_add_zip: function () {
             var active = [{
@@ -1836,6 +1974,21 @@ function ModalFlow (context) {
             }];
 
             apply_state(active);
+            self.dispatch.ApplyStateChooseTypeAddZip();
+        },
+        waiting_for_add_me_flow: function () {
+            console.log('setting waiting_for_add_me_flow');
+            var active = [{
+                el_type: 'display',
+                el_name: 'modal'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
+            }];
+            console.log(active);
+
+            apply_state(active);
+            self.dispatch.ApplyStateWaitingForAddMeFlow();
         },
         thank_you: function () {
             var active = [{
@@ -1870,6 +2023,7 @@ function ModalFlow (context) {
             }];
 
             apply_state(active);
+            self.dispatch.ApplyStateProfile();
         },
         profile_institution: function () {
             var active = [{
@@ -1887,6 +2041,7 @@ function ModalFlow (context) {
             }];
 
             apply_state(active);
+            self.dispatch.ApplyStateProfile();
         }
     };
 
@@ -1903,6 +2058,26 @@ function ModalFlow (context) {
         social_auth.render();
         select_type.render();
         select_work_in.render();
+        modal_animation
+            .selection(d3.select('#modal-animation'));
+
+        self.dispatch
+            .on('ApplyStateWaitingForAddMeFlow.modalNetwork',
+                function () {
+                    modal_animation.render();
+                });
+
+        self.dispatch
+            .on('ApplyStateProfile', function () {
+                modal_animation.remove();
+            });
+
+        self.dispatch
+            .on('ApplyStateChooseTypeAddZip', function () {
+                // if you get kicked back to this state,
+                // you shouldn't have the animation
+                modal_animation.remove();
+            });
 
         if (context.countries.data()) {
             // if the data is loaded already,
@@ -1952,6 +2127,14 @@ function ModalFlow (context) {
 
         context.user
                .dispatch.on('checkAuthComplete', function(err, d) {
+
+
+            // remove loading icon
+            d3.select('#activate-add-yourself .add-me')
+                .classed('active', true);
+            d3.select('#activate-add-yourself .loading')
+                .classed('active', false);
+
             d = context.user.data();
             console.log('auth check dispatch modal');
             console.log(d);
@@ -1995,8 +2178,7 @@ function ModalFlow (context) {
                 // and ask them to sign up
                 self.state('call_to_action');
 
-
-                // self.state('choose_type_add_zip');
+                // self.state('waiting_for_add_me_flow');
             }
         });
 
@@ -2024,6 +2206,10 @@ function ModalFlow (context) {
     };
 
     function add_me_flow () {
+        // set state
+        self.state('waiting_for_add_me_flow');
+
+
         // for the User that is stored.
         context.user
             .type(select_type.selected())
@@ -2163,7 +2349,7 @@ function ModalFlow (context) {
 
     return self;
 }
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":10,"./formComponents/socialAuthSelection":11}],18:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/modalAnimation":10,"./formComponents/radio":11,"./formComponents/socialAuthSelection":12}],19:[function(require,module,exports){
 module.exports = Network;
 
 // Network graph
@@ -2334,7 +2520,7 @@ function Network (context) {
         // add a close button
         canvas_wrapper
             .selectAll('.button')
-            .data([{ t: 'x', f: network.destroy }])
+            .data([{ t: 'x', f: network.remove }])
             .enter()
             .append('div')
             .attr('class', 'button')
@@ -2468,7 +2654,7 @@ function Network (context) {
         return network;
     };
 
-    network.destroy = function () {
+    network.remove = function () {
         // remove svg
         canvas.remove();
 
@@ -2479,6 +2665,9 @@ function Network (context) {
         nodes_sel.data([])
             .exit()
             .remove();
+
+        force.stop();
+        force = undefined;
 
         // these wont be set until after
         // a network has been initialized
@@ -2615,7 +2804,7 @@ function Network (context) {
 
     return network;
 }
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution');
 
@@ -2685,7 +2874,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./profile_individual":20,"./profile_institution":21}],20:[function(require,module,exports){
+},{"./profile_individual":21,"./profile_institution":22}],21:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3060,7 +3249,7 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":10,"./formComponents/text":12,"./formComponents/textarea":13,"./formComponents/updatableManager":14}],21:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":13,"./formComponents/textarea":14,"./formComponents/updatableManager":15}],22:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3489,7 +3678,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":10,"./formComponents/text":12,"./formComponents/textarea":13,"./formComponents/updatableManager":14}],22:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":13,"./formComponents/textarea":14,"./formComponents/updatableManager":15}],23:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -3545,7 +3734,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -3700,7 +3889,7 @@ function User (context) {
 
     return user;
 }
-},{"./profile":19}],24:[function(require,module,exports){
+},{"./profile":20}],25:[function(require,module,exports){
 var clone = function clone (obj) {
     // Thanks to stackoverflow:
     // http://stackoverflow.com/questions/
@@ -3735,7 +3924,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.clone = clone;
 }
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
         data;
@@ -3760,5 +3949,5 @@ module.exports = function dataTSV (url) {
 
     return self;
 };
-},{}]},{},[15])
+},{}]},{},[16])
 ;

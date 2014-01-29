@@ -168,7 +168,7 @@ function Network (context) {
         // add a close button
         canvas_wrapper
             .selectAll('.button')
-            .data([{ t: 'x', f: network.destroy }])
+            .data([{ t: 'x', f: network.remove }])
             .enter()
             .append('div')
             .attr('class', 'button')
@@ -302,7 +302,7 @@ function Network (context) {
         return network;
     };
 
-    network.destroy = function () {
+    network.remove = function () {
         // remove svg
         canvas.remove();
 
@@ -313,6 +313,9 @@ function Network (context) {
         nodes_sel.data([])
             .exit()
             .remove();
+
+        force.stop();
+        force = undefined;
 
         // these wont be set until after
         // a network has been initialized

@@ -1,0 +1,52 @@
+@mixin animation($name,
+                 $time,
+                 $easing,
+                 $iterations,
+                 $direction) {
+
+    -webkit-animation: $name $time $easing $iterations $direction;
+    -moz-animation: $name $time $easing $iterations $direction;
+    -ms-animation: $name $time $easing $iterations $direction;
+    -o-animation: $name $time $easing $iterations $direction;
+    animation: $name $time $easing $iterations $direction;
+}
+
+@mixin transformOrigin($perX, $perY) {
+    -webkit-transform-origin: $perX $perY;
+    -moz-transform-origin: $perX $perY;
+    -ms-transform-origin: $perX $perY;
+    -o-transform-origin: $perX $perY;
+    transform-origin: $perX $perY;
+}
+
+@mixin scale($size) {
+    -webkit-transform: scale($size);
+    -moz-transform: scale($size);
+    -ms-transform: scale($size);
+    -o-transform: scale($size);
+    transform: scale($size);
+}
+
+@mixin transition($what, $length, $easing) {
+    -moz-transition:    $what $length $easing;
+    -o-transition:      $what $length $easing;
+    -webkit-transition: $what $length $easing;
+    -ms-transition:     $what $length $easing;
+    transition:         $what $length $easing;
+
+}
+
+@mixin rotate($deg: 0, $m11: 0, $m12: 0, $m21: 0, $m22: 0) {
+     -moz-transform: rotate($deg + deg);
+       -o-transform: rotate($deg + deg);
+  -webkit-transform: rotate($deg + deg);
+      -ms-transform: rotate($deg + deg);
+          transform: rotate($deg + deg);
+             filter: progid:DXImageTransform.Microsoft.Matrix(
+                     M11=#{$m11},
+                     M12=#{$m12},
+                     M21=#{$m21},
+                     M22=#{$m22},
+                     sizingMethod='auto expand');
+               zoom: 1;
+}

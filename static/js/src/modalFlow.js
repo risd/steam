@@ -5,7 +5,10 @@ var geoComponent =
         require('./formComponents/radio'),
 
     socialAuthComponent =
-        require('./formComponents/socialAuthSelection');
+        require('./formComponents/socialAuthSelection'),
+
+    modalAnimation =
+        require('./formComponents/modalAnimation');
 
 module.exports = ModalFlow;
 
@@ -15,7 +18,9 @@ function ModalFlow (context) {
         previous_state,     // previous state
         input_data;         // object that tracks input data
 
-    self.dispatch = d3.dispatch('ApplyStateCallToAction');
+    self.dispatch = d3.dispatch('ApplyStateWaitingForAddMeFlow',
+                                'ApplyStateProfile',
+                                'ApplyStateChooseTypeAddZip');
 
     // form components
     var social_auth =
@@ -69,7 +74,9 @@ function ModalFlow (context) {
                     label: 'Industry',
                     value: 'industry',
                     selected: false
-                }]);
+                }]),
+
+        modal_animation = modalAnimation();
 
     // elements that need to be turned on and off
     var el = self.el = {
@@ -221,7 +228,6 @@ function ModalFlow (context) {
             }];
 
             apply_state(active);
-            self.dispatch.ApplyStateCallToAction();
         },
         choose_type_add_zip: function () {
             var active = [{
@@ -242,6 +248,21 @@ function ModalFlow (context) {
             }];
 
             apply_state(active);
+            self.dispatch.ApplyStateChooseTypeAddZip();
+        },
+        waiting_for_add_me_flow: function () {
+            console.log('setting waiting_for_add_me_flow');
+            var active = [{
+                el_type: 'display',
+                el_name: 'modal'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
+            }];
+            console.log(active);
+
+            apply_state(active);
+            self.dispatch.ApplyStateWaitingForAddMeFlow();
         },
         thank_you: function () {
             var active = [{
@@ -276,6 +297,7 @@ function ModalFlow (context) {
             }];
 
             apply_state(active);
+            self.dispatch.ApplyStateProfile();
         },
         profile_institution: function () {
             var active = [{
@@ -293,6 +315,7 @@ function ModalFlow (context) {
             }];
 
             apply_state(active);
+            self.dispatch.ApplyStateProfile();
         }
     };
 
@@ -309,6 +332,26 @@ function ModalFlow (context) {
         social_auth.render();
         select_type.render();
         select_work_in.render();
+        modal_animation
+            .selection(d3.select('#modal-animation'));
+
+        self.dispatch
+            .on('ApplyStateWaitingForAddMeFlow.modalNetwork',
+                function () {
+                    modal_animation.render();
+                });
+
+        self.dispatch
+            .on('ApplyStateProfile', function () {
+                modal_animation.remove();
+            });
+
+        self.dispatch
+            .on('ApplyStateChooseTypeAddZip', function () {
+                // if you get kicked back to this state,
+                // you shouldn't have the animation
+                modal_animation.remove();
+            });
 
         if (context.countries.data()) {
             // if the data is loaded already,
@@ -358,6 +401,14 @@ function ModalFlow (context) {
 
         context.user
                .dispatch.on('checkAuthComplete', function(err, d) {
+
+
+            // remove loading icon
+            d3.select('#activate-add-yourself .add-me')
+                .classed('active', true);
+            d3.select('#activate-add-yourself .loading')
+                .classed('active', false);
+
             d = context.user.data();
             console.log('auth check dispatch modal');
             console.log(d);
@@ -401,8 +452,7 @@ function ModalFlow (context) {
                 // and ask them to sign up
                 self.state('call_to_action');
 
-
-                // self.state('choose_type_add_zip');
+                // self.state('waiting_for_add_me_flow');
             }
         });
 
@@ -430,6 +480,10 @@ function ModalFlow (context) {
     };
 
     function add_me_flow () {
+        // set state
+        self.state('waiting_for_add_me_flow');
+
+
         // for the User that is stored.
         context.user
             .type(select_type.selected())

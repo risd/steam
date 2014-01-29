@@ -1,83 +1,8 @@
-@mixin transformOrigin($perX, $perY) {
-    -webkit-transform-origin: $perX $perY;
-    -moz-transform-origin: $perX $perY;
-    -ms-transform-origin: $perX $perY;
-    -o-transform-origin: $perX $perY;
-    transform-origin: $perX $perY;
-}
-
-@mixin scale($size) {
-    -webkit-transform: scale($size);
-    -moz-transform: scale($size);
-    -ms-transform: scale($size);
-    -o-transform: scale($size);
-    transform: scale($size);
-}
-
-@mixin transition($what, $length, $easing) {
-    -moz-transition:    $what $length $easing;
-    -o-transition:      $what $length $easing;
-    -webkit-transition: $what $length $easing;
-    -ms-transition:     $what $length $easing;
-    transition:         $what $length $easing;
-
-}
-
-@mixin rotate($deg: 0, $m11: 0, $m12: 0, $m21: 0, $m22: 0) {
-     -moz-transform: rotate($deg + deg);
-       -o-transform: rotate($deg + deg);
-  -webkit-transform: rotate($deg + deg);
-      -ms-transform: rotate($deg + deg);
-          transform: rotate($deg + deg);
-             filter: progid:DXImageTransform.Microsoft.Matrix(
-                     M11=#{$m11}, M12=#{$m12}, M21=#{$m21}, M22=#{$m22}, sizingMethod='auto expand');
-               zoom: 1;
-}
-
-@mixin sentinel {
-    font-family: 'Sentinel SSm A', 'Sentinel SSm B';
-    font-weight: 400;
-    font-style: normal;
-
-    -webkit-font-smoothing: antialiased;
-}
-
-@mixin antenna-bold {
-    font-family: "Antenna Comp";
-    font-style: normal;
-    font-weight: bold;
-    
-    -webkit-font-smoothing: antialiased;
-}
-
-@mixin antenna-medium {
-    font-family: "Antenna Comp Medium";
-    font-style: normal;
-    font-weight: normal;
-    
-    -webkit-font-smoothing: antialiased;
-}
-
-
 .center-in-parent {
     position: relative;
     margin: 0 auto;
     width: 80%;
 }
-
-// colors
-
-$color-research: rgb(105,230,64);
-$color-political: rgb(255,97,127);
-$color-education: rgb(255,137,49);
-$color-industry: rgb(39,180,242);
-$color-slate: rgb(81,98,114);
-$white: rgb(255,255,255);
-$off-white: rgb(200,200,200);
-$off-black: rgb(30,30,30);
-
-// overlay colors
-$fullscreen-color-opacity: 0.8;
 
 
 html, body {
@@ -495,7 +420,7 @@ network graph
 /* network nodes representing institutions  */
 .node.institution circle.outter {
     stroke-width: 1;
-    fill: none;   
+    fill: transparent;   
 }
 .node.institution circle.inner {
     stroke-width: 0;
