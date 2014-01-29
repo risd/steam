@@ -198,6 +198,10 @@ function ModalFlow (context) {
     };
 
     var states = {
+        just_logged_out: function () {
+            previous_state = 'inactive_no_profile';
+            self.state('inactive_no_profile');
+        },
         inactive_no_profile: function () {
             var active = [{
                 el_type: 'button',

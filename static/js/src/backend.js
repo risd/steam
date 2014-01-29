@@ -22,6 +22,10 @@ function Backend () {
         return api.api_url + '/network/' + x + '/?format=json';
     };
 
+    api.logout = function (callback) {
+        d3.json(api.base + '/map/logout/', callback);
+    };
+
     api.network_request = function (network_id, callback) {
         d3.json(api.network_url(network_id), callback);
     };

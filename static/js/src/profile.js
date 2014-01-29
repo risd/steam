@@ -1,5 +1,6 @@
 var Individual = require('./profile_individual'),
-    Institution = require('./profile_institution');
+    Institution = require('./profile_institution'),
+    Settings = require('./profile_settings');
 
 module.exports = function Profile (context) {
     var self = {},
@@ -43,6 +44,31 @@ module.exports = function Profile (context) {
         }
 
         set_modal_color();
+
+        profile.selection()
+                .append('div')
+                .attr('class', 'four-column-four')
+                .append('p')
+                .attr('class', 'large button')
+                .text('Sign out.')
+                .on('click', function () {
+
+                    context.api.logout(function (err, response) {
+                        if (err) {
+                            // how do you tell a user that the
+                            // logout wasnt complete?
+                            console.log('could not log out');
+                            console.log(err);
+                            return;
+                        }
+
+                        console.log('logged out, now what?');
+                        console.log(response);
+
+                        context.modal_flow
+                            .state('just_logged_out');
+                    });
+                });
 
         profile.work_in.dispatch
             .on('valueChange.profile', function () {

@@ -38,6 +38,10 @@ urlpatterns = patterns(
         'map.views.map',
         name='map'),
 
+    url(r'map/logout/$',
+        'map.views.log_out',
+        name='log_out'),
+
     # final step of log in, redirects to front end
     url(r'logged-in/$',
         'map.views.logged_in',
