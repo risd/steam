@@ -150,6 +150,7 @@ class NetworkResource(ModelResource):
         queryset = TopLevelGeo.objects.all()
         resource_name = 'network'
         fields = ['us_state',
+                  'us_district',
                   'us_district_ordinal',
                   'us_bool',
                   'country',

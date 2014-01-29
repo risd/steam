@@ -248,20 +248,36 @@ Global filters
 }
 .filter_bar .button.active.research {
     background-color: $color-research;
+    @include transition(all,
+                        0.8s,
+                        cubic-bezier(.95, .05, .795, .035));
 }
 .filter_bar .button.active.education {
     background-color: $color-education;
+    @include transition(all,
+                        0.8s,
+                        cubic-bezier(.95, .05, .795, .035));
 }
 .filter_bar .button.active.political {
     background-color: $color-political;
+    @include transition(all,
+                        0.8s,
+                        cubic-bezier(.95, .05, .795, .035));
 }
 .filter_bar .button.active.industry {
     background-color: $color-industry;
+    @include transition(all,
+                        0.8s,
+                        cubic-bezier(.95, .05, .795, .035));
 }
 .filter_bar.all-active .button.active {
     background-color: transparent;
     color: rgb(128, 130, 133);
     opacity: 1.0;
+
+    @include transition(all,
+                        0.8s,
+                        ease-in-out);
 }
 h3.filter-by {
     @include sentinel;
@@ -291,6 +307,9 @@ h3.filter-by {
 }
 .filter_bar .button:before {
     border-color: $white;
+    @include transition(all,
+                        0.8s,
+                        ease-in-out);
 }
 .filter_bar.all-active .button.research:before {
     border-color: $color-research;
@@ -438,6 +457,10 @@ $cluster-fill: rgba(78,91,109,0.8);
 }
 .mc-6-digit {
     @include mixin-cluster(61px);
+}
+.cluster-polygon {
+    color: $color-slate;
+    fillColor: $color-slate;
 }
 /* end Leaflet Marker Cluster Styles */
 

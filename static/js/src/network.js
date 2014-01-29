@@ -113,7 +113,7 @@ function Network (context) {
     network.title = function (x) {
         if(!arguments.length) return title;
         if (x.us_bool) {
-            if (x.us_district_ordinal.indexOf('0th') > -1) {
+            if (x.us_district === 0) {
                 title = x.us_state;
             } else {
                 title = x.us_state + ' <em>' +

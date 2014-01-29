@@ -119,8 +119,9 @@ function Clusters (context) {
         // for the polygon that shows the area
         // of entities captured
         polygonOptions: {
-            color: 'red',
-            fillColor: 'red'
+            opacity: 0.6,
+            weight: 0,
+            className: 'cluster-polygon'
         },
 
         //A cluster will cover at most 

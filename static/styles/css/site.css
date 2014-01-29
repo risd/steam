@@ -1084,21 +1084,46 @@ Global filters
   opacity: 1.0; }
 
 .filter_bar .button.active.research {
-  background-color: #69e640; }
+  background-color: #69e640;
+  -moz-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -o-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -webkit-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -ms-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035); }
 
 .filter_bar .button.active.education {
-  background-color: #ff8931; }
+  background-color: #ff8931;
+  -moz-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -o-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -webkit-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -ms-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035); }
 
 .filter_bar .button.active.political {
-  background-color: #ff617f; }
+  background-color: #ff617f;
+  -moz-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -o-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -webkit-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -ms-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035); }
 
 .filter_bar .button.active.industry {
-  background-color: #27b4f2; }
+  background-color: #27b4f2;
+  -moz-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -o-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -webkit-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -ms-transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  transition: all 0.8s cubic-bezier(0.95, 0.05, 0.795, 0.035); }
 
 .filter_bar.all-active .button.active {
   background-color: transparent;
   color: #808285;
-  opacity: 1.0; }
+  opacity: 1.0;
+  -moz-transition: all 0.8s ease-in-out;
+  -o-transition: all 0.8s ease-in-out;
+  -webkit-transition: all 0.8s ease-in-out;
+  -ms-transition: all 0.8s ease-in-out;
+  transition: all 0.8s ease-in-out; }
 
 h3.filter-by {
   font-family: 'Sentinel SSm A', 'Sentinel SSm B';
@@ -1123,7 +1148,12 @@ h3.filter-by {
   border-style: solid; }
 
 .filter_bar .button:before {
-  border-color: white; }
+  border-color: white;
+  -moz-transition: all 0.8s ease-in-out;
+  -o-transition: all 0.8s ease-in-out;
+  -webkit-transition: all 0.8s ease-in-out;
+  -ms-transition: all 0.8s ease-in-out;
+  transition: all 0.8s ease-in-out; }
 
 .filter_bar.all-active .button.research:before {
   border-color: #69e640; }
@@ -1339,6 +1369,10 @@ Leaflet Marker Cluster Styles
     width: 83px;
     background-color: transparent;
     margin: 0; }
+
+.cluster-polygon {
+  color: #516272;
+  fillColor: #516272; }
 
 /* end Leaflet Marker Cluster Styles */
 /************

@@ -480,8 +480,9 @@ function Clusters (context) {
         // for the polygon that shows the area
         // of entities captured
         polygonOptions: {
-            color: 'red',
-            fillColor: 'red'
+            opacity: 0.6,
+            weight: 0,
+            className: 'cluster-polygon'
         },
 
         //A cluster will cover at most 
@@ -2278,7 +2279,7 @@ function Network (context) {
     network.title = function (x) {
         if(!arguments.length) return title;
         if (x.us_bool) {
-            if (x.us_district_ordinal.indexOf('0th') > -1) {
+            if (x.us_district === 0) {
                 title = x.us_state;
             } else {
                 title = x.us_state + ' <em>' +
