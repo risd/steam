@@ -289,7 +289,6 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.load_extra_data',
     'social.pipeline.user.user_details',
     'map.pipeline.create_steamie',
-    'map.pipeline.extra_data',
 )
 ### end Social auth config
 

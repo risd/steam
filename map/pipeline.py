@@ -11,7 +11,12 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-def create_steamie(request, user, *args, **kwargs):
+def create_steamie(request,
+                   backend,
+                   response,
+                   user,
+                   *args,
+                   **kwargs):
     """Create Steamie. Depends on create_user"""
     print "create steamie"
 
@@ -22,55 +27,50 @@ def create_steamie(request, user, *args, **kwargs):
     steamie, created = Steamies.objects.get_or_create(
         user=user)
 
-    logger.info('Authenticated. Created?: {0}'.format(created))
+    if created:
+        avatar_url = ''
+        details = {
+            'first_name': '',
+            'last_name': '',
+            'email': '',
+        }
 
-    return {'steamie': steamie}
+        if isinstance(backend, FacebookAppOAuth2):
+            avatar_url = 'http://graph.facebook.com/%s/picture?type=small' \
+                % response['id']
 
+            details = FacebookAppOAuth2.get_user_details(response)
 
-def extra_data(request,
-                   backend,
-                   response,
-                   steamie, *args, **kwargs):
-    """
-    depends on having had created a Steamie object.
-    """
+            logger.info("Authenticated. Facebook.")
 
-    avatar_url = ''
-    details = None
+        elif isinstance(backend, TwitterOAuth):
+            avatar_url = response.get('profile_image_url', '')
 
-    if isinstance(backend, FacebookAppOAuth2):
-        avatar_url = 'http://graph.facebook.com/%s/picture?type=small' \
-            % response['id']
+            details = TwitterOAuth.get_user_details(response)
 
-        details = FacebookAppOAuth2.get_user_details(response)
+            logger.info("Authenticated. Twitter.")
 
-        logger.info("Authenticated. Facebook.")
+        elif isinstance(backend, GoogleOAuth2):
+            size = 60
+            # https://gist.github.com/jcsrb/1081548
+            avatar_url = "http://profiles.google.com/s2/photos/profile/" +\
+                response['id'] + "?sz=" + size;
 
-    elif isinstance(backend, TwitterOAuth):
-        avatar_url = response.get('profile_image_url', '')
+            details = GoogleOAuth2.get_user_details(response)
 
-        details = TwitterOAuth.get_user_details(response)
+            logger.info("Authenticated. Google.")
 
-        logger.info("Authenticated. Twitter.")
-
-    elif isinstance(backend, GoogleOAuth2):
-        size = 60
-        # https://gist.github.com/jcsrb/1081548
-        avatar_url = "http://profiles.google.com/s2/photos/profile/" +\
-            response['id'] + "?sz=" + size;
-
-        details = GoogleOAuth2.get_user_details(response)
-
-        logger.info("Authenticated. Google.")
-
-    else:
-        avatar_url = 'http://default/avatar'
-
-    if details:
         steamie.user.first_name = details['first_name']
         steamie.user.last_name = details['last_name']
         steamie.user.email = details['email']
         steamie.user.save()
 
-    steamie.avatar_url = avatar_url
-    steamie.save()
+        steamie.avatar_url = avatar_url
+        steamie.save()
+
+
+    logger.info('Authenticated. Created?: {0}'.format(created))
+
+    return {'steamie': steamie}
+
+    
