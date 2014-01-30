@@ -55,7 +55,7 @@ module.exports = function Profile (context) {
                 .append('div')
                 .attr('class', 'four-column-four')
                 .append('p')
-                .attr('class', 'large button')
+                .attr('class', 'logout-button')
                 .text('Sign out.')
                 .on('click', function () {
                     context.modal_flow

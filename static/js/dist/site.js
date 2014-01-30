@@ -992,7 +992,7 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../ui/checkmark":25,"./text":14}],10:[function(require,module,exports){
+},{"../ui/checkmark":26,"./text":15}],10:[function(require,module,exports){
 module.exports = function flowAnimation () {
     var self = {},
         selection,
@@ -1415,7 +1415,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":25}],13:[function(require,module,exports){
+},{"../ui/checkmark":26}],13:[function(require,module,exports){
 module.exports = function svgCross (sel) {
     console.log('cross');
     console.log(sel);
@@ -1449,6 +1449,39 @@ module.exports = function svgCross (sel) {
             .attr('stroke-width', 1);
 };
 },{}],14:[function(require,module,exports){
+module.exports = function svgNextArrow (sel) {
+    console.log('next arrow');
+    console.log(sel);
+    var button_size = 20;
+
+    // add the closing x as svg
+    sel.append('svg')
+        .attr('width', button_size)
+        .attr('height', button_size)
+        .selectAll('line')
+        .data([
+            { x1: 0, y1: 0,
+              x2: button_size/2, y2: button_size/2 },
+            { x1: button_size/2, y1: button_size/2,
+              x2: 0, y2: button_size }
+        ])
+        .enter()
+        .append('line')
+            .attr('x1', function (d) {
+                return d.x1;
+            })
+            .attr('y1', function (d) {
+                return d.y1;
+            })
+            .attr('x2', function (d) {
+                return d.x2;
+            })
+            .attr('y2', function (d) {
+                return d.y2;
+            })
+            .attr('stroke-width', 1);
+};
+},{}],15:[function(require,module,exports){
 // text input, with placeholder
 // dispatches when the value changes
 // against the initial value
@@ -1524,7 +1557,7 @@ module.exports = function TextInput () {
 
     return self;
 };
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 // textarea, with placeholder, and label
 // dispatches when the value changes
 // against the initial value
@@ -1609,7 +1642,7 @@ module.exports = function TextArea () {
 
     return self;
 };
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = function UpdatableComponentManager () {
     var self = {},
         updatable = [],
@@ -1663,7 +1696,7 @@ module.exports = function UpdatableComponentManager () {
 
     return self;
 };
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./util/clone'),
@@ -1724,7 +1757,7 @@ function STEAMMap() {
 
     init();
 }
-},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./filterUI":7,"./filters":8,"./map":18,"./modalFlow":19,"./network":20,"./user":26,"./util/clone":27,"./util/getTSV":28}],18:[function(require,module,exports){
+},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./filterUI":7,"./filters":8,"./map":19,"./modalFlow":20,"./network":21,"./user":27,"./util/clone":28,"./util/getTSV":29}],19:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -1763,7 +1796,7 @@ function Map (context) {
 
     return map;
 }
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
 
@@ -1777,7 +1810,10 @@ var geoComponent =
         require('./formComponents/modalAnimation'),
 
     svg_cross =
-        require('./formComponents/svgCross');
+        require('./formComponents/svgCross'),
+
+    svg_next_arrow =
+        require('./formComponents/svgNextArrow');
 
 module.exports = ModalFlow;
 
@@ -1859,7 +1895,7 @@ function ModalFlow (context) {
                         self.state('inactive_no_profile');
                     }
                 },
-                append_to_el: svg_cross,
+                append_to_el: svg_cross
             },
             open_modal: {
                 el: d3.select('#activate-add-yourself'),
@@ -1887,7 +1923,7 @@ function ModalFlow (context) {
             auth_me: {
                 el: d3.select('#auth-me-button'),
                 on_click: function () {},
-                append_to_el: function () {}
+                append_to_el: svg_next_arrow
             },
 
             go_to_profile: {
@@ -1899,7 +1935,7 @@ function ModalFlow (context) {
             },
 
             profile_link: {
-                el: d3.select('.profile-link'),
+                el: d3.select('#profile-link'),
                 on_click: function () {
                     self.state('profile_' + context.user.type());
                 },
@@ -2385,7 +2421,7 @@ function ModalFlow (context) {
 
     return self;
 }
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/modalAnimation":10,"./formComponents/radio":11,"./formComponents/socialAuthSelection":12,"./formComponents/svgCross":13}],20:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/modalAnimation":10,"./formComponents/radio":11,"./formComponents/socialAuthSelection":12,"./formComponents/svgCross":13,"./formComponents/svgNextArrow":14}],21:[function(require,module,exports){
 var svg_cross = require('./formComponents/svgCross');
 
 module.exports = Network;
@@ -2695,14 +2731,20 @@ function Network (context) {
         // d3.select('#steam-map').classed('active', true);
 
         // remove svg
-        canvas.remove();
+        canvas
+            .transition()
+            .duration(300)
+            .remove();
 
         // deactivate wrapper
         canvas_wrapper.classed('active', false);
 
         // remove all nodes from the graph
+
         nodes_sel.data([])
             .exit()
+            .transition(300)
+            .style('opacity', 0)
             .remove();
 
         // these wont be set until after
@@ -2840,7 +2882,7 @@ function Network (context) {
 
     return network;
 }
-},{"./formComponents/svgCross":13}],21:[function(require,module,exports){
+},{"./formComponents/svgCross":13}],22:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution'),
     Settings = require('./profile_settings');
@@ -2898,7 +2940,7 @@ module.exports = function Profile (context) {
                 .append('div')
                 .attr('class', 'four-column-four')
                 .append('p')
-                .attr('class', 'large button')
+                .attr('class', 'logout-button')
                 .text('Sign out.')
                 .on('click', function () {
                     context.modal_flow
@@ -2950,7 +2992,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./profile_individual":22,"./profile_institution":23,"./profile_settings":24}],22:[function(require,module,exports){
+},{"./profile_individual":23,"./profile_institution":24,"./profile_settings":25}],23:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3135,7 +3177,7 @@ module.exports = function ProfileIndividual (context) {
             sel.append('div')
                 .attr('class', 'four-column-four')
                 .append('p')
-                .attr('class', 'large button')
+                .attr('class', 'save-button')
                 .text('Save');
 
         // turn on dispatch validation
@@ -3325,7 +3367,7 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":14,"./formComponents/textarea":15,"./formComponents/updatableManager":16}],23:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":15,"./formComponents/textarea":16,"./formComponents/updatableManager":17}],24:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3539,7 +3581,7 @@ module.exports = function ProfileInstitution (context) {
             sel.append('div')
                 .attr('class', 'four-column-four')
                 .append('p')
-                .attr('class', 'large button')
+                .attr('class', 'save-button')
                 .text('Save');
 
         // turn on dispatch validation
@@ -3754,7 +3796,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":14,"./formComponents/textarea":15,"./formComponents/updatableManager":16}],24:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":15,"./formComponents/textarea":16,"./formComponents/updatableManager":17}],25:[function(require,module,exports){
 module.exports = function ProfileSettings () {
     var self = {},
         selection;
@@ -3767,7 +3809,7 @@ module.exports = function ProfileSettings () {
 
     return self;
 };
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -3823,7 +3865,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -3978,7 +4020,7 @@ function User (context) {
 
     return user;
 }
-},{"./profile":21}],27:[function(require,module,exports){
+},{"./profile":22}],28:[function(require,module,exports){
 var clone = function clone (obj) {
     // Thanks to stackoverflow:
     // http://stackoverflow.com/questions/
@@ -4013,7 +4055,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.clone = clone;
 }
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
         data;
@@ -4038,5 +4080,5 @@ module.exports = function dataTSV (url) {
 
     return self;
 };
-},{}]},{},[17])
+},{}]},{},[18])
 ;

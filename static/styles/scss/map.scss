@@ -12,6 +12,7 @@ html, body {
 
     height: 100%;
     width: 100%;
+    overflow: hidden;
 }
 
 header {
@@ -23,41 +24,28 @@ header {
 
 .fullscreen {
     position: absolute;
-    top: 0;
-    bottom: 0;
+    top: -200%;
+    bottom: -100%;
     left: 0;
     right: 0;
     height: 100%;
     width: 100%;
+    opacity: 0;
 
-    display: none;
+    display: block;
+    overflow: hidden;
 }
 .fullscreen.active {
-    display: block;
+    top: 0;
+    bottom: 0;
+    opacity: 1;
 }
 
 .modal {
     overflow-y: scroll;
 
-    // display: block;
-    // opacity: 0;
-    // top: -200%;
-    // -webkit-transform: scale(1.5);
-
-    &.active {
-        display: block;
-        // top: 0;
-        // opacity: 1;
-        // -webkit-transform: scale(1.0);
-        // -webkit-transition-property: opacity, -webkit-transform;
-        // -webkit-transition-duration: 0.2s, 0.2s;
-        // -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);
-    }
-
     color: $white;
-    @include transition(all,
-                        0.3s,
-                        cubic-bezier(.95, .05, .795, .035));
+
     background-color: rgba($color-slate,
                            $fullscreen-color-opacity);
 
@@ -173,26 +161,26 @@ Global filters
 .filter_bar .button.active.research {
     background-color: $color-research;
     @include transition(all,
-                        0.8s,
-                        cubic-bezier(.95, .05, .795, .035));
+                        0.7s,
+                        linear);
 }
 .filter_bar .button.active.education {
     background-color: $color-education;
     @include transition(all,
-                        0.8s,
-                        cubic-bezier(.95, .05, .795, .035));
+                        0.7s,
+                        linear);
 }
 .filter_bar .button.active.political {
     background-color: $color-political;
     @include transition(all,
-                        0.8s,
-                        cubic-bezier(.95, .05, .795, .035));
+                        0.7s,
+                        linear);
 }
 .filter_bar .button.active.industry {
     background-color: $color-industry;
     @include transition(all,
-                        0.8s,
-                        cubic-bezier(.95, .05, .795, .035));
+                        0.7s,
+                        linear);
 }
 .filter_bar.all-active .button.active {
     background-color: transparent;
@@ -201,7 +189,7 @@ Global filters
 
     @include transition(all,
                         0.8s,
-                        ease-in-out);
+                        linear);
 }
 h3.filter-by {
     @include sentinel;
@@ -521,6 +509,7 @@ network graph
     position: absolute;
     top: 36px;
     width: 100%;
+    color: $color-slate;
 
     h3 {
         text-align: center;
@@ -543,14 +532,6 @@ rect.blanket {
 /************
 form / profile
 */
-#activate-add-yourself {
-    position: absolute;
-    top: 100px;
-    right: 30px;
-
-    cursor: pointer;
-}
-
 .add-me {
     @include antenna-medium;
     font-size: 35px;
@@ -558,36 +539,84 @@ form / profile
     margin: 0;
     padding: 20px;
 }
-
-.button {
-
-    cursor: pointer;
+.top-right {
+    position: absolute;
+    top: 100px;
+    right: 30px;
+}
+.bottom-left {
+    position: absolute;
+    bottom: 150px;
+    left: 28px;
 }
 
-.button.large {
+.button-large {
     @include antenna-medium;
 
     font-size: 100px;
     line-height: 95px;
 
     border: 1px solid $white;
-    background-color: transparent;
-    text-align: center;
     color: $white;
 
     margin-top: 0.6em;
     padding: 20px;
     border-radius: 2px;
+
+    cursor: pointer;
+    text-align: center;
+    background-color: transparent;
 }
 
-.button.large.enabled {
+.button-large.enabled {
     color: $color-slate;
     background-color: $white;
 }
 
-.close-button line {
+.close-button line,
+.next-button line {
     stroke: $white;
 }
+.next-button {
+    text-align: center;
+    background-color: transparent;
+
+    p,
+    svg {
+        display: inline-block;
+    }
+
+    p {
+        @include antenna-medium;
+        font-size: 35px;
+        line-height: 35px;
+        margin: 0;
+    }
+    svg {
+        margin-left: 5px;
+    }
+}
+.modal .save-button,
+.modal .logout-button {
+    @include antenna-medium;
+    font-size: 35px;
+    margin: 0 auto;
+    padding: 10px;
+
+    &.enabled {
+        background-color: $white;
+    }
+}
+.button-activate,
+.next-button,
+.save-button,
+.logout-button,
+.close-button {
+    cursor: pointer;
+    text-align: center;
+    background-color: transparent;
+}
+
 .canvas-wrapper .close-button {
     position: absolute;
     top: 100px;
@@ -598,13 +627,19 @@ form / profile
     }
 }
 
-.column.half {
-    width: 45%;
-    margin-right: 5%; 
+.political .enabled {
+    color: $color-political;
 }
-.column.half.omega {
-    margin-right: 0;
+.research .enabled {
+    color: $color-research;
 }
+.education .enabled {
+    color: $color-education;
+}
+.industry .enabled {
+    color: $color-industry;
+}
+
 
 .add-yourself-login { }
 
@@ -724,11 +759,6 @@ select,
 textarea {
     box-sizing: border-box;
     padding-left: 10px;
-}
-.profile-link {
-    position: absolute;
-    bottom: 150px;
-    left: 28px;
 }
 
 .sel-work-in,

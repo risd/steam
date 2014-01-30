@@ -307,14 +307,20 @@ function Network (context) {
         // d3.select('#steam-map').classed('active', true);
 
         // remove svg
-        canvas.remove();
+        canvas
+            .transition()
+            .duration(300)
+            .remove();
 
         // deactivate wrapper
         canvas_wrapper.classed('active', false);
 
         // remove all nodes from the graph
+
         nodes_sel.data([])
             .exit()
+            .transition(300)
+            .style('opacity', 0)
             .remove();
 
         // these wont be set until after

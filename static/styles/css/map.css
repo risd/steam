@@ -1,21 +1,21 @@
 /*
 Syntax error: Undefined variable: "$white".
-        on line 57 of static/styles/scss/map.scss
+        on line 47 of static/styles/scss/map.scss
 
-52:         // -webkit-transition-property: opacity, -webkit-transform;
-53:         // -webkit-transition-duration: 0.2s, 0.2s;
-54:         // -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);
-55:     }
-56: 
-57:     color: $white;
-58:     @include transition(all,
-59:                         0.3s,
-60:                         cubic-bezier(.95, .05, .795, .035));
-61:     background-color: rgba($color-slate,
-62:                            $fullscreen-color-opacity);
+42: }
+43: 
+44: .modal {
+45:     overflow-y: scroll;
+46: 
+47:     color: $white;
+48: 
+49:     background-color: rgba($color-slate,
+50:                            $fullscreen-color-opacity);
+51: 
+52:     &.research {
 
 Backtrace:
-static/styles/scss/map.scss:57
+static/styles/scss/map.scss:47
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/script/tree/variable.rb:48:in `_perform'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/script/tree/node.rb:50:in `perform'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.229/lib/sass/tree/visitors/perform.rb:301:in `visit_prop'
@@ -61,4 +61,4 @@ static/styles/scss/map.scss:57
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Undefined variable: \"$white\".\A         on line 57 of static/styles/scss/map.scss\A \A 52:         // -webkit-transition-property: opacity, -webkit-transform;\A 53:         // -webkit-transition-duration: 0.2s, 0.2s;\A 54:         // -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);\A 55:     }\A 56: \A 57:     color: $white;\A 58:     @include transition(all,\A 59:                         0.3s,\A 60:                         cubic-bezier(.95, .05, .795, .035));\A 61:     background-color: rgba($color-slate,\A 62:                            $fullscreen-color-opacity);"; }
+  content: "Syntax error: Undefined variable: \"$white\".\A         on line 47 of static/styles/scss/map.scss\A \A 42: }\A 43: \A 44: .modal {\A 45:     overflow-y: scroll;\A 46: \A 47:     color: $white;\A 48: \A 49:     background-color: rgba($color-slate,\A 50:                            $fullscreen-color-opacity);\A 51: \A 52:     &.research {"; }

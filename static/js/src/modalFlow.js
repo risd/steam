@@ -11,7 +11,10 @@ var geoComponent =
         require('./formComponents/modalAnimation'),
 
     svg_cross =
-        require('./formComponents/svgCross');
+        require('./formComponents/svgCross'),
+
+    svg_next_arrow =
+        require('./formComponents/svgNextArrow');
 
 module.exports = ModalFlow;
 
@@ -93,7 +96,7 @@ function ModalFlow (context) {
                         self.state('inactive_no_profile');
                     }
                 },
-                append_to_el: svg_cross,
+                append_to_el: svg_cross
             },
             open_modal: {
                 el: d3.select('#activate-add-yourself'),
@@ -121,7 +124,7 @@ function ModalFlow (context) {
             auth_me: {
                 el: d3.select('#auth-me-button'),
                 on_click: function () {},
-                append_to_el: function () {}
+                append_to_el: svg_next_arrow
             },
 
             go_to_profile: {
@@ -133,7 +136,7 @@ function ModalFlow (context) {
             },
 
             profile_link: {
-                el: d3.select('.profile-link'),
+                el: d3.select('#profile-link'),
                 on_click: function () {
                     self.state('profile_' + context.user.type());
                 },

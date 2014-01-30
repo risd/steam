@@ -182,7 +182,7 @@ module.exports = function ProfileIndividual (context) {
             sel.append('div')
                 .attr('class', 'four-column-four')
                 .append('p')
-                .attr('class', 'large button')
+                .attr('class', 'save-button')
                 .text('Save');
 
         // turn on dispatch validation

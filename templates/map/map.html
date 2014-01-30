@@ -36,7 +36,7 @@
         </nav>
 
         <!-- humble host of the button to add oneself -->
-        <div id="activate-add-yourself" class="z-10 hide-til-active active">
+        <div id="activate-add-yourself" class="z-10 button-activate top-right active">
             {% include 'steam/orb.html' %}
             <p class="add-me hide-til-active">Add me!</p>
         </div>
@@ -47,7 +47,7 @@
 
 
         <!-- home of the network graph -->
-        <section id="steamie-network" class="fullscreen z-100 canvas-wrapper"></section>
+        <section id="steamie-network" class="fullscreen animate modal z-100 canvas-wrapper"></section>
 
 
         <!-- houses buttons for filtering map and network -->
@@ -55,13 +55,14 @@
             <h3 class="filter-by">filter by:</h3>
         </div>
 
-        <div class="profile-link z-150 hide-til-active clickable">
+        <div id="profile-link"
+             class="bottom-left z-150 button-activate clickable">
             <img src="" alt="" class="avatar">
         </div>
 
         
         <!-- modal for adding oneself -->
-        <section id="modal" class="fullscreen z-200 modal">
+        <section id="modal" class="fullscreen z-200 modal animate">
             <div id="modal-animation"
                  class="modal-animation"></div>
             <div class="grid full-width clearfix modal-wrapper">
@@ -96,9 +97,10 @@
                                     <div id="add-yourself-login"></div>
                                 </div>
                                 
-                                <p id="auth-me-button"
-                                   class="large button four-column-four"
-                                   >Next</p>
+                                <div id="auth-me-button"
+                                   class="next-button four-column-four">
+                                   <p>Next</p>
+                               </div>
                              </section>
 
                             <section id="choose-type-add-zip"
@@ -125,7 +127,7 @@
                                 </div>
 
                                 <p id="add-me-button"
-                                   class="large button four-column-four"
+                                   class="button-large four-column-four"
                                    >Add me!</p>
                             </section>
 
@@ -138,7 +140,7 @@
                                          class="avatar">
                                 </div>
                                 <p id="go-to-profile"
-                                   class="large button four-column-four"
+                                   class="button-large four-column-four"
                                    >Go to Profile</p>
                             </section>
 
