@@ -98,12 +98,16 @@ function ModalFlow (context) {
             open_modal: {
                 el: d3.select('#activate-add-yourself'),
                 on_click: function () {
-                    if (previous_state === 'inactive_no_profile') {
+                    console.log('open modal click');
+                    console.log(previous_state);
+                    if ((previous_state === 'inactive_no_profile') |
+                        (previous_state === 'just_logged_out')) {
                         // first time through
                         self.state('call_to_action');
                     } else {
                         self.state(previous_state);
                     }
+                    console.log(self.state());
                 },
                 append_to_el: function () {}
             },
@@ -145,6 +149,9 @@ function ModalFlow (context) {
             },
             avatar: {
                 el: d3.select('#modal-header-avatar')
+            },
+            logging_off: {
+                el: d3.select('#modal-header-logging-off')
             }
         },
         display: {
@@ -170,8 +177,21 @@ function ModalFlow (context) {
     };
 
     var states = {
+        logging_out: function () {
+            var active = [{
+                el_type: 'display',
+                el_name: 'modal'
+            }, {
+                el_type: 'modal_header',
+                el_name: 'logging_off'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
+            }];
+
+            apply_state(active);
+        },
         just_logged_out: function () {
-            previous_state = 'inactive_no_profile';
             self.state('inactive_no_profile');
         },
         inactive_no_profile: function () {

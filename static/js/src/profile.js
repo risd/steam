@@ -23,6 +23,12 @@ module.exports = function Profile (context) {
         return self;
     };
 
+    self.remove = function () {
+        self.built(false);
+        reset_modal_color();
+        profile.selection().html('');
+    };
+
     self.build = function () {
         type = context.user.type();
 
@@ -52,21 +58,18 @@ module.exports = function Profile (context) {
                 .attr('class', 'large button')
                 .text('Sign out.')
                 .on('click', function () {
-
+                    context.modal_flow
+                        .state('logging_out');
                     context.api.logout(function (err, response) {
                         if (err) {
-                            // how do you tell a user that the
-                            // logout wasnt complete?
-                            console.log('could not log out');
-                            console.log(err);
+                            context.modal_flow
+                                .state('profile_' + context.user.type());
                             return;
                         }
 
-                        console.log('logged out, now what?');
-                        console.log(response);
-
                         context.modal_flow
                             .state('just_logged_out');
+                        self.remove();
                     });
                 });
 
@@ -88,6 +91,17 @@ module.exports = function Profile (context) {
                 .modal
                 .el
                 .classed(d.value, d.selected);
+        });
+    }
+
+    function reset_modal_color () {
+        profile.work_in.data().forEach(function (d, i) {
+            context.modal_flow
+                .el
+                .display
+                .modal
+                .el
+                .classed(d.value, false);
         });
     }
 
