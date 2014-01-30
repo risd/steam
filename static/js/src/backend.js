@@ -27,6 +27,8 @@ function Backend () {
     };
 
     api.network_request = function (network_id, callback) {
+        console.log('network request');
+        console.log('url: ', api.network_url(network_id));
         d3.json(api.network_url(network_id), callback);
     };
 

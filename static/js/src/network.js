@@ -303,6 +303,9 @@ function Network (context) {
     };
 
     network.remove = function () {
+        // no draw on the map
+        // d3.select('#steam-map').classed('active', true);
+
         // remove svg
         canvas.remove();
 
@@ -313,9 +316,6 @@ function Network (context) {
         nodes_sel.data([])
             .exit()
             .remove();
-
-        force.stop();
-        force = undefined;
 
         // these wont be set until after
         // a network has been initialized
@@ -336,7 +336,7 @@ function Network (context) {
         // used to initialize a network graph
         // data is passed in from the cluster
         // group that is clicked.
-
+        console.log(data);
         context.api
             .network_request(data.tlg_id, function (err, results) {
                 console.log('returned data');

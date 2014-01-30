@@ -39,12 +39,23 @@ header {
 .modal {
     overflow-y: scroll;
 
+    // display: block;
+    // opacity: 0;
+    // top: -200%;
+    // -webkit-transform: scale(1.5);
+
     &.active {
         display: block;
+        // top: 0;
+        // opacity: 1;
+        // -webkit-transform: scale(1.0);
+        // -webkit-transition-property: opacity, -webkit-transform;
+        // -webkit-transition-duration: 0.2s, 0.2s;
+        // -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);
     }
 
     color: $white;
-    @include transition(background-color,
+    @include transition(all,
                         0.3s,
                         cubic-bezier(.95, .05, .795, .035));
     background-color: rgba($color-slate,

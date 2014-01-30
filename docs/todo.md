@@ -1,5 +1,8 @@
 ### left off
 
+- when map is up, can you turn off network scaling?
+- when network is up, can you turn off arc scaling?
+
 -modalflow
     - movement between forms
         - social auth selection -> waiting for social auth redirect
