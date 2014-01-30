@@ -1,23 +1,20 @@
 ### left off
 
-- profile work
-    -sign out of profile
-
 -modalflow
-    - move between forms. object can you have that represents the user's movement between each of the form's?
-        - if all info is taken at once, perhaps there is no movement necessary.
+    - movement between forms
+        - social auth selection -> waiting for social auth redirect
+        - saving profile -> not editable -> back to editable
+        - adding yourself -> awaiting confirmation -> link to profile
 
     - add css animations to buttons
         - previously auth me
             - next ->
             - have the arrow move on hover to suggest you can continue
 
-    - disable editing while requests are being made
-        - be transparent with the user about the state, but make it playful
-            - ask micah for another steamie do-dad to animate?
-            - could also use that for while "check_auth" is running, so you don't see "add me!" unless its relevant.
-
     - go through a clean sign up.
+
+- push state? how does the back button work through all of this?
+    - http://programming.oreilly.com/2014/01/pushstate-to-the-future-progressive-enhancement-using-html5-pushstate-at-twitter.html
 
 @babette, ask about what kind of links you want to send out?
     - WA state? WA 8th district? both?
