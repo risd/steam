@@ -8,7 +8,10 @@ var geoComponent =
         require('./formComponents/socialAuthSelection'),
 
     modalAnimation =
-        require('./formComponents/modalAnimation');
+        require('./formComponents/modalAnimation'),
+
+    svg_cross =
+        require('./formComponents/svgCross');
 
 module.exports = ModalFlow;
 
@@ -90,39 +93,8 @@ function ModalFlow (context) {
                         self.state('inactive_no_profile');
                     }
                 },
-                append_to_el: function (sel) {
-                    var button_size = 45;
-
-                    // add the closing x as svg
-                    sel.append('svg')
-                        .attr('width', button_size)
-                        .attr('height', button_size)
-                        .selectAll('line')
-                        .data([
-                            { x1: 0, y1: 0,
-                              x2: button_size, y2: button_size },
-                            { x1: button_size, y1: 0,
-                              x2: 0, y2: button_size }
-                        ])
-                        .enter()
-                        .append('line')
-                            .attr('x1', function (d) {
-                                return d.x1;
-                            })
-                            .attr('y1', function (d) {
-                                return d.y1;
-                            })
-                            .attr('x2', function (d) {
-                                return d.x2;
-                            })
-                            .attr('y2', function (d) {
-                                return d.y2;
-                            })
-                            .attr('stroke-width', 1)
-                            .attr('stroke', 'white');
-                }
+                append_to_el: svg_cross,
             },
-
             open_modal: {
                 el: d3.select('#activate-add-yourself'),
                 on_click: function () {

@@ -1,3 +1,5 @@
+var svg_cross = require('./formComponents/svgCross');
+
 module.exports = Network;
 
 // Network graph
@@ -167,17 +169,15 @@ function Network (context) {
 
         // add a close button
         canvas_wrapper
-            .selectAll('.button')
-            .data([{ t: 'x', f: network.remove }])
+            .selectAll('.close-button')
+            .data([{ f: network.remove }])
             .enter()
             .append('div')
-            .attr('class', 'button')
-            .text(function (d) {
-                return d.t;
-            })
+            .attr('class', 'close-button')
             .on('click', function (d) {
                 d.f();
-            });
+            })
+            .call(svg_cross);
 
         title_wrapper_sel = canvas_wrapper
             .append('div')

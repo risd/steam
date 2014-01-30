@@ -1096,12 +1096,6 @@ header {
 .z-250 {
   z-index: 250; }
 
-#steamie-network .button {
-  position: absolute;
-  top: 100px;
-  right: 100px;
-  cursor: pointer; }
-
 /************
 Global filters
 */
@@ -1562,9 +1556,6 @@ form / profile
   padding: 20px; }
 
 .button {
-  padding: 20px;
-  background: yellow;
-  border-radius: 2px;
   cursor: pointer; }
 
 .button.large {
@@ -1578,11 +1569,23 @@ form / profile
   background-color: transparent;
   text-align: center;
   color: white;
-  margin-top: 0.6em; }
+  margin-top: 0.6em;
+  padding: 20px;
+  border-radius: 2px; }
 
 .button.large.enabled {
   color: #516272;
   background-color: white; }
+
+.close-button line {
+  stroke: white; }
+
+.canvas-wrapper .close-button {
+  position: absolute;
+  top: 100px;
+  right: 100px; }
+  .canvas-wrapper .close-button line {
+    stroke: #516272; }
 
 .column.half {
   width: 45%;
