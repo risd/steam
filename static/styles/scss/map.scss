@@ -532,6 +532,9 @@ rect.blanket {
 /************
 form / profile
 */
+.steamie-description {
+
+}
 .add-me {
     @include antenna-medium;
     font-size: 35px;
@@ -866,6 +869,9 @@ input[type=radio] {
 .sel-work-in p,
 .individual-description p {
     margin-bottom: 1.1em;
+}
+.steamie-description {
+    margin-bottom: 15px;
 }
 .steamie-description p {
     border-bottom: 1px dotted $off-white;

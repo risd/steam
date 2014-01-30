@@ -1882,6 +1882,9 @@ input[type=radio] {
 .individual-description p {
   margin-bottom: 1.1em; }
 
+.steamie-description {
+  margin-bottom: 15px; }
+
 .steamie-description p {
   border-bottom: 1px dotted #c8c8c8;
   margin-bottom: 10px; }
