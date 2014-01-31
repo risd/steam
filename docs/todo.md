@@ -1,19 +1,18 @@
 ### left off
 
+- network scale in and out from the middle of the page.
+- thank you page
+    - explore your region button
+    - explore map button
+    - smaller go to profile button
+
+- profile colors
+    - make the fill on the radio button the color of the profile, rather than full screen color
+
 - when map is up, can you turn off network scaling?
 - when network is up, can you turn off arc scaling?
 
 -modalflow
-    - movement between forms
-        - social auth selection -> waiting for social auth redirect
-        - saving profile -> not editable -> back to editable
-        - adding yourself -> awaiting confirmation -> link to profile
-            - this has a rather useless in between step atm, but the beginnings of how this could be handled is here.
-
-        - added .blanket to save profile process. implement a more usable version of it.
-            - perhaps the button becomes home to the pulsing platonic orb?
-            - use def?
-
     - go through a clean sign up.
 
 - push state? how does the back button work through all of this?

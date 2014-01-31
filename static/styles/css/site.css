@@ -1026,15 +1026,15 @@ header {
 .modal {
   overflow-y: scroll;
   color: white;
-  background-color: rgba(81, 98, 114, 0.8); }
+  background-color: rgba(81, 98, 114, 0.9); }
   .modal.research {
-    background-color: rgba(105, 230, 64, 0.8); }
+    background-color: rgba(105, 230, 64, 0.9); }
   .modal.political {
-    background-color: rgba(255, 97, 127, 0.8); }
+    background-color: rgba(255, 97, 127, 0.9); }
   .modal.education {
-    background-color: rgba(255, 137, 49, 0.8); }
+    background-color: rgba(255, 137, 49, 0.9); }
   .modal.industry {
-    background-color: rgba(39, 180, 242, 0.8); }
+    background-color: rgba(39, 180, 242, 0.9); }
 
 .modal-wrapper {
   margin-top: 80px;
