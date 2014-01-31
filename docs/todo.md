@@ -10,7 +10,7 @@
         - adding yourself -> awaiting confirmation -> link to profile
             - this has a rather useless in between step atm, but the beginnings of how this could be handled is here.
 
-    - add a 'cancel' button to the choose-type-add-zip, have that hit the 'disconnect' endpoint on the backend, and delete the user model.
+        - added .blanket to save profile process. implement a more usable version of it.
 
     - go through a clean sign up.
 

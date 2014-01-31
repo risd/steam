@@ -14,9 +14,7 @@ module.exports = function ProfileIndividual (context) {
         selection,
         save_button,
         geo_options,
-        data,
-        prev_valid,
-        valid;
+        data;
 
     var first_name,
         last_name,
@@ -24,7 +22,7 @@ module.exports = function ProfileIndividual (context) {
         geo,
         work_in,
         description,
-        updatable = updatableManager();
+        updatable = self.updatable = updatableManager();
 
     self.selection = function (x) {
         if (!arguments.length) return selection;
@@ -45,17 +43,18 @@ module.exports = function ProfileIndividual (context) {
         return self;
     };
 
+    self.decorate_for_submittal = function (x) {
+        x.id = data.id;
+        x.resource_uri = data.resource_uri;
+        if (x.individual) {
+            x.individual.id = data.individual.id;
+        }
+
+        return x;
+    };
+
     self.build = function () {
         selection.datum(data).call(build);
-
-        // they start with the same value,
-        // depend on futher validation
-        // or changes to the dom to enable
-        // the save button.
-        prev_valid = valid = true;
-
-        validate();
-
         return self;
     };
 
@@ -90,7 +89,7 @@ module.exports = function ProfileIndividual (context) {
             .attr('class', 'four-column-four sel-geo')
             .attr('id', 'individual-geo');
 
-        geo = geoComponent()
+        geo = self.geo = geoComponent()
             .rootSelection(geo_sel)
             .validationVisual(false)
             .optionsKey(function (d) { return d.country; })
@@ -178,37 +177,30 @@ module.exports = function ProfileIndividual (context) {
                 data.description : '')
             .render();
 
-        save_button =
-            sel.append('div')
-                .attr('class', 'four-column-four')
-                .append('p')
-                .attr('class', 'save-button')
-                .text('Save');
-
         // turn on dispatch validation
         geo.dispatch
             .on('valueChange.profileIndividual', function () {
-                validate();
+                self.validate();
             });
 
         work_in.dispatch
             .on('valid.profileIndividual', function () {
-                validate();
+                self.validate();
             });
 
         first_name.dispatch
             .on('valueChange.profileIndividual', function () {
-                validate();
+                self.validate();
             });
 
         last_name.dispatch
             .on('valueChange.profileIndividual', function () {
-                validate();
+                self.validate();
             });
 
         description.dispatch
             .on('valueChange.profileIndividual', function () {
-                validate();
+                self.validate();
             });
 
         // manage updatable items.
@@ -242,132 +234,6 @@ module.exports = function ProfileIndividual (context) {
             position_in_data: ['description'],
             reset_initial: description.initialValue
         });
-    }
-    
-
-    function decorate_for_submittal (x) {
-        x.id = data.id;
-        x.resource_uri = data.resource_uri;
-        if (x.individual) {
-            x.individual.id = data.individual.id;
-        }
-
-        return x;
-    }
-
-    function update_user_data () {
-        // something should be updated
-
-        // updated data to be sent to
-        // the server for saving
-        var data_for_server = {};
-
-        updatable.updated().forEach(function (n, i) {
-            if (n.position_in_data.length === 1) {
-
-                data[n.position_in_data[0]] =
-                    n.value();
-
-                data_for_server[n.position_in_data[0]] =
-                    n.value();
-
-            } else if (n.position_in_data.length === 2) {
-
-                data[n.position_in_data[0]]
-                               [n.position_in_data[1]] =
-                    n.value();
-
-                // data for server may not have the correct
-                // nested object to save against
-                if (!data_for_server[n.position_in_data[0]]) {
-                    data_for_server[n.position_in_data[0]] =
-                        data[n.position_in_data[0]];
-                }
-
-                data_for_server[n.position_in_data[0]]
-                               [n.position_in_data[1]] =
-                    n.value();
-            }
-            
-        });
-        // make those changes out
-        // to the context.user module
-        context.user.data(data);
-
-        return data_for_server;
-    }
-
-    function save_flow () {
-        var data_to_submit =
-            decorate_for_submittal(update_user_data());
-
-        // todo: stop editability
-
-        context
-            .api
-            .steamie_update(data_to_submit,
-                             function (err, response) {
-            if (err){
-                console.log('err');
-                console.log(err);
-                return;
-            }
-            
-            console.log('do something with');
-            console.log(response);
-
-            var results = JSON.parse(response.responseText);
-            console.log(results);
-
-            updatable.resetInitialValues();
-            // will reset the save button
-            validate();
-        });
-    }
-
-    function validate () {
-        // deal with validation
-        if (work_in.isValid() &&
-            geo.isValid()) {
-            valid = true;
-        } else {
-            valid = false;
-        }
-
-        // check to see if any of the
-        // updatables, are updated.
-        updatable.check();
-
-        // determine button functionality
-        // based on validation and 
-        // updatable object status
-        if (updatable.updated().length > 0) {
-            if (valid) {
-                enable_save();
-            } else {
-                disable_save();
-            }
-        } else {
-            disable_save();
-        }
-
-        prev_valid = valid;
-
-        return valid;
-    }
-
-    function enable_save() {
-        save_button
-            .classed('enabled', true)
-            .on('click', function () {
-                save_flow();
-            });
-    }
-
-    function disable_save () {
-        save_button
-            .classed('enabled', false)
-            .on('click', null);
     }
 
     return self;

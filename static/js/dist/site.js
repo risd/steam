@@ -1940,6 +1940,20 @@ function ModalFlow (context) {
                     self.state('profile_' + context.user.type());
                 },
                 append_to_el: function () {}
+            },
+            cancel_add_button: {
+                el: d3.select('#cancel-add-button'),
+                on_click: function () {
+                    self.state('logging_out');
+                    context.api.logout(function (err, results) {
+                        if (err) {
+                            self.state('choose_type_add_zip');
+                            return;
+                        }
+                        self.state('just_logged_out');
+                    });
+                },
+                append_to_el: function () {}
             }
         },
         modal_header: {
@@ -1952,8 +1966,8 @@ function ModalFlow (context) {
             avatar: {
                 el: d3.select('#modal-header-avatar')
             },
-            logging_off: {
-                el: d3.select('#modal-header-logging-off')
+            logging_out: {
+                el: d3.select('#modal-header-logging-out')
             }
         },
         display: {
@@ -1985,7 +1999,7 @@ function ModalFlow (context) {
                 el_name: 'modal'
             }, {
                 el_type: 'modal_header',
-                el_name: 'logging_off'
+                el_name: 'logging_out'
             }, {
                 el_type: 'button',
                 el_name: 'close_modal'
@@ -2042,7 +2056,7 @@ function ModalFlow (context) {
                 el_name: 'close_modal'
             }, {
                 el_type: 'button',
-                el_name: 'close_modal'
+                el_name: 'cancel_add_button'
             }];
 
             apply_state(active);
@@ -2200,13 +2214,6 @@ function ModalFlow (context) {
         context.user
                .dispatch.on('checkAuthComplete', function(err, d) {
 
-
-            // remove loading icon
-            d3.select('#activate-add-yourself .add-me')
-                .classed('active', true);
-            d3.select('#activate-add-yourself .loading')
-                .classed('active', false);
-
             d = context.user.data();
             console.log('auth check dispatch modal');
             console.log(d);
@@ -2251,7 +2258,14 @@ function ModalFlow (context) {
                 self.state('call_to_action');
 
                 // self.state('waiting_for_add_me_flow');
+                // self.state('choose_type_add_zip');
             }
+
+            // remove loading icon
+            d3.select('#activate-add-yourself .add-me')
+                .classed('active', true);
+            d3.select('#activate-add-yourself .loading')
+                .classed('active', false);
         });
 
         return self;
@@ -2892,7 +2906,11 @@ module.exports = function Profile (context) {
         geo_options,
         profile,
         type,
-        built = false;
+        built = false,
+        prev_valid,
+        valid,
+        save_button,
+        blanket_sel;
 
     self.built = function (x) {
         // tell the world whether or not
@@ -2915,27 +2933,40 @@ module.exports = function Profile (context) {
     };
 
     self.build = function () {
+        blanket_sel = d3.select('#blanket');
+
         type = context.user.type();
 
         if ( type === 'individual') {
             profile = Individual(context)
                 .selection(d3.select('#profile-individual'))
                 .geoOptions(geo_options)
-                .data(context.user.data())
-                .build();
+                .data(context.user.data());
 
         } else if (type === 'institution') {
             profile = Institution(context)
                 .selection(d3.select('#profile-institution'))
                 .geoOptions(geo_options)
-                .data(context.user.data())
-                .build();
+                .data(context.user.data());
         } else {
             return self.built(false);
         }
 
+        // set validator
+        profile.validate = validate;
+        profile.build();
+
         set_modal_color();
 
+        // add save button
+        save_button = profile.selection()
+            .append('div')
+            .attr('class', 'four-column-four')
+            .append('p')
+            .attr('class', 'save-button')
+            .text('Save');
+
+        // add a sign out button
         profile.selection()
                 .append('div')
                 .attr('class', 'four-column-four')
@@ -2948,7 +2979,8 @@ module.exports = function Profile (context) {
                     context.api.logout(function (err, response) {
                         if (err) {
                             context.modal_flow
-                                .state('profile_' + context.user.type());
+                                .state('profile_' +
+                                       context.user.type());
                             return;
                         }
 
@@ -2962,6 +2994,13 @@ module.exports = function Profile (context) {
             .on('valueChange.profile', function () {
                 set_modal_color();
             });
+
+        // they start with the same value,
+        // depend on futher validation
+        // or changes to the dom to enable
+        // the save button.
+        prev_valid = valid = true;
+        validate();
 
         self.built(true);
 
@@ -2990,6 +3029,134 @@ module.exports = function Profile (context) {
         });
     }
 
+    function enable_save() {
+        save_button
+            .classed('enabled', true)
+            .on('click', function () {
+                save_flow();
+            });
+    }
+
+    function disable_save () {
+        save_button
+            .classed('enabled', false)
+            .on('click', null);
+    }
+
+    function validate () {
+        // deal with validation
+        if (profile.work_in.isValid() &&
+            profile.geo.isValid()) {
+            valid = true;
+        } else {
+            valid = false;
+        }
+
+        // check to see if any of the
+        // updatables, are updated.
+        // they are not validatable,
+        // just potentially, different.
+        profile.updatable.check();
+
+        // determine button functionality
+        // based on validation and 
+        // updatable object status
+        if (profile.updatable.updated().length > 0) {
+            if (valid) {
+                enable_save();
+            } else {
+                disable_save();
+            }
+        } else {
+            disable_save();
+        }
+
+        prev_valid = valid;
+
+        return valid;
+    }
+
+    function save_flow () {
+        var data_to_submit =
+            profile.decorate_for_submittal(update_user_data());
+
+        // todo: stop editability
+        blanket_sel.classed('active', true);
+
+        context
+            .api
+            .steamie_update(data_to_submit,
+                             function (err, response) {
+
+            blanket_sel.classed('active', false);
+
+            if (err){
+                console.log('err');
+                console.log(err);
+                return;
+            }
+            
+            console.log('do something with');
+            console.log(response);
+
+            var results = JSON.parse(response.responseText);
+            console.log(results);
+
+            profile.updatable.resetInitialValues();
+            // will reset the save button
+            validate();
+        });
+    }
+
+    function update_user_data () {
+        // something should be updated
+
+        // updated data to be sent to
+        // the server for saving
+        var data_for_server = {},
+            // copy of the data in profile.data,
+            // to update and send propogate
+            // out to the user object, also 
+            // back down into the profile object.
+            data = profile.data();
+
+        profile.updatable.updated().forEach(function (n, i) {
+            if (n.position_in_data.length === 1) {
+
+                data[n.position_in_data[0]] =
+                    n.value();
+
+                data_for_server[n.position_in_data[0]] =
+                    n.value();
+
+            } else if (n.position_in_data.length === 2) {
+
+                data[n.position_in_data[0]]
+                               [n.position_in_data[1]] =
+                    n.value();
+
+                // data for server may not have the correct
+                // nested object to save against
+                if (!data_for_server[n.position_in_data[0]]) {
+                    data_for_server[n.position_in_data[0]] =
+                        data[n.position_in_data[0]];
+                }
+
+                data_for_server[n.position_in_data[0]]
+                               [n.position_in_data[1]] =
+                    n.value();
+            }
+            
+        });
+
+        // make those changes out
+        // to the context.user module
+        context.user.data(data);
+        profile.data(data);
+
+        return data_for_server;
+    }
+
     return self;
 };
 },{"./profile_individual":23,"./profile_institution":24,"./profile_settings":25}],23:[function(require,module,exports){
@@ -3009,9 +3176,7 @@ module.exports = function ProfileIndividual (context) {
         selection,
         save_button,
         geo_options,
-        data,
-        prev_valid,
-        valid;
+        data;
 
     var first_name,
         last_name,
@@ -3019,7 +3184,7 @@ module.exports = function ProfileIndividual (context) {
         geo,
         work_in,
         description,
-        updatable = updatableManager();
+        updatable = self.updatable = updatableManager();
 
     self.selection = function (x) {
         if (!arguments.length) return selection;
@@ -3040,17 +3205,18 @@ module.exports = function ProfileIndividual (context) {
         return self;
     };
 
+    self.decorate_for_submittal = function (x) {
+        x.id = data.id;
+        x.resource_uri = data.resource_uri;
+        if (x.individual) {
+            x.individual.id = data.individual.id;
+        }
+
+        return x;
+    };
+
     self.build = function () {
         selection.datum(data).call(build);
-
-        // they start with the same value,
-        // depend on futher validation
-        // or changes to the dom to enable
-        // the save button.
-        prev_valid = valid = true;
-
-        validate();
-
         return self;
     };
 
@@ -3085,7 +3251,7 @@ module.exports = function ProfileIndividual (context) {
             .attr('class', 'four-column-four sel-geo')
             .attr('id', 'individual-geo');
 
-        geo = geoComponent()
+        geo = self.geo = geoComponent()
             .rootSelection(geo_sel)
             .validationVisual(false)
             .optionsKey(function (d) { return d.country; })
@@ -3173,37 +3339,30 @@ module.exports = function ProfileIndividual (context) {
                 data.description : '')
             .render();
 
-        save_button =
-            sel.append('div')
-                .attr('class', 'four-column-four')
-                .append('p')
-                .attr('class', 'save-button')
-                .text('Save');
-
         // turn on dispatch validation
         geo.dispatch
             .on('valueChange.profileIndividual', function () {
-                validate();
+                self.validate();
             });
 
         work_in.dispatch
             .on('valid.profileIndividual', function () {
-                validate();
+                self.validate();
             });
 
         first_name.dispatch
             .on('valueChange.profileIndividual', function () {
-                validate();
+                self.validate();
             });
 
         last_name.dispatch
             .on('valueChange.profileIndividual', function () {
-                validate();
+                self.validate();
             });
 
         description.dispatch
             .on('valueChange.profileIndividual', function () {
-                validate();
+                self.validate();
             });
 
         // manage updatable items.
@@ -3238,132 +3397,6 @@ module.exports = function ProfileIndividual (context) {
             reset_initial: description.initialValue
         });
     }
-    
-
-    function decorate_for_submittal (x) {
-        x.id = data.id;
-        x.resource_uri = data.resource_uri;
-        if (x.individual) {
-            x.individual.id = data.individual.id;
-        }
-
-        return x;
-    }
-
-    function update_user_data () {
-        // something should be updated
-
-        // updated data to be sent to
-        // the server for saving
-        var data_for_server = {};
-
-        updatable.updated().forEach(function (n, i) {
-            if (n.position_in_data.length === 1) {
-
-                data[n.position_in_data[0]] =
-                    n.value();
-
-                data_for_server[n.position_in_data[0]] =
-                    n.value();
-
-            } else if (n.position_in_data.length === 2) {
-
-                data[n.position_in_data[0]]
-                               [n.position_in_data[1]] =
-                    n.value();
-
-                // data for server may not have the correct
-                // nested object to save against
-                if (!data_for_server[n.position_in_data[0]]) {
-                    data_for_server[n.position_in_data[0]] =
-                        data[n.position_in_data[0]];
-                }
-
-                data_for_server[n.position_in_data[0]]
-                               [n.position_in_data[1]] =
-                    n.value();
-            }
-            
-        });
-        // make those changes out
-        // to the context.user module
-        context.user.data(data);
-
-        return data_for_server;
-    }
-
-    function save_flow () {
-        var data_to_submit =
-            decorate_for_submittal(update_user_data());
-
-        // todo: stop editability
-
-        context
-            .api
-            .steamie_update(data_to_submit,
-                             function (err, response) {
-            if (err){
-                console.log('err');
-                console.log(err);
-                return;
-            }
-            
-            console.log('do something with');
-            console.log(response);
-
-            var results = JSON.parse(response.responseText);
-            console.log(results);
-
-            updatable.resetInitialValues();
-            // will reset the save button
-            validate();
-        });
-    }
-
-    function validate () {
-        // deal with validation
-        if (work_in.isValid() &&
-            geo.isValid()) {
-            valid = true;
-        } else {
-            valid = false;
-        }
-
-        // check to see if any of the
-        // updatables, are updated.
-        updatable.check();
-
-        // determine button functionality
-        // based on validation and 
-        // updatable object status
-        if (updatable.updated().length > 0) {
-            if (valid) {
-                enable_save();
-            } else {
-                disable_save();
-            }
-        } else {
-            disable_save();
-        }
-
-        prev_valid = valid;
-
-        return valid;
-    }
-
-    function enable_save() {
-        save_button
-            .classed('enabled', true)
-            .on('click', function () {
-                save_flow();
-            });
-    }
-
-    function disable_save () {
-        save_button
-            .classed('enabled', false)
-            .on('click', null);
-    }
 
     return self;
 };
@@ -3382,11 +3415,8 @@ var geoComponent =
 module.exports = function ProfileInstitution (context) {
     var self = {},
         selection,
-        save_button,
         geo_options,
-        data,
-        prev_valid,
-        valid;
+        data;
 
     var name,
         representative_first_name,
@@ -3395,7 +3425,7 @@ module.exports = function ProfileInstitution (context) {
         geo,
         work_in,
         description,
-        updatable = updatableManager();
+        updatable = self.updatable = updatableManager();
 
     self.selection = function (x) {
         if (!arguments.length) return selection;
@@ -3416,17 +3446,18 @@ module.exports = function ProfileInstitution (context) {
         return self;
     };
 
+    self.decorate_for_submittal = function (x) {
+        x.id = data.id;
+        x.resource_uri = data.resource_uri;
+        if (x.institution) {
+            x.institution.id = data.institution.id;
+        }
+
+        return x;
+    };
+
     self.build = function () {
         selection.datum(data).call(build);
-
-        // they start with the same value,
-        // depend on futher validation
-        // or changes to the dom to enable
-        // the save button.
-        prev_valid = valid = true;
-
-        validate();
-
         return self;
     };
 
@@ -3491,7 +3522,7 @@ module.exports = function ProfileInstitution (context) {
             .attr('class', 'four-column-four sel-geo')
             .attr('id', 'institution-geo');
 
-        geo = geoComponent()
+        geo = self.geo = geoComponent()
             .rootSelection(geo_sel)
             .validationVisual(false)
             .optionsKey(function (d) { return d.country; })
@@ -3577,47 +3608,40 @@ module.exports = function ProfileInstitution (context) {
                 data.description : '')
             .render();
 
-        save_button =
-            sel.append('div')
-                .attr('class', 'four-column-four')
-                .append('p')
-                .attr('class', 'save-button')
-                .text('Save');
-
         // turn on dispatch validation
         geo.dispatch
             .on('valueChange.profileInstitution', function () {
-                validate();
+                self.validate();
             });
 
         work_in.dispatch
             .on('valid.profileInstitution', function () {
-                validate();
+                self.validate();
             });
 
         name.dispatch
             .on('valueChange.profileInstitution', function () {
-                validate();
+                self.validate();
             });
 
         representative_first_name.dispatch
             .on('valueChange.profileInstitution', function () {
-                validate();
+                self.validate();
             });
 
         representative_last_name.dispatch
             .on('valueChange.profileInstitution', function () {
-                validate();
+                self.validate();
             });
 
         representative_email.dispatch
             .on('valueChange.profileInstitution', function () {
-                validate();
+                self.validate();
             });
 
         description.dispatch
             .on('valueChange.profileInstitution', function () {
-                validate();
+                self.validate();
             });
 
         // manage updatable items.
@@ -3667,131 +3691,6 @@ module.exports = function ProfileInstitution (context) {
             position_in_data: ['description'],
             reset_initial: description.initialValue
         });
-    }
-
-    function decorate_for_submittal (x) {
-        x.id = data.id;
-        x.resource_uri = data.resource_uri;
-        if (x.institution) {
-            x.institution.id = data.institution.id;
-        }
-
-        return x;
-    }
-
-    function update_user_data () {
-        // something should be updated
-
-        // updated data to be sent to
-        // the server for saving
-        var data_for_server = {};
-
-        updatable.updated().forEach(function (n, i) {
-            if (n.position_in_data.length === 1) {
-
-                data[n.position_in_data[0]] =
-                    n.value();
-
-                data_for_server[n.position_in_data[0]] =
-                    n.value();
-
-            } else if (n.position_in_data.length === 2) {
-
-                data[n.position_in_data[0]]
-                               [n.position_in_data[1]] =
-                    n.value();
-
-                // data for server may not have the correct
-                // nested object to save against
-                if (!data_for_server[n.position_in_data[0]]) {
-                    data_for_server[n.position_in_data[0]] =
-                        data[n.position_in_data[0]];
-                }
-
-                data_for_server[n.position_in_data[0]]
-                               [n.position_in_data[1]] =
-                    n.value();
-            }
-            
-        });
-        // make those changes out
-        // to the context.user module
-        context.user.data(data);
-
-        return data_for_server;
-    }
-
-    function save_flow () {
-        var data_to_submit =
-            decorate_for_submittal(update_user_data());
-
-        // todo: stop editability
-
-        context
-            .api
-            .steamie_update(data_to_submit,
-                             function (err, response) {
-            if (err){
-                console.log('err');
-                console.log(err);
-                return;
-            }
-            
-            console.log('do something with');
-            console.log(response);
-
-            var results = JSON.parse(response.responseText);
-            console.log(results);
-
-            updatable.resetInitialValues();
-            // will reset the save button
-            validate();
-        });
-    }
-
-    function validate () {
-        // deal with validation
-        if (work_in.isValid() &&
-            geo.isValid()) {
-            valid = true;
-        } else {
-            valid = false;
-        }
-
-        // check to see if any of the
-        // updatables, are updated.
-        updatable.check();
-
-        // determine button functionality
-        // based on validation and 
-        // updatable object status
-        if (updatable.updated().length > 0) {
-            if (valid) {
-                enable_save();
-            } else {
-                disable_save();
-            }
-        } else {
-            disable_save();
-        }
-
-        prev_valid = valid;
-
-        return valid;
-    }
-
-    function enable_save() {
-        save_button
-            .classed('enabled', true)
-            .on('click', function () {
-                save_flow();
-            });
-    }
-
-    function disable_save () {
-        save_button
-            .classed('enabled', false)
-            .on('click', null);
     }
 
     return self;

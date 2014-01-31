@@ -126,6 +126,10 @@ header {
 .z-250 {
     z-index: 250;
 }
+// z-900 used as the blanket
+.z-900 {
+    z-index: 900;
+}
 
 /************
 Global filters
@@ -451,6 +455,7 @@ network graph
     margin-top: 10px;
     border-left-width: 1px;
     border-left-style: solid;
+    color: $color-slate;
 }
 .info_tip.research {
     p.name {
@@ -532,9 +537,6 @@ rect.blanket {
 /************
 form / profile
 */
-.steamie-description {
-
-}
 .add-me {
     @include antenna-medium;
     font-size: 35px;
@@ -547,13 +549,25 @@ form / profile
     top: 100px;
     right: 30px;
 }
+
+.button-activate,
+.next-button,
+.save-button,
+.logout-button,
+.close-button,
+.cancel-add-button {
+    cursor: pointer;
+    text-align: center;
+    background-color: transparent;
+}
+
 .bottom-left {
     position: absolute;
     bottom: 150px;
     left: 28px;
 }
 
-.button-large {
+.modal .button-large {
     @include antenna-medium;
 
     font-size: 100px;
@@ -603,21 +617,25 @@ form / profile
 .modal .logout-button {
     @include antenna-medium;
     font-size: 35px;
-    margin: 0 auto;
+    margin: 20px auto;
     padding: 10px;
-
-    &.enabled {
-        background-color: $white;
-    }
 }
-.button-activate,
-.next-button,
-.save-button,
-.logout-button,
-.close-button {
+.modal .save-button {
+    cursor: default;
+}
+.modal .save-button.enabled {
+    background-color: $white;
     cursor: pointer;
-    text-align: center;
-    background-color: transparent;
+}
+.modal .logout-button:hover {
+    background-color: $white;
+}
+.modal .cancel-add-button {
+    @include antenna-medium;
+    font-size: 35px;
+    line-height: 35px;
+    margin: 20px 0;
+    padding: 20px;
 }
 
 .canvas-wrapper .close-button {
@@ -630,16 +648,20 @@ form / profile
     }
 }
 
-.political .enabled {
+.political .enabled,
+.political .logout-button:hover {
     color: $color-political;
 }
-.research .enabled {
+.research .enabled,
+.research .logout-button:hover {
     color: $color-research;
 }
-.education .enabled {
+.education .enabled,
+.education .logout-button:hover {
     color: $color-education;
 }
-.industry .enabled {
+.industry .enabled,
+.industry .logout-button:hover {
     color: $color-industry;
 }
 
@@ -882,6 +904,10 @@ input[type=radio] {
 .steamie-description p {
     box-sizing: border-box;
     padding-left: 10px;
+}
+
+.blanket {
+    background-color: black;
 }
 /* end form */
 

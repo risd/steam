@@ -141,6 +141,20 @@ function ModalFlow (context) {
                     self.state('profile_' + context.user.type());
                 },
                 append_to_el: function () {}
+            },
+            cancel_add_button: {
+                el: d3.select('#cancel-add-button'),
+                on_click: function () {
+                    self.state('logging_out');
+                    context.api.logout(function (err, results) {
+                        if (err) {
+                            self.state('choose_type_add_zip');
+                            return;
+                        }
+                        self.state('just_logged_out');
+                    });
+                },
+                append_to_el: function () {}
             }
         },
         modal_header: {
@@ -153,8 +167,8 @@ function ModalFlow (context) {
             avatar: {
                 el: d3.select('#modal-header-avatar')
             },
-            logging_off: {
-                el: d3.select('#modal-header-logging-off')
+            logging_out: {
+                el: d3.select('#modal-header-logging-out')
             }
         },
         display: {
@@ -186,7 +200,7 @@ function ModalFlow (context) {
                 el_name: 'modal'
             }, {
                 el_type: 'modal_header',
-                el_name: 'logging_off'
+                el_name: 'logging_out'
             }, {
                 el_type: 'button',
                 el_name: 'close_modal'
@@ -243,7 +257,7 @@ function ModalFlow (context) {
                 el_name: 'close_modal'
             }, {
                 el_type: 'button',
-                el_name: 'close_modal'
+                el_name: 'cancel_add_button'
             }];
 
             apply_state(active);
@@ -401,13 +415,6 @@ function ModalFlow (context) {
         context.user
                .dispatch.on('checkAuthComplete', function(err, d) {
 
-
-            // remove loading icon
-            d3.select('#activate-add-yourself .add-me')
-                .classed('active', true);
-            d3.select('#activate-add-yourself .loading')
-                .classed('active', false);
-
             d = context.user.data();
             console.log('auth check dispatch modal');
             console.log(d);
@@ -452,7 +459,14 @@ function ModalFlow (context) {
                 self.state('call_to_action');
 
                 // self.state('waiting_for_add_me_flow');
+                // self.state('choose_type_add_zip');
             }
+
+            // remove loading icon
+            d3.select('#activate-add-yourself .add-me')
+                .classed('active', true);
+            d3.select('#activate-add-yourself .loading')
+                .classed('active', false);
         });
 
         return self;

@@ -1094,6 +1094,9 @@ header {
 .z-250 {
   z-index: 250; }
 
+.z-900 {
+  z-index: 900; }
+
 /************
 Global filters
 */
@@ -1480,7 +1483,8 @@ network graph
   padding-left: 15px;
   margin-top: 10px;
   border-left-width: 1px;
-  border-left-style: solid; }
+  border-left-style: solid;
+  color: #516272; }
 
 .info_tip.research p.name {
   color: #69e640; }
@@ -1553,12 +1557,22 @@ form / profile
   top: 100px;
   right: 30px; }
 
+.button-activate,
+.next-button,
+.save-button,
+.logout-button,
+.close-button,
+.cancel-add-button {
+  cursor: pointer;
+  text-align: center;
+  background-color: transparent; }
+
 .bottom-left {
   position: absolute;
   bottom: 150px;
   left: 28px; }
 
-.button-large {
+.modal .button-large {
   font-family: "Antenna Comp Medium";
   font-style: normal;
   font-weight: normal;
@@ -1606,20 +1620,28 @@ form / profile
   font-weight: normal;
   -webkit-font-smoothing: antialiased;
   font-size: 35px;
-  margin: 0 auto;
+  margin: 20px auto;
   padding: 10px; }
-  .modal .save-button.enabled,
-  .modal .logout-button.enabled {
-    background-color: white; }
 
-.button-activate,
-.next-button,
-.save-button,
-.logout-button,
-.close-button {
-  cursor: pointer;
-  text-align: center;
-  background-color: transparent; }
+.modal .save-button {
+  cursor: default; }
+
+.modal .save-button.enabled {
+  background-color: white;
+  cursor: pointer; }
+
+.modal .logout-button:hover {
+  background-color: white; }
+
+.modal .cancel-add-button {
+  font-family: "Antenna Comp Medium";
+  font-style: normal;
+  font-weight: normal;
+  -webkit-font-smoothing: antialiased;
+  font-size: 35px;
+  line-height: 35px;
+  margin: 20px 0;
+  padding: 20px; }
 
 .canvas-wrapper .close-button {
   position: absolute;
@@ -1628,16 +1650,20 @@ form / profile
   .canvas-wrapper .close-button line {
     stroke: #516272; }
 
-.political .enabled {
+.political .enabled,
+.political .logout-button:hover {
   color: #ff617f; }
 
-.research .enabled {
+.research .enabled,
+.research .logout-button:hover {
   color: #69e640; }
 
-.education .enabled {
+.education .enabled,
+.education .logout-button:hover {
   color: #ff8931; }
 
-.industry .enabled {
+.industry .enabled,
+.industry .logout-button:hover {
   color: #27b4f2; }
 
 .checkmark {
@@ -1894,6 +1920,9 @@ input[type=radio] {
 .steamie-description p {
   box-sizing: border-box;
   padding-left: 10px; }
+
+.blanket {
+  background-color: black; }
 
 /* end form */
 .modal-animation {
