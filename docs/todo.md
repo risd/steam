@@ -11,6 +11,8 @@
             - this has a rather useless in between step atm, but the beginnings of how this could be handled is here.
 
         - added .blanket to save profile process. implement a more usable version of it.
+            - perhaps the button becomes home to the pulsing platonic orb?
+            - use def?
 
     - go through a clean sign up.
 

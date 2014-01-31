@@ -45,7 +45,7 @@ module.exports = function UpdatableComponentManager () {
 
     self.resetInitialValues = function () {
         updated.forEach(function (n, i) {
-            n.reset_initial(n.value());
+            n.reset_initial(n.value_being_saved);
         });
     };
 

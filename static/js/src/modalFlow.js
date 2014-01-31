@@ -50,7 +50,7 @@ function ModalFlow (context) {
                     value: 'individual',
                     selected: false
                 }, {
-                    label: 'Institution',
+                    label: 'Organization',
                     value: 'institution',
                     selected: false
                 }]),
@@ -546,7 +546,6 @@ function ModalFlow (context) {
     }
 
     function process_authentication (d) {
-
         window.location = d.url;
     }
 
@@ -607,6 +606,9 @@ function ModalFlow (context) {
         el.button.auth_me.el
             .classed('enabled', true)
             .on('click', function () {
+                el.button.auth_me.el
+                    .select('p')
+                    .text('Redirecting...');
                 process_authentication(social_auth.selected());
             });
     }

@@ -1690,7 +1690,7 @@ module.exports = function UpdatableComponentManager () {
 
     self.resetInitialValues = function () {
         updated.forEach(function (n, i) {
-            n.reset_initial(n.value());
+            n.reset_initial(n.value_being_saved);
         });
     };
 
@@ -1849,7 +1849,7 @@ function ModalFlow (context) {
                     value: 'individual',
                     selected: false
                 }, {
-                    label: 'Institution',
+                    label: 'Organization',
                     value: 'institution',
                     selected: false
                 }]),
@@ -2345,7 +2345,6 @@ function ModalFlow (context) {
     }
 
     function process_authentication (d) {
-
         window.location = d.url;
     }
 
@@ -2406,6 +2405,9 @@ function ModalFlow (context) {
         el.button.auth_me.el
             .classed('enabled', true)
             .on('click', function () {
+                el.button.auth_me.el
+                    .select('p')
+                    .text('Redirecting...');
                 process_authentication(social_auth.selected());
             });
     }
@@ -2909,8 +2911,7 @@ module.exports = function Profile (context) {
         built = false,
         prev_valid,
         valid,
-        save_button,
-        blanket_sel;
+        save_button;
 
     self.built = function (x) {
         // tell the world whether or not
@@ -2933,7 +2934,6 @@ module.exports = function Profile (context) {
     };
 
     self.build = function () {
-        blanket_sel = d3.select('#blanket');
 
         type = context.user.type();
 
@@ -3080,15 +3080,13 @@ module.exports = function Profile (context) {
         var data_to_submit =
             profile.decorate_for_submittal(update_user_data());
 
-        // todo: stop editability
-        blanket_sel.classed('active', true);
+        save_button.text('Saving...');
 
         context
             .api
             .steamie_update(data_to_submit,
                              function (err, response) {
 
-            blanket_sel.classed('active', false);
 
             if (err){
                 console.log('err');
@@ -3102,9 +3100,14 @@ module.exports = function Profile (context) {
             var results = JSON.parse(response.responseText);
             console.log(results);
 
+            // resets the initial values to the ones saved
+            // to the server. in case the user continues to
+            // do work while its being saved.
             profile.updatable.resetInitialValues();
-            // will reset the save button
+            // will reset the save button, unless
+            // they have continued to edit
             validate();
+            save_button.text('Save');
         });
     }
 
@@ -3121,19 +3124,21 @@ module.exports = function Profile (context) {
             data = profile.data();
 
         profile.updatable.updated().forEach(function (n, i) {
+            var cur_value = n.value();
+            n.value_being_saved = cur_value;
             if (n.position_in_data.length === 1) {
 
                 data[n.position_in_data[0]] =
-                    n.value();
+                    cur_value;
 
                 data_for_server[n.position_in_data[0]] =
-                    n.value();
+                    cur_value;
 
             } else if (n.position_in_data.length === 2) {
 
                 data[n.position_in_data[0]]
                                [n.position_in_data[1]] =
-                    n.value();
+                    cur_value;
 
                 // data for server may not have the correct
                 // nested object to save against
@@ -3144,9 +3149,8 @@ module.exports = function Profile (context) {
 
                 data_for_server[n.position_in_data[0]]
                                [n.position_in_data[1]] =
-                    n.value();
+                    cur_value;
             }
-            
         });
 
         // make those changes out

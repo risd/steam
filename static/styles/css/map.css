@@ -6,7 +6,7 @@ Syntax error: Undefined variable: "$white".
 43: 
 44: .modal {
 45:     overflow-y: scroll;
-46: 
+46:     
 47:     color: $white;
 48: 
 49:     background-color: rgba($color-slate,
@@ -61,4 +61,4 @@ static/styles/scss/map.scss:47
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Undefined variable: \"$white\".\A         on line 47 of static/styles/scss/map.scss\A \A 42: }\A 43: \A 44: .modal {\A 45:     overflow-y: scroll;\A 46: \A 47:     color: $white;\A 48: \A 49:     background-color: rgba($color-slate,\A 50:                            $fullscreen-color-opacity);\A 51: \A 52:     &.research {"; }
+  content: "Syntax error: Undefined variable: \"$white\".\A         on line 47 of static/styles/scss/map.scss\A \A 42: }\A 43: \A 44: .modal {\A 45:     overflow-y: scroll;\A 46:     \A 47:     color: $white;\A 48: \A 49:     background-color: rgba($color-slate,\A 50:                            $fullscreen-color-opacity);\A 51: \A 52:     &.research {"; }
