@@ -2784,23 +2784,27 @@ function Network (context) {
         // no draw on the map
         // d3.select('#steam-map').classed('active', true);
 
-        // remove svg
-        canvas
-            .transition()
-            .duration(300)
-            .remove();
-
         // deactivate wrapper
         canvas_wrapper.classed('active', false);
 
-        // remove all nodes from the graph
+        d3.transition()
+            .duration(300)
+            .each(function () {
+                // remove svg
+                d3.transition(canvas)
+                    // .delay(300)
+                    .remove();
 
-        nodes_sel.data([])
-            .exit()
-            .transition(300)
-            .style('opacity', 0)
-            .remove();
+                // remove all nodes from the graph
+                d3.transition(nodes_sel.data([]).exit())
+                    .style('opacity', 0)
+                    .remove();
 
+                d3.transition(title_wrapper_sel)
+                    .remove();
+
+
+            });
         // these wont be set until after
         // a network has been initialized
         // and a node has been clicked
@@ -2810,8 +2814,6 @@ function Network (context) {
         if (canvas_blanket_sel) {
             canvas_blanket_sel.remove();
         }
-
-        title_wrapper_sel.remove();
 
         return network;
     };
