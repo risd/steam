@@ -37,6 +37,28 @@
     }   
 }
 
+.logout-button,
+.button-go-to-profile,
+.button-explore-map,
+.button-explore-region {
+    svg {
+        -webkit-transform: translateX(0px);
+
+        -webkit-transition-property: -webkit-transform;
+        -webkit-transition-duration: 0.2s;
+        -webkit-transition-delay: 0s;
+        -webkit-transition-timing-function: cubic-bezier(.19, 1, .22, 1);
+    }
+    &:hover svg {
+        -webkit-transform: translateX(4px);
+
+        -webkit-transition-property: -webkit-transform;
+        -webkit-transition-duration: 0.2s;
+        -webkit-transition-delay: 0s;
+        -webkit-transition-timing-function: cubic-bezier(.19, 1, .22, 1);
+    }   
+}
+
 .button-activate {
     opacity: 0;
 

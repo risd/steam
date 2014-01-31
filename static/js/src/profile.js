@@ -1,6 +1,7 @@
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution'),
-    Settings = require('./profile_settings');
+    Settings = require('./profile_settings'),
+    svg_next_arrow = require('./formComponents/svgNextArrow');
 
 module.exports = function Profile (context) {
     var self = {},
@@ -66,28 +67,32 @@ module.exports = function Profile (context) {
             .text('Save');
 
         // add a sign out button
-        profile.selection()
+        var sign_out = profile.selection()
                 .append('div')
-                .attr('class', 'four-column-four')
-                .append('p')
-                .attr('class', 'logout-button')
-                .text('Sign out.')
-                .on('click', function () {
-                    context.modal_flow
-                        .state('logging_out');
-                    context.api.logout(function (err, response) {
-                        if (err) {
-                            context.modal_flow
-                                .state('profile_' +
-                                       context.user.type());
-                            return;
-                        }
-
+                .attr('class',
+                      'logout-button four-column-two offset-one');
+        sign_out
+            .append('p')
+            .attr('class', '')
+            .text('Sign out.')
+            .on('click', function () {
+                context.modal_flow
+                    .state('logging_out');
+                context.api.logout(function (err, response) {
+                    if (err) {
                         context.modal_flow
-                            .state('just_logged_out');
-                        self.remove();
-                    });
+                            .state('profile_' +
+                                   context.user.type());
+                        return;
+                    }
+
+                    context.modal_flow
+                        .state('just_logged_out');
+                    self.remove();
                 });
+            });
+
+        sign_out.call(svg_next_arrow);
 
         profile.work_in.dispatch
             .on('valueChange.profile', function () {

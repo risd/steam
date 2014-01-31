@@ -1923,7 +1923,10 @@ function ModalFlow (context) {
             auth_me: {
                 el: d3.select('#auth-me-button'),
                 on_click: function () {},
-                append_to_el: svg_next_arrow
+                append_to_el: function (sel) {
+                    sel.call(svg_next_arrow);
+                    sel.select('p').text('Next');
+                }
             },
 
             go_to_profile: {
@@ -1931,7 +1934,29 @@ function ModalFlow (context) {
                 on_click: function () {
                     self.state('profile_' + context.user.type());
                 },
-                append_to_el: function () {}
+                append_to_el: svg_next_arrow
+            },
+
+            explore_map: {
+                el: d3.select('#explore-map'),
+                on_click: function () {
+                    self.state('inactive_with_profile');
+                },
+                append_to_el: svg_next_arrow
+            },
+
+            explore_region: {
+                el: d3.select('#explore-region'),
+                on_click: function () {
+                    console.log('explore region');
+                    self.state('inactive_with_profile');
+                    var d = context.user.data();
+                    console.log(d);
+                    context.network.init({
+                        tlg_id: d.top_level.id
+                    });
+                },
+                append_to_el: svg_next_arrow
             },
 
             profile_link: {
@@ -2257,6 +2282,7 @@ function ModalFlow (context) {
                 // and ask them to sign up
                 self.state('call_to_action');
 
+                // self.state('thank_you');
                 // self.state('waiting_for_add_me_flow');
                 // self.state('choose_type_add_zip');
             }
@@ -2405,9 +2431,21 @@ function ModalFlow (context) {
         el.button.auth_me.el
             .classed('enabled', true)
             .on('click', function () {
-                el.button.auth_me.el
-                    .select('p')
-                    .text('Redirecting...');
+                var p = el.button.auth_me.el.select('p'),
+                    svg = el.button.auth_me.el.select('svg');
+                d3.transition()
+                    .duration(300)
+                    .each(function () {
+                        d3.transition(p)
+                            .style('opacity', 0)
+                            .transition(p)
+                            .text('Redirecting...')
+                            .style('opacity', 1);
+
+                        d3.transition(svg)
+                            .style('opacity', 0)
+                            .remove();
+                    });
                 process_authentication(social_auth.selected());
             });
     }
@@ -2873,8 +2911,8 @@ function Network (context) {
         sel.append('img')
             .attr('class', 'avatar')
             .attr('src', function (d) {
-                // return d.avatar;
-                return "https://pbs.twimg.com" +
+                return d.avatar ? d.avatar :
+                    "https://pbs.twimg.com" +
                     "/profile_images/2216753469/ruben_face_normal.png";
             });
 
@@ -2901,7 +2939,8 @@ function Network (context) {
 },{"./formComponents/svgCross":13}],22:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution'),
-    Settings = require('./profile_settings');
+    Settings = require('./profile_settings'),
+    svg_next_arrow = require('./formComponents/svgNextArrow');
 
 module.exports = function Profile (context) {
     var self = {},
@@ -2967,28 +3006,32 @@ module.exports = function Profile (context) {
             .text('Save');
 
         // add a sign out button
-        profile.selection()
+        var sign_out = profile.selection()
                 .append('div')
-                .attr('class', 'four-column-four')
-                .append('p')
-                .attr('class', 'logout-button')
-                .text('Sign out.')
-                .on('click', function () {
-                    context.modal_flow
-                        .state('logging_out');
-                    context.api.logout(function (err, response) {
-                        if (err) {
-                            context.modal_flow
-                                .state('profile_' +
-                                       context.user.type());
-                            return;
-                        }
-
+                .attr('class',
+                      'logout-button four-column-two offset-one');
+        sign_out
+            .append('p')
+            .attr('class', '')
+            .text('Sign out.')
+            .on('click', function () {
+                context.modal_flow
+                    .state('logging_out');
+                context.api.logout(function (err, response) {
+                    if (err) {
                         context.modal_flow
-                            .state('just_logged_out');
-                        self.remove();
-                    });
+                            .state('profile_' +
+                                   context.user.type());
+                        return;
+                    }
+
+                    context.modal_flow
+                        .state('just_logged_out');
+                    self.remove();
                 });
+            });
+
+        sign_out.call(svg_next_arrow);
 
         profile.work_in.dispatch
             .on('valueChange.profile', function () {
@@ -3163,7 +3206,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./profile_individual":23,"./profile_institution":24,"./profile_settings":25}],23:[function(require,module,exports){
+},{"./formComponents/svgNextArrow":14,"./profile_individual":23,"./profile_institution":24,"./profile_settings":25}],23:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =

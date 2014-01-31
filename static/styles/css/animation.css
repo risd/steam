@@ -26,6 +26,25 @@
     -webkit-transition-delay: 0s;
     -webkit-transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
 
+.logout-button svg,
+.button-go-to-profile svg,
+.button-explore-map svg,
+.button-explore-region svg {
+  -webkit-transform: translateX(0px);
+  -webkit-transition-property: -webkit-transform;
+  -webkit-transition-duration: 0.2s;
+  -webkit-transition-delay: 0s;
+  -webkit-transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
+.logout-button:hover svg,
+.button-go-to-profile:hover svg,
+.button-explore-map:hover svg,
+.button-explore-region:hover svg {
+  -webkit-transform: translateX(4px);
+  -webkit-transition-property: -webkit-transform;
+  -webkit-transition-duration: 0.2s;
+  -webkit-transition-delay: 0s;
+  -webkit-transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
+
 .button-activate {
   opacity: 0;
   -webkit-transition-property: opacity;

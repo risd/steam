@@ -1027,14 +1027,6 @@ header {
   overflow-y: scroll;
   color: white;
   background-color: rgba(81, 98, 114, 0.9); }
-  .modal.research {
-    background-color: rgba(105, 230, 64, 0.9); }
-  .modal.political {
-    background-color: rgba(255, 97, 127, 0.9); }
-  .modal.education {
-    background-color: rgba(255, 137, 49, 0.9); }
-  .modal.industry {
-    background-color: rgba(39, 180, 242, 0.9); }
 
 .modal-wrapper {
   margin-top: 80px;
@@ -1557,12 +1549,15 @@ form / profile
   top: 100px;
   right: 30px; }
 
+.button-explore-region,
+.button-explore-map,
 .button-activate,
 .next-button,
 .save-button,
 .logout-button,
 .close-button,
-.cancel-add-button {
+.cancel-add-button,
+.button-go-to-profile {
   cursor: pointer;
   text-align: center;
   background-color: transparent; }
@@ -1592,16 +1587,36 @@ form / profile
   color: #516272;
   background-color: white; }
 
+.logout-button line,
+.button-explore-region line,
+.button-explore-map line,
+.button-go-to-profile line,
 .close-button line,
 .next-button line {
   stroke: white; }
 
+.button-explore-region,
+.button-explore-map,
+.button-go-to-profile,
+.logout-button,
 .next-button {
   text-align: center;
   background-color: transparent; }
+  .button-explore-region p,
+  .button-explore-region svg,
+  .button-explore-map p,
+  .button-explore-map svg,
+  .button-go-to-profile p,
+  .button-go-to-profile svg,
+  .logout-button p,
+  .logout-button svg,
   .next-button p,
   .next-button svg {
     display: inline-block; }
+  .button-explore-region p,
+  .button-explore-map p,
+  .button-go-to-profile p,
+  .logout-button p,
   .next-button p {
     font-family: "Antenna Comp Medium";
     font-style: normal;
@@ -1610,9 +1625,16 @@ form / profile
     font-size: 35px;
     line-height: 35px;
     margin: 0; }
+  .button-explore-region svg,
+  .button-explore-map svg,
+  .button-go-to-profile svg,
+  .logout-button svg,
   .next-button svg {
     margin-left: 5px; }
 
+.modal .button-explore-region,
+.modal .button-explore-map,
+.modal .button-go-to-profile,
 .modal .save-button,
 .modal .logout-button {
   font-family: "Antenna Comp Medium";
@@ -1620,18 +1642,18 @@ form / profile
   font-weight: normal;
   -webkit-font-smoothing: antialiased;
   font-size: 35px;
-  margin: 20px auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
   padding: 10px; }
 
 .modal .save-button {
-  cursor: default; }
+  cursor: default;
+  color: #c8c8c8; }
 
 .modal .save-button.enabled {
+  color: #516272;
   background-color: white;
   cursor: pointer; }
-
-.modal .logout-button:hover {
-  background-color: white; }
 
 .modal .cancel-add-button {
   font-family: "Antenna Comp Medium";
@@ -1649,22 +1671,6 @@ form / profile
   right: 100px; }
   .canvas-wrapper .close-button line {
     stroke: #516272; }
-
-.political .enabled,
-.political .logout-button:hover {
-  color: #ff617f; }
-
-.research .enabled,
-.research .logout-button:hover {
-  color: #69e640; }
-
-.education .enabled,
-.education .logout-button:hover {
-  color: #ff8931; }
-
-.industry .enabled,
-.industry .logout-button:hover {
-  color: #27b4f2; }
 
 .checkmark {
   position: absolute;
@@ -1836,29 +1842,49 @@ textarea {
     -webkit-transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035);
     -ms-transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035);
     transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035); }
-    .type-option-label .indicator .fill {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      border-radius: 50%;
-      background: white;
-      -webkit-transform-origin: 50% 50%;
-      -moz-transform-origin: 50% 50%;
-      -ms-transform-origin: 50% 50%;
-      -o-transform-origin: 50% 50%;
-      transform-origin: 50% 50%;
-      -webkit-transform: scale(0);
-      -moz-transform: scale(0);
-      -ms-transform: scale(0);
-      -o-transform: scale(0);
-      transform: scale(0);
-      -moz-transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035);
-      -o-transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035);
-      -webkit-transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035);
-      -ms-transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035);
-      transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035); }
+  .type-option-label .fill {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    background: white;
+    -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -ms-transform: scale(0);
+    -o-transform: scale(0);
+    transform: scale(0);
+    -moz-transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    -o-transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    -webkit-transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    -ms-transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035); }
+
+.political input[type=radio]:checked + .type-option-label .indicator {
+  border-color: #ff617f; }
+  .political input[type=radio]:checked + .type-option-label .indicator .fill {
+    background-color: white; }
+
+.research input[type=radio]:checked + .type-option-label .indicator {
+  border-color: white; }
+  .research input[type=radio]:checked + .type-option-label .indicator .fill {
+    background-color: #69e640; }
+
+.education input[type=radio]:checked + .type-option-label .indicator {
+  border-color: #ff8931; }
+  .education input[type=radio]:checked + .type-option-label .indicator .fill {
+    background-color: #ff8931; }
+
+.industry input[type=radio]:checked + .type-option-label .indicator {
+  border-color: #27b4f2; }
+  .industry input[type=radio]:checked + .type-option-label .indicator .fill {
+    background-color: #27b4f2; }
 
 input[type=radio] {
   opacity: 0;
@@ -1967,6 +1993,25 @@ input[type=radio] {
     -webkit-transition-duration: 0.2s;
     -webkit-transition-delay: 0s;
     -webkit-transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
+
+.logout-button svg,
+.button-go-to-profile svg,
+.button-explore-map svg,
+.button-explore-region svg {
+  -webkit-transform: translateX(0px);
+  -webkit-transition-property: -webkit-transform;
+  -webkit-transition-duration: 0.2s;
+  -webkit-transition-delay: 0s;
+  -webkit-transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
+.logout-button:hover svg,
+.button-go-to-profile:hover svg,
+.button-explore-map:hover svg,
+.button-explore-region:hover svg {
+  -webkit-transform: translateX(4px);
+  -webkit-transition-property: -webkit-transform;
+  -webkit-transition-duration: 0.2s;
+  -webkit-transition-delay: 0s;
+  -webkit-transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
 
 .button-activate {
   opacity: 0;

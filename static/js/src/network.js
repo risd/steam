@@ -433,8 +433,8 @@ function Network (context) {
         sel.append('img')
             .attr('class', 'avatar')
             .attr('src', function (d) {
-                // return d.avatar;
-                return "https://pbs.twimg.com" +
+                return d.avatar ? d.avatar :
+                    "https://pbs.twimg.com" +
                     "/profile_images/2216753469/ruben_face_normal.png";
             });
 

@@ -124,7 +124,10 @@ function ModalFlow (context) {
             auth_me: {
                 el: d3.select('#auth-me-button'),
                 on_click: function () {},
-                append_to_el: svg_next_arrow
+                append_to_el: function (sel) {
+                    sel.call(svg_next_arrow);
+                    sel.select('p').text('Next');
+                }
             },
 
             go_to_profile: {
@@ -132,7 +135,29 @@ function ModalFlow (context) {
                 on_click: function () {
                     self.state('profile_' + context.user.type());
                 },
-                append_to_el: function () {}
+                append_to_el: svg_next_arrow
+            },
+
+            explore_map: {
+                el: d3.select('#explore-map'),
+                on_click: function () {
+                    self.state('inactive_with_profile');
+                },
+                append_to_el: svg_next_arrow
+            },
+
+            explore_region: {
+                el: d3.select('#explore-region'),
+                on_click: function () {
+                    console.log('explore region');
+                    self.state('inactive_with_profile');
+                    var d = context.user.data();
+                    console.log(d);
+                    context.network.init({
+                        tlg_id: d.top_level.id
+                    });
+                },
+                append_to_el: svg_next_arrow
             },
 
             profile_link: {
@@ -458,6 +483,7 @@ function ModalFlow (context) {
                 // and ask them to sign up
                 self.state('call_to_action');
 
+                // self.state('thank_you');
                 // self.state('waiting_for_add_me_flow');
                 // self.state('choose_type_add_zip');
             }
@@ -606,9 +632,21 @@ function ModalFlow (context) {
         el.button.auth_me.el
             .classed('enabled', true)
             .on('click', function () {
-                el.button.auth_me.el
-                    .select('p')
-                    .text('Redirecting...');
+                var p = el.button.auth_me.el.select('p'),
+                    svg = el.button.auth_me.el.select('svg');
+                d3.transition()
+                    .duration(300)
+                    .each(function () {
+                        d3.transition(p)
+                            .style('opacity', 0)
+                            .transition(p)
+                            .text('Redirecting...')
+                            .style('opacity', 1);
+
+                        d3.transition(svg)
+                            .style('opacity', 0)
+                            .remove();
+                    });
                 process_authentication(social_auth.selected());
             });
     }
