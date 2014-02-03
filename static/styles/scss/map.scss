@@ -139,6 +139,7 @@ Global filters
     top: 200px;
 }
 .filter_bar .button {
+    cursor: pointer;
     width: 124px;
 
     font-family: "Mercury Display";
@@ -260,8 +261,15 @@ Leaflet map styles
     }
 }
 
+.leaflet-control-layers, .leaflet-bar {
+    background-color: transparent;
+}
+
 .leaflet-bar > a.leaflet-control-zoom-in,
 .leaflet-bar > a.leaflet-control-zoom-out {
+    text-align: center;
+    text-indent: 0;
+
     height: 23px;
     width: 23px;
 
@@ -542,7 +550,7 @@ form / profile
     font-size: 35px;
     color: $color-slate;
     margin: 0;
-    padding: 20px;
+    padding: 10px;
 }
 .top-right {
     position: absolute;

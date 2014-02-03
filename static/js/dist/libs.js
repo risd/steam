@@ -9281,7 +9281,7 @@ d3 = function() {
 var oldL = window.L,
     L = {};
 
-L.version = '0.6.4';
+L.version = '0.7.2';
 
 // define Leaflet for Node module pattern loaders, including Browserify
 if (typeof module === 'object' && typeof module.exports === 'object') {
@@ -9408,7 +9408,6 @@ L.Util = {
 		}
 		return ((!existingUrl || existingUrl.indexOf('?') === -1) ? '?' : '&') + params.join('&');
 	},
-
 	template: function (str, data) {
 		return str.replace(/\{ *([\w_]+) *\}/g, function (str, key) {
 			var value = data[key];
@@ -9421,7 +9420,7 @@ L.Util = {
 		});
 	},
 
-	isArray: function (obj) {
+	isArray: Array.isArray || function (obj) {
 		return (Object.prototype.toString.call(obj) === '[object Array]');
 	},
 
@@ -9611,7 +9610,7 @@ L.Mixin.Events = {
 		if (L.Util.invokeEach(types, this.addEventListener, this, fn, context)) { return this; }
 
 		var events = this[eventsKey] = this[eventsKey] || {},
-		    contextId = context && L.stamp(context),
+		    contextId = context && context !== this && L.stamp(context),
 		    i, len, event, type, indexKey, indexLenKey, typeIndex;
 
 		// types can be a string of space-separated words
@@ -9624,7 +9623,7 @@ L.Mixin.Events = {
 			};
 			type = types[i];
 
-			if (context) {
+			if (contextId) {
 				// store listeners of a particular context in a separate hash (if it has an id)
 				// gives a major performance boost when removing thousands of map layers
 
@@ -9671,7 +9670,7 @@ L.Mixin.Events = {
 		if (L.Util.invokeEach(types, this.removeEventListener, this, fn, context)) { return this; }
 
 		var events = this[eventsKey],
-		    contextId = context && L.stamp(context),
+		    contextId = context && context !== this && L.stamp(context),
 		    i, len, type, listeners, j, indexKey, indexLenKey, typeIndex, removed;
 
 		types = L.Util.splitWords(types);
@@ -9687,9 +9686,10 @@ L.Mixin.Events = {
 				// clear all listeners for a type if function isn't specified
 				delete events[type];
 				delete events[indexKey];
+				delete events[indexLenKey];
 
 			} else {
-				listeners = context && typeIndex ? typeIndex[contextId] : events[type];
+				listeners = contextId && typeIndex ? typeIndex[contextId] : events[type];
 
 				if (listeners) {
 					for (j = listeners.length - 1; j >= 0; j--) {
@@ -9732,7 +9732,7 @@ L.Mixin.Events = {
 			listeners = events[type].slice();
 
 			for (i = 0, len = listeners.length; i < len; i++) {
-				listeners[i].action.call(listeners[i].context || this, event);
+				listeners[i].action.call(listeners[i].context, event);
 			}
 		}
 
@@ -9744,7 +9744,7 @@ L.Mixin.Events = {
 
 			if (listeners) {
 				for (i = 0, len = listeners.length; i < len; i++) {
-					listeners[i].action.call(listeners[i].context || this, event);
+					listeners[i].action.call(listeners[i].context, event);
 				}
 			}
 		}
@@ -9780,9 +9780,7 @@ L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
 
 (function () {
 
-	var ie = !!window.ActiveXObject,
-	    ie6 = ie && !window.XMLHttpRequest,
-	    ie7 = ie && !document.querySelector,
+	var ie = 'ActiveXObject' in window,
 		ielt9 = ie && !document.addEventListener,
 
 	    // terrible browser detection to work around Safari / iOS / Android browser bugs
@@ -9792,17 +9790,20 @@ L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
 	    phantomjs = ua.indexOf('phantom') !== -1,
 	    android = ua.indexOf('android') !== -1,
 	    android23 = ua.search('android [23]') !== -1,
+		gecko = ua.indexOf('gecko') !== -1,
 
 	    mobile = typeof orientation !== undefined + '',
-	    msTouch = window.navigator && window.navigator.msPointerEnabled &&
-	              window.navigator.msMaxTouchPoints,
+	    msPointer = window.navigator && window.navigator.msPointerEnabled &&
+	              window.navigator.msMaxTouchPoints && !window.PointerEvent,
+		pointer = (window.PointerEvent && window.navigator.pointerEnabled && window.navigator.maxTouchPoints) ||
+				  msPointer,
 	    retina = ('devicePixelRatio' in window && window.devicePixelRatio > 1) ||
 	             ('matchMedia' in window && window.matchMedia('(min-resolution:144dpi)') &&
 	              window.matchMedia('(min-resolution:144dpi)').matches),
 
 	    doc = document.documentElement,
 	    ie3d = ie && ('transition' in doc.style),
-	    webkit3d = ('WebKitCSSMatrix' in window) && ('m11' in new window.WebKitCSSMatrix()),
+	    webkit3d = ('WebKitCSSMatrix' in window) && ('m11' in new window.WebKitCSSMatrix()) && !android23,
 	    gecko3d = 'MozPerspective' in doc.style,
 	    opera3d = 'OTransition' in doc.style,
 	    any3d = !window.L_DISABLE_3D && (ie3d || webkit3d || gecko3d || opera3d) && !phantomjs;
@@ -9815,8 +9816,8 @@ L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
 
 		var startName = 'ontouchstart';
 
-		// IE10+ (We simulate these into touch* events in L.DomEvent and L.DomEvent.MsTouch) or WebKit, etc.
-		if (msTouch || (startName in doc)) {
+		// IE10+ (We simulate these into touch* events in L.DomEvent and L.DomEvent.Pointer) or WebKit, etc.
+		if (pointer || (startName in doc)) {
 			return true;
 		}
 
@@ -9842,10 +9843,9 @@ L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
 
 	L.Browser = {
 		ie: ie,
-		ie6: ie6,
-		ie7: ie7,
 		ielt9: ielt9,
 		webkit: webkit,
+		gecko: gecko && !webkit && !window.opera && !ie,
 
 		android: android,
 		android23: android23,
@@ -9864,7 +9864,8 @@ L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
 		mobileOpera: mobile && window.opera,
 
 		touch: touch,
-		msTouch: msTouch,
+		msPointer: msPointer,
+		pointer: pointer,
 
 		retina: retina
 	};
@@ -10155,8 +10156,7 @@ L.DomUtil = {
 		    el = element,
 		    docBody = document.body,
 		    docEl = document.documentElement,
-		    pos,
-		    ie7 = L.Browser.ie7;
+		    pos;
 
 		do {
 			top  += el.offsetTop  || 0;
@@ -10203,19 +10203,6 @@ L.DomUtil = {
 			top  -= el.scrollTop  || 0;
 			left -= el.scrollLeft || 0;
 
-			// webkit (and ie <= 7) handles RTL scrollLeft different to everyone else
-			// https://code.google.com/p/closure-library/source/browse/trunk/closure/goog/style/bidi.js
-			if (!L.DomUtil.documentIsLtr() && (L.Browser.webkit || ie7)) {
-				left += el.scrollWidth - el.clientWidth;
-
-				// ie7 shows the scrollbar by default and provides clientWidth counting it, so we
-				// need to add it back in if it is visible; scrollbar is on the left as we are RTL
-				if (ie7 && L.DomUtil.getStyle(el, 'overflow-y') !== 'hidden' &&
-				           L.DomUtil.getStyle(el, 'overflow') !== 'hidden') {
-					left += 17;
-				}
-			}
-
 			el = el.parentNode;
 		} while (el);
 
@@ -10243,18 +10230,44 @@ L.DomUtil = {
 	},
 
 	hasClass: function (el, name) {
-		return (el.className.length > 0) &&
-		        new RegExp('(^|\\s)' + name + '(\\s|$)').test(el.className);
+		if (el.classList !== undefined) {
+			return el.classList.contains(name);
+		}
+		var className = L.DomUtil._getClass(el);
+		return className.length > 0 && new RegExp('(^|\\s)' + name + '(\\s|$)').test(className);
 	},
 
 	addClass: function (el, name) {
-		if (!L.DomUtil.hasClass(el, name)) {
-			el.className += (el.className ? ' ' : '') + name;
+		if (el.classList !== undefined) {
+			var classes = L.Util.splitWords(name);
+			for (var i = 0, len = classes.length; i < len; i++) {
+				el.classList.add(classes[i]);
+			}
+		} else if (!L.DomUtil.hasClass(el, name)) {
+			var className = L.DomUtil._getClass(el);
+			L.DomUtil._setClass(el, (className ? className + ' ' : '') + name);
 		}
 	},
 
 	removeClass: function (el, name) {
-		el.className = L.Util.trim((' ' + el.className + ' ').replace(' ' + name + ' ', ' '));
+		if (el.classList !== undefined) {
+			el.classList.remove(name);
+		} else {
+			L.DomUtil._setClass(el, L.Util.trim((' ' + L.DomUtil._getClass(el) + ' ').replace(' ' + name + ' ', ' ')));
+		}
+	},
+
+	_setClass: function (el, name) {
+		if (el.className.baseVal === undefined) {
+			el.className = name;
+		} else {
+			// in case of SVG element
+			el.className.baseVal = name;
+		}
+	},
+
+	_getClass: function (el) {
+		return el.className.baseVal === undefined ? el.className : el.className.baseVal;
 	},
 
 	setOpacity: function (el, value) {
@@ -10326,11 +10339,6 @@ L.DomUtil = {
 
 		if (!disable3D && L.Browser.any3d) {
 			el.style[L.DomUtil.TRANSFORM] =  L.DomUtil.getTranslateString(point);
-
-			// workaround for Android 2/3 stability (https://github.com/CloudMade/Leaflet/issues/69)
-			if (L.Browser.mobileWebkit3d) {
-				el.style.WebkitBackfaceVisibility = 'hidden';
-			}
 		} else {
 			el.style.left = point.x + 'px';
 			el.style.top = point.y + 'px';
@@ -10363,27 +10371,39 @@ L.DomUtil.TRANSITION_END =
         L.DomUtil.TRANSITION + 'End' : 'transitionend';
 
 (function () {
-	var userSelectProperty = L.DomUtil.testProp(
-		['userSelect', 'WebkitUserSelect', 'OUserSelect', 'MozUserSelect', 'msUserSelect']);
+    if ('onselectstart' in document) {
+        L.extend(L.DomUtil, {
+            disableTextSelection: function () {
+                L.DomEvent.on(window, 'selectstart', L.DomEvent.preventDefault);
+            },
+
+            enableTextSelection: function () {
+                L.DomEvent.off(window, 'selectstart', L.DomEvent.preventDefault);
+            }
+        });
+    } else {
+        var userSelectProperty = L.DomUtil.testProp(
+            ['userSelect', 'WebkitUserSelect', 'OUserSelect', 'MozUserSelect', 'msUserSelect']);
+
+        L.extend(L.DomUtil, {
+            disableTextSelection: function () {
+                if (userSelectProperty) {
+                    var style = document.documentElement.style;
+                    this._userSelect = style[userSelectProperty];
+                    style[userSelectProperty] = 'none';
+                }
+            },
+
+            enableTextSelection: function () {
+                if (userSelectProperty) {
+                    document.documentElement.style[userSelectProperty] = this._userSelect;
+                    delete this._userSelect;
+                }
+            }
+        });
+    }
 
 	L.extend(L.DomUtil, {
-		disableTextSelection: function () {
-			L.DomEvent.on(window, 'selectstart', L.DomEvent.preventDefault);
-			if (userSelectProperty) {
-				var style = document.documentElement.style;
-				this._userSelect = style[userSelectProperty];
-				style[userSelectProperty] = 'none';
-			}
-		},
-
-		enableTextSelection: function () {
-			L.DomEvent.off(window, 'selectstart', L.DomEvent.preventDefault);
-			if (userSelectProperty) {
-				document.documentElement.style[userSelectProperty] = this._userSelect;
-				delete this._userSelect;
-			}
-		},
-
 		disableImageDrag: function () {
 			L.DomEvent.on(window, 'dragstart', L.DomEvent.preventDefault);
 		},
@@ -10399,16 +10419,20 @@ L.DomUtil.TRANSITION_END =
  * L.LatLng represents a geographical point with latitude and longitude coordinates.
  */
 
-L.LatLng = function (rawLat, rawLng) { // (Number, Number)
-	var lat = parseFloat(rawLat),
-	    lng = parseFloat(rawLng);
+L.LatLng = function (lat, lng, alt) { // (Number, Number, Number)
+	lat = parseFloat(lat);
+	lng = parseFloat(lng);
 
 	if (isNaN(lat) || isNaN(lng)) {
-		throw new Error('Invalid LatLng object: (' + rawLat + ', ' + rawLng + ')');
+		throw new Error('Invalid LatLng object: (' + lat + ', ' + lng + ')');
 	}
 
 	this.lat = lat;
 	this.lng = lng;
+
+	if (alt !== undefined) {
+		this.alt = parseFloat(alt);
+	}
 };
 
 L.extend(L.LatLng, {
@@ -10472,13 +10496,20 @@ L.latLng = function (a, b) { // (LatLng) or ([Number, Number]) or (Number, Numbe
 		return a;
 	}
 	if (L.Util.isArray(a)) {
-		return new L.LatLng(a[0], a[1]);
+		if (typeof a[0] === 'number' || typeof a[0] === 'string') {
+			return new L.LatLng(a[0], a[1], a[2]);
+		} else {
+			return null;
+		}
 	}
 	if (a === undefined || a === null) {
 		return a;
 	}
 	if (typeof a === 'object' && 'lat' in a) {
 		return new L.LatLng(a.lat, 'lng' in a ? a.lng : a.lon);
+	}
+	if (b === undefined) {
+		return null;
 	}
 	return new L.LatLng(a, b);
 };
@@ -10504,8 +10535,9 @@ L.LatLngBounds.prototype = {
 	extend: function (obj) { // (LatLng) or (LatLngBounds)
 		if (!obj) { return this; }
 
-		if (typeof obj[0] === 'number' || typeof obj[0] === 'string' || obj instanceof L.LatLng) {
-			obj = L.latLng(obj);
+		var latLng = L.latLng(obj);
+		if (latLng !== null) {
+			obj = latLng;
 		} else {
 			obj = L.latLngBounds(obj);
 		}
@@ -10718,6 +10750,11 @@ L.CRS = {
 
 	scale: function (zoom) {
 		return 256 * Math.pow(2, zoom);
+	},
+
+	getSize: function (zoom) {
+		var s = this.scale(zoom);
+		return L.point(s, s);
 	}
 };
 
@@ -10796,8 +10833,13 @@ L.Map = L.Class.extend({
 	initialize: function (id, options) { // (HTMLElement or String, Object)
 		options = L.setOptions(this, options);
 
+
 		this._initContainer(id);
 		this._initLayout();
+
+		// hack for https://github.com/Leaflet/Leaflet/issues/1980
+		this._onResize = L.bind(this._onResize, this);
+
 		this._initEvents();
 
 		if (options.maxBounds) {
@@ -10824,11 +10866,16 @@ L.Map = L.Class.extend({
 
 	// replaced by animation-powered implementation in Map.PanAnimation.js
 	setView: function (center, zoom) {
+		zoom = zoom === undefined ? this.getZoom() : zoom;
 		this._resetView(L.latLng(center), this._limitZoom(zoom));
 		return this;
 	},
 
 	setZoom: function (zoom, options) {
+		if (!this._loaded) {
+			this._zoom = this._limitZoom(zoom);
+			return this;
+		}
 		return this.setView(this.getCenter(), zoom, {zoom: options});
 	},
 
@@ -10866,6 +10913,8 @@ L.Map = L.Class.extend({
 		    nePoint = this.project(bounds.getNorthEast(), zoom),
 		    center = this.unproject(swPoint.add(nePoint).divideBy(2).add(paddingOffset), zoom);
 
+		zoom = options && options.maxZoom ? Math.min(options.maxZoom, zoom) : zoom;
+
 		return this.setView(center, zoom, options);
 	},
 
@@ -10878,7 +10927,7 @@ L.Map = L.Class.extend({
 	},
 
 	panBy: function (offset) { // (Point)
-		// replaced with animated panBy in Map.Animation.js
+		// replaced with animated panBy in Map.PanAnimation.js
 		this.fire('movestart');
 
 		this._rawPanBy(L.point(offset));
@@ -10887,63 +10936,29 @@ L.Map = L.Class.extend({
 		return this.fire('moveend');
 	},
 
-	setMaxBounds: function (bounds, options) {
+	setMaxBounds: function (bounds) {
 		bounds = L.latLngBounds(bounds);
 
 		this.options.maxBounds = bounds;
 
 		if (!bounds) {
-			this._boundsMinZoom = null;
-			this.off('moveend', this._panInsideMaxBounds, this);
-			return this;
+			return this.off('moveend', this._panInsideMaxBounds, this);
 		}
-
-		var minZoom = this.getBoundsZoom(bounds, true);
-
-		this._boundsMinZoom = minZoom;
 
 		if (this._loaded) {
-			if (this._zoom < minZoom) {
-				this.setView(bounds.getCenter(), minZoom, options);
-			} else {
-				this.panInsideBounds(bounds);
-			}
+			this._panInsideMaxBounds();
 		}
 
-		this.on('moveend', this._panInsideMaxBounds, this);
-
-		return this;
+		return this.on('moveend', this._panInsideMaxBounds, this);
 	},
 
-	panInsideBounds: function (bounds) {
-		bounds = L.latLngBounds(bounds);
+	panInsideBounds: function (bounds, options) {
+		var center = this.getCenter(),
+			newCenter = this._limitCenter(center, this._zoom, bounds);
 
-		var viewBounds = this.getPixelBounds(),
-		    viewSw = viewBounds.getBottomLeft(),
-		    viewNe = viewBounds.getTopRight(),
-		    sw = this.project(bounds.getSouthWest()),
-		    ne = this.project(bounds.getNorthEast()),
-		    dx = 0,
-		    dy = 0;
+		if (center.equals(newCenter)) { return this; }
 
-		if (viewNe.y < ne.y) { // north
-			dy = Math.ceil(ne.y - viewNe.y);
-		}
-		if (viewNe.x > ne.x) { // east
-			dx = Math.floor(ne.x - viewNe.x);
-		}
-		if (viewSw.y > sw.y) { // south
-			dy = Math.floor(sw.y - viewSw.y);
-		}
-		if (viewSw.x < sw.x) { // west
-			dx = Math.ceil(sw.x - viewSw.x);
-		}
-
-		if (dx || dy) {
-			return this.panBy([dx, dy]);
-		}
-
-		return this;
+		return this.panTo(newCenter, options);
 	},
 
 	addLayer: function (layer) {
@@ -10978,7 +10993,7 @@ L.Map = L.Class.extend({
 	removeLayer: function (layer) {
 		var id = L.stamp(layer);
 
-		if (!this._layers[id]) { return; }
+		if (!this._layers[id]) { return this; }
 
 		if (this._loaded) {
 			layer.onRemove(this);
@@ -11019,6 +11034,8 @@ L.Map = L.Class.extend({
 	},
 
 	invalidateSize: function (options) {
+		if (!this._loaded) { return this; }
+
 		options = L.extend({
 			animate: false,
 			pan: true
@@ -11026,15 +11043,12 @@ L.Map = L.Class.extend({
 
 		var oldSize = this.getSize();
 		this._sizeChanged = true;
-
-		if (this.options.maxBounds) {
-			this.setMaxBounds(this.options.maxBounds);
-		}
-
-		if (!this._loaded) { return this; }
+		this._initialCenter = null;
 
 		var newSize = this.getSize(),
-		    offset = oldSize.subtract(newSize).divideBy(2).round();
+		    oldCenter = oldSize.divideBy(2).round(),
+		    newCenter = newSize.divideBy(2).round(),
+		    offset = oldCenter.subtract(newCenter);
 
 		if (!offset.x && !offset.y) { return this; }
 
@@ -11048,9 +11062,12 @@ L.Map = L.Class.extend({
 
 			this.fire('move');
 
-			// make sure moveend is not fired too often on resize
-			clearTimeout(this._sizeTimer);
-			this._sizeTimer = setTimeout(L.bind(this.fire, this, 'moveend'), 200);
+			if (options.debounceMoveend) {
+				clearTimeout(this._sizeTimer);
+				this._sizeTimer = setTimeout(L.bind(this.fire, this, 'moveend'), 200);
+			} else {
+				this.fire('moveend');
+			}
 		}
 
 		return this.fire('resize', {
@@ -11061,7 +11078,7 @@ L.Map = L.Class.extend({
 
 	// TODO handler.addTo
 	addHandler: function (name, HandlerClass) {
-		if (!HandlerClass) { return; }
+		if (!HandlerClass) { return this; }
 
 		var handler = this[name] = new HandlerClass(this);
 
@@ -11081,7 +11098,12 @@ L.Map = L.Class.extend({
 
 		this._initEvents('off');
 
-		delete this._container._leaflet;
+		try {
+			// throws error in IE6-8
+			delete this._container._leaflet;
+		} catch (e) {
+			this._container._leaflet = undefined;
+		}
 
 		this._clearPanes();
 		if (this._clearControlPos) {
@@ -11099,7 +11121,7 @@ L.Map = L.Class.extend({
 	getCenter: function () { // (Boolean) -> LatLng
 		this._checkIfLoaded();
 
-		if (!this._moved()) {
+		if (this._initialCenter && !this._moved()) {
 			return this._initialCenter;
 		}
 		return this.layerPointToLatLng(this._getCenterLayerPoint());
@@ -11118,9 +11140,9 @@ L.Map = L.Class.extend({
 	},
 
 	getMinZoom: function () {
-		var z1 = this._layersMinZoom === undefined ? 0 : this._layersMinZoom,
-		    z2 = this._boundsMinZoom === undefined ? 0 : this._boundsMinZoom;
-		return this.options.minZoom === undefined ? Math.max(z1, z2) : this.options.minZoom;
+		return this.options.minZoom === undefined ?
+			(this._layersMinZoom === undefined ? 0 : this._layersMinZoom) :
+			this.options.minZoom;
 	},
 
 	getMaxZoom: function () {
@@ -11272,6 +11294,7 @@ L.Map = L.Class.extend({
 		L.DomUtil.addClass(container, 'leaflet-container' +
 			(L.Browser.touch ? ' leaflet-touch' : '') +
 			(L.Browser.retina ? ' leaflet-retina' : '') +
+			(L.Browser.ielt9 ? ' leaflet-oldie' : '') +
 			(this.options.fadeAnimation ? ' leaflet-fade-anim' : ''));
 
 		var position = L.DomUtil.getStyle(container, 'position');
@@ -11442,12 +11465,14 @@ L.Map = L.Class.extend({
 	_onResize: function () {
 		L.Util.cancelAnimFrame(this._resizeRequest);
 		this._resizeRequest = L.Util.requestAnimFrame(
-		        this.invalidateSize, this, false, this._container);
+		        function () { this.invalidateSize({debounceMoveend: true}); }, this, false, this._container);
 	},
 
 	_onMouseClick: function (e) {
-		if (!this._loaded || (!e._simulated && this.dragging && this.dragging.moved()) ||
-		        L.DomEvent._skipped(e)) { return; }
+		if (!this._loaded || (!e._simulated &&
+		        ((this.dragging && this.dragging.moved()) ||
+		         (this.boxZoom  && this.boxZoom.moved()))) ||
+		            L.DomEvent._skipped(e)) { return; }
 
 		this.fire('preclick');
 		this._fireMouseEvent(e);
@@ -11542,6 +11567,46 @@ L.Map = L.Class.extend({
 		return this.latLngToLayerPoint(latlng).subtract(this._getCenterLayerPoint());
 	},
 
+	// adjust center for view to get inside bounds
+	_limitCenter: function (center, zoom, bounds) {
+
+		if (!bounds) { return center; }
+
+		var centerPoint = this.project(center, zoom),
+		    viewHalf = this.getSize().divideBy(2),
+		    viewBounds = new L.Bounds(centerPoint.subtract(viewHalf), centerPoint.add(viewHalf)),
+		    offset = this._getBoundsOffset(viewBounds, bounds, zoom);
+
+		return this.unproject(centerPoint.add(offset), zoom);
+	},
+
+	// adjust offset for view to get inside bounds
+	_limitOffset: function (offset, bounds) {
+		if (!bounds) { return offset; }
+
+		var viewBounds = this.getPixelBounds(),
+		    newBounds = new L.Bounds(viewBounds.min.add(offset), viewBounds.max.add(offset));
+
+		return offset.add(this._getBoundsOffset(newBounds, bounds));
+	},
+
+	// returns offset needed for pxBounds to get inside maxBounds at a specified zoom
+	_getBoundsOffset: function (pxBounds, maxBounds, zoom) {
+		var nwOffset = this.project(maxBounds.getNorthWest(), zoom).subtract(pxBounds.min),
+		    seOffset = this.project(maxBounds.getSouthEast(), zoom).subtract(pxBounds.max),
+
+		    dx = this._rebound(nwOffset.x, -seOffset.x),
+		    dy = this._rebound(nwOffset.y, -seOffset.y);
+
+		return new L.Point(dx, dy);
+	},
+
+	_rebound: function (left, right) {
+		return left + right > 0 ?
+			Math.round(left - right) / 2 :
+			Math.max(0, Math.ceil(left)) - Math.max(0, Math.floor(right));
+	},
+
 	_limitZoom: function (zoom) {
 		var min = this.getMinZoom(),
 		    max = this.getMaxZoom();
@@ -11622,9 +11687,9 @@ L.CRS.EPSG3395 = L.extend({}, L.CRS, {
 	transformation: (function () {
 		var m = L.Projection.Mercator,
 		    r = m.R_MAJOR,
-		    r2 = m.R_MINOR;
+		    scale = 0.5 / (Math.PI * r);
 
-		return new L.Transformation(0.5 / (Math.PI * r), 0.5, -0.5 / (Math.PI * r2), 0.5);
+		return new L.Transformation(scale, 0.5, -scale, 0.5);
 	}())
 });
 
@@ -11645,7 +11710,8 @@ L.TileLayer = L.Class.extend({
 		attribution: '',
 		zoomOffset: 0,
 		opacity: 1,
-		/* (undefined works too)
+		/*
+		maxNativeZoom: null,
 		zIndex: null,
 		tms: false,
 		continuousWorld: false,
@@ -11693,9 +11759,6 @@ L.TileLayer = L.Class.extend({
 
 		// create a container div for tiles
 		this._initContainer();
-
-		// create an image to clone for tiles
-		this._createTileProto();
 
 		// set up events
 		map.on({
@@ -11861,7 +11924,7 @@ L.TileLayer = L.Class.extend({
 			this._updateZIndex();
 
 			if (this._animated) {
-				var className = 'leaflet-tile-container leaflet-zoom-animated';
+				var className = 'leaflet-tile-container';
 
 				this._bgBuffer = L.DomUtil.create('div', className, this._container);
 				this._tileContainer = L.DomUtil.create('div', className, this._container);
@@ -11899,13 +11962,27 @@ L.TileLayer = L.Class.extend({
 		this._initContainer();
 	},
 
+	_getTileSize: function () {
+		var map = this._map,
+		    zoom = map.getZoom() + this.options.zoomOffset,
+		    zoomN = this.options.maxNativeZoom,
+		    tileSize = this.options.tileSize;
+
+		if (zoomN && zoom > zoomN) {
+			tileSize = Math.round(map.getZoomScale(zoom) / map.getZoomScale(zoomN) * tileSize);
+		}
+
+		return tileSize;
+	},
+
 	_update: function () {
 
 		if (!this._map) { return; }
 
-		var bounds = this._map.getPixelBounds(),
-		    zoom = this._map.getZoom(),
-		    tileSize = this.options.tileSize;
+		var map = this._map,
+		    bounds = map.getPixelBounds(),
+		    zoom = map.getZoom(),
+		    tileSize = this._getTileSize();
 
 		if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
 			return;
@@ -11974,8 +12051,8 @@ L.TileLayer = L.Class.extend({
 			var limit = this._getWrapTileNum();
 
 			// don't load if exceeds world bounds
-			if ((options.noWrap && (tilePoint.x < 0 || tilePoint.x >= limit)) ||
-				tilePoint.y < 0 || tilePoint.y >= limit) { return false; }
+			if ((options.noWrap && (tilePoint.x < 0 || tilePoint.x >= limit.x)) ||
+				tilePoint.y < 0 || tilePoint.y >= limit.y) { return false; }
 		}
 
 		if (options.bounds) {
@@ -12044,11 +12121,9 @@ L.TileLayer = L.Class.extend({
 		/*
 		Chrome 20 layouts much faster with top/left (verify with timeline, frames)
 		Android 4 browser has display issues with top/left and requires transform instead
-		Android 2 browser requires top/left or tiles disappear on load or first drag
-		(reappear after zoom) https://github.com/CloudMade/Leaflet/issues/866
 		(other browsers don't currently care) - see debug/hacks/jitter.html for an example
 		*/
-		L.DomUtil.setPosition(tile, tilePos, L.Browser.chrome || L.Browser.android23);
+		L.DomUtil.setPosition(tile, tilePos, L.Browser.chrome);
 
 		this._tiles[tilePoint.x + ':' + tilePoint.y] = tile;
 
@@ -12068,12 +12143,14 @@ L.TileLayer = L.Class.extend({
 			zoom = options.maxZoom - zoom;
 		}
 
-		return zoom + options.zoomOffset;
+		zoom += options.zoomOffset;
+
+		return options.maxNativeZoom ? Math.min(zoom, options.maxNativeZoom) : zoom;
 	},
 
 	_getTilePos: function (tilePoint) {
 		var origin = this._map.getPixelOrigin(),
-		    tileSize = this.options.tileSize;
+		    tileSize = this._getTileSize();
 
 		return tilePoint.multiplyBy(tileSize).subtract(origin);
 	},
@@ -12090,8 +12167,9 @@ L.TileLayer = L.Class.extend({
 	},
 
 	_getWrapTileNum: function () {
-		// TODO refactor, limit is not valid for non-standard projections
-		return Math.pow(2, this._getZoomForUrl());
+		var crs = this._map.options.crs,
+		    size = crs.getSize(this._map.getZoom());
+		return size.divideBy(this._getTileSize())._floor();
 	},
 
 	_adjustTilePoint: function (tilePoint) {
@@ -12100,11 +12178,11 @@ L.TileLayer = L.Class.extend({
 
 		// wrap tile coordinates
 		if (!this.options.continuousWorld && !this.options.noWrap) {
-			tilePoint.x = ((tilePoint.x % limit) + limit) % limit;
+			tilePoint.x = ((tilePoint.x % limit.x) + limit.x) % limit.x;
 		}
 
 		if (this.options.tms) {
-			tilePoint.y = limit - tilePoint.y - 1;
+			tilePoint.y = limit.y - tilePoint.y - 1;
 		}
 
 		tilePoint.z = this._getZoomForUrl();
@@ -12113,12 +12191,6 @@ L.TileLayer = L.Class.extend({
 	_getSubdomain: function (tilePoint) {
 		var index = Math.abs(tilePoint.x + tilePoint.y) % this.options.subdomains.length;
 		return this.options.subdomains[index];
-	},
-
-	_createTileProto: function () {
-		var img = this._tileImg = L.DomUtil.create('img', 'leaflet-tile');
-		img.style.width = img.style.height = this.options.tileSize + 'px';
-		img.galleryimg = 'no';
 	},
 
 	_getTile: function () {
@@ -12134,11 +12206,19 @@ L.TileLayer = L.Class.extend({
 	_resetTile: function (/*tile*/) {},
 
 	_createTile: function () {
-		var tile = this._tileImg.cloneNode(false);
+		var tile = L.DomUtil.create('img', 'leaflet-tile');
+		tile.style.width = tile.style.height = this._getTileSize() + 'px';
+		tile.galleryimg = 'no';
+
 		tile.onselectstart = tile.onmousemove = L.Util.falseFn;
 
 		if (L.Browser.ielt9 && this.options.opacity !== undefined) {
 			L.DomUtil.setOpacity(tile, this.options.opacity);
+		}
+		// without this hack, tiles disappear after zoom on Chrome for Android
+		// https://github.com/Leaflet/Leaflet/issues/2078
+		if (L.Browser.mobileWebkit3d) {
+			tile.style.WebkitBackfaceVisibility = 'hidden';
 		}
 		return tile;
 	},
@@ -12150,10 +12230,20 @@ L.TileLayer = L.Class.extend({
 
 		this._adjustTilePoint(tilePoint);
 		tile.src     = this.getTileUrl(tilePoint);
+
+		this.fire('tileloadstart', {
+			tile: tile,
+			url: tile.src
+		});
 	},
 
 	_tileLoaded: function () {
 		this._tilesToLoad--;
+
+		if (this._animated) {
+			L.DomUtil.addClass(this._tileContainer, 'leaflet-zoom-animated');
+		}
+
 		if (!this._tilesToLoad) {
 			this.fire('load');
 
@@ -12248,13 +12338,15 @@ L.TileLayer.WMS = L.TileLayer.extend({
 
 		this._crs = this.options.crs || map.options.crs;
 
-		var projectionKey = parseFloat(this.wmsParams.version) >= 1.3 ? 'crs' : 'srs';
+		this._wmsVersion = parseFloat(this.wmsParams.version);
+
+		var projectionKey = this._wmsVersion >= 1.3 ? 'crs' : 'srs';
 		this.wmsParams[projectionKey] = this._crs.code;
 
 		L.TileLayer.prototype.onAdd.call(this, map);
 	},
 
-	getTileUrl: function (tilePoint, zoom) { // (Point, Number) -> String
+	getTileUrl: function (tilePoint) { // (Point, Number) -> String
 
 		var map = this._map,
 		    tileSize = this.options.tileSize,
@@ -12262,10 +12354,11 @@ L.TileLayer.WMS = L.TileLayer.extend({
 		    nwPoint = tilePoint.multiplyBy(tileSize),
 		    sePoint = nwPoint.add([tileSize, tileSize]),
 
-		    nw = this._crs.project(map.unproject(nwPoint, zoom)),
-		    se = this._crs.project(map.unproject(sePoint, zoom)),
-
-		    bbox = [nw.x, se.y, se.x, nw.y].join(','),
+		    nw = this._crs.project(map.unproject(nwPoint, tilePoint.z)),
+		    se = this._crs.project(map.unproject(sePoint, tilePoint.z)),
+		    bbox = this._wmsVersion >= 1.3 && this._crs === L.CRS.EPSG4326 ?
+		        [se.y, nw.x, nw.y, se.x].join(',') :
+		        [nw.x, se.y, se.x, nw.y].join(','),
 
 		    url = L.Util.template(this._url, {s: this._getSubdomain(tilePoint)});
 
@@ -12308,7 +12401,7 @@ L.TileLayer.Canvas = L.TileLayer.extend({
 			this._reset({hard: true});
 			this._update();
 		}
-		
+
 		for (var i in this._tiles) {
 			this._redrawTile(this._tiles[i]);
 		}
@@ -12319,13 +12412,9 @@ L.TileLayer.Canvas = L.TileLayer.extend({
 		this.drawTile(tile, tile._tilePoint, this._map._zoom);
 	},
 
-	_createTileProto: function () {
-		var proto = this._canvasProto = L.DomUtil.create('canvas', 'leaflet-tile');
-		proto.width = proto.height = this.options.tileSize;
-	},
-
 	_createTile: function () {
-		var tile = this._canvasProto.cloneNode(false);
+		var tile = L.DomUtil.create('canvas', 'leaflet-tile');
+		tile.width = tile.height = this.options.tileSize;
 		tile.onselectstart = tile.onmousemove = L.Util.falseFn;
 		return tile;
 	},
@@ -12427,6 +12516,15 @@ L.ImageOverlay = L.Class.extend({
 			pane.insertBefore(this._image, pane.firstChild);
 		}
 		return this;
+	},
+
+	setUrl: function (url) {
+		this._url = url;
+		this._image.src = this._url;
+	},
+
+	getAttribution: function () {
+		return this.options.attribution;
 	},
 
 	_initImage: function () {
@@ -12572,19 +12670,8 @@ L.Icon = L.Class.extend({
 	},
 
 	_createImg: function (src, el) {
-
-		if (!L.Browser.ie6) {
-			if (!el) {
-				el = document.createElement('img');
-			}
-			el.src = src;
-		} else {
-			if (!el) {
-				el = document.createElement('div');
-			}
-			el.style.filter =
-			        'progid:DXImageTransform.Microsoft.AlphaImageLoader(src="' + src + '")';
-		}
+		el = el || document.createElement('img');
+		el.src = src;
 		return el;
 	},
 
@@ -12665,6 +12752,7 @@ L.Marker = L.Class.extend({
 	options: {
 		icon: new L.Icon.Default(),
 		title: '',
+		alt: '',
 		clickable: true,
 		draggable: false,
 		keyboard: true,
@@ -12686,6 +12774,7 @@ L.Marker = L.Class.extend({
 
 		this._initIcon();
 		this.update();
+		this.fire('add');
 
 		if (map.options.zoomAnimation && map.options.markerZoomAnimation) {
 			map.on('zoomanim', this._animateZoom, this);
@@ -12743,6 +12832,10 @@ L.Marker = L.Class.extend({
 			this.update();
 		}
 
+		if (this._popup) {
+			this.bindPopup(this._popup);
+		}
+
 		return this;
 	},
 
@@ -12773,6 +12866,10 @@ L.Marker = L.Class.extend({
 
 			if (options.title) {
 				icon.title = options.title;
+			}
+			
+			if (options.alt) {
+				icon.alt = options.alt;
 			}
 		}
 
@@ -12858,7 +12955,7 @@ L.Marker = L.Class.extend({
 	},
 
 	_animateZoom: function (opt) {
-		var pos = this._map._latLngToNewLayerPoint(this._latlng, opt.zoom, opt.center);
+		var pos = this._map._latLngToNewLayerPoint(this._latlng, opt.zoom, opt.center).round();
 
 		this._setPos(pos);
 	},
@@ -12939,7 +13036,7 @@ L.Marker = L.Class.extend({
 		if (this._map) {
 			this._updateOpacity();
 		}
-		
+
 		return this;
 	},
 
@@ -13025,11 +13122,13 @@ L.Popup = L.Class.extend({
 	options: {
 		minWidth: 50,
 		maxWidth: 300,
-		maxHeight: null,
+		// maxHeight: null,
 		autoPan: true,
 		closeButton: true,
 		offset: [0, 7],
 		autoPanPadding: [5, 5],
+		// autoPanPaddingTopLeft: null,
+		// autoPanPaddingBottomRight: null,
 		keepInView: false,
 		className: '',
 		zoomAnimation: true
@@ -13049,7 +13148,6 @@ L.Popup = L.Class.extend({
 		if (!this._container) {
 			this._initLayout();
 		}
-		this._updateContent();
 
 		var animFade = map.options.fadeAnimation;
 
@@ -13060,7 +13158,7 @@ L.Popup = L.Class.extend({
 
 		map.on(this._getEvents(), this);
 
-		this._update();
+		this.update();
 
 		if (animFade) {
 			L.DomUtil.setOpacity(this._container, 1);
@@ -13107,16 +13205,41 @@ L.Popup = L.Class.extend({
 		}
 	},
 
+	getLatLng: function () {
+		return this._latlng;
+	},
+
 	setLatLng: function (latlng) {
 		this._latlng = L.latLng(latlng);
-		this._update();
+		if (this._map) {
+			this._updatePosition();
+			this._adjustPan();
+		}
 		return this;
+	},
+
+	getContent: function () {
+		return this._content;
 	},
 
 	setContent: function (content) {
 		this._content = content;
-		this._update();
+		this.update();
 		return this;
+	},
+
+	update: function () {
+		if (!this._map) { return; }
+
+		this._container.style.visibility = 'hidden';
+
+		this._updateContent();
+		this._updateLayout();
+		this._updatePosition();
+
+		this._container.style.visibility = '';
+
+		this._adjustPan();
 	},
 
 	_getEvents: function () {
@@ -13165,25 +13288,12 @@ L.Popup = L.Class.extend({
 		L.DomEvent.disableClickPropagation(wrapper);
 
 		this._contentNode = L.DomUtil.create('div', prefix + '-content', wrapper);
-		L.DomEvent.on(this._contentNode, 'mousewheel', L.DomEvent.stopPropagation);
-		L.DomEvent.on(this._contentNode, 'MozMousePixelScroll', L.DomEvent.stopPropagation);
+
+		L.DomEvent.disableScrollPropagation(this._contentNode);
 		L.DomEvent.on(wrapper, 'contextmenu', L.DomEvent.stopPropagation);
+
 		this._tipContainer = L.DomUtil.create('div', prefix + '-tip-container', container);
 		this._tip = L.DomUtil.create('div', prefix + '-tip', this._tipContainer);
-	},
-
-	_update: function () {
-		if (!this._map) { return; }
-
-		this._container.style.visibility = 'hidden';
-
-		this._updateContent();
-		this._updateLayout();
-		this._updatePosition();
-
-		this._container.style.visibility = '';
-
-		this._adjustPan();
 	},
 
 	_updateContent: function () {
@@ -13270,21 +13380,23 @@ L.Popup = L.Class.extend({
 
 		var containerPos = map.layerPointToContainerPoint(layerPos),
 		    padding = L.point(this.options.autoPanPadding),
+		    paddingTL = L.point(this.options.autoPanPaddingTopLeft || padding),
+		    paddingBR = L.point(this.options.autoPanPaddingBottomRight || padding),
 		    size = map.getSize(),
 		    dx = 0,
 		    dy = 0;
 
-		if (containerPos.x + containerWidth > size.x) { // right
-			dx = containerPos.x + containerWidth - size.x + padding.x;
+		if (containerPos.x + containerWidth + paddingBR.x > size.x) { // right
+			dx = containerPos.x + containerWidth - size.x + paddingBR.x;
 		}
-		if (containerPos.x - dx < 0) { // left
-			dx = containerPos.x - padding.x;
+		if (containerPos.x - dx - paddingTL.x < 0) { // left
+			dx = containerPos.x - paddingTL.x;
 		}
-		if (containerPos.y + containerHeight > size.y) { // bottom
-			dy = containerPos.y + containerHeight - size.y + padding.y;
+		if (containerPos.y + containerHeight + paddingBR.y > size.y) { // bottom
+			dy = containerPos.y + containerHeight - size.y + paddingBR.y;
 		}
-		if (containerPos.y - dy < 0) { // top
-			dy = containerPos.y - padding.y;
+		if (containerPos.y - dy - paddingTL.y < 0) { // top
+			dy = containerPos.y - paddingTL.y;
 		}
 
 		if (dx || dy) {
@@ -13379,11 +13491,12 @@ L.Marker.include({
 
 		options = L.extend({offset: anchor}, options);
 
-		if (!this._popup) {
+		if (!this._popupHandlersAdded) {
 			this
 			    .on('click', this.togglePopup, this)
 			    .on('remove', this.closePopup, this)
 			    .on('move', this._movePopup, this);
+			this._popupHandlersAdded = true;
 		}
 
 		if (content instanceof L.Popup) {
@@ -13408,11 +13521,16 @@ L.Marker.include({
 		if (this._popup) {
 			this._popup = null;
 			this
-			    .off('click', this.togglePopup)
-			    .off('remove', this.closePopup)
-			    .off('move', this._movePopup);
+			    .off('click', this.togglePopup, this)
+			    .off('remove', this.closePopup, this)
+			    .off('move', this._movePopup, this);
+			this._popupHandlersAdded = false;
 		}
 		return this;
+	},
+
+	getPopup: function () {
+		return this._popup;
 	},
 
 	_movePopup: function (e) {
@@ -13555,7 +13673,9 @@ L.FeatureGroup = L.LayerGroup.extend({
 			return this;
 		}
 
-		layer.on(L.FeatureGroup.EVENTS, this._propagateEvent, this);
+		if ('on' in layer) {
+			layer.on(L.FeatureGroup.EVENTS, this._propagateEvent, this);
+		}
 
 		L.LayerGroup.prototype.addLayer.call(this, layer);
 
@@ -13591,6 +13711,15 @@ L.FeatureGroup = L.LayerGroup.extend({
 		return this.invoke('bindPopup', content, options);
 	},
 
+	openPopup: function (latlng) {
+		// open popup on the first layer
+		for (var id in this._layers) {
+			this._layers[id].openPopup(latlng);
+			break;
+		}
+		return this;
+	},
+
 	setStyle: function (style) {
 		return this.invoke('setStyle', style);
 	},
@@ -13614,11 +13743,10 @@ L.FeatureGroup = L.LayerGroup.extend({
 	},
 
 	_propagateEvent: function (e) {
-		if (!e.layer) {
-			e.layer = e.target;
-		}
-		e.target = this;
-
+		e = L.extend({
+			layer: e.target,
+			target: this
+		}, e);
 		this.fire(e.type, e);
 	}
 });
@@ -13650,6 +13778,8 @@ L.Path = L.Class.extend({
 		stroke: true,
 		color: '#0033ff',
 		dashArray: null,
+		lineCap: null,
+		lineJoin: null,
 		weight: 5,
 		opacity: 0.5,
 
@@ -13799,6 +13929,11 @@ L.Path = L.Path.extend({
 		this._container = this._createElement('g');
 
 		this._path = this._createElement('path');
+
+		if (this.options.className) {
+			L.DomUtil.addClass(this._path, this.options.className);
+		}
+
 		this._container.appendChild(this._path);
 	},
 
@@ -13829,6 +13964,12 @@ L.Path = L.Path.extend({
 			} else {
 				this._path.removeAttribute('stroke-dasharray');
 			}
+			if (this.options.lineCap) {
+				this._path.setAttribute('stroke-linecap', this.options.lineCap);
+			}
+			if (this.options.lineJoin) {
+				this._path.setAttribute('stroke-linejoin', this.options.lineJoin);
+			}
 		} else {
 			this._path.setAttribute('stroke', 'none');
 		}
@@ -13853,7 +13994,7 @@ L.Path = L.Path.extend({
 	_initEvents: function () {
 		if (this.options.clickable) {
 			if (L.Browser.svg || !L.Browser.vml) {
-				this._path.setAttribute('class', 'leaflet-clickable');
+				L.DomUtil.addClass(this._path, 'leaflet-clickable');
 			}
 
 			L.DomEvent.on(this._container, 'click', this._onMouseClick, this);
@@ -13903,14 +14044,14 @@ L.Map.include({
 			this._panes.overlayPane.appendChild(this._pathRoot);
 
 			if (this.options.zoomAnimation && L.Browser.any3d) {
-				this._pathRoot.setAttribute('class', ' leaflet-zoom-animated');
+				L.DomUtil.addClass(this._pathRoot, 'leaflet-zoom-animated');
 
 				this.on({
 					'zoomanim': this._animatePathZoom,
 					'zoomend': this._endPathZoom
 				});
 			} else {
-				this._pathRoot.setAttribute('class', ' leaflet-zoom-hide');
+				L.DomUtil.addClass(this._pathRoot, 'leaflet-zoom-hide');
 			}
 
 			this.on('moveend', this._updateSvgViewport);
@@ -14077,10 +14218,14 @@ L.Path = L.Browser.svg || !L.Browser.vml ? L.Path : L.Path.extend({
 
 	_initPath: function () {
 		var container = this._container = this._createElement('shape');
-		L.DomUtil.addClass(container, 'leaflet-vml-shape');
+
+		L.DomUtil.addClass(container, 'leaflet-vml-shape' +
+			(this.options.className ? ' ' + this.options.className : ''));
+
 		if (this.options.clickable) {
 			L.DomUtil.addClass(container, 'leaflet-clickable');
 		}
+
 		container.coordsize = '1 1';
 
 		this._path = this._createElement('path');
@@ -14113,11 +14258,17 @@ L.Path = L.Browser.svg || !L.Browser.vml ? L.Path : L.Path.extend({
 			stroke.opacity = options.opacity;
 
 			if (options.dashArray) {
-				stroke.dashStyle = options.dashArray instanceof Array ?
+				stroke.dashStyle = L.Util.isArray(options.dashArray) ?
 				    options.dashArray.join(' ') :
 				    options.dashArray.replace(/( *, *)/g, ' ');
 			} else {
 				stroke.dashStyle = '';
+			}
+			if (options.lineCap) {
+				stroke.endcap = options.lineCap.replace('butt', 'flat');
+			}
+			if (options.lineJoin) {
+				stroke.joinstyle = options.lineJoin;
 			}
 
 		} else if (stroke) {
@@ -14366,7 +14517,7 @@ L.Map.include((L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? {} 
  * and polylines (clipping, simplification, distances, etc.)
  */
 
-/*jshint bitwise:false */ // allow bitwise oprations for this file
+/*jshint bitwise:false */ // allow bitwise operations for this file
 
 L.LineUtil = {
 
@@ -14798,10 +14949,12 @@ L.Polygon = L.Polyline.extend({
 	},
 
 	initialize: function (latlngs, options) {
-		var i, len, hole;
-
 		L.Polyline.prototype.initialize.call(this, latlngs, options);
+		this._initWithHoles(latlngs);
+	},
 
+	_initWithHoles: function (latlngs) {
+		var i, len, hole;
 		if (latlngs && L.Util.isArray(latlngs[0]) && (typeof latlngs[0][0] !== 'number')) {
 			this._latlngs = this._convertLatLngs(latlngs[0]);
 			this._holes = latlngs.slice(1);
@@ -14839,6 +14992,15 @@ L.Polygon = L.Polyline.extend({
 			for (j = 0, len2 = this._holes[i].length; j < len2; j++) {
 				this._holePoints[i][j] = this._map.latLngToLayerPoint(this._holes[i][j]);
 			}
+		}
+	},
+
+	setLatLngs: function (latlngs) {
+		if (latlngs && L.Util.isArray(latlngs[0]) && (typeof latlngs[0][0] !== 'number')) {
+			this._initWithHoles(latlngs);
+			return this.redraw();
+		} else {
+			return L.Polyline.prototype.setLatLngs.call(this, latlngs);
 		}
 	},
 
@@ -15083,9 +15245,21 @@ L.CircleMarker = L.Circle.extend({
 		this.setRadius(this.options.radius);
 	},
 
+	setLatLng: function (latlng) {
+		L.Circle.prototype.setLatLng.call(this, latlng);
+		if (this._popup && this._popup._isOpen) {
+			this._popup.setLatLng(latlng);
+		}
+		return this;
+	},
+
 	setRadius: function (radius) {
 		this.options.radius = this._radius = radius;
 		return this.redraw();
+	},
+
+	getRadius: function () {
+		return this._radius;
 	}
 });
 
@@ -15231,7 +15405,7 @@ L.GeoJSON = L.FeatureGroup.extend({
 
 		if (options.filter && !options.filter(geojson)) { return; }
 
-		var layer = L.GeoJSON.geometryToLayer(geojson, options.pointToLayer, options.coordsToLatLng);
+		var layer = L.GeoJSON.geometryToLayer(geojson, options.pointToLayer, options.coordsToLatLng, options);
 		layer.feature = L.GeoJSON.asFeature(geojson);
 
 		layer.defaultOptions = layer.options;
@@ -15271,11 +15445,11 @@ L.GeoJSON = L.FeatureGroup.extend({
 });
 
 L.extend(L.GeoJSON, {
-	geometryToLayer: function (geojson, pointToLayer, coordsToLatLng) {
+	geometryToLayer: function (geojson, pointToLayer, coordsToLatLng, vectorOptions) {
 		var geometry = geojson.type === 'Feature' ? geojson.geometry : geojson,
 		    coords = geometry.coordinates,
 		    layers = [],
-		    latlng, latlngs, i, len, layer;
+		    latlng, latlngs, i, len;
 
 		coordsToLatLng = coordsToLatLng || this.coordsToLatLng;
 
@@ -15287,37 +15461,37 @@ L.extend(L.GeoJSON, {
 		case 'MultiPoint':
 			for (i = 0, len = coords.length; i < len; i++) {
 				latlng = coordsToLatLng(coords[i]);
-				layer = pointToLayer ? pointToLayer(geojson, latlng) : new L.Marker(latlng);
-				layers.push(layer);
+				layers.push(pointToLayer ? pointToLayer(geojson, latlng) : new L.Marker(latlng));
 			}
 			return new L.FeatureGroup(layers);
 
 		case 'LineString':
 			latlngs = this.coordsToLatLngs(coords, 0, coordsToLatLng);
-			return new L.Polyline(latlngs);
+			return new L.Polyline(latlngs, vectorOptions);
 
 		case 'Polygon':
+			if (coords.length === 2 && !coords[1].length) {
+				throw new Error('Invalid GeoJSON object.');
+			}
 			latlngs = this.coordsToLatLngs(coords, 1, coordsToLatLng);
-			return new L.Polygon(latlngs);
+			return new L.Polygon(latlngs, vectorOptions);
 
 		case 'MultiLineString':
 			latlngs = this.coordsToLatLngs(coords, 1, coordsToLatLng);
-			return new L.MultiPolyline(latlngs);
+			return new L.MultiPolyline(latlngs, vectorOptions);
 
 		case 'MultiPolygon':
 			latlngs = this.coordsToLatLngs(coords, 2, coordsToLatLng);
-			return new L.MultiPolygon(latlngs);
+			return new L.MultiPolygon(latlngs, vectorOptions);
 
 		case 'GeometryCollection':
 			for (i = 0, len = geometry.geometries.length; i < len; i++) {
 
-				layer = this.geometryToLayer({
+				layers.push(this.geometryToLayer({
 					geometry: geometry.geometries[i],
 					type: 'Feature',
 					properties: geojson.properties
-				}, pointToLayer, coordsToLatLng);
-
-				layers.push(layer);
+				}, pointToLayer, coordsToLatLng, vectorOptions));
 			}
 			return new L.FeatureGroup(layers);
 
@@ -15327,7 +15501,7 @@ L.extend(L.GeoJSON, {
 	},
 
 	coordsToLatLng: function (coords) { // (Array[, Boolean]) -> LatLng
-		return new L.LatLng(coords[1], coords[0]);
+		return new L.LatLng(coords[1], coords[0], coords[2]);
 	},
 
 	coordsToLatLngs: function (coords, levelsDeep, coordsToLatLng) { // (Array[, Number, Function]) -> Array
@@ -15345,8 +15519,13 @@ L.extend(L.GeoJSON, {
 		return latlngs;
 	},
 
-	latLngToCoords: function (latLng) {
-		return [latLng.lng, latLng.lat];
+	latLngToCoords: function (latlng) {
+		var coords = [latlng.lng, latlng.lat];
+
+		if (latlng.alt !== undefined) {
+			coords.push(latlng.alt);
+		}
+		return coords;
 	},
 
 	latLngsToCoords: function (latLngs) {
@@ -15421,43 +15600,58 @@ L.Polygon.include({
 });
 
 (function () {
-	function includeMulti(Klass, type) {
-		Klass.include({
-			toGeoJSON: function () {
-				var coords = [];
+	function multiToGeoJSON(type) {
+		return function () {
+			var coords = [];
 
-				this.eachLayer(function (layer) {
-					coords.push(layer.toGeoJSON().geometry.coordinates);
-				});
+			this.eachLayer(function (layer) {
+				coords.push(layer.toGeoJSON().geometry.coordinates);
+			});
 
-				return L.GeoJSON.getFeature(this, {
-					type: type,
-					coordinates: coords
-				});
-			}
-		});
-	}
-
-	includeMulti(L.MultiPolyline, 'MultiLineString');
-	includeMulti(L.MultiPolygon, 'MultiPolygon');
-}());
-
-L.LayerGroup.include({
-	toGeoJSON: function () {
-		var features = [];
-
-		this.eachLayer(function (layer) {
-			if (layer.toGeoJSON) {
-				features.push(L.GeoJSON.asFeature(layer.toGeoJSON()));
-			}
-		});
-
-		return {
-			type: 'FeatureCollection',
-			features: features
+			return L.GeoJSON.getFeature(this, {
+				type: type,
+				coordinates: coords
+			});
 		};
 	}
-});
+
+	L.MultiPolyline.include({toGeoJSON: multiToGeoJSON('MultiLineString')});
+	L.MultiPolygon.include({toGeoJSON: multiToGeoJSON('MultiPolygon')});
+
+	L.LayerGroup.include({
+		toGeoJSON: function () {
+
+			var geometry = this.feature && this.feature.geometry,
+				jsons = [],
+				json;
+
+			if (geometry && geometry.type === 'MultiPoint') {
+				return multiToGeoJSON('MultiPoint').call(this);
+			}
+
+			var isGeometryCollection = geometry && geometry.type === 'GeometryCollection';
+
+			this.eachLayer(function (layer) {
+				if (layer.toGeoJSON) {
+					json = layer.toGeoJSON();
+					jsons.push(isGeometryCollection ? json.geometry : L.GeoJSON.asFeature(json));
+				}
+			});
+
+			if (isGeometryCollection) {
+				return L.GeoJSON.getFeature(this, {
+					geometries: jsons,
+					type: 'GeometryCollection'
+				});
+			}
+
+			return {
+				type: 'FeatureCollection',
+				features: jsons
+			};
+		}
+	});
+}());
 
 L.geoJson = function (geojson, options) {
 	return new L.GeoJSON(geojson, options);
@@ -15482,8 +15676,8 @@ L.DomEvent = {
 			return fn.call(context || obj, e || L.DomEvent._getEvent());
 		};
 
-		if (L.Browser.msTouch && type.indexOf('touch') === 0) {
-			return this.addMsTouchListener(obj, type, handler, id);
+		if (L.Browser.pointer && type.indexOf('touch') === 0) {
+			return this.addPointerListener(obj, type, handler, id);
 		}
 		if (L.Browser.touch && (type === 'dblclick') && this.addDoubleTapListener) {
 			this.addDoubleTapListener(obj, handler, id);
@@ -15535,8 +15729,8 @@ L.DomEvent = {
 
 		if (!handler) { return this; }
 
-		if (L.Browser.msTouch && type.indexOf('touch') === 0) {
-			this.removeMsTouchListener(obj, type, id);
+		if (L.Browser.pointer && type.indexOf('touch') === 0) {
+			this.removePointerListener(obj, type, id);
 		} else if (L.Browser.touch && (type === 'dblclick') && this.removeDoubleTapListener) {
 			this.removeDoubleTapListener(obj, id);
 
@@ -15567,19 +15761,29 @@ L.DomEvent = {
 		} else {
 			e.cancelBubble = true;
 		}
+		L.DomEvent._skipped(e);
+
 		return this;
+	},
+
+	disableScrollPropagation: function (el) {
+		var stop = L.DomEvent.stopPropagation;
+
+		return L.DomEvent
+			.on(el, 'mousewheel', stop)
+			.on(el, 'MozMousePixelScroll', stop);
 	},
 
 	disableClickPropagation: function (el) {
 		var stop = L.DomEvent.stopPropagation;
 
 		for (var i = L.Draggable.START.length - 1; i >= 0; i--) {
-			L.DomEvent.addListener(el, L.Draggable.START[i], stop);
+			L.DomEvent.on(el, L.Draggable.START[i], stop);
 		}
 
 		return L.DomEvent
-			.addListener(el, 'click', L.DomEvent._fakeStop)
-			.addListener(el, 'dblclick', stop);
+			.on(el, 'click', L.DomEvent._fakeStop)
+			.on(el, 'dblclick', stop);
 	},
 
 	preventDefault: function (e) {
@@ -15593,35 +15797,21 @@ L.DomEvent = {
 	},
 
 	stop: function (e) {
-		return L.DomEvent.preventDefault(e).stopPropagation(e);
+		return L.DomEvent
+			.preventDefault(e)
+			.stopPropagation(e);
 	},
 
 	getMousePosition: function (e, container) {
-
-		var ie7 = L.Browser.ie7,
-		    body = document.body,
-		    docEl = document.documentElement,
-		    x = e.pageX ? e.pageX - body.scrollLeft - docEl.scrollLeft: e.clientX,
-		    y = e.pageY ? e.pageY - body.scrollTop - docEl.scrollTop: e.clientY,
-		    pos = new L.Point(x, y),
-		    rect = container.getBoundingClientRect(),
-		    left = rect.left - container.clientLeft,
-		    top = rect.top - container.clientTop;
-
-		// webkit (and ie <= 7) handles RTL scrollLeft different to everyone else
-		// https://code.google.com/p/closure-library/source/browse/trunk/closure/goog/style/bidi.js
-		if (!L.DomUtil.documentIsLtr() && (L.Browser.webkit || ie7)) {
-			left += container.scrollWidth - container.clientWidth;
-
-			// ie7 shows the scrollbar by default and provides clientWidth counting it, so we
-			// need to add it back in if it is visible; scrollbar is on the left as we are RTL
-			if (ie7 && L.DomUtil.getStyle(container, 'overflow-y') !== 'hidden' &&
-			           L.DomUtil.getStyle(container, 'overflow') !== 'hidden') {
-				left += 17;
-			}
+		if (!container) {
+			return new L.Point(e.clientX, e.clientY);
 		}
 
-		return pos._subtract(new L.Point(left, top));
+		var rect = container.getBoundingClientRect();
+
+		return new L.Point(
+			e.clientX - rect.left - container.clientLeft,
+			e.clientY - rect.top - container.clientTop);
 	},
 
 	getWheelDelta: function (e) {
@@ -15720,11 +15910,13 @@ L.Draggable = L.Class.extend({
 		END: {
 			mousedown: 'mouseup',
 			touchstart: 'touchend',
+			pointerdown: 'touchend',
 			MSPointerDown: 'touchend'
 		},
 		MOVE: {
 			mousedown: 'mousemove',
 			touchstart: 'touchmove',
+			pointerdown: 'touchmove',
 			MSPointerDown: 'touchmove'
 		}
 	},
@@ -15756,27 +15948,20 @@ L.Draggable = L.Class.extend({
 	},
 
 	_onDown: function (e) {
+		this._moved = false;
+
 		if (e.shiftKey || ((e.which !== 1) && (e.button !== 1) && !e.touches)) { return; }
 
-		L.DomEvent
-			.stopPropagation(e);
+		L.DomEvent.stopPropagation(e);
 
 		if (L.Draggable._disabled) { return; }
 
 		L.DomUtil.disableImageDrag();
 		L.DomUtil.disableTextSelection();
 
-		var first = e.touches ? e.touches[0] : e,
-		    el = first.target;
-
-		// if touching a link, highlight it
-		if (L.Browser.touch && el.tagName.toLowerCase() === 'a') {
-			L.DomUtil.addClass(el, 'leaflet-active');
-		}
-
-		this._moved = false;
-
 		if (this._moving) { return; }
+
+		var first = e.touches ? e.touches[0] : e;
 
 		this._startPoint = new L.Point(first.clientX, first.clientY);
 		this._startPos = this._newPos = L.DomUtil.getPosition(this._element);
@@ -15787,7 +15972,10 @@ L.Draggable = L.Class.extend({
 	},
 
 	_onMove: function (e) {
-		if (e.touches && e.touches.length > 1) { return; }
+		if (e.touches && e.touches.length > 1) {
+			this._moved = true;
+			return;
+		}
 
 		var first = (e.touches && e.touches.length === 1 ? e.touches[0] : e),
 		    newPoint = new L.Point(first.clientX, first.clientY),
@@ -15803,9 +15991,8 @@ L.Draggable = L.Class.extend({
 			this._moved = true;
 			this._startPos = L.DomUtil.getPosition(this._element).subtract(offset);
 
-			if (!L.Browser.touch) {
-				L.DomUtil.addClass(document.body, 'leaflet-dragging');
-			}
+			L.DomUtil.addClass(document.body, 'leaflet-dragging');
+			L.DomUtil.addClass((e.target || e.srcElement), 'leaflet-drag-target');
 		}
 
 		this._newPos = this._startPos.add(offset);
@@ -15821,10 +16008,9 @@ L.Draggable = L.Class.extend({
 		this.fire('drag');
 	},
 
-	_onUp: function () {
-		if (!L.Browser.touch) {
-			L.DomUtil.removeClass(document.body, 'leaflet-dragging');
-		}
+	_onUp: function (e) {
+		L.DomUtil.removeClass(document.body, 'leaflet-dragging');
+		L.DomUtil.removeClass((e.target || e.srcElement), 'leaflet-drag-target');
 
 		for (var i in L.Draggable.MOVE) {
 			L.DomEvent
@@ -15835,11 +16021,13 @@ L.Draggable = L.Class.extend({
 		L.DomUtil.enableImageDrag();
 		L.DomUtil.enableTextSelection();
 
-		if (this._moved) {
+		if (this._moved && this._moving) {
 			// ensure drag is not fired after dragend
 			L.Util.cancelAnimFrame(this._animRequest);
 
-			this.fire('dragend');
+			this.fire('dragend', {
+				distance: this._newPos.distanceTo(this._startPos)
+			});
 		}
 
 		this._moving = false;
@@ -15911,7 +16099,7 @@ L.Map.Drag = L.Handler.extend({
 				this._draggable.on('predrag', this._onPreDrag, this);
 				map.on('viewreset', this._onViewReset, this);
 
-				this._onViewReset();
+				map.whenReady(this._onViewReset, this);
 			}
 		}
 		this._draggable.enable();
@@ -15983,14 +16171,14 @@ L.Map.Drag = L.Handler.extend({
 		this._draggable._newPos.x = newX;
 	},
 
-	_onDragEnd: function () {
+	_onDragEnd: function (e) {
 		var map = this._map,
 		    options = map.options,
 		    delay = +new Date() - this._lastTime,
 
 		    noInertia = !options.inertia || delay > options.inertiaThreshold || !this._positions[0];
 
-		map.fire('dragend');
+		map.fire('dragend', e);
 
 		if (noInertia) {
 			map.fire('moveend');
@@ -16014,6 +16202,8 @@ L.Map.Drag = L.Handler.extend({
 				map.fire('moveend');
 
 			} else {
+				offset = map._limitOffset(offset, map.options.maxBounds);
+
 				L.Util.requestAnimFrame(function () {
 					map.panBy(offset, {
 						duration: decelerationDuration,
@@ -16039,15 +16229,22 @@ L.Map.mergeOptions({
 
 L.Map.DoubleClickZoom = L.Handler.extend({
 	addHooks: function () {
-		this._map.on('dblclick', this._onDoubleClick);
+		this._map.on('dblclick', this._onDoubleClick, this);
 	},
 
 	removeHooks: function () {
-		this._map.off('dblclick', this._onDoubleClick);
+		this._map.off('dblclick', this._onDoubleClick, this);
 	},
 
 	_onDoubleClick: function (e) {
-		this.setZoomAround(e.containerPoint, this._zoom + 1);
+		var map = this._map,
+		    zoom = map.getZoom() + (e.originalEvent.shiftKey ? -1 : 1);
+
+		if (map.options.doubleClickZoom === 'center') {
+			map.setZoom(zoom);
+		} else {
+			map.setZoomAround(e.containerPoint, zoom);
+		}
 	}
 });
 
@@ -16107,7 +16304,11 @@ L.Map.ScrollWheelZoom = L.Handler.extend({
 
 		if (!delta) { return; }
 
-		map.setZoomAround(this._lastMousePos, zoom + delta);
+		if (map.options.scrollWheelZoom === 'center') {
+			map.setZoom(zoom + delta);
+		} else {
+			map.setZoomAround(this._lastMousePos, zoom + delta);
+		}
 	}
 });
 
@@ -16120,8 +16321,8 @@ L.Map.addInitHook('addHandler', 'scrollWheelZoom', L.Map.ScrollWheelZoom);
 
 L.extend(L.DomEvent, {
 
-	_touchstart: L.Browser.msTouch ? 'MSPointerDown' : 'touchstart',
-	_touchend: L.Browser.msTouch ? 'MSPointerUp' : 'touchend',
+	_touchstart: L.Browser.msPointer ? 'MSPointerDown' : L.Browser.pointer ? 'pointerdown' : 'touchstart',
+	_touchend: L.Browser.msPointer ? 'MSPointerUp' : L.Browser.pointer ? 'pointerup' : 'touchend',
 
 	// inspired by Zepto touch code by Thomas Fuchs
 	addDoubleTapListener: function (obj, handler, id) {
@@ -16137,7 +16338,7 @@ L.extend(L.DomEvent, {
 		function onTouchStart(e) {
 			var count;
 
-			if (L.Browser.msTouch) {
+			if (L.Browser.pointer) {
 				trackedTouches.push(e.pointerId);
 				count = trackedTouches.length;
 			} else {
@@ -16156,7 +16357,7 @@ L.extend(L.DomEvent, {
 		}
 
 		function onTouchEnd(e) {
-			if (L.Browser.msTouch) {
+			if (L.Browser.pointer) {
 				var idx = trackedTouches.indexOf(e.pointerId);
 				if (idx === -1) {
 					return;
@@ -16165,7 +16366,7 @@ L.extend(L.DomEvent, {
 			}
 
 			if (doubleTap) {
-				if (L.Browser.msTouch) {
+				if (L.Browser.pointer) {
 					// work around .type being readonly with MSPointer* events
 					var newTouch = { },
 						prop;
@@ -16189,15 +16390,15 @@ L.extend(L.DomEvent, {
 		obj[pre + touchstart + id] = onTouchStart;
 		obj[pre + touchend + id] = onTouchEnd;
 
-		// on msTouch we need to listen on the document, otherwise a drag starting on the map and moving off screen
+		// on pointer we need to listen on the document, otherwise a drag starting on the map and moving off screen
 		// will not come through to us, so we will lose track of how many touches are ongoing
-		var endElement = L.Browser.msTouch ? document.documentElement : obj;
+		var endElement = L.Browser.pointer ? document.documentElement : obj;
 
 		obj.addEventListener(touchstart, onTouchStart, false);
 		endElement.addEventListener(touchend, onTouchEnd, false);
 
-		if (L.Browser.msTouch) {
-			endElement.addEventListener('MSPointerCancel', onTouchEnd, false);
+		if (L.Browser.pointer) {
+			endElement.addEventListener(L.DomEvent.POINTER_CANCEL, onTouchEnd, false);
 		}
 
 		return this;
@@ -16207,11 +16408,12 @@ L.extend(L.DomEvent, {
 		var pre = '_leaflet_';
 
 		obj.removeEventListener(this._touchstart, obj[pre + this._touchstart + id], false);
-		(L.Browser.msTouch ? document.documentElement : obj).removeEventListener(
+		(L.Browser.pointer ? document.documentElement : obj).removeEventListener(
 		        this._touchend, obj[pre + this._touchend + id], false);
 
-		if (L.Browser.msTouch) {
-			document.documentElement.removeEventListener('MSPointerCancel', obj[pre + this._touchend + id], false);
+		if (L.Browser.pointer) {
+			document.documentElement.removeEventListener(L.DomEvent.POINTER_CANCEL, obj[pre + this._touchend + id],
+				false);
 		}
 
 		return this;
@@ -16225,81 +16427,90 @@ L.extend(L.DomEvent, {
 
 L.extend(L.DomEvent, {
 
-	_msTouches: [],
-	_msDocumentListener: false,
+	//static
+	POINTER_DOWN: L.Browser.msPointer ? 'MSPointerDown' : 'pointerdown',
+	POINTER_MOVE: L.Browser.msPointer ? 'MSPointerMove' : 'pointermove',
+	POINTER_UP: L.Browser.msPointer ? 'MSPointerUp' : 'pointerup',
+	POINTER_CANCEL: L.Browser.msPointer ? 'MSPointerCancel' : 'pointercancel',
 
-	// Provides a touch events wrapper for msPointer events.
+	_pointers: [],
+	_pointerDocumentListener: false,
+
+	// Provides a touch events wrapper for (ms)pointer events.
 	// Based on changes by veproza https://github.com/CloudMade/Leaflet/pull/1019
+	//ref http://www.w3.org/TR/pointerevents/ https://www.w3.org/Bugs/Public/show_bug.cgi?id=22890
 
-	addMsTouchListener: function (obj, type, handler, id) {
+	addPointerListener: function (obj, type, handler, id) {
 
 		switch (type) {
 		case 'touchstart':
-			return this.addMsTouchListenerStart(obj, type, handler, id);
+			return this.addPointerListenerStart(obj, type, handler, id);
 		case 'touchend':
-			return this.addMsTouchListenerEnd(obj, type, handler, id);
+			return this.addPointerListenerEnd(obj, type, handler, id);
 		case 'touchmove':
-			return this.addMsTouchListenerMove(obj, type, handler, id);
+			return this.addPointerListenerMove(obj, type, handler, id);
 		default:
 			throw 'Unknown touch event type';
 		}
 	},
 
-	addMsTouchListenerStart: function (obj, type, handler, id) {
+	addPointerListenerStart: function (obj, type, handler, id) {
 		var pre = '_leaflet_',
-		    touches = this._msTouches;
+		    pointers = this._pointers;
 
 		var cb = function (e) {
 
+			L.DomEvent.preventDefault(e);
+
 			var alreadyInArray = false;
-			for (var i = 0; i < touches.length; i++) {
-				if (touches[i].pointerId === e.pointerId) {
+			for (var i = 0; i < pointers.length; i++) {
+				if (pointers[i].pointerId === e.pointerId) {
 					alreadyInArray = true;
 					break;
 				}
 			}
 			if (!alreadyInArray) {
-				touches.push(e);
+				pointers.push(e);
 			}
 
-			e.touches = touches.slice();
+			e.touches = pointers.slice();
 			e.changedTouches = [e];
 
 			handler(e);
 		};
 
 		obj[pre + 'touchstart' + id] = cb;
-		obj.addEventListener('MSPointerDown', cb, false);
+		obj.addEventListener(this.POINTER_DOWN, cb, false);
 
-		// need to also listen for end events to keep the _msTouches list accurate
+		// need to also listen for end events to keep the _pointers list accurate
 		// this needs to be on the body and never go away
-		if (!this._msDocumentListener) {
+		if (!this._pointerDocumentListener) {
 			var internalCb = function (e) {
-				for (var i = 0; i < touches.length; i++) {
-					if (touches[i].pointerId === e.pointerId) {
-						touches.splice(i, 1);
+				for (var i = 0; i < pointers.length; i++) {
+					if (pointers[i].pointerId === e.pointerId) {
+						pointers.splice(i, 1);
 						break;
 					}
 				}
 			};
 			//We listen on the documentElement as any drags that end by moving the touch off the screen get fired there
-			document.documentElement.addEventListener('MSPointerUp', internalCb, false);
-			document.documentElement.addEventListener('MSPointerCancel', internalCb, false);
+			document.documentElement.addEventListener(this.POINTER_UP, internalCb, false);
+			document.documentElement.addEventListener(this.POINTER_CANCEL, internalCb, false);
 
-			this._msDocumentListener = true;
+			this._pointerDocumentListener = true;
 		}
 
 		return this;
 	},
 
-	addMsTouchListenerMove: function (obj, type, handler, id) {
+	addPointerListenerMove: function (obj, type, handler, id) {
 		var pre = '_leaflet_',
-		    touches = this._msTouches;
+		    touches = this._pointers;
 
 		function cb(e) {
 
 			// don't fire touch moves when mouse isn't down
-			if (e.pointerType === e.MSPOINTER_TYPE_MOUSE && e.buttons === 0) { return; }
+			if ((e.pointerType === e.MSPOINTER_TYPE_MOUSE || e.pointerType === 'mouse') && e.buttons === 0) { return; }
 
 			for (var i = 0; i < touches.length; i++) {
 				if (touches[i].pointerId === e.pointerId) {
@@ -16315,14 +16526,14 @@ L.extend(L.DomEvent, {
 		}
 
 		obj[pre + 'touchmove' + id] = cb;
-		obj.addEventListener('MSPointerMove', cb, false);
+		obj.addEventListener(this.POINTER_MOVE, cb, false);
 
 		return this;
 	},
 
-	addMsTouchListenerEnd: function (obj, type, handler, id) {
+	addPointerListenerEnd: function (obj, type, handler, id) {
 		var pre = '_leaflet_',
-		    touches = this._msTouches;
+		    touches = this._pointers;
 
 		var cb = function (e) {
 			for (var i = 0; i < touches.length; i++) {
@@ -16339,26 +16550,26 @@ L.extend(L.DomEvent, {
 		};
 
 		obj[pre + 'touchend' + id] = cb;
-		obj.addEventListener('MSPointerUp', cb, false);
-		obj.addEventListener('MSPointerCancel', cb, false);
+		obj.addEventListener(this.POINTER_UP, cb, false);
+		obj.addEventListener(this.POINTER_CANCEL, cb, false);
 
 		return this;
 	},
 
-	removeMsTouchListener: function (obj, type, id) {
+	removePointerListener: function (obj, type, id) {
 		var pre = '_leaflet_',
 		    cb = obj[pre + type + id];
 
 		switch (type) {
 		case 'touchstart':
-			obj.removeEventListener('MSPointerDown', cb, false);
+			obj.removeEventListener(this.POINTER_DOWN, cb, false);
 			break;
 		case 'touchmove':
-			obj.removeEventListener('MSPointerMove', cb, false);
+			obj.removeEventListener(this.POINTER_MOVE, cb, false);
 			break;
 		case 'touchend':
-			obj.removeEventListener('MSPointerUp', cb, false);
-			obj.removeEventListener('MSPointerCancel', cb, false);
+			obj.removeEventListener(this.POINTER_UP, cb, false);
+			obj.removeEventListener(this.POINTER_CANCEL, cb, false);
 			break;
 		}
 
@@ -16372,7 +16583,8 @@ L.extend(L.DomEvent, {
  */
 
 L.Map.mergeOptions({
-	touchZoom: L.Browser.touch && !L.Browser.android23
+	touchZoom: L.Browser.touch && !L.Browser.android23,
+	bounceAtZoomLimits: true
 });
 
 L.Map.TouchZoom = L.Handler.extend({
@@ -16424,6 +16636,11 @@ L.Map.TouchZoom = L.Handler.extend({
 		this._delta = p1._add(p2)._divideBy(2)._subtract(this._startCenter);
 
 		if (this._scale === 1) { return; }
+
+		if (!map.options.bounceAtZoomLimits) {
+			if ((map.getZoom() === map.getMinZoom() && this._scale < 1) ||
+			    (map.getZoom() === map.getMaxZoom() && this._scale > 1)) { return; }
+		}
 
 		if (!this._moved) {
 			L.DomUtil.addClass(map._mapPane, 'leaflet-touching');
@@ -16528,7 +16745,7 @@ L.Map.Tap = L.Handler.extend({
 		this._startPos = this._newPos = new L.Point(first.clientX, first.clientY);
 
 		// if touching a link, highlight it
-		if (el.tagName.toLowerCase() === 'a') {
+		if (el.tagName && el.tagName.toLowerCase() === 'a') {
 			L.DomUtil.addClass(el, 'leaflet-active');
 		}
 
@@ -16558,7 +16775,7 @@ L.Map.Tap = L.Handler.extend({
 			var first = e.changedTouches[0],
 			    el = first.target;
 
-			if (el.tagName.toLowerCase() === 'a') {
+			if (el && el.tagName && el.tagName.toLowerCase() === 'a') {
 				L.DomUtil.removeClass(el, 'leaflet-active');
 			}
 
@@ -16594,7 +16811,7 @@ L.Map.Tap = L.Handler.extend({
 	}
 });
 
-if (L.Browser.touch && !L.Browser.msTouch) {
+if (L.Browser.touch && !L.Browser.pointer) {
 	L.Map.addInitHook('addHandler', 'tap', L.Map.Tap);
 }
 
@@ -16613,6 +16830,7 @@ L.Map.BoxZoom = L.Handler.extend({
 		this._map = map;
 		this._container = map._container;
 		this._pane = map._panes.overlayPane;
+		this._moved = false;
 	},
 
 	addHooks: function () {
@@ -16621,9 +16839,16 @@ L.Map.BoxZoom = L.Handler.extend({
 
 	removeHooks: function () {
 		L.DomEvent.off(this._container, 'mousedown', this._onMouseDown);
+		this._moved = false;
+	},
+
+	moved: function () {
+		return this._moved;
 	},
 
 	_onMouseDown: function (e) {
+		this._moved = false;
+
 		if (!e.shiftKey || ((e.which !== 1) && (e.button !== 1))) { return false; }
 
 		L.DomUtil.disableTextSelection();
@@ -16631,21 +16856,22 @@ L.Map.BoxZoom = L.Handler.extend({
 
 		this._startLayerPoint = this._map.mouseEventToLayerPoint(e);
 
-		this._box = L.DomUtil.create('div', 'leaflet-zoom-box', this._pane);
-		L.DomUtil.setPosition(this._box, this._startLayerPoint);
-
-		//TODO refactor: move cursor to styles
-		this._container.style.cursor = 'crosshair';
-
 		L.DomEvent
 		    .on(document, 'mousemove', this._onMouseMove, this)
 		    .on(document, 'mouseup', this._onMouseUp, this)
 		    .on(document, 'keydown', this._onKeyDown, this);
-
-		this._map.fire('boxzoomstart');
 	},
 
 	_onMouseMove: function (e) {
+		if (!this._moved) {
+			this._box = L.DomUtil.create('div', 'leaflet-zoom-box', this._pane);
+			L.DomUtil.setPosition(this._box, this._startLayerPoint);
+
+			//TODO refactor: move cursor to styles
+			this._container.style.cursor = 'crosshair';
+			this._map.fire('boxzoomstart');
+		}
+
 		var startPoint = this._startLayerPoint,
 		    box = this._box,
 
@@ -16658,14 +16884,18 @@ L.Map.BoxZoom = L.Handler.extend({
 
 		L.DomUtil.setPosition(box, newPos);
 
+		this._moved = true;
+
 		// TODO refactor: remove hardcoded 4 pixels
 		box.style.width  = (Math.max(0, Math.abs(offset.x) - 4)) + 'px';
 		box.style.height = (Math.max(0, Math.abs(offset.y) - 4)) + 'px';
 	},
 
 	_finish: function () {
-		this._pane.removeChild(this._box);
-		this._container.style.cursor = '';
+		if (this._moved) {
+			this._pane.removeChild(this._box);
+			this._container.style.cursor = '';
+		}
 
 		L.DomUtil.enableTextSelection();
 		L.DomUtil.enableImageDrag();
@@ -16723,7 +16953,7 @@ L.Map.Keyboard = L.Handler.extend({
 		right:   [39],
 		down:    [40],
 		up:      [38],
-		zoomIn:  [187, 107, 61],
+		zoomIn:  [187, 107, 61, 171],
 		zoomOut: [189, 109, 173]
 	},
 
@@ -16878,6 +17108,7 @@ L.Handler.MarkerDrag = L.Handler.extend({
 			.on('drag', this._onDrag, this)
 			.on('dragend', this._onDragEnd, this);
 		this._draggable.enable();
+		L.DomUtil.addClass(this._marker._icon, 'leaflet-marker-draggable');
 	},
 
 	removeHooks: function () {
@@ -16887,6 +17118,7 @@ L.Handler.MarkerDrag = L.Handler.extend({
 			.off('dragend', this._onDragEnd, this);
 
 		this._draggable.disable();
+		L.DomUtil.removeClass(this._marker._icon, 'leaflet-marker-draggable');
 	},
 
 	moved: function () {
@@ -16918,10 +17150,10 @@ L.Handler.MarkerDrag = L.Handler.extend({
 		    .fire('drag');
 	},
 
-	_onDragEnd: function () {
+	_onDragEnd: function (e) {
 		this._marker
 		    .fire('moveend')
-		    .fire('dragend');
+		    .fire('dragend', e);
 	}
 });
 
@@ -16994,6 +17226,12 @@ L.Control = L.Class.extend({
 		}
 
 		return this;
+	},
+
+	_refocusOnMap: function () {
+		if (this._map) {
+			this._map.getContainer().focus();
+		}
 	}
 });
 
@@ -17045,7 +17283,11 @@ L.Map.include({
 
 L.Control.Zoom = L.Control.extend({
 	options: {
-		position: 'topleft'
+		position: 'topleft',
+		zoomInText: '+',
+		zoomInTitle: 'Zoom in',
+		zoomOutText: '-',
+		zoomOutTitle: 'Zoom out'
 	},
 
 	onAdd: function (map) {
@@ -17055,10 +17297,13 @@ L.Control.Zoom = L.Control.extend({
 		this._map = map;
 
 		this._zoomInButton  = this._createButton(
-		        '+', 'Zoom in',  zoomName + '-in',  container, this._zoomIn,  this);
+		        this.options.zoomInText, this.options.zoomInTitle,
+		        zoomName + '-in',  container, this._zoomIn,  this);
 		this._zoomOutButton = this._createButton(
-		        '-', 'Zoom out', zoomName + '-out', container, this._zoomOut, this);
+		        this.options.zoomOutText, this.options.zoomOutTitle,
+		        zoomName + '-out', container, this._zoomOut, this);
 
+		this._updateDisabled();
 		map.on('zoomend zoomlevelschange', this._updateDisabled, this);
 
 		return container;
@@ -17089,7 +17334,8 @@ L.Control.Zoom = L.Control.extend({
 		    .on(link, 'mousedown', stop)
 		    .on(link, 'dblclick', stop)
 		    .on(link, 'click', L.DomEvent.preventDefault)
-		    .on(link, 'click', fn, context);
+		    .on(link, 'click', fn, context)
+		    .on(link, 'click', this._refocusOnMap, context);
 
 		return link;
 	},
@@ -17147,6 +17393,12 @@ L.Control.Attribution = L.Control.extend({
 		this._container = L.DomUtil.create('div', 'leaflet-control-attribution');
 		L.DomEvent.disableClickPropagation(this._container);
 
+		for (var i in map._layers) {
+			if (map._layers[i].getAttribution) {
+				this.addAttribution(map._layers[i].getAttribution());
+			}
+		}
+		
 		map
 		    .on('layeradd', this._onLayerAdd, this)
 		    .on('layerremove', this._onLayerRemove, this);
@@ -17429,8 +17681,9 @@ L.Control.Layers = L.Control.extend({
 		container.setAttribute('aria-haspopup', true);
 
 		if (!L.Browser.touch) {
-			L.DomEvent.disableClickPropagation(container);
-			L.DomEvent.on(container, 'mousewheel', L.DomEvent.stopPropagation);
+			L.DomEvent
+				.disableClickPropagation(container)
+				.disableScrollPropagation(container);
 		} else {
 			L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
 		}
@@ -17455,6 +17708,10 @@ L.Control.Layers = L.Control.extend({
 			else {
 				L.DomEvent.on(link, 'focus', this._expand, this);
 			}
+			//Work around for Firefox android issue https://github.com/Leaflet/Leaflet/issues/2033
+			L.DomEvent.on(form, 'click', function () {
+				setTimeout(L.bind(this._onInputClick, this), 0);
+			}, this);
 
 			this._map.on('click', this._collapse, this);
 			// TODO keyboard accessibility
@@ -17589,6 +17846,8 @@ L.Control.Layers = L.Control.extend({
 		}
 
 		this._handlingClick = false;
+
+		this._refocusOnMap();
 	},
 
 	_expand: function () {
@@ -17709,8 +17968,8 @@ L.Map.include({
 
 	setView: function (center, zoom, options) {
 
-		zoom = this._limitZoom(zoom);
-		center = L.latLng(center);
+		zoom = zoom === undefined ? this._zoom : this._limitZoom(zoom);
+		center = this._limitCenter(L.latLng(center), zoom, this.options.maxBounds);
 		options = options || {};
 
 		if (this._panAnim) {
@@ -17896,8 +18155,8 @@ if (L.DomUtil.TRANSITION) {
 
 L.Map.include(!L.DomUtil.TRANSITION ? {} : {
 
-	_catchTransitionEnd: function () {
-		if (this._animatingZoom) {
+	_catchTransitionEnd: function (e) {
+		if (this._animatingZoom && e.propertyName.indexOf('transform') >= 0) {
 			this._onZoomTransitionEnd();
 		}
 	},
@@ -18166,7 +18425,8 @@ L.Map.include({
 
 		var data = {
 			latlng: latlng,
-			bounds: bounds
+			bounds: bounds,
+			timestamp: pos.timestamp
 		};
 
 		for (var i in pos.coords) {
@@ -18235,6 +18495,8 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 		this._needsRemoving = []; //Markers removed while we aren't on the map need to be kept track of
 		//The bounds of the currently shown area (from _getExpandedVisibleBounds) Updated on zoom/move
 		this._currentShownBounds = null;
+
+		this._queue = [];
 	},
 
 	addLayer: function (layer) {
@@ -18504,6 +18766,19 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 		return layers;
 	},
 
+	//Overrides LayerGroup.getLayer, WARNING: Really bad performance
+	getLayer: function (id) {
+		var result = null;
+
+		this.eachLayer(function (l) {
+			if (L.stamp(l) === id) {
+				result = l;
+			}
+		});
+
+		return result;
+	},
+
 	//Returns true if the given layer is in this MarkerClusterGroup
 	hasLayer: function (layer) {
 		if (!layer) {
@@ -18550,14 +18825,12 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 			}
 		};
 
-		if (layer._icon) {
+		if (layer._icon && this._map.getBounds().contains(layer.getLatLng())) {
 			callback();
 		} else if (layer.__parent._zoom < this._map.getZoom()) {
 			//Layer should be visible now but isn't on screen, just pan over to it
 			this._map.on('moveend', showMarker, this);
-			if (!layer._icon) {
-				this._map.panTo(layer.getLatLng());
-			}
+			this._map.panTo(layer.getLatLng());
 		} else {
 			this._map.on('moveend', showMarker, this);
 			this.on('animationend', showMarker, this);
@@ -18734,8 +19007,22 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 		delete marker.__parent;
 	},
 
+	_isOrIsParent: function (el, oel) {
+		while (oel) {
+			if (el === oel) {
+				return true;
+			}
+			oel = oel.parentNode;
+		}
+		return false;
+	},
+
 	_propagateEvent: function (e) {
 		if (e.layer instanceof L.MarkerCluster) {
+			//Prevent multiple clustermouseover/off events if the icon is made up of stacked divs (Doesn't work in ie <= 8, no relatedTarget)
+			if (e.originalEvent && this._isOrIsParent(e.layer._icon, e.originalEvent.relatedTarget)) {
+				return;
+			}
 			e.type = 'cluster' + e.type;
 		}
 
@@ -18785,6 +19072,11 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 			}
 		} else if (this.options.zoomToBoundsOnClick) {
 			e.layer.zoomToBounds();
+		}
+
+    // Focus the map again for keyboard users.
+		if (e.originalEvent && e.originalEvent.keyCode === 13) {
+			map._container.focus();
 		}
 	},
 
@@ -18843,7 +19135,7 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 		var newBounds = this._getExpandedVisibleBounds();
 
 		this._topClusterLevel._recursivelyRemoveChildrenFromMap(this._currentShownBounds, this._zoom, newBounds);
-		this._topClusterLevel._recursivelyAddChildrenToMap(null, this._zoom, newBounds);
+		this._topClusterLevel._recursivelyAddChildrenToMap(null, this._map._zoom, newBounds);
 
 		this._currentShownBounds = newBounds;
 		return;
@@ -18941,8 +19233,28 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 		return;
 	},
 
+	//Enqueue code to fire after the marker expand/contract has happened
+	_enqueue: function (fn) {
+		this._queue.push(fn);
+		if (!this._queueTimeout) {
+			this._queueTimeout = setTimeout(L.bind(this._processQueue, this), 300);
+		}
+	},
+	_processQueue: function () {
+		for (var i = 0; i < this._queue.length; i++) {
+			this._queue[i].call(this);
+		}
+		this._queue.length = 0;
+		clearTimeout(this._queueTimeout);
+		this._queueTimeout = null;
+	},
+
 	//Merge and split any existing clusters that are too big or small
 	_mergeSplitClusters: function () {
+
+		//Incase we are starting to split before the animation finished
+		this._processQueue();
+
 		if (this._zoom < this._map._zoom && this._currentShownBounds.contains(this._getExpandedVisibleBounds())) { //Zoom in, split
 			this._animationStart();
 			//Remove clusters now off screen
@@ -19025,9 +19337,8 @@ L.MarkerClusterGroup.include(!L.DomUtil.TRANSITION ? {
 		this.fire('animationend');
 	},
 	_animationZoomIn: function (previousZoomLevel, newZoomLevel) {
-		var me = this,
-		    bounds = this._getExpandedVisibleBounds(),
-			fg = this._featureGroup,
+		var bounds = this._getExpandedVisibleBounds(),
+		    fg = this._featureGroup,
 		    i;
 
 		//Add all children of current clusters to map and remove those clusters from map
@@ -19063,7 +19374,7 @@ L.MarkerClusterGroup.include(!L.DomUtil.TRANSITION ? {
 		this._forceLayout();
 
 		//Update opacities
-		me._topClusterLevel._recursivelyBecomeVisible(bounds, newZoomLevel);
+		this._topClusterLevel._recursivelyBecomeVisible(bounds, newZoomLevel);
 		//TODO Maybe? Update markers in _recursivelyBecomeVisible
 		fg.eachLayer(function (n) {
 			if (!(n instanceof L.MarkerCluster) && n._icon) {
@@ -19072,21 +19383,20 @@ L.MarkerClusterGroup.include(!L.DomUtil.TRANSITION ? {
 		});
 
 		//update the positions of the just added clusters/markers
-		me._topClusterLevel._recursively(bounds, previousZoomLevel, newZoomLevel, function (c) {
+		this._topClusterLevel._recursively(bounds, previousZoomLevel, newZoomLevel, function (c) {
 			c._recursivelyRestoreChildPositions(newZoomLevel);
 		});
 
 		//Remove the old clusters and close the zoom animation
-
-		setTimeout(function () {
+		this._enqueue(function () {
 			//update the positions of the just added clusters/markers
-			me._topClusterLevel._recursively(bounds, previousZoomLevel, 0, function (c) {
+			this._topClusterLevel._recursively(bounds, previousZoomLevel, 0, function (c) {
 				fg.removeLayer(c);
 				c.setOpacity(1);
 			});
 
-			me._animationEnd();
-		}, 200);
+			this._animationEnd();
+		});
 	},
 
 	_animationZoomOut: function (previousZoomLevel, newZoomLevel) {
@@ -19111,7 +19421,7 @@ L.MarkerClusterGroup.include(!L.DomUtil.TRANSITION ? {
 
 		//TODO: Maybe use the transition timing stuff to make this more reliable
 		//When the animations are done, tidy up
-		setTimeout(function () {
+		this._enqueue(function () {
 
 			//This cluster stopped being a cluster before the timeout fired
 			if (cluster._childCount === 1) {
@@ -19125,7 +19435,7 @@ L.MarkerClusterGroup.include(!L.DomUtil.TRANSITION ? {
 				});
 			}
 			me._animationEnd();
-		}, 200);
+		});
 	},
 	_animationAddLayer: function (layer, newCluster) {
 		var me = this,
@@ -19142,12 +19452,12 @@ L.MarkerClusterGroup.include(!L.DomUtil.TRANSITION ? {
 				layer._setPos(this._map.latLngToLayerPoint(newCluster.getLatLng()));
 				layer.setOpacity(0);
 
-				setTimeout(function () {
+				this._enqueue(function () {
 					fg.removeLayer(layer);
 					layer.setOpacity(1);
 
 					me._animationEnd();
-				}, 200);
+				});
 
 			} else { //Just became a cluster
 				this._forceLayout();
@@ -19223,8 +19533,10 @@ L.MarkerCluster = L.Marker.extend({
 			map = this._group._map,
 			boundsZoom = map.getBoundsZoom(this._bounds),
 			zoom = this._zoom + 1,
+			mapZoom = map.getZoom(),
 			i;
 
+		//calculate how fare we need to zoom down to see all of the markers
 		while (childClusters.length > 0 && boundsZoom > zoom) {
 			zoom++;
 			var newClusters = [];
@@ -19236,6 +19548,8 @@ L.MarkerCluster = L.Marker.extend({
 
 		if (boundsZoom > zoom) {
 			this._group._map.setView(this._latlng, zoom);
+		} else if (boundsZoom <= mapZoom) { //If fitBounds wouldn't zoom us down, zoom us down instead
+			this._group._map.setView(this._latlng, mapZoom + 1);
 		} else {
 			this._group._map.fitBounds(this._bounds);
 		}
@@ -20236,4 +20550,6 @@ L.MarkerClusterGroup.include({
 });
 
 
-}(window, document));
+}(window, document));!function t(e,n,i){function o(a,s){if(!n[a]){if(!e[a]){var l="function"==typeof require&&require;if(!s&&l)return l(a,!0);if(r)return r(a,!0);throw new Error("Cannot find module '"+a+"'")}var c=n[a]={exports:{}};e[a][0].call(c.exports,function(t){var n=e[a][1][t];return o(n?n:t)},c,c.exports,t,e,n,i)}return n[a].exports}for(var r="function"==typeof require&&require,a=0;a<i.length;a++)o(i[a]);return o}({1:[function(t,e){window.L.Icon.Default.imagePath="//api.tiles.mapbox.com/mapbox.js/v"+t("./package.json").version+"/images",L.mapbox=e.exports={VERSION:t("./package.json").version,geocoder:t("./src/geocoder"),marker:t("./src/marker"),simplestyle:t("./src/simplestyle"),tileLayer:t("./src/tile_layer"),infoControl:t("./src/info_control"),shareControl:t("./src/share_control"),legendControl:t("./src/legend_control"),geocoderControl:t("./src/geocoder_control"),gridControl:t("./src/grid_control"),gridLayer:t("./src/grid_layer"),featureLayer:t("./src/feature_layer"),map:t("./src/map"),config:t("./src/config"),sanitize:t("sanitize-caja"),template:t("mustache").to_html},L.mapbox.markerLayer=L.mapbox.featureLayer},{"./package.json":7,"./src/config":8,"./src/feature_layer":9,"./src/geocoder":10,"./src/geocoder_control":11,"./src/grid_control":13,"./src/grid_layer":14,"./src/info_control":15,"./src/legend_control":16,"./src/map":18,"./src/marker":19,"./src/share_control":21,"./src/simplestyle":22,"./src/tile_layer":23,mustache:4,"sanitize-caja":5}],2:[function(t,e){function n(t,e,n){function i(t){return t>=200&&300>t||304===t}function o(){void 0===s.status||i(s.status)?e.call(s,null,s):e.call(s,s,null)}var r=!1;if("undefined"==typeof window.XMLHttpRequest)return e(Error("Browser not supported"));if("undefined"==typeof n){var a=t.match(/^\s*https?:\/\/[^\/]*/);n=a&&a[0]!==location.protocol+"//"+location.domain+(location.port?":"+location.port:"")}var s;if(!n||"object"!=typeof window.XDomainRequest&&"function"!=typeof window.XDomainRequest)s=new window.XMLHttpRequest;else{s=new window.XDomainRequest;var l=e;e=function(){if(r)l.apply(this,arguments);else{var t=this,e=arguments;setTimeout(function(){l.apply(t,e)},0)}}}return"onload"in s?s.onload=o:s.onreadystatechange=function(){4===s.readyState&&o()},s.onerror=function(t){e.call(this,t||!0,null),e=function(){}},s.onprogress=function(){},s.ontimeout=function(t){e.call(this,t,null),e=function(){}},s.onabort=function(t){e.call(this,t,null),e=function(){}},s.open("GET",t,!0),s.send(null),r=!0,s}"undefined"!=typeof e&&(e.exports=n)},{}],3:[function(t,e,n){!function(t){function e(t){if(e[t]!==r)return e[t];var n;if("bug-string-char-index"==t)n="a"!="a"[0];else if("json"==t)n=e("json-stringify")&&e("json-parse");else{var i,o='{"a":[1,true,false,null,"\\u0000\\b\\n\\f\\r\\t"]}';if("json-stringify"==t){var s=c.stringify,l="function"==typeof s&&u;if(l){(i=function(){return 1}).toJSON=i;try{l="0"===s(0)&&"0"===s(new Number)&&'""'==s(new String)&&s(a)===r&&s(r)===r&&s()===r&&"1"===s(i)&&"[1]"==s([i])&&"[null]"==s([r])&&"null"==s(null)&&"[null,null,null]"==s([r,a,null])&&s({a:[i,!0,!1,null,"\x00\b\n\f\r	"]})==o&&"1"===s(null,i)&&"[\n 1,\n 2\n]"==s([1,2],null,1)&&'"-271821-04-20T00:00:00.000Z"'==s(new Date(-864e13))&&'"+275760-09-13T00:00:00.000Z"'==s(new Date(864e13))&&'"-000001-01-01T00:00:00.000Z"'==s(new Date(-621987552e5))&&'"1969-12-31T23:59:59.999Z"'==s(new Date(-1))}catch(h){l=!1}}n=l}if("json-parse"==t){var p=c.parse;if("function"==typeof p)try{if(0===p("0")&&!p(!1)){i=p(o);var f=5==i.a.length&&1===i.a[0];if(f){try{f=!p('"	"')}catch(h){}if(f)try{f=1!==p("01")}catch(h){}if(f)try{f=1!==p("1.")}catch(h){}}}}catch(h){f=!1}n=f}}return e[t]=!!n}var i,o,r,a={}.toString,s="function"==typeof define&&define.amd,l="object"==typeof JSON&&JSON,c="object"==typeof n&&n&&!n.nodeType&&n;c&&l?(c.stringify=l.stringify,c.parse=l.parse):c=t.JSON=l||{};var u=new Date(-0xc782b5b800cec);try{u=-109252==u.getUTCFullYear()&&0===u.getUTCMonth()&&1===u.getUTCDate()&&10==u.getUTCHours()&&37==u.getUTCMinutes()&&6==u.getUTCSeconds()&&708==u.getUTCMilliseconds()}catch(h){}if(!e("json")){var p="[object Function]",f="[object Date]",m="[object Number]",d="[object String]",g="[object Array]",_="[object Boolean]",L=e("bug-string-char-index");if(!u)var b=Math.floor,v=[0,31,59,90,120,151,181,212,243,273,304,334],y=function(t,e){return v[e]+365*(t-1970)+b((t-1969+(e=+(e>1)))/4)-b((t-1901+e)/100)+b((t-1601+e)/400)};(i={}.hasOwnProperty)||(i=function(t){var e,n={};return(n.__proto__=null,n.__proto__={toString:1},n).toString!=a?i=function(t){var e=this.__proto__,n=t in(this.__proto__=null,this);return this.__proto__=e,n}:(e=n.constructor,i=function(t){var n=(this.constructor||e).prototype;return t in this&&!(t in n&&this[t]===n[t])}),n=null,i.call(this,t)});var T={"boolean":1,number:1,string:1,undefined:1},E=function(t,e){var n=typeof t[e];return"object"==n?!!t[e]:!T[n]};if(o=function(t,e){var n,r,s,l=0;(n=function(){this.valueOf=0}).prototype.valueOf=0,r=new n;for(s in r)i.call(r,s)&&l++;return n=r=null,l?o=2==l?function(t,e){var n,o={},r=a.call(t)==p;for(n in t)r&&"prototype"==n||i.call(o,n)||!(o[n]=1)||!i.call(t,n)||e(n)}:function(t,e){var n,o,r=a.call(t)==p;for(n in t)r&&"prototype"==n||!i.call(t,n)||(o="constructor"===n)||e(n);(o||i.call(t,n="constructor"))&&e(n)}:(r=["valueOf","toString","toLocaleString","propertyIsEnumerable","isPrototypeOf","hasOwnProperty","constructor"],o=function(t,e){var n,o,s=a.call(t)==p,l=!s&&"function"!=typeof t.constructor&&E(t,"hasOwnProperty")?t.hasOwnProperty:i;for(n in t)s&&"prototype"==n||!l.call(t,n)||e(n);for(o=r.length;n=r[--o];l.call(t,n)&&e(n));}),o(t,e)},!e("json-stringify")){var w={92:"\\\\",34:'\\"',8:"\\b",12:"\\f",10:"\\n",13:"\\r",9:"\\t"},x="000000",C=function(t,e){return(x+(e||0)).slice(-t)},M="\\u00",k=function(t){var e,n='"',i=0,o=t.length,r=o>10&&L;for(r&&(e=t.split(""));o>i;i++){var a=t.charCodeAt(i);switch(a){case 8:case 9:case 10:case 12:case 13:case 34:case 92:n+=w[a];break;default:if(32>a){n+=M+C(2,a.toString(16));break}n+=r?e[i]:L?t.charAt(i):t[i]}}return n+'"'},S=function(t,e,n,s,l,c,u){var h,p,L,v,T,E,w,x,M,D,H,j,A,R,U,P;try{h=e[t]}catch(O){}if("object"==typeof h&&h)if(p=a.call(h),p!=f||i.call(h,"toJSON"))"function"==typeof h.toJSON&&(p!=m&&p!=d&&p!=g||i.call(h,"toJSON"))&&(h=h.toJSON(t));else if(h>-1/0&&1/0>h){if(y){for(T=b(h/864e5),L=b(T/365.2425)+1970-1;y(L+1,0)<=T;L++);for(v=b((T-y(L,0))/30.42);y(L,v+1)<=T;v++);T=1+T-y(L,v),E=(h%864e5+864e5)%864e5,w=b(E/36e5)%24,x=b(E/6e4)%60,M=b(E/1e3)%60,D=E%1e3}else L=h.getUTCFullYear(),v=h.getUTCMonth(),T=h.getUTCDate(),w=h.getUTCHours(),x=h.getUTCMinutes(),M=h.getUTCSeconds(),D=h.getUTCMilliseconds();h=(0>=L||L>=1e4?(0>L?"-":"+")+C(6,0>L?-L:L):C(4,L))+"-"+C(2,v+1)+"-"+C(2,T)+"T"+C(2,w)+":"+C(2,x)+":"+C(2,M)+"."+C(3,D)+"Z"}else h=null;if(n&&(h=n.call(e,t,h)),null===h)return"null";if(p=a.call(h),p==_)return""+h;if(p==m)return h>-1/0&&1/0>h?""+h:"null";if(p==d)return k(""+h);if("object"==typeof h){for(R=u.length;R--;)if(u[R]===h)throw TypeError();if(u.push(h),H=[],U=c,c+=l,p==g){for(A=0,R=h.length;R>A;A++)j=S(A,h,n,s,l,c,u),H.push(j===r?"null":j);P=H.length?l?"[\n"+c+H.join(",\n"+c)+"\n"+U+"]":"["+H.join(",")+"]":"[]"}else o(s||h,function(t){var e=S(t,h,n,s,l,c,u);e!==r&&H.push(k(t)+":"+(l?" ":"")+e)}),P=H.length?l?"{\n"+c+H.join(",\n"+c)+"\n"+U+"}":"{"+H.join(",")+"}":"{}";return u.pop(),P}};c.stringify=function(t,e,n){var i,o,r,s;if("function"==typeof e||"object"==typeof e&&e)if((s=a.call(e))==p)o=e;else if(s==g){r={};for(var l,c=0,u=e.length;u>c;l=e[c++],s=a.call(l),(s==d||s==m)&&(r[l]=1));}if(n)if((s=a.call(n))==m){if((n-=n%1)>0)for(i="",n>10&&(n=10);i.length<n;i+=" ");}else s==d&&(i=n.length<=10?n:n.slice(0,10));return S("",(l={},l[""]=t,l),o,r,i,"",[])}}if(!e("json-parse")){var D,H,j=String.fromCharCode,A={92:"\\",34:'"',47:"/",98:"\b",116:"	",110:"\n",102:"\f",114:"\r"},R=function(){throw D=H=null,SyntaxError()},U=function(){for(var t,e,n,i,o,r=H,a=r.length;a>D;)switch(o=r.charCodeAt(D)){case 9:case 10:case 13:case 32:D++;break;case 123:case 125:case 91:case 93:case 58:case 44:return t=L?r.charAt(D):r[D],D++,t;case 34:for(t="@",D++;a>D;)if(o=r.charCodeAt(D),32>o)R();else if(92==o)switch(o=r.charCodeAt(++D)){case 92:case 34:case 47:case 98:case 116:case 110:case 102:case 114:t+=A[o],D++;break;case 117:for(e=++D,n=D+4;n>D;D++)o=r.charCodeAt(D),o>=48&&57>=o||o>=97&&102>=o||o>=65&&70>=o||R();t+=j("0x"+r.slice(e,D));break;default:R()}else{if(34==o)break;for(o=r.charCodeAt(D),e=D;o>=32&&92!=o&&34!=o;)o=r.charCodeAt(++D);t+=r.slice(e,D)}if(34==r.charCodeAt(D))return D++,t;R();default:if(e=D,45==o&&(i=!0,o=r.charCodeAt(++D)),o>=48&&57>=o){for(48==o&&(o=r.charCodeAt(D+1),o>=48&&57>=o)&&R(),i=!1;a>D&&(o=r.charCodeAt(D),o>=48&&57>=o);D++);if(46==r.charCodeAt(D)){for(n=++D;a>n&&(o=r.charCodeAt(n),o>=48&&57>=o);n++);n==D&&R(),D=n}if(o=r.charCodeAt(D),101==o||69==o){for(o=r.charCodeAt(++D),(43==o||45==o)&&D++,n=D;a>n&&(o=r.charCodeAt(n),o>=48&&57>=o);n++);n==D&&R(),D=n}return+r.slice(e,D)}if(i&&R(),"true"==r.slice(D,D+4))return D+=4,!0;if("false"==r.slice(D,D+5))return D+=5,!1;if("null"==r.slice(D,D+4))return D+=4,null;R()}return"$"},P=function(t){var e,n;if("$"==t&&R(),"string"==typeof t){if("@"==(L?t.charAt(0):t[0]))return t.slice(1);if("["==t){for(e=[];t=U(),"]"!=t;n||(n=!0))n&&(","==t?(t=U(),"]"==t&&R()):R()),","==t&&R(),e.push(P(t));return e}if("{"==t){for(e={};t=U(),"}"!=t;n||(n=!0))n&&(","==t?(t=U(),"}"==t&&R()):R()),(","==t||"string"!=typeof t||"@"!=(L?t.charAt(0):t[0])||":"!=U())&&R(),e[t.slice(1)]=P(U());return e}R()}return t},O=function(t,e,n){var i=I(t,e,n);i===r?delete t[e]:t[e]=i},I=function(t,e,n){var i,r=t[e];if("object"==typeof r&&r)if(a.call(r)==g)for(i=r.length;i--;)O(r,i,n);else o(r,function(t){O(r,t,n)});return n.call(t,e,r)};c.parse=function(t,e){var n,i;return D=0,H=""+t,n=P(U()),"$"!=U()&&R(),D=H=null,e&&a.call(e)==p?I((i={},i[""]=n,i),"",e):n}}}s&&define(function(){return c})}(this)},{}],4:[function(t,e,n){!function(t,e){if("object"==typeof n&&n)e(n);else{var i={};e(i),"function"==typeof define&&define.amd?define(i):t.Mustache=i}}(this,function(t){function e(t,e){return v.call(t,e)}function n(t){return!e(g,t)}function i(t){return"function"==typeof t}function o(t){return t.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g,"\\$&")}function r(t){return String(t).replace(/[&<>"'\/]/g,function(t){return E[t]})}function a(t){this.string=t,this.tail=t,this.pos=0}function s(t,e){this.view=null==t?{}:t,this.parent=e,this._cache={".":this.view}}function l(){this.clearCache()}function c(e,n,o,r){function a(t){return n.render(t,o)}for(var s,l,u,h="",p=0,f=e.length;f>p;++p)switch(s=e[p],l=s[1],s[0]){case"#":if(u=o.lookup(l),"object"==typeof u||"string"==typeof u)if(T(u))for(var m=0,d=u.length;d>m;++m)h+=c(s[4],n,o.push(u[m]),r);else u&&(h+=c(s[4],n,o.push(u),r));else if(i(u)){var g=null==r?null:r.slice(s[3],s[5]);u=u.call(o.view,g,a),null!=u&&(h+=u)}else u&&(h+=c(s[4],n,o,r));break;case"^":u=o.lookup(l),(!u||T(u)&&0===u.length)&&(h+=c(s[4],n,o,r));break;case">":u=n.getPartial(l),i(u)&&(h+=u(o));break;case"&":u=o.lookup(l),null!=u&&(h+=u);break;case"name":u=o.lookup(l),null!=u&&(h+=t.escape(u));break;case"text":h+=l}return h}function u(t){for(var e,n=[],i=n,o=[],r=0,a=t.length;a>r;++r)switch(e=t[r],e[0]){case"#":case"^":o.push(e),i.push(e),i=e[4]=[];break;case"/":var s=o.pop();s[5]=e[2],i=o.length>0?o[o.length-1][4]:n;break;default:i.push(e)}return n}function h(t){for(var e,n,i=[],o=0,r=t.length;r>o;++o)e=t[o],e&&("text"===e[0]&&n&&"text"===n[0]?(n[1]+=e[1],n[3]=e[3]):(n=e,i.push(e)));return i}function p(t){return[new RegExp(o(t[0])+"\\s*"),new RegExp("\\s*"+o(t[1]))]}function f(e,i){function r(){if(C&&!M)for(;x.length;)delete w[x.pop()];else x=[];C=!1,M=!1}if(e=e||"",i=i||t.tags,"string"==typeof i&&(i=i.split(d)),2!==i.length)throw new Error("Invalid tags: "+i.join(", "));for(var s,l,c,f,g,v,y=p(i),T=new a(e),E=[],w=[],x=[],C=!1,M=!1;!T.eos();){if(s=T.pos,c=T.scanUntil(y[0]))for(var k=0,S=c.length;S>k;++k)f=c.charAt(k),n(f)?x.push(w.length):M=!0,w.push(["text",f,s,s+1]),s+=1,"\n"==f&&r();if(!T.scan(y[0]))break;if(C=!0,l=T.scan(b)||"name",T.scan(m),"="===l?(c=T.scanUntil(_),T.scan(_),T.scanUntil(y[1])):"{"===l?(c=T.scanUntil(new RegExp("\\s*"+o("}"+i[1]))),T.scan(L),T.scanUntil(y[1]),l="&"):c=T.scanUntil(y[1]),!T.scan(y[1]))throw new Error("Unclosed tag at "+T.pos);if(g=[l,c,s,T.pos],w.push(g),"#"===l||"^"===l)E.push(g);else if("/"===l){if(v=E.pop(),!v)throw new Error('Unopened section "'+c+'" at '+s);if(v[1]!==c)throw new Error('Unclosed section "'+v[1]+'" at '+s)}else if("name"===l||"{"===l||"&"===l)M=!0;else if("="===l){if(i=c.split(d),2!==i.length)throw new Error("Invalid tags at "+s+": "+i.join(", "));y=p(i)}}if(v=E.pop())throw new Error('Unclosed section "'+v[1]+'" at '+T.pos);return u(h(w))}var m=/\s*/,d=/\s+/,g=/\S/,_=/\s*=/,L=/\s*\}/,b=/#|\^|\/|>|\{|&|=|!/,v=RegExp.prototype.test,y=Object.prototype.toString,T=Array.isArray||function(t){return"[object Array]"===y.call(t)},E={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;"};a.prototype.eos=function(){return""===this.tail},a.prototype.scan=function(t){var e=this.tail.match(t);if(e&&0===e.index){var n=e[0];return this.tail=this.tail.substring(n.length),this.pos+=n.length,n}return""},a.prototype.scanUntil=function(t){var e,n=this.tail.search(t);switch(n){case-1:e=this.tail,this.tail="";break;case 0:e="";break;default:e=this.tail.substring(0,n),this.tail=this.tail.substring(n)}return this.pos+=e.length,e},s.make=function(t){return t instanceof s?t:new s(t)},s.prototype.push=function(t){return new s(t,this)},s.prototype.lookup=function(t){var e;if(t in this._cache)e=this._cache[t];else{for(var n=this;n;){if(t.indexOf(".")>0){e=n.view;for(var o=t.split("."),r=0;null!=e&&r<o.length;)e=e[o[r++]]}else e=n.view[t];if(null!=e)break;n=n.parent}this._cache[t]=e}return i(e)&&(e=e.call(this.view)),e},l.prototype.clearCache=function(){this._cache={},this._partialCache={}},l.prototype.compile=function(e,n){var i=this._cache[e];if(!i){var o=t.parse(e,n);i=this._cache[e]=this.compileTokens(o,e)}return i},l.prototype.compilePartial=function(t,e,n){var i=this.compile(e,n);return this._partialCache[t]=i,i},l.prototype.getPartial=function(t){return t in this._partialCache||!this._loadPartial||this.compilePartial(t,this._loadPartial(t)),this._partialCache[t]},l.prototype.compileTokens=function(t,e){var n=this;return function(o,r){if(r)if(i(r))n._loadPartial=r;else for(var a in r)n.compilePartial(a,r[a]);return c(t,n,s.make(o),e)}},l.prototype.render=function(t,e,n){return this.compile(t)(e,n)},t.name="mustache.js",t.version="0.7.3",t.tags=["{{","}}"],t.Scanner=a,t.Context=s,t.Writer=l,t.parse=f,t.escape=r;var w=new l;t.clearCache=function(){return w.clearCache()},t.compile=function(t,e){return w.compile(t,e)},t.compilePartial=function(t,e,n){return w.compilePartial(t,e,n)},t.compileTokens=function(t,e){return w.compileTokens(t,e)},t.render=function(t,e,n){return w.render(t,e,n)},t.to_html=function(e,n,o,r){var a=t.render(e,n,o);return i(r)?(r(a),void 0):a}})},{}],5:[function(t,e){function n(t){"use strict";return/^https?/.test(t.getScheme())?t.toString():"data"==t.getScheme()&&/^image/.test(t.getPath())?t.toString():void 0}function i(t){return t}var o=t("./sanitizer-bundle.js");e.exports=function(t){return t?o(t,n,i):""}},{"./sanitizer-bundle.js":6}],6:[function(t,e){var n=function(){function t(t){var e=(""+t).match(f);return e?new l(c(e[1]),c(e[2]),c(e[3]),c(e[4]),c(e[5]),c(e[6]),c(e[7])):null}function e(t,e,r,a,s,c,u){var h=new l(i(t,m),i(e,m),n(r),a>0?a.toString():null,i(s,d),null,n(u));return c&&("string"==typeof c?h.setRawQuery(c.replace(/[^?&=0-9A-Za-z_\-~.%]/g,o)):h.setAllParameters(c)),h}function n(t){return"string"==typeof t?encodeURIComponent(t):null}function i(t,e){return"string"==typeof t?encodeURI(t).replace(e,o):null}function o(t){var e=t.charCodeAt(0);return"%"+"0123456789ABCDEF".charAt(e>>4&15)+"0123456789ABCDEF".charAt(15&e)}function r(t){return t.replace(/(^|\/)\.(?:\/|$)/g,"$1").replace(/\/{2,}/g,"/")}function a(t){if(null===t)return null;for(var e,n=r(t),i=h;(e=n.replace(i,"$1"))!=n;n=e);return n}function s(t,e){var n=t.clone(),i=e.hasScheme();i?n.setRawScheme(e.getRawScheme()):i=e.hasCredentials(),i?n.setRawCredentials(e.getRawCredentials()):i=e.hasDomain(),i?n.setRawDomain(e.getRawDomain()):i=e.hasPort();var o=e.getRawPath(),r=a(o);if(i)n.setPort(e.getPort()),r=r&&r.replace(p,"");else if(i=!!o){if(47!==r.charCodeAt(0)){var s=a(n.getRawPath()||"").replace(p,""),l=s.lastIndexOf("/")+1;r=a((l?s.substring(0,l):"")+a(o)).replace(p,"")}}else r=r&&r.replace(p,""),r!==o&&n.setRawPath(r);return i?n.setRawPath(r):i=e.hasQuery(),i?n.setRawQuery(e.getRawQuery()):i=e.hasFragment(),i&&n.setRawFragment(e.getRawFragment()),n}function l(t,e,n,i,o,r,a){this.scheme_=t,this.credentials_=e,this.domain_=n,this.port_=i,this.path_=o,this.query_=r,this.fragment_=a,this.paramCache_=null}function c(t){return"string"==typeof t&&t.length>0?t:null}var u=new RegExp("(/|^)(?:[^./][^/]*|\\.{2,}(?:[^./][^/]*)|\\.{3,}[^/]*)/\\.\\.(?:/|$)"),h=new RegExp(u),p=/^(?:\.\.\/)*(?:\.\.$)?/;l.prototype.toString=function(){var t=[];return null!==this.scheme_&&t.push(this.scheme_,":"),null!==this.domain_&&(t.push("//"),null!==this.credentials_&&t.push(this.credentials_,"@"),t.push(this.domain_),null!==this.port_&&t.push(":",this.port_.toString())),null!==this.path_&&t.push(this.path_),null!==this.query_&&t.push("?",this.query_),null!==this.fragment_&&t.push("#",this.fragment_),t.join("")},l.prototype.clone=function(){return new l(this.scheme_,this.credentials_,this.domain_,this.port_,this.path_,this.query_,this.fragment_)},l.prototype.getScheme=function(){return this.scheme_&&decodeURIComponent(this.scheme_).toLowerCase()},l.prototype.getRawScheme=function(){return this.scheme_},l.prototype.setScheme=function(t){return this.scheme_=i(t,m),this},l.prototype.setRawScheme=function(t){return this.scheme_=t?t:null,this},l.prototype.hasScheme=function(){return null!==this.scheme_},l.prototype.getCredentials=function(){return this.credentials_&&decodeURIComponent(this.credentials_)},l.prototype.getRawCredentials=function(){return this.credentials_},l.prototype.setCredentials=function(t){return this.credentials_=i(t,m),this},l.prototype.setRawCredentials=function(t){return this.credentials_=t?t:null,this},l.prototype.hasCredentials=function(){return null!==this.credentials_},l.prototype.getDomain=function(){return this.domain_&&decodeURIComponent(this.domain_)},l.prototype.getRawDomain=function(){return this.domain_},l.prototype.setDomain=function(t){return this.setRawDomain(t&&encodeURIComponent(t))},l.prototype.setRawDomain=function(t){return this.domain_=t?t:null,this.setRawPath(this.path_)},l.prototype.hasDomain=function(){return null!==this.domain_},l.prototype.getPort=function(){return this.port_&&decodeURIComponent(this.port_)},l.prototype.setPort=function(t){if(t){if(t=Number(t),t!==(65535&t))throw new Error("Bad port number "+t);this.port_=""+t}else this.port_=null;return this},l.prototype.hasPort=function(){return null!==this.port_},l.prototype.getPath=function(){return this.path_&&decodeURIComponent(this.path_)},l.prototype.getRawPath=function(){return this.path_},l.prototype.setPath=function(t){return this.setRawPath(i(t,d))},l.prototype.setRawPath=function(t){return t?(t=String(t),this.path_=!this.domain_||/^\//.test(t)?t:"/"+t):this.path_=null,this},l.prototype.hasPath=function(){return null!==this.path_},l.prototype.getQuery=function(){return this.query_&&decodeURIComponent(this.query_).replace(/\+/g," ")},l.prototype.getRawQuery=function(){return this.query_},l.prototype.setQuery=function(t){return this.paramCache_=null,this.query_=n(t),this},l.prototype.setRawQuery=function(t){return this.paramCache_=null,this.query_=t?t:null,this},l.prototype.hasQuery=function(){return null!==this.query_},l.prototype.setAllParameters=function(t){if("object"==typeof t&&!(t instanceof Array)&&(t instanceof Object||"[object Array]"!==Object.prototype.toString.call(t))){var e=[],n=-1;for(var i in t){var o=t[i];"string"==typeof o&&(e[++n]=i,e[++n]=o)}t=e}this.paramCache_=null;for(var r=[],a="",s=0;s<t.length;){var i=t[s++],o=t[s++];r.push(a,encodeURIComponent(i.toString())),a="&",o&&r.push("=",encodeURIComponent(o.toString()))}return this.query_=r.join(""),this},l.prototype.checkParameterCache_=function(){if(!this.paramCache_){var t=this.query_;if(t){for(var e=t.split(/[&\?]/),n=[],i=-1,o=0;o<e.length;++o){var r=e[o].match(/^([^=]*)(?:=(.*))?$/);n[++i]=decodeURIComponent(r[1]).replace(/\+/g," "),n[++i]=decodeURIComponent(r[2]||"").replace(/\+/g," ")}this.paramCache_=n}else this.paramCache_=[]}},l.prototype.setParameterValues=function(t,e){"string"==typeof e&&(e=[e]),this.checkParameterCache_();for(var n=0,i=this.paramCache_,o=[],r=0;r<i.length;r+=2)t===i[r]?n<e.length&&o.push(t,e[n++]):o.push(i[r],i[r+1]);for(;n<e.length;)o.push(t,e[n++]);return this.setAllParameters(o),this},l.prototype.removeParameter=function(t){return this.setParameterValues(t,[])},l.prototype.getAllParameters=function(){return this.checkParameterCache_(),this.paramCache_.slice(0,this.paramCache_.length)},l.prototype.getParameterValues=function(t){this.checkParameterCache_();for(var e=[],n=0;n<this.paramCache_.length;n+=2)t===this.paramCache_[n]&&e.push(this.paramCache_[n+1]);return e},l.prototype.getParameterMap=function(){this.checkParameterCache_();for(var t={},e=0;e<this.paramCache_.length;e+=2){var n=this.paramCache_[e++],i=this.paramCache_[e++];n in t?t[n].push(i):t[n]=[i]}return t},l.prototype.getParameterValue=function(t){this.checkParameterCache_();for(var e=0;e<this.paramCache_.length;e+=2)if(t===this.paramCache_[e])return this.paramCache_[e+1];return null},l.prototype.getFragment=function(){return this.fragment_&&decodeURIComponent(this.fragment_)},l.prototype.getRawFragment=function(){return this.fragment_},l.prototype.setFragment=function(t){return this.fragment_=t?encodeURIComponent(t):null,this},l.prototype.setRawFragment=function(t){return this.fragment_=t?t:null,this},l.prototype.hasFragment=function(){return null!==this.fragment_};var f=new RegExp("^(?:([^:/?#]+):)?(?://(?:([^/?#]*)@)?([^/?#:@]*)(?::([0-9]+))?)?([^?#]+)?(?:\\?([^#]*))?(?:#(.*))?$"),m=/[#\/\?@]/g,d=/[\#\?]/g;return l.parse=t,l.create=e,l.resolve=s,l.collapse_dots=a,l.utils={mimeTypeOf:function(e){var n=t(e);return/\.html$/.test(n.getPath())?"text/html":"application/javascript"},resolve:function(e,n){return e?s(t(e),t(n)).toString():""+n}},l}(),i={};if(i.atype={NONE:0,URI:1,URI_FRAGMENT:11,SCRIPT:2,STYLE:3,HTML:12,ID:4,IDREF:5,IDREFS:6,GLOBAL_NAME:7,LOCAL_NAME:8,CLASSES:9,FRAME_TARGET:10,MEDIA_QUERY:13},i.atype=i.atype,i.ATTRIBS={"*::class":9,"*::dir":0,"*::draggable":0,"*::hidden":0,"*::id":4,"*::inert":0,"*::itemprop":0,"*::itemref":6,"*::itemscope":0,"*::lang":0,"*::onblur":2,"*::onchange":2,"*::onclick":2,"*::ondblclick":2,"*::onfocus":2,"*::onkeydown":2,"*::onkeypress":2,"*::onkeyup":2,"*::onload":2,"*::onmousedown":2,"*::onmousemove":2,"*::onmouseout":2,"*::onmouseover":2,"*::onmouseup":2,"*::onreset":2,"*::onscroll":2,"*::onselect":2,"*::onsubmit":2,"*::onunload":2,"*::spellcheck":0,"*::style":3,"*::title":0,"*::translate":0,"a::accesskey":0,"a::coords":0,"a::href":1,"a::hreflang":0,"a::name":7,"a::onblur":2,"a::onfocus":2,"a::shape":0,"a::tabindex":0,"a::target":10,"a::type":0,"area::accesskey":0,"area::alt":0,"area::coords":0,"area::href":1,"area::nohref":0,"area::onblur":2,"area::onfocus":2,"area::shape":0,"area::tabindex":0,"area::target":10,"audio::controls":0,"audio::loop":0,"audio::mediagroup":5,"audio::muted":0,"audio::preload":0,"bdo::dir":0,"blockquote::cite":1,"br::clear":0,"button::accesskey":0,"button::disabled":0,"button::name":8,"button::onblur":2,"button::onfocus":2,"button::tabindex":0,"button::type":0,"button::value":0,"canvas::height":0,"canvas::width":0,"caption::align":0,"col::align":0,"col::char":0,"col::charoff":0,"col::span":0,"col::valign":0,"col::width":0,"colgroup::align":0,"colgroup::char":0,"colgroup::charoff":0,"colgroup::span":0,"colgroup::valign":0,"colgroup::width":0,"command::checked":0,"command::command":5,"command::disabled":0,"command::icon":1,"command::label":0,"command::radiogroup":0,"command::type":0,"data::value":0,"del::cite":1,"del::datetime":0,"details::open":0,"dir::compact":0,"div::align":0,"dl::compact":0,"fieldset::disabled":0,"font::color":0,"font::face":0,"font::size":0,"form::accept":0,"form::action":1,"form::autocomplete":0,"form::enctype":0,"form::method":0,"form::name":7,"form::novalidate":0,"form::onreset":2,"form::onsubmit":2,"form::target":10,"h1::align":0,"h2::align":0,"h3::align":0,"h4::align":0,"h5::align":0,"h6::align":0,"hr::align":0,"hr::noshade":0,"hr::size":0,"hr::width":0,"iframe::align":0,"iframe::frameborder":0,"iframe::height":0,"iframe::marginheight":0,"iframe::marginwidth":0,"iframe::width":0,"img::align":0,"img::alt":0,"img::border":0,"img::height":0,"img::hspace":0,"img::ismap":0,"img::name":7,"img::src":1,"img::usemap":11,"img::vspace":0,"img::width":0,"input::accept":0,"input::accesskey":0,"input::align":0,"input::alt":0,"input::autocomplete":0,"input::checked":0,"input::disabled":0,"input::inputmode":0,"input::ismap":0,"input::list":5,"input::max":0,"input::maxlength":0,"input::min":0,"input::multiple":0,"input::name":8,"input::onblur":2,"input::onchange":2,"input::onfocus":2,"input::onselect":2,"input::placeholder":0,"input::readonly":0,"input::required":0,"input::size":0,"input::src":1,"input::step":0,"input::tabindex":0,"input::type":0,"input::usemap":11,"input::value":0,"ins::cite":1,"ins::datetime":0,"label::accesskey":0,"label::for":5,"label::onblur":2,"label::onfocus":2,"legend::accesskey":0,"legend::align":0,"li::type":0,"li::value":0,"map::name":7,"menu::compact":0,"menu::label":0,"menu::type":0,"meter::high":0,"meter::low":0,"meter::max":0,"meter::min":0,"meter::value":0,"ol::compact":0,"ol::reversed":0,"ol::start":0,"ol::type":0,"optgroup::disabled":0,"optgroup::label":0,"option::disabled":0,"option::label":0,"option::selected":0,"option::value":0,"output::for":6,"output::name":8,"p::align":0,"pre::width":0,"progress::max":0,"progress::min":0,"progress::value":0,"q::cite":1,"select::autocomplete":0,"select::disabled":0,"select::multiple":0,"select::name":8,"select::onblur":2,"select::onchange":2,"select::onfocus":2,"select::required":0,"select::size":0,"select::tabindex":0,"source::type":0,"table::align":0,"table::bgcolor":0,"table::border":0,"table::cellpadding":0,"table::cellspacing":0,"table::frame":0,"table::rules":0,"table::summary":0,"table::width":0,"tbody::align":0,"tbody::char":0,"tbody::charoff":0,"tbody::valign":0,"td::abbr":0,"td::align":0,"td::axis":0,"td::bgcolor":0,"td::char":0,"td::charoff":0,"td::colspan":0,"td::headers":6,"td::height":0,"td::nowrap":0,"td::rowspan":0,"td::scope":0,"td::valign":0,"td::width":0,"textarea::accesskey":0,"textarea::autocomplete":0,"textarea::cols":0,"textarea::disabled":0,"textarea::inputmode":0,"textarea::name":8,"textarea::onblur":2,"textarea::onchange":2,"textarea::onfocus":2,"textarea::onselect":2,"textarea::placeholder":0,"textarea::readonly":0,"textarea::required":0,"textarea::rows":0,"textarea::tabindex":0,"textarea::wrap":0,"tfoot::align":0,"tfoot::char":0,"tfoot::charoff":0,"tfoot::valign":0,"th::abbr":0,"th::align":0,"th::axis":0,"th::bgcolor":0,"th::char":0,"th::charoff":0,"th::colspan":0,"th::headers":6,"th::height":0,"th::nowrap":0,"th::rowspan":0,"th::scope":0,"th::valign":0,"th::width":0,"thead::align":0,"thead::char":0,"thead::charoff":0,"thead::valign":0,"tr::align":0,"tr::bgcolor":0,"tr::char":0,"tr::charoff":0,"tr::valign":0,"track::default":0,"track::kind":0,"track::label":0,"track::srclang":0,"ul::compact":0,"ul::type":0,"video::controls":0,"video::height":0,"video::loop":0,"video::mediagroup":5,"video::muted":0,"video::poster":1,"video::preload":0,"video::width":0},i.ATTRIBS=i.ATTRIBS,i.eflags={OPTIONAL_ENDTAG:1,EMPTY:2,CDATA:4,RCDATA:8,UNSAFE:16,FOLDABLE:32,SCRIPT:64,STYLE:128,VIRTUALIZED:256},i.eflags=i.eflags,i.ELEMENTS={a:0,abbr:0,acronym:0,address:0,applet:272,area:2,article:0,aside:0,audio:0,b:0,base:274,basefont:274,bdi:0,bdo:0,big:0,blockquote:0,body:305,br:2,button:0,canvas:0,caption:0,center:0,cite:0,code:0,col:2,colgroup:1,command:2,data:0,datalist:0,dd:1,del:0,details:0,dfn:0,dialog:272,dir:0,div:0,dl:0,dt:1,em:0,fieldset:0,figcaption:0,figure:0,font:0,footer:0,form:0,frame:274,frameset:272,h1:0,h2:0,h3:0,h4:0,h5:0,h6:0,head:305,header:0,hgroup:0,hr:2,html:305,i:0,iframe:4,img:2,input:2,ins:0,isindex:274,kbd:0,keygen:274,label:0,legend:0,li:1,link:274,map:0,mark:0,menu:0,meta:274,meter:0,nav:0,nobr:0,noembed:276,noframes:276,noscript:276,object:272,ol:0,optgroup:0,option:1,output:0,p:1,param:274,pre:0,progress:0,q:0,s:0,samp:0,script:84,section:0,select:0,small:0,source:2,span:0,strike:0,strong:0,style:148,sub:0,summary:0,sup:0,table:0,tbody:1,td:1,textarea:8,tfoot:1,th:1,thead:1,time:0,title:280,tr:1,track:2,tt:0,u:0,ul:0,"var":0,video:0,wbr:2},i.ELEMENTS=i.ELEMENTS,i.ELEMENT_DOM_INTERFACES={a:"HTMLAnchorElement",abbr:"HTMLElement",acronym:"HTMLElement",address:"HTMLElement",applet:"HTMLAppletElement",area:"HTMLAreaElement",article:"HTMLElement",aside:"HTMLElement",audio:"HTMLAudioElement",b:"HTMLElement",base:"HTMLBaseElement",basefont:"HTMLBaseFontElement",bdi:"HTMLElement",bdo:"HTMLElement",big:"HTMLElement",blockquote:"HTMLQuoteElement",body:"HTMLBodyElement",br:"HTMLBRElement",button:"HTMLButtonElement",canvas:"HTMLCanvasElement",caption:"HTMLTableCaptionElement",center:"HTMLElement",cite:"HTMLElement",code:"HTMLElement",col:"HTMLTableColElement",colgroup:"HTMLTableColElement",command:"HTMLCommandElement",data:"HTMLElement",datalist:"HTMLDataListElement",dd:"HTMLElement",del:"HTMLModElement",details:"HTMLDetailsElement",dfn:"HTMLElement",dialog:"HTMLDialogElement",dir:"HTMLDirectoryElement",div:"HTMLDivElement",dl:"HTMLDListElement",dt:"HTMLElement",em:"HTMLElement",fieldset:"HTMLFieldSetElement",figcaption:"HTMLElement",figure:"HTMLElement",font:"HTMLFontElement",footer:"HTMLElement",form:"HTMLFormElement",frame:"HTMLFrameElement",frameset:"HTMLFrameSetElement",h1:"HTMLHeadingElement",h2:"HTMLHeadingElement",h3:"HTMLHeadingElement",h4:"HTMLHeadingElement",h5:"HTMLHeadingElement",h6:"HTMLHeadingElement",head:"HTMLHeadElement",header:"HTMLElement",hgroup:"HTMLElement",hr:"HTMLHRElement",html:"HTMLHtmlElement",i:"HTMLElement",iframe:"HTMLIFrameElement",img:"HTMLImageElement",input:"HTMLInputElement",ins:"HTMLModElement",isindex:"HTMLUnknownElement",kbd:"HTMLElement",keygen:"HTMLKeygenElement",label:"HTMLLabelElement",legend:"HTMLLegendElement",li:"HTMLLIElement",link:"HTMLLinkElement",map:"HTMLMapElement",mark:"HTMLElement",menu:"HTMLMenuElement",meta:"HTMLMetaElement",meter:"HTMLMeterElement",nav:"HTMLElement",nobr:"HTMLElement",noembed:"HTMLElement",noframes:"HTMLElement",noscript:"HTMLElement",object:"HTMLObjectElement",ol:"HTMLOListElement",optgroup:"HTMLOptGroupElement",option:"HTMLOptionElement",output:"HTMLOutputElement",p:"HTMLParagraphElement",param:"HTMLParamElement",pre:"HTMLPreElement",progress:"HTMLProgressElement",q:"HTMLQuoteElement",s:"HTMLElement",samp:"HTMLElement",script:"HTMLScriptElement",section:"HTMLElement",select:"HTMLSelectElement",small:"HTMLElement",source:"HTMLSourceElement",span:"HTMLSpanElement",strike:"HTMLElement",strong:"HTMLElement",style:"HTMLStyleElement",sub:"HTMLElement",summary:"HTMLElement",sup:"HTMLElement",table:"HTMLTableElement",tbody:"HTMLTableSectionElement",td:"HTMLTableDataCellElement",textarea:"HTMLTextAreaElement",tfoot:"HTMLTableSectionElement",th:"HTMLTableHeaderCellElement",thead:"HTMLTableSectionElement",time:"HTMLTimeElement",title:"HTMLTitleElement",tr:"HTMLTableRowElement",track:"HTMLTrackElement",tt:"HTMLElement",u:"HTMLElement",ul:"HTMLUListElement","var":"HTMLElement",video:"HTMLVideoElement",wbr:"HTMLElement"},i.ELEMENT_DOM_INTERFACES=i.ELEMENT_DOM_INTERFACES,i.ueffects={NOT_LOADED:0,SAME_DOCUMENT:1,NEW_DOCUMENT:2},i.ueffects=i.ueffects,i.URIEFFECTS={"a::href":2,"area::href":2,"blockquote::cite":0,"command::icon":1,"del::cite":0,"form::action":2,"img::src":1,"input::src":1,"ins::cite":0,"q::cite":0,"video::poster":1},i.URIEFFECTS=i.URIEFFECTS,i.ltypes={UNSANDBOXED:2,SANDBOXED:1,DATA:0},i.ltypes=i.ltypes,i.LOADERTYPES={"a::href":2,"area::href":2,"blockquote::cite":2,"command::icon":1,"del::cite":2,"form::action":2,"img::src":1,"input::src":1,"ins::cite":2,"q::cite":2,"video::poster":1},i.LOADERTYPES=i.LOADERTYPES,"i"!=="I".toLowerCase())throw"I/i problem";
+var o=function(t){function e(t){if(H.hasOwnProperty(t))return H[t];var e=t.match(j);if(e)return String.fromCharCode(parseInt(e[1],10));if(e=t.match(A))return String.fromCharCode(parseInt(e[1],16));if(U&&R.test(t)){U.innerHTML="&"+t+";";var n=U.textContent;return H[t]=n,n}return"&"+t+";"}function i(t,n){return e(n)}function o(t){return t.replace(P,"")}function r(t){return t.replace(O,i)}function a(t){return(""+t).replace(N,"&amp;").replace(q,"&lt;").replace(F,"&gt;").replace(B,"&#34;")}function s(t){return t.replace(z,"&amp;$1").replace(q,"&lt;").replace(F,"&gt;")}function l(t){var e={cdata:t.cdata||t.cdata,comment:t.comment||t.comment,endDoc:t.endDoc||t.endDoc,endTag:t.endTag||t.endTag,pcdata:t.pcdata||t.pcdata,rcdata:t.rcdata||t.rcdata,startDoc:t.startDoc||t.startDoc,startTag:t.startTag||t.startTag};return function(t,n){return c(t,e,n)}}function c(t,e,n){var i=p(t),o={noMoreGT:!1,noMoreEndComments:!1};h(e,i,0,o,n)}function u(t,e,n,i,o){return function(){h(t,e,n,i,o)}}function h(e,n,i,o,r){try{e.startDoc&&0==i&&e.startDoc(r);for(var a,s,l,c=i,h=n.length;h>c;){var p=n[c++],g=n[c];switch(p){case"&":I.test(g)?(e.pcdata&&e.pcdata("&"+g,r,Z,u(e,n,c,o,r)),c++):e.pcdata&&e.pcdata("&amp;",r,Z,u(e,n,c,o,r));break;case"</":(a=/^([-\w:]+)[^\'\"]*/.exec(g))?a[0].length===g.length&&">"===n[c+1]?(c+=2,l=a[1].toLowerCase(),e.endTag&&e.endTag(l,r,Z,u(e,n,c,o,r))):c=f(n,c,e,r,Z,o):e.pcdata&&e.pcdata("&lt;/",r,Z,u(e,n,c,o,r));break;case"<":if(a=/^([-\w:]+)\s*\/?/.exec(g))if(a[0].length===g.length&&">"===n[c+1]){c+=2,l=a[1].toLowerCase(),e.startTag&&e.startTag(l,[],r,Z,u(e,n,c,o,r));var _=t.ELEMENTS[l];if(_&$){var L={name:l,next:c,eflags:_};c=d(n,L,e,r,Z,o)}}else c=m(n,c,e,r,Z,o);else e.pcdata&&e.pcdata("&lt;",r,Z,u(e,n,c,o,r));break;case"<!--":if(!o.noMoreEndComments){for(s=c+1;h>s&&(">"!==n[s]||!/--$/.test(n[s-1]));s++);if(h>s){if(e.comment){var b=n.slice(c,s).join("");e.comment(b.substr(0,b.length-2),r,Z,u(e,n,s+1,o,r))}c=s+1}else o.noMoreEndComments=!0}o.noMoreEndComments&&e.pcdata&&e.pcdata("&lt;!--",r,Z,u(e,n,c,o,r));break;case"<!":if(/^\w/.test(g)){if(!o.noMoreGT){for(s=c+1;h>s&&">"!==n[s];s++);h>s?c=s+1:o.noMoreGT=!0}o.noMoreGT&&e.pcdata&&e.pcdata("&lt;!",r,Z,u(e,n,c,o,r))}else e.pcdata&&e.pcdata("&lt;!",r,Z,u(e,n,c,o,r));break;case"<?":if(!o.noMoreGT){for(s=c+1;h>s&&">"!==n[s];s++);h>s?c=s+1:o.noMoreGT=!0}o.noMoreGT&&e.pcdata&&e.pcdata("&lt;?",r,Z,u(e,n,c,o,r));break;case">":e.pcdata&&e.pcdata("&gt;",r,Z,u(e,n,c,o,r));break;case"":break;default:e.pcdata&&e.pcdata(p,r,Z,u(e,n,c,o,r))}}e.endDoc&&e.endDoc(r)}catch(v){if(v!==Z)throw v}}function p(t){var e=/(<\/|<\!--|<[!?]|[&<>])/g;if(t+="",G)return t.split(e);for(var n,i=[],o=0;null!==(n=e.exec(t));)i.push(t.substring(o,n.index)),i.push(n[0]),o=n.index+n[0].length;return i.push(t.substring(o)),i}function f(t,e,n,i,o,r){var a=g(t,e);return a?(n.endTag&&n.endTag(a.name,i,o,u(n,t,e,r,i)),a.next):t.length}function m(t,e,n,i,o,r){var a=g(t,e);return a?(n.startTag&&n.startTag(a.name,a.attrs,i,o,u(n,t,a.next,r,i)),a.eflags&$?d(t,a,n,i,o,r):a.next):t.length}function d(e,n,i,o,r,a){var l=e.length;Y.hasOwnProperty(n.name)||(Y[n.name]=new RegExp("^"+n.name+"(?:[\\s\\/]|$)","i"));for(var c=Y[n.name],h=n.next,p=n.next+1;l>p&&("</"!==e[p-1]||!c.test(e[p]));p++);l>p&&(p-=1);var f=e.slice(h,p).join("");if(n.eflags&t.eflags.CDATA)i.cdata&&i.cdata(f,o,r,u(i,e,p,a,o));else{if(!(n.eflags&t.eflags.RCDATA))throw new Error("bug");i.rcdata&&i.rcdata(s(f),o,r,u(i,e,p,a,o))}return p}function g(e,n){var i=/^([-\w:]+)/.exec(e[n]),o={};o.name=i[1].toLowerCase(),o.eflags=t.ELEMENTS[o.name];for(var r=e[n].substr(i[0].length),a=n+1,s=e.length;s>a&&">"!==e[a];a++)r+=e[a];if(a>=s)return void 0;for(var l=[];""!==r;)if(i=J.exec(r)){if(i[4]&&!i[5]||i[6]&&!i[7]){for(var c=i[4]||i[6],u=!1,h=[r,e[a++]];s>a;a++){if(u){if(">"===e[a])break}else 0<=e[a].indexOf(c)&&(u=!0);h.push(e[a])}if(a>=s)break;r=h.join("");continue}var p=i[1].toLowerCase(),f=i[2]?_(i[3]):"";l.push(p,f),r=r.substr(i[0].length)}else r=r.replace(/^[\s\S][^a-z\s]*/,"");return o.attrs=l,o.next=a+1,o}function _(t){var e=t.charCodeAt(0);return(34===e||39===e)&&(t=t.substr(1,t.length-2)),r(o(t))}function L(e){var n,i,o=function(t,e){i||e.push(t)};return l({startDoc:function(){n=[],i=!1},startTag:function(o,r,s){if(!i&&t.ELEMENTS.hasOwnProperty(o)){var l=t.ELEMENTS[o];if(!(l&t.eflags.FOLDABLE)){var c=e(o,r);if(!c)return i=!(l&t.eflags.EMPTY),void 0;if("object"!=typeof c)throw new Error("tagPolicy did not return object (old API?)");if(!("attribs"in c))throw new Error("tagPolicy gave no attribs");r=c.attribs;var u,h;if("tagName"in c?(h=c.tagName,u=t.ELEMENTS[h]):(h=o,u=l),l&t.eflags.OPTIONAL_ENDTAG){var p=n[n.length-1];!p||p.orig!==o||p.rep===h&&o===h||s.push("</",p.rep,">")}l&t.eflags.EMPTY||n.push({orig:o,rep:h}),s.push("<",h);for(var f=0,m=r.length;m>f;f+=2){var d=r[f],g=r[f+1];null!==g&&void 0!==g&&s.push(" ",d,'="',a(g),'"')}s.push(">"),l&t.eflags.EMPTY&&!(u&t.eflags.EMPTY)&&s.push("</",h,">")}}},endTag:function(e,o){if(i)return i=!1,void 0;if(t.ELEMENTS.hasOwnProperty(e)){var r=t.ELEMENTS[e];if(!(r&(t.eflags.EMPTY|t.eflags.FOLDABLE))){var a;if(r&t.eflags.OPTIONAL_ENDTAG)for(a=n.length;--a>=0;){var s=n[a].orig;if(s===e)break;if(!(t.ELEMENTS[s]&t.eflags.OPTIONAL_ENDTAG))return}else for(a=n.length;--a>=0&&n[a].orig!==e;);if(0>a)return;for(var l=n.length;--l>a;){var c=n[l].rep;t.ELEMENTS[c]&t.eflags.OPTIONAL_ENDTAG||o.push("</",c,">")}a<n.length&&(e=n[a].rep),n.length=a,o.push("</",e,">")}}},pcdata:o,rcdata:o,cdata:o,endDoc:function(t){for(;n.length;n.length--)t.push("</",n[n.length-1].rep,">")}})}function b(t,e,i,o,r){if(!r)return null;try{var a=n.parse(""+t);if(a&&(!a.hasScheme()||V.test(a.getScheme()))){var s=r(a,e,i,o);return s?s.toString():null}}catch(l){return null}return null}function v(t,e,n,i,o){if(n||t(e+" removed",{change:"removed",tagName:e}),i!==o){var r="changed";i&&!o?r="removed":!i&&o&&(r="added"),t(e+"."+n+" "+r,{change:r,tagName:e,attribName:n,oldValue:i,newValue:o})}}function y(t,e,n){var i;return i=e+"::"+n,t.hasOwnProperty(i)?t[i]:(i="*::"+n,t.hasOwnProperty(i)?t[i]:void 0)}function T(e,n){return y(t.LOADERTYPES,e,n)}function E(e,n){return y(t.URIEFFECTS,e,n)}function w(e,n,i,o,r){for(var a=0;a<n.length;a+=2){var s,l=n[a],c=n[a+1],u=c,h=null;if(s=e+"::"+l,(t.ATTRIBS.hasOwnProperty(s)||(s="*::"+l,t.ATTRIBS.hasOwnProperty(s)))&&(h=t.ATTRIBS[s]),null!==h)switch(h){case t.atype.NONE:break;case t.atype.SCRIPT:c=null,r&&v(r,e,l,u,c);break;case t.atype.STYLE:if("undefined"==typeof k){c=null,r&&v(r,e,l,u,c);break}var p=[];k(c,{declaration:function(e,n){var o=e.toLowerCase(),r=D[o];r&&(S(o,r,n,i?function(e){return b(e,t.ueffects.SAME_DOCUMENT,t.ltypes.SANDBOXED,{TYPE:"CSS",CSS_PROP:o},i)}:null),p.push(e+": "+n.join(" ")))}}),c=p.length>0?p.join(" ; "):null,r&&v(r,e,l,u,c);break;case t.atype.ID:case t.atype.IDREF:case t.atype.IDREFS:case t.atype.GLOBAL_NAME:case t.atype.LOCAL_NAME:case t.atype.CLASSES:c=o?o(c):c,r&&v(r,e,l,u,c);break;case t.atype.URI:c=b(c,E(e,l),T(e,l),{TYPE:"MARKUP",XML_ATTR:l,XML_TAG:e},i),r&&v(r,e,l,u,c);break;case t.atype.URI_FRAGMENT:c&&"#"===c.charAt(0)?(c=c.substring(1),c=o?o(c):c,null!==c&&void 0!==c&&(c="#"+c)):c=null,r&&v(r,e,l,u,c);break;default:c=null,r&&v(r,e,l,u,c)}else c=null,r&&v(r,e,l,u,c);n[a+1]=c}return n}function x(e,n,i){return function(o,r){return t.ELEMENTS[o]&t.eflags.UNSAFE?(i&&v(i,o,void 0,void 0,void 0),void 0):{attribs:w(o,r,e,n,i)}}}function C(t,e){var n=[];return L(e)(t,n),n.join("")}function M(t,e,n,i){var o=x(e,n,i);return C(t,o)}var k,S,D;"undefined"!=typeof window&&(k=window.parseCssDeclarations,S=window.sanitizeCssProperty,D=window.cssSchema);var H={lt:"<",LT:"<",gt:">",GT:">",amp:"&",AMP:"&",quot:'"',apos:"'",nbsp:" "},j=/^#(\d+)$/,A=/^#x([0-9A-Fa-f]+)$/,R=/^[A-Za-z][A-za-z0-9]+$/,U="undefined"!=typeof window&&window.document?window.document.createElement("textarea"):null,P=/\0/g,O=/&(#[0-9]+|#[xX][0-9A-Fa-f]+|\w+);/g,I=/^(#[0-9]+|#[xX][0-9A-Fa-f]+|\w+);/,N=/&/g,z=/&([^a-z#]|#(?:[^0-9x]|x(?:[^0-9a-f]|$)|$)|$)/gi,q=/[<]/g,F=/>/g,B=/\"/g,J=new RegExp("^\\s*([-.:\\w]+)(?:\\s*(=)\\s*((\")[^\"]*(\"|$)|(')[^']*('|$)|(?=[a-z][-\\w]*\\s*=)|[^\"'\\s]*))?","i"),G=3==="a,b".split(/(,)/).length,$=t.eflags.CDATA|t.eflags.RCDATA,Z={},Y={},V=/^(?:https?|mailto|data)$/i,Q={};return Q.escapeAttrib=Q.escapeAttrib=a,Q.makeHtmlSanitizer=Q.makeHtmlSanitizer=L,Q.makeSaxParser=Q.makeSaxParser=l,Q.makeTagPolicy=Q.makeTagPolicy=x,Q.normalizeRCData=Q.normalizeRCData=s,Q.sanitize=Q.sanitize=M,Q.sanitizeAttribs=Q.sanitizeAttribs=w,Q.sanitizeWithPolicy=Q.sanitizeWithPolicy=C,Q.unescapeEntities=Q.unescapeEntities=r,Q}(i),r=o.sanitize;i.ATTRIBS["*::style"]=0,i.ELEMENTS.style=0,i.ATTRIBS["a::target"]=0,i.ELEMENTS.video=0,i.ATTRIBS["video::src"]=0,i.ATTRIBS["video::poster"]=0,i.ATTRIBS["video::controls"]=0,i.ELEMENTS.audio=0,i.ATTRIBS["audio::src"]=0,i.ATTRIBS["video::autoplay"]=0,i.ATTRIBS["video::controls"]=0,"undefined"!=typeof e&&(e.exports=r)},{}],7:[function(t,e){e.exports={author:{name:"Mapbox"},name:"mapbox.js",description:"mapbox javascript api",version:"1.6.1",homepage:"http://mapbox.com/",repository:{type:"git",url:"git://github.com/mapbox/mapbox.js.git"},main:"index.js",dependencies:{leaflet:"0.7.2",mustache:"0.7.3",corslite:"0.0.5",json3:"git://github.com/bestiejs/json3.git#v3.2.6","sanitize-caja":"0.0.0"},scripts:{test:"jshint src/*.js && mocha-phantomjs test/index.html"},devDependencies:{"leaflet-hash":"git://github.com/mlevans/leaflet-hash.git#b039a3aa4e2492a5c7448075172ac26769e601d6","leaflet-fullscreen":"0.0.0","uglify-js":"2.4.8",mocha:"1.17.0","expect.js":"0.2.0",sinon:"1.7.3","mocha-phantomjs":"3.1.6",happen:"0.1.3",browserify:"3.23.1",jshint:"2.4.2"},optionalDependencies:{},engines:{node:"*"},readme:"# mapbox.js\n\n[![Build Status](https://travis-ci.org/mapbox/mapbox.js.png?branch=v1)](https://travis-ci.org/mapbox/mapbox.js)\n\nThis is the Mapbox Javascript API, version 1.x. It's built as a [Leaflet](http://leafletjs.com/)\nplugin. You can [read about its launch](http://mapbox.com/blog/mapbox-js-with-leaflet/).\n\n## [API](http://mapbox.com/mapbox.js/api/)\n\nManaged as Markdown in `API.md`, following the standards in `DOCUMENTING.md`\n\n## [Examples](http://mapbox.com/mapbox.js/example/v1.0.0/)\n\n## Usage with Browserify\n\nInstall the mapbox.js module and add it to `dependencies` in package.json:\n\n```sh\nnpm install mapbox.js --save\n```\n\nRequire mapbox in your script:\n\n```js\n// main.js\n\nrequire('mapbox.js'); // <-- auto-attaches to window.L\n```\n\nBrowserify it:\n\n```sh\nbrowserify main.js -o bundle.js\n```\n\n## Building\n\nRequires [node.js](http://nodejs.org/) installed on your system.\n\n``` sh\ngit clone https://github.com/mapbox/mapbox.js.git\ncd mapbox.js\nnpm install\nmake\n```\n\nThis project uses [browserify](https://github.com/substack/node-browserify) to combine\ndependencies and installs a local copy when you run `npm install`.\n`make` will build the project in `dist/`.\n\n### Tests\n\nTest with [phantomjs](http://phantomjs.org/):\n\n``` sh\nnpm test\n```\n\nTo test in a browser, run a [local development server](https://gist.github.com/tmcw/4989751)\nand go to `/test`.\n\n### Version v0.x.x\n\n[Version v0.x.x can be accessed in the old master branch.](https://github.com/mapbox/mapbox.js/tree/master).\n\n### Editing Icons\n\nRequirements:\n\n    inkscape\n    pngquant\n    convert (part of imagemagick)\n\n1. Make edits to `theme/images/icons.svg`.\n2. Run `./theme/images/render.sh` to update sprites from your edits.\n3. Add a CSS reference with the appropriate pixel coordinate if adding a new icon.\n",readmeFilename:"README.md",bugs:{url:"https://github.com/mapbox/mapbox.js/issues"},_id:"mapbox.js@1.6.1",dist:{shasum:"e4eeda0124a85809bdafc8839fd88d83848d5d0c"},_from:"mapbox.js@",_resolved:"https://registry.npmjs.org/mapbox.js/-/mapbox.js-1.6.1.tgz"}},{}],8:[function(t,e){"use strict";e.exports={HTTP_URLS:["http://a.tiles.mapbox.com/v3/","http://b.tiles.mapbox.com/v3/","http://c.tiles.mapbox.com/v3/","http://d.tiles.mapbox.com/v3/"],FORCE_HTTPS:!1,HTTPS_URLS:["https://a.tiles.mapbox.com/v3/","https://b.tiles.mapbox.com/v3/","https://c.tiles.mapbox.com/v3/","https://d.tiles.mapbox.com/v3/"]}},{}],9:[function(t,e){"use strict";var n=t("./util"),i=t("./url"),o=t("./request"),r=t("./marker"),a=t("./simplestyle"),s=L.FeatureGroup.extend({options:{filter:function(){return!0},sanitizer:t("sanitize-caja"),style:a.style},initialize:function(t,e){L.setOptions(this,e),this._layers={},"string"==typeof t?n.idUrl(t,this):t&&"object"==typeof t&&this.setGeoJSON(t)},setGeoJSON:function(t){return this._geojson=t,this.clearLayers(),this._initialize(t),this},getGeoJSON:function(){return this._geojson},loadURL:function(t){return this._request&&"abort"in this._request&&this._request.abort(),t=i.jsonify(t),this._request=o(t,L.bind(function(e,i){this._request=null,e&&"abort"!==e.type?(n.log("could not load features at "+t),this.fire("error",{error:e})):i&&(this.setGeoJSON(i),this.fire("ready"))},this)),this},loadID:function(t){return this.loadURL(i.base()+t+"/markers.geojson")},setFilter:function(t){return this.options.filter=t,this._geojson&&(this.clearLayers(),this._initialize(this._geojson)),this},getFilter:function(){return this.options.filter},_initialize:function(t){var e,n,i=L.Util.isArray(t)?t:t.features;if(i)for(e=0,n=i.length;n>e;e++)(i[e].geometries||i[e].geometry||i[e].features)&&this._initialize(i[e]);else if(this.options.filter(t)){var o=L.GeoJSON.geometryToLayer(t,r.style),s=r.createPopup(t,this.options.sanitizer);"setStyle"in o&&o.setStyle(a.style(t)),o.feature=t,s&&o.bindPopup(s,{closeButton:!1}),this.addLayer(o)}}});e.exports=function(t,e){return new s(t,e)}},{"./marker":19,"./request":20,"./simplestyle":22,"./url":24,"./util":25,"sanitize-caja":5}],10:[function(t,e){"use strict";var n=t("./util"),i=t("./url"),o=t("./request");e.exports=function(t){var e,r={};return r.getURL=function(){return e},r.setURL=function(t){return e=i.jsonify(t),r},r.setID=function(t){return n.strict(t,"string"),r.setURL(i.base()+t+"/geocode/{query}.json"),r},r.setTileJSON=function(t){return n.strict(t,"object"),r.setURL(t.geocoder),r},r.queryURL=function(t){if(n.strict(t,"string"),!r.getURL())throw new Error("Geocoding map ID not set");return L.Util.template(r.getURL(),{query:encodeURIComponent(t)})},r.query=function(t,e){return n.strict(t,"string"),n.strict(e,"function"),o(r.queryURL(t),function(t,i){if(i&&i.results&&i.results.length){var o={results:i.results,latlng:[i.results[0][0].lat,i.results[0][0].lon]};void 0!==i.results[0][0].bounds&&(o.bounds=i.results[0][0].bounds,o.lbounds=n.lbounds(o.bounds)),e(null,o)}else e(t||!0)}),r},r.reverseQuery=function(t,e){function n(t){return void 0!==t.lat&&void 0!==t.lng?t.lng+","+t.lat:void 0!==t.lat&&void 0!==t.lon?t.lon+","+t.lat:t[0]+","+t[1]}var i="";if(t.length&&t[0].length){for(var a=0,s=[];a<t.length;a++)s.push(n(t[a]));i=s.join(";")}else i=n(t);return o(r.queryURL(i),function(t,n){e(t,n)}),r},"string"==typeof t?-1==t.indexOf("/")?r.setID(t):r.setURL(t):"object"==typeof t&&r.setTileJSON(t),r}},{"./request":20,"./url":24,"./util":25}],11:[function(t,e){"use strict";var n=t("./geocoder"),i=L.Control.extend({includes:L.Mixin.Events,options:{position:"topleft",keepOpen:!1},initialize:function(t,e){L.Util.setOptions(this,e),this.geocoder=n(t)},setURL:function(t){return this.geocoder.setURL(t),this},getURL:function(){return this.geocoder.getURL()},setID:function(t){return this.geocoder.setID(t),this},setTileJSON:function(t){return this.geocoder.setTileJSON(t),this},_toggle:function(t){t&&L.DomEvent.stop(t),L.DomUtil.hasClass(this._container,"active")?(L.DomUtil.removeClass(this._container,"active"),this._results.innerHTML="",this._input.blur()):(L.DomUtil.addClass(this._container,"active"),this._input.focus(),this._input.select())},_closeIfOpen:function(){L.DomUtil.hasClass(this._container,"active")&&!this.options.keepOpen&&(L.DomUtil.removeClass(this._container,"active"),this._results.innerHTML="",this._input.blur())},onAdd:function(t){var e=L.DomUtil.create("div","leaflet-control-mapbox-geocoder leaflet-bar leaflet-control"),n=L.DomUtil.create("a","leaflet-control-mapbox-geocoder-toggle mapbox-icon mapbox-icon-geocoder",e),i=L.DomUtil.create("div","leaflet-control-mapbox-geocoder-results",e),o=L.DomUtil.create("div","leaflet-control-mapbox-geocoder-wrap",e),r=L.DomUtil.create("form","leaflet-control-mapbox-geocoder-form",o),a=L.DomUtil.create("input","",r);return n.href="#",n.innerHTML="&nbsp;",a.type="text",a.setAttribute("placeholder","Search"),L.DomEvent.addListener(r,"submit",this._geocode,this),L.DomEvent.disableClickPropagation(e),this._map=t,this._results=i,this._input=a,this._form=r,this.options.keepOpen?L.DomUtil.addClass(e,"active"):(this._map.on("click",this._closeIfOpen,this),L.DomEvent.addListener(n,"click",this._toggle,this)),e},_geocode:function(t){L.DomEvent.preventDefault(t),L.DomUtil.addClass(this._container,"searching");var e=this._map,n=L.bind(function(t,n){if(L.DomUtil.removeClass(this._container,"searching"),!t&&n&&n.results&&n.results.length){if(this._results.innerHTML="",1===n.results.length&&n.lbounds)this.fire("autoselect",{data:n}),this._map.fitBounds(n.lbounds),this._closeIfOpen();else{for(var i=0,o=Math.min(n.results.length,5);o>i;i++){for(var r=[],a=0;a<n.results[i].length;a++)n.results[i][a].name&&r.push(n.results[i][a].name);if(r.length){var s=L.DomUtil.create("a","",this._results);s.innerHTML=r.join(", "),s.href="#",L.bind(function(t){L.DomEvent.addListener(s,"click",function(n){var i=t[0].bounds;e.fitBounds(L.latLngBounds([[i[1],i[0]],[i[3],i[2]]])),L.DomEvent.stop(n),this.fire("select",{data:t})},this)},this)(n.results[i])}}if(n.results.length>5){var l=L.DomUtil.create("span","",this._results);l.innerHTML="Top 5 of "+n.results.length+"  results"}}this.fire("found",n)}else this.fire("error",{error:t})},this);this.geocoder.query(this._input.value,n)}});e.exports=function(t,e){return new i(t,e)}},{"./geocoder":10}],12:[function(t,e){"use strict";function n(t){return t>=93&&t--,t>=35&&t--,t-32}e.exports=function(t){return function(e,i){if(t){var o=n(t.grid[i].charCodeAt(e)),r=t.keys[o];return t.data[r]}}}},{}],13:[function(t,e){"use strict";var n=t("./util"),i=t("mustache"),o=L.Control.extend({options:{pinnable:!0,follow:!1,sanitizer:t("sanitize-caja"),touchTeaser:!0,location:!0},_currentContent:"",_pinned:!1,initialize:function(t,e){L.Util.setOptions(this,e),n.strict_instance(t,L.Class,"L.mapbox.gridLayer"),this._layer=t},setTemplate:function(t){return n.strict(t,"string"),this.options.template=t,this},_template:function(t,e){if(e){var n=this.options.template||this._layer.getTileJSON().template;if(n){var o={};return o["__"+t+"__"]=!0,this.options.sanitizer(i.to_html(n,L.extend(o,e)))}}},_show:function(t,e){t!==this._currentContent&&(this._currentContent=t,this.options.follow?(this._popup.setContent(t).setLatLng(e.latLng),this._map._popup!==this._popup&&this._popup.openOn(this._map)):(this._container.style.display="block",this._contentWrapper.innerHTML=t))},hide:function(){return this._pinned=!1,this._currentContent="",this._map.closePopup(),this._container.style.display="none",this._contentWrapper.innerHTML="",L.DomUtil.removeClass(this._container,"closable"),this},_mouseover:function(t){if(t.data?L.DomUtil.addClass(this._map._container,"map-clickable"):L.DomUtil.removeClass(this._map._container,"map-clickable"),!this._pinned){var e=this._template("teaser",t.data);e?this._show(e,t):this.hide()}},_mousemove:function(t){this._pinned||this.options.follow&&this._popup.setLatLng(t.latLng)},_navigateTo:function(t){window.top.location.href=t},_click:function(t){var e=this._template("location",t.data);if(this.options.location&&e&&0===e.search(/^https?:/))return this._navigateTo(this._template("location",t.data));if(this.options.pinnable){var n=this._template("full",t.data);!n&&this.options.touchTeaser&&L.Browser.touch&&(n=this._template("teaser",t.data)),n?(L.DomUtil.addClass(this._container,"closable"),this._pinned=!0,this._show(n,t)):this._pinned&&(L.DomUtil.removeClass(this._container,"closable"),this._pinned=!1,this.hide())}},_onPopupClose:function(){this._currentContent=null,this._pinned=!1},_createClosebutton:function(t,e){var n=L.DomUtil.create("a","close",t);return n.innerHTML="close",n.href="#",n.title="close",L.DomEvent.on(n,"click",L.DomEvent.stopPropagation).on(n,"mousedown",L.DomEvent.stopPropagation).on(n,"dblclick",L.DomEvent.stopPropagation).on(n,"click",L.DomEvent.preventDefault).on(n,"click",e,this),n},onAdd:function(t){this._map=t;var e="leaflet-control-grid map-tooltip",n=L.DomUtil.create("div",e),i=L.DomUtil.create("div","map-tooltip-content");return n.style.display="none",this._createClosebutton(n,this.hide),n.appendChild(i),this._contentWrapper=i,this._popup=new L.Popup({autoPan:!1,closeOnClick:!1}),t.on("popupclose",this._onPopupClose,this),L.DomEvent.disableClickPropagation(n).addListener(n,"mousewheel",L.DomEvent.stopPropagation),this._layer.on("mouseover",this._mouseover,this).on("mousemove",this._mousemove,this).on("click",this._click,this),n},onRemove:function(t){t.off("popupclose",this._onPopupClose,this),this._layer.off("mouseover",this._mouseover,this).off("mousemove",this._mousemove,this).off("click",this._click,this)}});e.exports=function(t,e){return new o(t,e)}},{"./util":25,mustache:4,"sanitize-caja":5}],14:[function(t,e){"use strict";var n=t("./util"),i=(t("./url"),t("./request")),o=t("./grid"),r=L.Class.extend({includes:[L.Mixin.Events,t("./load_tilejson")],options:{template:function(){return""}},_mouseOn:null,_tilejson:{},_cache:{},initialize:function(t,e){L.Util.setOptions(this,e),this._loadTileJSON(t)},_setTileJSON:function(t){return n.strict(t,"object"),L.extend(this.options,{grids:t.grids,minZoom:t.minzoom,maxZoom:t.maxzoom,bounds:t.bounds&&n.lbounds(t.bounds)}),this._tilejson=t,this._cache={},this._update(),this},getTileJSON:function(){return this._tilejson},active:function(){return!!(this._map&&this.options.grids&&this.options.grids.length)},addTo:function(t){return t.addLayer(this),this},onAdd:function(t){this._map=t,this._update(),this._map.on("click",this._click,this).on("mousemove",this._move,this).on("moveend",this._update,this)},onRemove:function(){this._map.off("click",this._click,this).off("mousemove",this._move,this).off("moveend",this._update,this)},getData:function(t,e){if(this.active()){var n=this._map,i=n.project(t.wrap()),o=256,r=4,a=Math.floor(i.x/o),s=Math.floor(i.y/o),l=n.options.crs.scale(n.getZoom())/o;return a=(a+l)%l,s=(s+l)%l,this._getTile(n.getZoom(),a,s,function(t){var n=Math.floor((i.x-a*o)/r),l=Math.floor((i.y-s*o)/r);e(t(n,l))}),this}},_click:function(t){this.getData(t.latlng,L.bind(function(e){this.fire("click",{latLng:t.latlng,data:e})},this))},_move:function(t){this.getData(t.latlng,L.bind(function(e){e!==this._mouseOn?(this._mouseOn&&this.fire("mouseout",{latLng:t.latlng,data:this._mouseOn}),this.fire("mouseover",{latLng:t.latlng,data:e}),this._mouseOn=e):this.fire("mousemove",{latLng:t.latlng,data:e})},this))},_getTileURL:function(t){var e=this.options.grids,n=(t.x+t.y)%e.length,i=e[n];return L.Util.template(i,t)},_update:function(){if(this.active()){var t=this._map.getPixelBounds(),e=this._map.getZoom(),n=256;if(!(e>this.options.maxZoom||e<this.options.minZoom))for(var i=new L.Point(Math.floor(t.min.x/n),Math.floor(t.min.y/n)),o=new L.Point(Math.floor(t.max.x/n),Math.floor(t.max.y/n)),r=this._map.options.crs.scale(e)/n,a=i.x;a<=o.x;a++)for(var s=i.y;s<=o.y;s++){var l=(a+r)%r,c=(s+r)%r;this._getTile(e,l,c)}}},_getTile:function(t,e,n,r){var a=t+"_"+e+"_"+n,s=L.point(e,n);if(s.z=t,this._tileShouldBeLoaded(s)){if(a in this._cache){if(!r)return;return"function"==typeof this._cache[a]?r(this._cache[a]):this._cache[a].push(r),void 0}this._cache[a]=[],r&&this._cache[a].push(r),i(this._getTileURL(s),L.bind(function(t,e){var n=this._cache[a];this._cache[a]=o(e);for(var i=0;i<n.length;++i)n[i](this._cache[a])},this))}},_tileShouldBeLoaded:function(t){if(t.z>this.options.maxZoom||t.z<this.options.minZoom)return!1;if(this.options.bounds){var e=256,n=t.multiplyBy(e),i=n.add(new L.Point(e,e)),o=this._map.unproject(n),r=this._map.unproject(i),a=new L.LatLngBounds([o,r]);if(!this.options.bounds.intersects(a))return!1}return!0}});e.exports=function(t,e){return new r(t,e)}},{"./grid":12,"./load_tilejson":17,"./request":20,"./url":24,"./util":25}],15:[function(t,e){"use strict";var n=L.Control.extend({options:{position:"bottomright",sanitizer:t("sanitize-caja"),editLink:!1},initialize:function(t){L.setOptions(this,t),this._info={}},onAdd:function(t){this._container=L.DomUtil.create("div","mapbox-control-info mapbox-small"),this._content=L.DomUtil.create("div","map-info-container",this._container),("bottomright"===this.options.position||"topright"===this.options.position)&&(this._container.className+=" mapbox-control-info-right");var e=L.DomUtil.create("a","mapbox-info-toggle mapbox-icon mapbox-icon-info",this._container);e.href="#",L.DomEvent.addListener(e,"click",this._showInfo,this),L.DomEvent.disableClickPropagation(this._container);for(var n in t._layers)t._layers[n].getAttribution&&this.addInfo(t._layers[n].getAttribution());return t.on("layeradd",this._onLayerAdd,this).on("layerremove",this._onLayerRemove,this),this._update(),this._container},onRemove:function(t){t.off("layeradd",this._onLayerAdd).off("layerremove",this._onLayerRemove)},addInfo:function(t){return t?(this._info[t]||(this._info[t]=0),this._info[t]++,this._update()):this},removeInfo:function(t){return t?(this._info[t]&&this._info[t]--,this._update()):this},_showInfo:function(t){return L.DomEvent.preventDefault(t),this._active===!0?this._hidecontent():(L.DomUtil.addClass(this._container,"active"),this._active=!0,this._update(),void 0)},_hidecontent:function(){this._content.innerHTML="",this._active=!1,L.DomUtil.removeClass(this._container,"active")},_update:function(){if(!this._map)return this;this._content.innerHTML="";var t="none",e=[];for(var n in this._info)this._info.hasOwnProperty(n)&&this._info[n]&&(e.push(this.options.sanitizer(n)),t="block");if(this._content.innerHTML+=e.join(" | "),this.options.editLink&&!L.Browser.mobile){this._content.innerHTML+=e.length?" | ":"";var i=L.DomUtil.create("a","",this._content);i.href="#",i.innerHTML="Improve this map",i.title="Edit in OpenStreetMap",L.DomEvent.on(i,"click",L.bind(this._osmlink,this),this)}return this._container.style.display=t,this},_osmlink:function(){var t=this._map.getCenter(),e=this._map.getZoom();window.open("http://www.openstreetmap.org/edit?zoom="+e+"&lat="+t.lat+"&lon="+t.lng)},_onLayerAdd:function(t){t.layer.getAttribution&&this.addInfo(t.layer.getAttribution()),"on"in t.layer&&t.layer.getAttribution&&t.layer.on("ready",L.bind(function(){this.addInfo(t.layer.getAttribution())},this))},_onLayerRemove:function(t){t.layer.getAttribution&&this.removeInfo(t.layer.getAttribution())}});e.exports=function(t){return new n(t)}},{"sanitize-caja":5}],16:[function(t,e){"use strict";var n=L.Control.extend({options:{position:"bottomright",sanitizer:t("sanitize-caja")},initialize:function(t){L.setOptions(this,t),this._legends={}},onAdd:function(){return this._container=L.DomUtil.create("div","map-legends wax-legends"),L.DomEvent.disableClickPropagation(this._container),this._update(),this._container},addLegend:function(t){return t?(this._legends[t]||(this._legends[t]=0),this._legends[t]++,this._update()):this},removeLegend:function(t){return t?(this._legends[t]&&this._legends[t]--,this._update()):this},_update:function(){if(!this._map)return this;this._container.innerHTML="";var t="none";for(var e in this._legends)if(this._legends.hasOwnProperty(e)&&this._legends[e]){var n=L.DomUtil.create("div","map-legend wax-legend",this._container);n.innerHTML=this.options.sanitizer(e),t="block"}return this._container.style.display=t,this}});e.exports=function(t){return new n(t)}},{"sanitize-caja":5}],17:[function(t,e){"use strict";var n=t("./request"),i=t("./url"),o=t("./util");e.exports={_loadTileJSON:function(t){"string"==typeof t?(-1==t.indexOf("/")&&(t=i.base()+t+".json"),n(i.secureFlag(t),L.bind(function(e,n){e?(o.log("could not load TileJSON at "+t),this.fire("error",{error:e})):n&&(this._setTileJSON(n),this.fire("ready"))},this))):t&&"object"==typeof t&&this._setTileJSON(t)}}},{"./request":20,"./url":24,"./util":25}],18:[function(t,e){"use strict";var n=(t("./util"),t("./tile_layer")),i=t("./feature_layer"),o=t("./grid_layer"),r=t("./grid_control"),a=t("./info_control"),s=t("./share_control"),l=t("./legend_control"),c=L.Map.extend({includes:[t("./load_tilejson")],options:{tileLayer:{},featureLayer:{},gridLayer:{},legendControl:{},gridControl:{},infoControl:{},attributionControl:!1,shareControl:!1},_tilejson:{},initialize:function(t,e,c){L.Map.prototype.initialize.call(this,t,c),this.attributionControl&&this.attributionControl.setPrefix(""),this.options.tileLayer&&(this.tileLayer=n(void 0,this.options.tileLayer),this.addLayer(this.tileLayer)),this.options.featureLayer===!1||this.options.markerLayer===!1?this.options.featureLayer=this.options.markerLayer=!1:this.options.markerLayer&&(this.options.featureLayer=this.options.markerLayer),this.options.featureLayer&&(this.featureLayer=this.markerLayer=i(void 0,this.options.featureLayer),this.addLayer(this.featureLayer)),this.options.gridLayer&&(this.gridLayer=o(void 0,this.options.gridLayer),this.addLayer(this.gridLayer)),this.options.gridLayer&&this.options.gridControl&&(this.gridControl=r(this.gridLayer,this.options.gridControl),this.addControl(this.gridControl)),this.options.infoControl&&(this.infoControl=a(this.options.infoControl),this.addControl(this.infoControl)),this.options.legendControl&&(this.legendControl=l(this.options.legendControl),this.addControl(this.legendControl)),this.options.shareControl&&(this.shareControl=s(void 0,this.options.shareControl),this.addControl(this.shareControl)),this._loadTileJSON(e)},addLayer:function(t){return"on"in t&&t.on("ready",L.bind(function(){this._updateLayer(t)},this)),L.Map.prototype.addLayer.call(this,t)},_setTileJSON:function(t){return this._tilejson=t,this._initialize(t),this},getTileJSON:function(){return this._tilejson},_initialize:function(t){if(this.tileLayer&&(this.tileLayer._setTileJSON(t),this._updateLayer(this.tileLayer)),this.featureLayer&&!this.featureLayer.getGeoJSON()&&t.data&&t.data[0]&&this.featureLayer.loadURL(t.data[0]),this.gridLayer&&(this.gridLayer._setTileJSON(t),this._updateLayer(this.gridLayer)),this.infoControl&&t.attribution&&this.infoControl.addInfo(t.attribution),this.legendControl&&t.legend&&this.legendControl.addLegend(t.legend),this.shareControl&&this.shareControl._setTileJSON(t),!this._loaded){var e=t.center[2],n=L.latLng(t.center[1],t.center[0]);this.setView(n,e)}},_updateLayer:function(t){t.options&&(this.infoControl&&this._loaded&&this.infoControl.addInfo(t.options.infoControl),L.stamp(t)in this._zoomBoundLayers||!t.options.maxZoom&&!t.options.minZoom||(this._zoomBoundLayers[L.stamp(t)]=t),this._updateZoomLevels())}});e.exports=function(t,e,n){return new c(t,e,n)}},{"./feature_layer":9,"./grid_control":13,"./grid_layer":14,"./info_control":15,"./legend_control":16,"./load_tilejson":17,"./share_control":21,"./tile_layer":23,"./util":25}],19:[function(t,e){"use strict";function n(t){t=t||{};var e={small:[20,50],medium:[30,70],large:[35,90]},n=t["marker-size"]||"medium",i=t["marker-symbol"]?"-"+t["marker-symbol"]:"",o=(t["marker-color"]||"7e7e7e").replace("#","");return L.icon({iconUrl:r.base()+"marker/pin-"+n.charAt(0)+i+"+"+o+(L.Browser.retina?"@2x":"")+".png",iconSize:e[n],iconAnchor:[e[n][0]/2,e[n][1]/2],popupAnchor:[0,-e[n][1]/2]})}function i(t,e){return L.marker(e,{icon:n(t.properties),title:a.strip_tags(s(t.properties&&t.properties.title||""))})}function o(t,e){if(!t||!t.properties)return"";var n="";return t.properties.title&&(n+='<div class="marker-title">'+t.properties.title+"</div>"),t.properties.description&&(n+='<div class="marker-description">'+t.properties.description+"</div>"),(e||s)(n)}var r=t("./url"),a=t("./util"),s=t("sanitize-caja");
+e.exports={icon:n,style:i,createPopup:o}},{"./url":24,"./util":25,"sanitize-caja":5}],20:[function(t,e){"use strict";var n=t("corslite"),i=t("json3"),o=t("./util").strict;e.exports=function(t,e){function r(t,n){!t&&n&&(n="g"==n.responseText[0]?i.parse(n.responseText.substring(5,n.responseText.length-2)):i.parse(n.responseText)),e(t,n)}return o(t,"string"),o(e,"function"),n(t,r)}},{"./util":25,corslite:2,json3:3}],21:[function(t,e){"use strict";var n=t("./url"),i=L.Control.extend({includes:[t("./load_tilejson")],options:{position:"topleft",url:""},initialize:function(t,e){L.setOptions(this,e),this._loadTileJSON(t)},_setTileJSON:function(t){this._tilejson=t},onAdd:function(t){this._map=t,this._url=n;var e=L.DomUtil.create("div","leaflet-control-mapbox-share leaflet-bar"),i=L.DomUtil.create("a","mapbox-share mapbox-icon mapbox-icon-share",e);return i.href="#",this._modal=t._createPane("mapbox-modal",this._map._container),this._mask=t._createPane("mapbox-modal-mask",this._modal),this._content=t._createPane("mapbox-modal-content",this._modal),L.DomEvent.addListener(i,"click",this._shareClick,this),L.DomEvent.disableClickPropagation(e),this._map.on("mousedown",this._clickOut,this),e},_clickOut:function(t){return this._sharing?(L.DomEvent.preventDefault(t),L.DomUtil.removeClass(this._modal,"active"),this._content.innerHTML="",this._sharing=null,void 0):void 0},_shareClick:function(t){if(L.DomEvent.stop(t),this._sharing)return this._clickOut(t);var e=this._tilejson||this._map._tilejson||{},n=encodeURIComponent(this.options.url||e.webpage||window.location),i=encodeURIComponent(e.name),o=this._url.base()+e.id+"/"+this._map.getCenter().lng+","+this._map.getCenter().lat+","+this._map.getZoom()+"/600x600.png",r="//twitter.com/intent/tweet?status="+i+" "+n,a="//www.facebook.com/sharer.php?u="+n+"&t="+encodeURIComponent(e.name),s="//www.pinterest.com/pin/create/button/?url="+n+"&media="+o+"&description="+e.name,l="<h3>Share this map</h3><div class='mapbox-share-buttons'><a class='mapbox-button mapbox-button-icon mapbox-icon-facebook' target='_blank' href='{{facebook}}'>Facebook</a><a class='mapbox-button mapbox-button-icon mapbox-icon-twitter' target='_blank' href='{{twitter}}'>Twitter</a><a class='mapbox-button mapbox-button-icon mapbox-icon-pinterest' target='_blank' href='{{pinterest}}'>Pinterest</a></div>".replace("{{twitter}}",r).replace("{{facebook}}",a).replace("{{pinterest}}",s),c='<iframe width="100%" height="500px" frameBorder="0" src="{{embed}}"></iframe>'.replace("{{embed}}",e.embed||window.location),u="Copy and paste this <strong>HTML code</strong> into documents to embed this map on web pages.";L.DomUtil.addClass(this._modal,"active"),this._sharing=this._map._createPane("mapbox-modal-body",this._content),this._sharing.innerHTML=l;var h=L.DomUtil.create("input","mapbox-embed",this._sharing);h.type="text",h.value=c;var p=L.DomUtil.create("label","mapbox-embed-description",this._sharing);p.innerHTML=u;var f=L.DomUtil.create("a","leaflet-popup-close-button",this._sharing);f.href="#",L.DomEvent.disableClickPropagation(this._sharing),L.DomEvent.addListener(f,"click",this._clickOut,this),L.DomEvent.addListener(h,"click",function(t){t.target.focus(),t.target.select()})}});e.exports=function(t,e){return new i(t,e)}},{"./load_tilejson":17,"./url":24}],22:[function(t,e){"use strict";function n(t,e){var n={};for(var i in e)n[i]=void 0===t[i]?e[i]:t[i];return n}function i(t){for(var e={},n=0;n<a.length;n++)e[a[n][1]]=t[a[n][0]];return e}function o(t){return i(n(t.properties||{},r))}var r={stroke:"#555555","stroke-width":2,"stroke-opacity":1,fill:"#555555","fill-opacity":.5},a=[["stroke","color"],["stroke-width","weight"],["stroke-opacity","opacity"],["fill","fillColor"],["fill-opacity","fillOpacity"]];e.exports={style:o,defaults:r}},{}],23:[function(t,e){"use strict";var n=t("./util"),i=(t("./url"),L.TileLayer.extend({includes:[t("./load_tilejson")],options:{format:"png"},formats:["png","png32","png64","png128","png256","jpg70","jpg80","jpg90"],scalePrefix:"@2x.",initialize:function(t,e){L.TileLayer.prototype.initialize.call(this,void 0,e),this._tilejson={},e&&e.detectRetina&&L.Browser.retina&&e.retinaVersion&&(t=e.retinaVersion),e&&e.format&&n.strict_oneof(e.format,this.formats),this._loadTileJSON(t)},setFormat:function(t){return n.strict(t,"string"),this.options.format=t,this.redraw(),this},_autoScale:function(){return this.options&&L.Browser.retina&&this.options.detectRetina&&!this.options.retinaVersion&&this.options.autoscale},setUrl:null,_setTileJSON:function(t){return n.strict(t,"object"),L.extend(this.options,{tiles:t.tiles,attribution:t.attribution,minZoom:t.minzoom,maxZoom:t.maxzoom,autoscale:t.autoscale||!1,tms:"tms"===t.scheme,bounds:t.bounds&&n.lbounds(t.bounds)}),this._tilejson=t,this.redraw(),this},getTileJSON:function(){return this._tilejson},getTileUrl:function(t){var e=this.options.tiles,n=Math.floor(Math.abs(t.x+t.y)%e.length),i=e[n],o=L.Util.template(i,t);return o?o.replace(".png",(this._autoScale()?this.scalePrefix:".")+this.options.format):o},_update:function(){this.options.tiles&&L.TileLayer.prototype._update.call(this)}}));e.exports=function(t,e){return new i(t,e)}},{"./load_tilejson":17,"./url":24,"./util":25}],24:[function(t,e){"use strict";var n=t("./config");e.exports={isSSL:function(){return"https:"===document.location.protocol||n.FORCE_HTTPS},base:function(t){var e=this.isSSL()?n.HTTPS_URLS:n.HTTP_URLS;return void 0===t||"number"!=typeof t?e[0]:e[t%e.length]},secureFlag:function(t){return this.isSSL()?t.match(/(\?|&)secure/)?t:-1!==t.indexOf("?")?t+"&secure":t+"?secure":t},jsonify:function(t){return t.replace(/\.(geo)?jsonp(?=$|\?)/,".$1json")}}},{"./config":8}],25:[function(t,e){"use strict";e.exports={idUrl:function(t,e){-1==t.indexOf("/")?e.loadID(t):e.loadURL(t)},log:function(t){console&&"function"==typeof console.error&&console.error(t)},strict:function(t,e){if(typeof t!==e)throw new Error("Invalid argument: "+e+" expected")},strict_instance:function(t,e,n){if(!(t instanceof e))throw new Error("Invalid argument: "+n+" expected")},strict_oneof:function(t,e){if(-1==e.indexOf(t))throw new Error("Invalid argument: "+t+" given, valid values are "+e.join(", "))},strip_tags:function(t){return t.replace(/<[^<]+>/g,"")},lbounds:function(t){return new L.LatLngBounds([[t[1],t[0]],[t[3],t[2]]])}}},{}]},{},[1]);

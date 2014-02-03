@@ -506,7 +506,7 @@ function ModalFlow (context) {
         return self;
     };
 
-    self.state = function (x) {
+    self.state = window.state = function (x) {
         if (!arguments.length) return state;
 
         if (x in states) {

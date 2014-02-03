@@ -12,7 +12,8 @@ dist:
 dist/libs.js: dist
 	cat lib/d3.v3.js \
 		lib/leaflet-src.js \
-		lib/leaflet.markercluster-src.js > dist/libs.js
+		lib/leaflet.markercluster-src.js \
+		lib/mapbox.standalone.js > dist/libs.js
 
 dist/delegate.js: src/delegate.js
 	$(BROWSERIFY) src/delegate.js > dist/delegate.js

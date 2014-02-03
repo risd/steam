@@ -1,6 +1,22 @@
 ### left off
 
-- network scale in and out from the middle of the page.
+- reconider the way the arcs are bound to clusters
+    - could be data driven?
+    - as clusters are made, pass data to cluster bounding, rather than relying on the dom. use a key function to grab the correct item.
+
+    - either way, the solution needs to consider the fact that the arcs are actually created when _getExpandedVisibleBounds is run. Or, more precisely, when the iconCreateFactory is run on the cluster group
+
+- reconsider transition on arcs
+    - currently, clusters have a transition on the number, and a transition on the arcs. is it more performative to do that in one step? as you did with the transition on "next >" > "redirecting...".
+
+- clicking multiple clusters
+    - should only be a queue of one thing being searched for on the server
+        - click to show network, change number to "..." or another icon that says fetching/processing/waiting
+        - have network module manage this. if an .init function is called, stash that id as the "active" network. 
+            - clear on network.remove().
+            - if there is an "active" network when a request comes through, cancel the other ajax request, and 
+                - xhr.abort()
+        - close the network graph, and restore the icon count to the span
 
 - when map is up, can you turn off network scaling?
 - when network is up, can you turn off arc scaling?
@@ -18,3 +34,9 @@
 
 @babette, ask about what kind of links you want to send out?
     - WA state? WA 8th district? both?
+
+@micah, work-in profile selections
+    - white inside, color outside?
+    - color inside, color outside?
+    - color inside, white outside?
+    - white inside, white outside?

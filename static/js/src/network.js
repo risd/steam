@@ -327,6 +327,7 @@ function Network (context) {
 
 
             });
+
         // these wont be set until after
         // a network has been initialized
         // and a node has been clicked

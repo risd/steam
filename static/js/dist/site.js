@@ -12,134 +12,25 @@ function Arcs (context) {
             .range([0, τ]),
         format = d3.format(',');
 
-    arcs.create = function () {
+    arcs.draw = function () {
+        console.log('draw');
+
+        // adding arcs
+        d3.selectAll('.arc-wrapper')
+            .html('')
+            .each(create);
+
+    };
+
+    arcs.redraw = function () {
+        console.log('redraw');
         // bound to the zoom of the map
         // sets the arcs per marker cluster
 
         // adding arcs
         d3.selectAll('.arc-wrapper')
             .html('')
-            .each(function () {
-                var node = d3.select(this);
-
-                // icon display, set in the createIconFactory
-                // method in the cluster creation process.
-                var meta = {
-                    total: +node.attr('data-total'),
-                    total_active:
-                        +node.attr('data-total-active'),
-                    prev_total_active:
-                        +node.attr('data-prev-total-active'),
-                    icon_category:
-                        node.attr('data-icon-cateogry')
-                };
-
-                // the data that will be bound to the svg
-                // in order to draw the arcs.
-                var data = [
-                    {
-                        'value': 'research',
-                        'count': +node.attr('data-research')
-                    }, {
-                        'value': 'political',
-                        'count': +node.attr('data-political')
-                    }, {
-                        'value': 'education',
-                        'count': +node.attr('data-education')
-                    }, {
-                        'value': 'industry',
-                        'count': +node.attr('data-industry')
-                    }
-                ];
-
-                // add the prev_status, and status
-                // attributes to the data object
-                // for appropriate scaling based on
-                // the filter settings
-                add_status(data);
-
-                // update the domain to set the
-                // arc start and end angles
-                arc_scale.domain([0, meta.total]);
-
-                // add arc specific data to the
-                // data to be bound and drawn.
-                var accounted_for = 0;
-                data.forEach(function (d, i) {
-                    d.startAngle = accounted_for;
-
-                    var slice = arc_scale(d.count);
-                    accounted_for += slice;
-                    
-                    d.endAngle = accounted_for;
-
-                    d.innerRadius = context.icon_size
-                                        [meta.icon_category]
-                                        [d.prev_status]
-                                        .innerRadius;
-                    d.outerRadius = context.icon_size
-                                        [meta.icon_category]
-                                        [d.prev_status]
-                                        .outerRadius;
-                });
-
-                var svg_dimensions =
-                    context.icon_size[meta.icon_category].total;
-
-                var svg = node.append('svg')
-                    .attr('class', 'arc-svg')
-                    .attr('width', svg_dimensions)
-                    .attr('height', svg_dimensions)
-                    .append('g')
-                    .attr('transform',
-                          'translate(' +
-                          svg_dimensions / 2 + ',' +
-                          svg_dimensions / 2 + ')');
-
-                
-                var arc_sel = svg.selectAll('.arc-segment')
-                    .data(data)
-                    .enter()
-                    .append('path')
-                    .attr('class', 'arc-segment')
-                    .style('fill', function (d) {
-                        return context.colors[d.value];
-                    })
-                    .attr('d', arc);
-
-                
-                var span_sel = d3.select(node.node().parentNode)
-                                .select('span')
-                                .datum({
-                                    start: meta.prev_total_active,
-                                    end: meta.total_active
-                                });
-
-                span_sel.transition()
-                    .duration(800)
-                    .tween('text', function (d) {
-                        var i = d3.interpolateRound(d.start, d.end);
-                        return function (t) {
-                            this.textContent = format(i(t));
-                        };
-                    });
-
-                arc_sel.transition()
-                    .duration(800)
-                    .attrTween('d', tweenArc(function (d, i) {
-                        return {
-                            innerRadius: context.icon_size
-                                           [meta.icon_category]
-                                           [d.status]
-                                           .innerRadius,
-                            outerRadius: context.icon_size
-                                           [meta.icon_category]
-                                           [d.status]
-                                           .outerRadius
-                        };
-                    }));
-
-            });
+            .each(create);
     };
 
     function tweenArc(b) {
@@ -224,6 +115,127 @@ function Arcs (context) {
         }
 
         // return node_data;
+    }
+
+    function create () {
+        var node = d3.select(this);
+
+        // icon display, set in the createIconFactory
+        // method in the cluster creation process.
+        var meta = {
+            total: +node.attr('data-total'),
+            total_active:
+                +node.attr('data-total-active'),
+            prev_total_active:
+                +node.attr('data-prev-total-active'),
+            icon_category:
+                node.attr('data-icon-cateogry')
+        };
+
+        // the data that will be bound to the svg
+        // in order to draw the arcs.
+        var data = [
+            {
+                'value': 'research',
+                'count': +node.attr('data-research')
+            }, {
+                'value': 'political',
+                'count': +node.attr('data-political')
+            }, {
+                'value': 'education',
+                'count': +node.attr('data-education')
+            }, {
+                'value': 'industry',
+                'count': +node.attr('data-industry')
+            }
+        ];
+
+        // add the prev_status, and status
+        // attributes to the data object
+        // for appropriate scaling based on
+        // the filter settings
+        add_status(data);
+
+        // update the domain to set the
+        // arc start and end angles
+        arc_scale.domain([0, meta.total]);
+
+        // add arc specific data to the
+        // data to be bound and drawn.
+        var accounted_for = 0;
+        data.forEach(function (d, i) {
+            d.startAngle = accounted_for;
+
+            var slice = arc_scale(d.count);
+            accounted_for += slice;
+            
+            d.endAngle = accounted_for;
+
+            d.innerRadius = context.icon_size
+                                [meta.icon_category]
+                                [d.prev_status]
+                                .innerRadius;
+            d.outerRadius = context.icon_size
+                                [meta.icon_category]
+                                [d.prev_status]
+                                .outerRadius;
+        });
+
+        var svg_dimensions =
+            context.icon_size[meta.icon_category].total;
+
+        var svg = node.append('svg')
+            .attr('class', 'arc-svg')
+            .attr('width', svg_dimensions)
+            .attr('height', svg_dimensions)
+            .append('g')
+            .attr('transform',
+                  'translate(' +
+                  svg_dimensions / 2 + ',' +
+                  svg_dimensions / 2 + ')');
+
+        
+        var arc_sel = svg.selectAll('.arc-segment')
+            .data(data)
+            .enter()
+            .append('path')
+            .attr('class', 'arc-segment')
+            .style('fill', function (d) {
+                return context.colors[d.value];
+            })
+            .attr('d', arc);
+
+        
+        var span_sel = d3.select(node.node().parentNode)
+                        .select('span')
+                        .datum({
+                            start: meta.prev_total_active,
+                            end: meta.total_active
+                        });
+
+        span_sel.transition()
+            .duration(800)
+            .tween('text', function (d) {
+                var i = d3.interpolateRound(d.start, d.end);
+                return function (t) {
+                    this.textContent = format(i(t));
+                };
+            });
+
+        arc_sel.transition()
+            .duration(800)
+            .attrTween('d', tweenArc(function (d, i) {
+                return {
+                    innerRadius: context.icon_size
+                                   [meta.icon_category]
+                                   [d.status]
+                                   .innerRadius,
+                    outerRadius: context.icon_size
+                                   [meta.icon_category]
+                                   [d.status]
+                                   .outerRadius
+                };
+            }));
     }
 
     return arcs;
@@ -507,14 +519,14 @@ function Clusters (context) {
         var bounds = d.layer.getBounds().pad(0.5);
 
         context.map.fitBounds(bounds);
-
-        // remove all svg references.
     });
 
     clusters.bindArcs = function () {
-        clusters_group.on('animationend', function () {
-            context.arcs.create();
-        });
+
+        context.map
+            .on('moveend', function () {
+                context.arcs.draw();
+            });
 
         return clusters;
     };
@@ -565,7 +577,7 @@ function Clusters (context) {
         clusters_group.addLayer(geojson);
 
         context.map.addLayer(clusters_group);
-        context.arcs.create();
+        context.arcs.draw();
     }
 
     function calculate_steamies (d, count) {
@@ -2305,7 +2317,7 @@ function ModalFlow (context) {
         return self;
     };
 
-    self.state = function (x) {
+    self.state = window.state = function (x) {
         if (!arguments.length) return state;
 
         if (x in states) {
@@ -2805,6 +2817,7 @@ function Network (context) {
 
 
             });
+
         // these wont be set until after
         // a network has been initialized
         // and a node has been clicked

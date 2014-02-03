@@ -71,14 +71,14 @@
     -webkit-transition-delay: 0s, 0s, 0s, 0s;
     -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
 
-.animate-in-out {
+.animate-in-out.modal {
   border-radius: 100%;
   -webkit-transform: scale(0) translateY(-50px);
   -webkit-transition-property: top, background-color, -webkit-transform, opacity, border-radius;
   -webkit-transition-duration: 0s, 0.3s, 0.3s, 0.3s, 0.3s;
   -webkit-transition-delay: 0.3s, 0s, 0s, 0s, 0s;
   -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
-  .animate-in-out.active {
+  .animate-in-out.modal.active {
     border-radius: 0;
     -webkit-transform: scale(1) translateY(0px);
     -webkit-transition-property: top, opacity, -webkit-transform, background-color, border-radius;

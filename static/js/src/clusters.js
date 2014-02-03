@@ -140,14 +140,14 @@ function Clusters (context) {
         var bounds = d.layer.getBounds().pad(0.5);
 
         context.map.fitBounds(bounds);
-
-        // remove all svg references.
     });
 
     clusters.bindArcs = function () {
-        clusters_group.on('animationend', function () {
-            context.arcs.create();
-        });
+
+        context.map
+            .on('moveend', function () {
+                context.arcs.draw();
+            });
 
         return clusters;
     };
@@ -198,7 +198,7 @@ function Clusters (context) {
         clusters_group.addLayer(geojson);
 
         context.map.addLayer(clusters_group);
-        context.arcs.create();
+        context.arcs.draw();
     }
 
     function calculate_steamies (d, count) {
