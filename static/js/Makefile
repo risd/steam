@@ -1,7 +1,7 @@
 BROWSERIFY = node_modules/.bin/browserify
 UGLIFY = node_modules/.bin/uglifyjs
 
-all: dist clean dist/libs.js dist/site.js dist/delegate.js
+all: dist clean dist/libs.js dist/site.js
 
 node_modules: package.json
 	npm install
@@ -15,9 +15,6 @@ dist/libs.js: dist
 		lib/leaflet.markercluster-src.js \
 		lib/leaflet-divIconWithData.js \
 		lib/mapbox.standalone.js > dist/libs.js
-
-dist/delegate.js: src/delegate.js
-	$(BROWSERIFY) src/delegate.js > dist/delegate.js
 
 dist/site.js: dist
 	$(BROWSERIFY) src/index.js > dist/site.js
