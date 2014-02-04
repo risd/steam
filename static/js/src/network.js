@@ -17,7 +17,9 @@ function Network (context) {
         canvas_blanket_sel,
         // name of the overlay
         title,
-        title_wrapper_sel;
+        title_wrapper_sel,
+        request,
+        built = false;
 
     var random_around_zero = function (range) {
         var val = Math.floor(Math.random() * range);
@@ -130,6 +132,10 @@ function Network (context) {
     };
 
     network.create = function () {
+
+        if (built) {
+            network.remove();
+        }
 
         // set gravity of force based on the
         // number of nodes
@@ -299,6 +305,8 @@ function Network (context) {
                 .attr('transform', transform);
         });
 
+        built = true;
+
         return network;
     };
 
@@ -338,6 +346,8 @@ function Network (context) {
             canvas_blanket_sel.remove();
         }
 
+        built = false;
+
         return network;
     };
 
@@ -345,9 +355,15 @@ function Network (context) {
         // used to initialize a network graph
         // data is passed in from the cluster
         // group that is clicked.
-        console.log(data);
-        context.api
-            .network_request(data.tlg_id, function (err, results) {
+        if (request) {
+            request.abort();
+        }
+
+        request = context.api
+            .network_request(data.layer
+                                .feature
+                                .properties
+                                .tlg_id, function (err, results) {
                 console.log('returned data');
                 console.log(results);
                 network
@@ -356,6 +372,8 @@ function Network (context) {
                               {
                                 us_bool: results.us_bool,
                                 us_state: results.us_state,
+                                us_district:
+                                    results.us_district,
                                 us_district_ordinal:
                                     results.us_district_ordinal
                               } :
