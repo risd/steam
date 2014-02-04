@@ -1,15 +1,15 @@
 ### left off
 
-- clicking multiple clusters
-    - should only be a queue of one thing being searched for on the server
-        - click to show network, change number to "..." or another icon that says fetching/processing/waiting
-        - have network module manage this. if an .init function is called, stash that id as the "active" network. 
-            - clear on network.remove().
-            - if there is an "active" network when a request comes through, cancel the other ajax request, and 
-                - xhr.abort()
-        - close the network graph, and restore the icon count to the span
+- delegate
+    - what does an incapable browser do?
 
--modalflow
+- add mixins for all transitions.
+
+- remove `window.state` from `modalFlow.js`
+
+- put css fallbacks in place for svg in stylesheet and modal_flow
+
+- modalflow
     - go through a clean sign up.
 
 - push state? how does the back button work through all of this?
@@ -28,3 +28,5 @@
     - color inside, color outside?
     - color inside, white outside?
     - white inside, white outside?
+
+@micah, what to do with the header?
