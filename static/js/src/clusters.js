@@ -90,30 +90,40 @@ function Clusters (context) {
                 c += ' represents-multiple-entities';
             }
 
-            return new L.DivIcon({
+            return new L.DivIconWithData({
                 html: '<div class="span-wrapper">' +
                     '<span>' +
                     format(steamie_count.prev_total_active) +
                     '</span>' +
                     '</div>' +
-                    '<div class="arc-wrapper"' +
-                        ' data-research=' + steamie_count.research +
-                        ' data-political=' + steamie_count.political +
-                        ' data-education=' + steamie_count.education +
-                        ' data-industry=' + steamie_count.industry +
-                        ' data-total=' + steamie_count.total +
-                        ' data-total-active=' +
-                        steamie_count.total_active +
-                        ' data-prev-total-active=' +
-                        steamie_count.prev_total_active +
-                        ' data-icon-cateogry="' +
-                        icon_category + '"' +
-                        '></div>',
+                    '<div class="arc-wrapper"></div>',
                 className: 'marker-cluster' + c,
                 iconSize: new L.Point(
                              context.icon_size[icon_category].total,
-                             context.icon_size[icon_category].total)
-            });
+                             context.icon_size[icon_category].total),
+                data: {
+                    meta: {
+                        total: steamie_count.total,
+                        total_active: steamie_count.total_active,
+                        prev_total_active:
+                            steamie_count.prev_total_active,
+                        icon_category: icon_category
+                    },
+                    filters: [{
+                            'value': 'research',
+                            'count': steamie_count.research
+                        }, {
+                            'value': 'political',
+                            'count': steamie_count.political
+                        }, {
+                            'value': 'education',
+                            'count': steamie_count.education
+                        }, {
+                            'value': 'industry',
+                            'count': steamie_count.industry
+                        }]
+                    }
+                });
         },
 
         // for the polygon that shows the area
@@ -143,9 +153,18 @@ function Clusters (context) {
     });
 
     clusters.bindArcs = function () {
+        // arcs get updated on 
 
+        // map move
         context.map
-            .on('moveend', function () {
+            .on('dragend', function () {
+                context.arcs.draw();
+            });
+
+        // cluster animation, which occurs
+        // on map zoom.
+        clusters_group
+            .on('animationend', function () {
                 context.arcs.draw();
             });
 

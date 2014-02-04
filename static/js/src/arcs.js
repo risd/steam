@@ -15,21 +15,8 @@ function Arcs (context) {
         console.log('draw');
 
         // adding arcs
-        d3.selectAll('.arc-wrapper')
-            .html('')
-            .each(create);
-
-    };
-
-    arcs.redraw = function () {
-        console.log('redraw');
-        // bound to the zoom of the map
-        // sets the arcs per marker cluster
-
-        // adding arcs
-        d3.selectAll('.arc-wrapper')
-            .html('')
-            .each(create);
+        d3.selectAll('.marker-cluster')
+            .each(draw);
     };
 
     function tweenArc(b) {
@@ -116,53 +103,67 @@ function Arcs (context) {
         // return node_data;
     }
 
-    function create () {
+    function draw (d, i) {
         var node = d3.select(this);
+        var node_data = d;
+        var svg_wrapper = node.select('.arc-wrapper');
+        var svg = svg_wrapper.select('svg');
+        var g = svg_wrapper.select('g');
 
-        // icon display, set in the createIconFactory
-        // method in the cluster creation process.
-        var meta = {
-            total: +node.attr('data-total'),
-            total_active:
-                +node.attr('data-total-active'),
-            prev_total_active:
-                +node.attr('data-prev-total-active'),
-            icon_category:
-                node.attr('data-icon-cateogry')
-        };
+        if (svg.node()) {
+            // if there is an svg, that means that
+            // the data has not been updated.
+            // since the markerclustergroup will
+            // redraw all of the clusters if the
+            // data is changed, which would
+            // mean there is no svg node.
+            return;
+        }
+        
+        // there is NO an svg here
+        svg_dimensions = [{
+            dimensions:
+                context.icon_size[node_data
+                                   .meta
+                                   .icon_category].total
+           }];
 
-        // the data that will be bound to the svg
-        // in order to draw the arcs.
-        var data = [
-            {
-                'value': 'research',
-                'count': +node.attr('data-research')
-            }, {
-                'value': 'political',
-                'count': +node.attr('data-political')
-            }, {
-                'value': 'education',
-                'count': +node.attr('data-education')
-            }, {
-                'value': 'industry',
-                'count': +node.attr('data-industry')
-            }
-        ];
+        svg = svg_wrapper.selectAll('svg')
+            .data(svg_dimensions)
+            .enter()
+            .append('svg')
+            .attr('class', 'arc-svg')
+            .attr('width', function (d) {
+                return d.dimensions;
+            })
+            .attr('height', function (d) {
+                return d.dimensions;
+            });
+
+        g = svg.selectAll('g')
+            .data(svg_dimensions)
+            .enter()
+            .append('g')
+            .attr('transform', function (d) {
+                return 'translate(' +
+                  d.dimensions / 2 + ',' +
+                  d.dimensions / 2 + ')';
+            });
 
         // add the prev_status, and status
         // attributes to the data object
         // for appropriate scaling based on
         // the filter settings
-        add_status(data);
+        add_status(node_data.filters);
 
         // update the domain to set the
         // arc start and end angles
-        arc_scale.domain([0, meta.total]);
+        arc_scale.domain([0, node_data.meta.total]);
 
         // add arc specific data to the
         // data to be bound and drawn.
         var accounted_for = 0;
-        data.forEach(function (d, i) {
+        node_data.filters.forEach(function (d, i) {
             d.startAngle = accounted_for;
 
             var slice = arc_scale(d.count);
@@ -171,31 +172,17 @@ function Arcs (context) {
             d.endAngle = accounted_for;
 
             d.innerRadius = context.icon_size
-                                [meta.icon_category]
+                                [node_data.meta.icon_category]
                                 [d.prev_status]
                                 .innerRadius;
             d.outerRadius = context.icon_size
-                                [meta.icon_category]
+                                [node_data.meta.icon_category]
                                 [d.prev_status]
                                 .outerRadius;
         });
-
-        var svg_dimensions =
-            context.icon_size[meta.icon_category].total;
-
-        var svg = node.append('svg')
-            .attr('class', 'arc-svg')
-            .attr('width', svg_dimensions)
-            .attr('height', svg_dimensions)
-            .append('g')
-            .attr('transform',
-                  'translate(' +
-                  svg_dimensions / 2 + ',' +
-                  svg_dimensions / 2 + ')');
-
         
-        var arc_sel = svg.selectAll('.arc-segment')
-            .data(data)
+        var arc_sel = g.selectAll('.arc-segment')
+            .data(node_data.filters)
             .enter()
             .append('path')
             .attr('class', 'arc-segment')
@@ -205,36 +192,50 @@ function Arcs (context) {
             .attr('d', arc);
 
         
-        var span_sel = d3.select(node.node().parentNode)
-                        .select('span')
-                        .datum({
-                            start: meta.prev_total_active,
-                            end: meta.total_active
-                        });
-
-        span_sel.transition()
-            .duration(800)
-            .tween('text', function (d) {
-                var i = d3.interpolateRound(d.start, d.end);
-                return function (t) {
-                    this.textContent = format(i(t));
-                };
+        var span_sel = node
+            .selectAll('span')
+            .datum({
+                start: node_data.meta.prev_total_active,
+                end: node_data.meta.total_active
             });
 
-        arc_sel.transition()
+        d3.transition()
             .duration(800)
-            .attrTween('d', tweenArc(function (d, i) {
-                return {
-                    innerRadius: context.icon_size
-                                   [meta.icon_category]
+            .each(function () {
+                // text transition is a little misleading.
+                // on zoom, its not actually counting from
+                // the parent cluster total to the individual
+                // child cluster values. its just taking those
+                // child cluster values, and animating between
+                // the prev_active_total (which was never seen
+                // by the user), and the active_total, which
+                // the user is about to see.
+                // not a show stopper for now.
+                d3.transition(span_sel)
+                    .tween('text', function (d) {
+                        var i = d3.interpolateRound(d.start,
+                                                    d.end);
+                        return function (t) {
+                            this.textContent = format(i(t));
+                        };
+                    });
+
+                d3.transition(arc_sel)
+                    .attrTween('d', tweenArc(function (d, i) {
+                        return {
+                            innerRadius:
+                                context.icon_size
+                                   [node_data.meta.icon_category]
                                    [d.status]
                                    .innerRadius,
-                    outerRadius: context.icon_size
-                                   [meta.icon_category]
+                            outerRadius:
+                                context.icon_size
+                                   [node_data.meta.icon_category]
                                    [d.status]
                                    .outerRadius
-                };
-            }));
+                        };
+                    }));
+            });
     }
 
     return arcs;

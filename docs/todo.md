@@ -1,14 +1,5 @@
 ### left off
 
-- reconider the way the arcs are bound to clusters
-    - could be data driven?
-    - as clusters are made, pass data to cluster bounding, rather than relying on the dom. use a key function to grab the correct item.
-
-    - either way, the solution needs to consider the fact that the arcs are actually created when _getExpandedVisibleBounds is run. Or, more precisely, when the iconCreateFactory is run on the cluster group
-
-- reconsider transition on arcs
-    - currently, clusters have a transition on the number, and a transition on the arcs. is it more performative to do that in one step? as you did with the transition on "next >" > "redirecting...".
-
 - clicking multiple clusters
     - should only be a queue of one thing being searched for on the server
         - click to show network, change number to "..." or another icon that says fetching/processing/waiting
