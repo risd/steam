@@ -9,9 +9,6 @@
                 - xhr.abort()
         - close the network graph, and restore the icon count to the span
 
-- when map is up, can you turn off network scaling?
-- when network is up, can you turn off arc scaling?
-
 -modalflow
     - go through a clean sign up.
 
