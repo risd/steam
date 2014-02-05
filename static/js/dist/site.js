@@ -658,20 +658,32 @@ function Config (hostname) {
 },{}],7:[function(require,module,exports){
 module.exports = filterUI;
 
+
+var svg_arrow = require('./formComponents/svgArrow');
+
 // UI for manipulating data
 function filterUI (context) {
 
     var ui = {},
         active_count = 4,
         prev_active_count,
-        clicked = 0;
+        clicked = 0,
+        collapsed = false;
 
-    var filter_bar = d3.select('.filter_bar');
+    var filter_bar = d3.select('.filter-bar'),
+        filter_bar_header = d3.select('.filter-bar-header'),
+        filter_collapsable_visual = d3.select('.filter-bar .collapse');
 
     ui.filter_bar = filter_bar;
 
     ui.init = function () {
         filter_bar.classed('all-active', true);
+        filter_bar_header
+            .on('click', function () {
+                collapsed = collapsed ? false : true;
+                filter_bar.classed('collapse', collapsed);
+            });
+        filter_collapsable_visual.call(svg_arrow);
 
         var filter_buttons = filter_bar.selectAll('.button')
             .data(context.filters)
@@ -680,8 +692,9 @@ function filterUI (context) {
             .attr('class', function (d) {
                 return 'button active ' + d.value;
             })
-            .text(function (d) {
-                return d.display;
+            .html(function (d) {
+                return  "<span class='indicator'></span>" +
+                    "<span class='label'>" + d.display + "</span>";
             })
             .on('click', function (d) {
 
@@ -781,7 +794,7 @@ function filterUI (context) {
 
     return ui;
 }
-},{}],8:[function(require,module,exports){
+},{"./formComponents/svgArrow":13}],8:[function(require,module,exports){
 var filters = [{
         value: 'research',
         display: 'research',
@@ -1025,7 +1038,7 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../ui/checkmark":27,"./text":15}],10:[function(require,module,exports){
+},{"../ui/checkmark":28,"./text":16}],10:[function(require,module,exports){
 module.exports = function flowAnimation () {
     var self = {},
         selection,
@@ -1448,7 +1461,40 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":27}],13:[function(require,module,exports){
+},{"../ui/checkmark":28}],13:[function(require,module,exports){
+module.exports = function svgArrow (sel) {
+    console.log('arrow');
+    console.log(sel);
+    var button_size = 10;
+
+    // add the closing x as svg
+    sel.append('svg')
+        .attr('width', button_size)
+        .attr('height', button_size)
+        .selectAll('line')
+        .data([
+            { x1: button_size, y1: 0,
+              x2: button_size/2, y2: button_size/2 },
+            { x1: button_size/2, y1: button_size/2,
+              x2: button_size, y2: button_size }
+        ])
+        .enter()
+        .append('line')
+            .attr('x1', function (d) {
+                return d.x1;
+            })
+            .attr('y1', function (d) {
+                return d.y1;
+            })
+            .attr('x2', function (d) {
+                return d.x2;
+            })
+            .attr('y2', function (d) {
+                return d.y2;
+            })
+            .attr('stroke-width', 2);
+};
+},{}],14:[function(require,module,exports){
 module.exports = function svgCross (sel) {
     console.log('cross');
     console.log(sel);
@@ -1481,7 +1527,7 @@ module.exports = function svgCross (sel) {
             })
             .attr('stroke-width', 1);
 };
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = function svgNextArrow (sel) {
     console.log('next arrow');
     console.log(sel);
@@ -1514,7 +1560,7 @@ module.exports = function svgNextArrow (sel) {
             })
             .attr('stroke-width', 1);
 };
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 // text input, with placeholder
 // dispatches when the value changes
 // against the initial value
@@ -1590,7 +1636,7 @@ module.exports = function TextInput () {
 
     return self;
 };
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 // textarea, with placeholder, and label
 // dispatches when the value changes
 // against the initial value
@@ -1675,7 +1721,7 @@ module.exports = function TextArea () {
 
     return self;
 };
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = function UpdatableComponentManager () {
     var self = {},
         updatable = [],
@@ -1729,7 +1775,7 @@ module.exports = function UpdatableComponentManager () {
 
     return self;
 };
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./util/clone'),
@@ -1800,7 +1846,7 @@ function STEAMMap() {
 
     init();
 }
-},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./filterUI":7,"./filters":8,"./map":19,"./modalFlow":20,"./nav":21,"./network":22,"./user":28,"./util/clone":29,"./util/getTSV":30}],19:[function(require,module,exports){
+},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./filterUI":7,"./filters":8,"./map":20,"./modalFlow":21,"./nav":22,"./network":23,"./user":29,"./util/clone":30,"./util/getTSV":31}],20:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -1839,7 +1885,7 @@ function Map (context) {
 
     return map;
 }
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
 
@@ -2518,7 +2564,7 @@ function ModalFlow (context) {
 
     return self;
 }
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/modalAnimation":10,"./formComponents/radio":11,"./formComponents/socialAuthSelection":12,"./formComponents/svgCross":13,"./formComponents/svgNextArrow":14}],21:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/modalAnimation":10,"./formComponents/radio":11,"./formComponents/socialAuthSelection":12,"./formComponents/svgCross":14,"./formComponents/svgNextArrow":15}],22:[function(require,module,exports){
 var Nav = function () {
     // blanket is the element that should appear
     //         when the mobile toggle is enabled
@@ -2615,7 +2661,7 @@ var Nav = function () {
 };
 
 module.exports = Nav;
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var svg_cross = require('./formComponents/svgCross');
 
 module.exports = Network;
@@ -3097,7 +3143,7 @@ function Network (context) {
 
     return network;
 }
-},{"./formComponents/svgCross":13}],23:[function(require,module,exports){
+},{"./formComponents/svgCross":14}],24:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution'),
     Settings = require('./profile_settings'),
@@ -3367,7 +3413,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./formComponents/svgNextArrow":14,"./profile_individual":24,"./profile_institution":25,"./profile_settings":26}],24:[function(require,module,exports){
+},{"./formComponents/svgNextArrow":15,"./profile_individual":25,"./profile_institution":26,"./profile_settings":27}],25:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3608,7 +3654,7 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":15,"./formComponents/textarea":16,"./formComponents/updatableManager":17}],25:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":16,"./formComponents/textarea":17,"./formComponents/updatableManager":18}],26:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3903,7 +3949,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":15,"./formComponents/textarea":16,"./formComponents/updatableManager":17}],26:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":16,"./formComponents/textarea":17,"./formComponents/updatableManager":18}],27:[function(require,module,exports){
 module.exports = function ProfileSettings () {
     var self = {},
         selection;
@@ -3916,7 +3962,7 @@ module.exports = function ProfileSettings () {
 
     return self;
 };
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -3972,7 +4018,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -4127,7 +4173,7 @@ function User (context) {
 
     return user;
 }
-},{"./profile":23}],29:[function(require,module,exports){
+},{"./profile":24}],30:[function(require,module,exports){
 var clone = function clone (obj) {
     // Thanks to stackoverflow:
     // http://stackoverflow.com/questions/
@@ -4162,7 +4208,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.clone = clone;
 }
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
         data;
@@ -4187,5 +4233,5 @@ module.exports = function dataTSV (url) {
 
     return self;
 };
-},{}]},{},[18])
+},{}]},{},[19])
 ;

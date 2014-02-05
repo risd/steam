@@ -555,7 +555,6 @@ textarea {
 
   @page {
     margin: 0.5cm; }
-
   p,
   h2,
   h3 {
@@ -1382,7 +1381,6 @@ textarea {
 @font-face {
   font-family: "ModernPictograms";
   src: url("../../fonts/modernpics.otf"); }
-
 body {
   margin: 0px; }
 
@@ -2058,7 +2056,6 @@ input[type="submit"]:hover {
     -ms-transform: scale(1.3);
     -o-transform: scale(1.3);
     transform: scale(1.3); } }
-
 .center-in-parent {
   position: relative;
   margin: 0 auto;
@@ -2163,11 +2160,11 @@ header {
 /************
 Global filters
 */
-.filter_bar {
+.filter-bar {
   position: absolute;
   top: 200px; }
 
-.filter_bar .button {
+.filter-bar .button {
   cursor: pointer;
   width: 124px;
   font-family: "Mercury Display";
@@ -2179,15 +2176,18 @@ Global filters
   margin: 0;
   line-height: 0.9em; }
 
-.filter_bar .button {
+.filter-bar .collapse {
+  display: none; }
+
+.filter-bar .button {
   background-color: transparent;
   opacity: 0.5; }
 
-.filter_bar .button.active {
+.filter-bar .button.active {
   color: white;
   opacity: 1.0; }
 
-.filter_bar .button.active.research {
+.filter-bar .button.active.research {
   background-color: #69e640;
   -moz-transition: all 0.7s linear;
   -o-transition: all 0.7s linear;
@@ -2195,7 +2195,7 @@ Global filters
   -ms-transition: all 0.7s linear;
   transition: all 0.7s linear; }
 
-.filter_bar .button.active.education {
+.filter-bar .button.active.education {
   background-color: #ff8931;
   -moz-transition: all 0.7s linear;
   -o-transition: all 0.7s linear;
@@ -2203,7 +2203,7 @@ Global filters
   -ms-transition: all 0.7s linear;
   transition: all 0.7s linear; }
 
-.filter_bar .button.active.political {
+.filter-bar .button.active.political {
   background-color: #ff617f;
   -moz-transition: all 0.7s linear;
   -o-transition: all 0.7s linear;
@@ -2211,7 +2211,7 @@ Global filters
   -ms-transition: all 0.7s linear;
   transition: all 0.7s linear; }
 
-.filter_bar .button.active.industry {
+.filter-bar .button.active.industry {
   background-color: #27b4f2;
   -moz-transition: all 0.7s linear;
   -o-transition: all 0.7s linear;
@@ -2219,7 +2219,7 @@ Global filters
   -ms-transition: all 0.7s linear;
   transition: all 0.7s linear; }
 
-.filter_bar.all-active .button.active {
+.filter-bar.all-active .button.active {
   background-color: transparent;
   color: #808285;
   opacity: 1.0;
@@ -2239,7 +2239,7 @@ h3.filter-by {
   margin: 0 0 0 27px;
   padding: 0; }
 
-.filter_bar .button:before {
+.filter-bar .button .indicator {
   position: relative;
   display: inline-block;
   top: 0;
@@ -2251,7 +2251,7 @@ h3.filter-by {
   border-width: 1px;
   border-style: solid; }
 
-.filter_bar .button:before {
+.filter-bar .button .indicator {
   border-color: white;
   -moz-transition: all 0.8s ease-in-out;
   -o-transition: all 0.8s ease-in-out;
@@ -2259,16 +2259,16 @@ h3.filter-by {
   -ms-transition: all 0.8s ease-in-out;
   transition: all 0.8s ease-in-out; }
 
-.filter_bar.all-active .button.research:before {
+.filter-bar.all-active .button.research .indicator {
   border-color: #69e640; }
 
-.filter_bar.all-active .button.political:before {
+.filter-bar.all-active .button.political .indicator {
   border-color: #ff617f; }
 
-.filter_bar.all-active .button.education:before {
+.filter-bar.all-active .button.education .indicator {
   border-color: #ff8931; }
 
-.filter_bar.all-active .button.industry:before {
+.filter-bar.all-active .button.industry .indicator {
   border-color: #27b4f2; }
 
 /* end global filters */
@@ -3163,10 +3163,33 @@ input[type=radio] {
   .leaflet-top {
     top: 10%; }
 
-  .filter_bar {
+  * {
+    transition: all 3s ease-in-out; }
+
+  .filter-bar {
     top: 26%; }
-    .filter_bar.all-active .button.active {
+    .filter-bar.all-active .button.active {
       background-color: rgba(255, 255, 255, 0.9); }
+    .filter-bar .filter-bar-header {
+      cursor: pointer;
+      background-color: rgba(255, 255, 255, 0.9); }
+    .filter-bar.collapse {
+      overflow: hidden; }
+      .filter-bar.collapse h3,
+      .filter-bar.collapse .label {
+        -webkit-transform: translateX(-300px); }
+    .filter-bar h3,
+    .filter-bar .label {
+      -webkit-transform: translateX(0px); }
+    .filter-bar h3 {
+      font-size: 18px;
+      display: inline-block;
+      margin-left: 7px; }
+    .filter-bar .collapse {
+      display: inline-block;
+      margin-left: 7px; }
+    .filter-bar line {
+      stroke: #c8c8c8; }
 
   .top-right {
     top: 26%; }
@@ -3181,9 +3204,9 @@ input[type=radio] {
   .leaflet-left {
     left: 23px; }
 
-  .filter_bar {
+  .filter-bar {
     top: 122px; }
-    .filter_bar.all-active .button.active {
+    .filter-bar.all-active .button.active {
       background-color: rgba(255, 255, 255, 0.9); }
 
   .top-right {

@@ -123,7 +123,8 @@
         // top: 75px;
         top: 10%;
     }
-    .filter_bar {
+    * { transition: all 3s ease-in-out; }
+    .filter-bar {
         // top: 155px;
         top: 26%;
 
@@ -132,7 +133,43 @@
                 background-color: rgba($white,
                                        $fullscreen-color-opacity);
             }
-        }   
+        }
+
+        .filter-bar-header {
+            cursor: pointer;
+            background-color: rgba($white,
+                                   $fullscreen-color-opacity);
+        }
+
+        &.collapse {
+            // width: 28px;
+            overflow: hidden;
+            h3,
+            .label {
+                // opacity: 0;
+                -webkit-transform: translateX(-300px);
+                // line-height: 16.2px;
+            }
+        }
+
+        h3,
+        .label {
+            // opacity: 1;
+            -webkit-transform: translateX(0px);
+        }
+
+        h3 {
+            font-size: 18px;
+            display: inline-block;
+            margin-left: 7px;
+        }
+        .collapse {
+            display: inline-block;
+            margin-left: 7px;
+        }
+        line {
+            stroke: $off-white;    
+        }
     }
 
     .top-right {
@@ -151,7 +188,7 @@
     .leaflet-left {
         left: 23px;
     }
-    .filter_bar {
+    .filter-bar {
         top: 122px;
 
         &.all-active {

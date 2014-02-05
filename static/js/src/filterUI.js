@@ -1,19 +1,31 @@
 module.exports = filterUI;
 
+
+var svg_arrow = require('./formComponents/svgArrow');
+
 // UI for manipulating data
 function filterUI (context) {
 
     var ui = {},
         active_count = 4,
         prev_active_count,
-        clicked = 0;
+        clicked = 0,
+        collapsed = false;
 
-    var filter_bar = d3.select('.filter_bar');
+    var filter_bar = d3.select('.filter-bar'),
+        filter_bar_header = d3.select('.filter-bar-header'),
+        filter_collapsable_visual = d3.select('.filter-bar .collapse');
 
     ui.filter_bar = filter_bar;
 
     ui.init = function () {
         filter_bar.classed('all-active', true);
+        filter_bar_header
+            .on('click', function () {
+                collapsed = collapsed ? false : true;
+                filter_bar.classed('collapse', collapsed);
+            });
+        filter_collapsable_visual.call(svg_arrow);
 
         var filter_buttons = filter_bar.selectAll('.button')
             .data(context.filters)
@@ -22,8 +34,9 @@ function filterUI (context) {
             .attr('class', function (d) {
                 return 'button active ' + d.value;
             })
-            .text(function (d) {
-                return d.display;
+            .html(function (d) {
+                return  "<span class='indicator'></span>" +
+                    "<span class='label'>" + d.display + "</span>";
             })
             .on('click', function (d) {
 

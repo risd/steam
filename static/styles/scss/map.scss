@@ -134,11 +134,11 @@ header {
 /************
 Global filters
 */
-.filter_bar {
+.filter-bar {
     position: absolute;
     top: 200px;
 }
-.filter_bar .button {
+.filter-bar .button {
     cursor: pointer;
     width: 124px;
 
@@ -154,40 +154,42 @@ Global filters
     margin: 0;
     line-height: 0.9em;
 }
-
-.filter_bar .button {
+.filter-bar .collapse {
+    display: none;
+}
+.filter-bar .button {
     background-color: transparent;
     opacity: 0.5;
 }
-.filter_bar .button.active {
+.filter-bar .button.active {
     color: $white;
     opacity: 1.0;
 }
-.filter_bar .button.active.research {
+.filter-bar .button.active.research {
     background-color: $color-research;
     @include transition(all,
                         0.7s,
                         linear);
 }
-.filter_bar .button.active.education {
+.filter-bar .button.active.education {
     background-color: $color-education;
     @include transition(all,
                         0.7s,
                         linear);
 }
-.filter_bar .button.active.political {
+.filter-bar .button.active.political {
     background-color: $color-political;
     @include transition(all,
                         0.7s,
                         linear);
 }
-.filter_bar .button.active.industry {
+.filter-bar .button.active.industry {
     background-color: $color-industry;
     @include transition(all,
                         0.7s,
                         linear);
 }
-.filter_bar.all-active .button.active {
+.filter-bar.all-active .button.active {
     background-color: transparent;
     color: rgb(128, 130, 133);
     opacity: 1.0;
@@ -206,7 +208,7 @@ h3.filter-by {
     margin: 0 0 0 27px;
     padding: 0;
 }
-.filter_bar .button:before {
+.filter-bar .button .indicator {
     position: relative;
     display: inline-block;
 
@@ -222,22 +224,22 @@ h3.filter-by {
     border-width: 1px;
     border-style: solid;
 }
-.filter_bar .button:before {
+.filter-bar .button .indicator {
     border-color: $white;
     @include transition(all,
                         0.8s,
                         ease-in-out);
 }
-.filter_bar.all-active .button.research:before {
+.filter-bar.all-active .button.research .indicator {
     border-color: $color-research;
 }
-.filter_bar.all-active .button.political:before {
+.filter-bar.all-active .button.political .indicator {
     border-color: $color-political;
 }
-.filter_bar.all-active .button.education:before {
+.filter-bar.all-active .button.education .indicator {
     border-color: $color-education;
 }
-.filter_bar.all-active .button.industry:before {
+.filter-bar.all-active .button.industry .indicator {
     border-color: $color-industry;
 }
 /* end global filters */
