@@ -2746,6 +2746,9 @@ form / profile
   .canvas-wrapper .close-button line {
     stroke: #516272; }
 
+.canvas-wrapper .header-wrapper .close-button {
+  display: none; }
+
 .checkmark {
   position: absolute;
   left: -40px;
@@ -2946,24 +2949,24 @@ textarea {
     -ms-transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035);
     transition: all 0.2s cubic-bezier(0.95, 0.05, 0.795, 0.035); }
 
-.political input[type=radio]:checked + .type-option-label .indicator {
-  border-color: #ff617f; }
-  .political input[type=radio]:checked + .type-option-label .indicator .fill {
-    background-color: white; }
-
-.research input[type=radio]:checked + .type-option-label .indicator {
+.political .sel-work-in input[type=radio]:checked + .type-option-label .indicator {
   border-color: white; }
-  .research input[type=radio]:checked + .type-option-label .indicator .fill {
+  .political .sel-work-in input[type=radio]:checked + .type-option-label .indicator .fill {
+    background-color: #ff617f; }
+
+.research .sel-work-in input[type=radio]:checked + .type-option-label .indicator {
+  border-color: white; }
+  .research .sel-work-in input[type=radio]:checked + .type-option-label .indicator .fill {
     background-color: #69e640; }
 
-.education input[type=radio]:checked + .type-option-label .indicator {
-  border-color: #ff8931; }
-  .education input[type=radio]:checked + .type-option-label .indicator .fill {
+.education .sel-work-in input[type=radio]:checked + .type-option-label .indicator {
+  border-color: white; }
+  .education .sel-work-in input[type=radio]:checked + .type-option-label .indicator .fill {
     background-color: #ff8931; }
 
-.industry input[type=radio]:checked + .type-option-label .indicator {
-  border-color: #27b4f2; }
-  .industry input[type=radio]:checked + .type-option-label .indicator .fill {
+.industry .sel-work-in input[type=radio]:checked + .type-option-label .indicator {
+  border-color: white; }
+  .industry .sel-work-in input[type=radio]:checked + .type-option-label .indicator .fill {
     background-color: #27b4f2; }
 
 input[type=radio] {
@@ -3089,6 +3092,7 @@ input[type=radio] {
     display: none; }
 
   .canvas-wrapper .header-wrapper .close-button {
+    display: block;
     -webkit-transform: scale(0.65);
     position: absolute;
     top: -10px;
@@ -3166,7 +3170,10 @@ input[type=radio] {
   input[type=radio] {
     position: relative;
     margin: 0;
-    height: 0; } }
+    height: 0; }
+
+  .canvas-wrapper .four-column {
+    margin-top: 40px; } }
 @media only screen and (max-height: 768px) {
   .leaflet-top {
     top: 10%; }

@@ -1,21 +1,21 @@
 /*
 Syntax error: Undefined variable: "$white".
-        on line 144 of static/styles/scss/breakpoints.scss
+        on line 148 of static/styles/scss/breakpoints.scss
 
-139:         top: 26%;
-140:         left: 0;
-141: 
-142:         &.all-active {
-143:             .button.active {
-144:                 background-color: rgba($white,
-145:                                        $fullscreen-color-opacity);
-146:             }
-147:         }
-148: 
-149:         .filter-bar-header {
+143:         top: 26%;
+144:         left: 0;
+145: 
+146:         &.all-active {
+147:             .button.active {
+148:                 background-color: rgba($white,
+149:                                        $fullscreen-color-opacity);
+150:             }
+151:         }
+152: 
+153:         .filter-bar-header {
 
 Backtrace:
-static/styles/scss/breakpoints.scss:144
+static/styles/scss/breakpoints.scss:148
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/variable.rb:49:in `_perform'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/node.rb:50:in `perform'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/funcall.rb:169:in `perform_arg'
@@ -110,4 +110,4 @@ static/styles/scss/breakpoints.scss:144
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Undefined variable: \"$white\".\A         on line 144 of static/styles/scss/breakpoints.scss\A \A 139:         top: 26%;\A 140:         left: 0;\A 141: \A 142:         &.all-active {\A 143:             .button.active {\A 144:                 background-color: rgba($white,\A 145:                                        $fullscreen-color-opacity);\A 146:             }\A 147:         }\A 148: \A 149:         .filter-bar-header {"; }
+  content: "Syntax error: Undefined variable: \"$white\".\A         on line 148 of static/styles/scss/breakpoints.scss\A \A 143:         top: 26%;\A 144:         left: 0;\A 145: \A 146:         &.all-active {\A 147:             .button.active {\A 148:                 background-color: rgba($white,\A 149:                                        $fullscreen-color-opacity);\A 150:             }\A 151:         }\A 152: \A 153:         .filter-bar-header {"; }

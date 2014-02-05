@@ -1463,8 +1463,6 @@ module.exports = function socialAuthSelection (context) {
 };
 },{"../ui/checkmark":28}],13:[function(require,module,exports){
 module.exports = function svgArrow (sel) {
-    console.log('arrow');
-    console.log(sel);
     var button_size = 10;
 
     // add the closing x as svg
@@ -1496,8 +1494,6 @@ module.exports = function svgArrow (sel) {
 };
 },{}],14:[function(require,module,exports){
 module.exports = function svgCross (sel) {
-    console.log('cross');
-    console.log(sel);
     var button_size = 45;
 
     // add the closing x as svg
@@ -1529,8 +1525,6 @@ module.exports = function svgCross (sel) {
 };
 },{}],15:[function(require,module,exports){
 module.exports = function svgNextArrow (sel) {
-    console.log('next arrow');
-    console.log(sel);
     var button_size = 20;
 
     // add the closing x as svg

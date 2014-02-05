@@ -670,6 +670,9 @@ form / profile
         stroke: $color-slate;
     }
 }
+.canvas-wrapper .header-wrapper .close-button {
+    display: none;
+}
 
 // .political .enabled,
 // .political .logout-button:hover {
@@ -877,26 +880,26 @@ textarea {
         @include transition(all, 0.2s, cubic-bezier(.95, .05, .795, .035));
     }
 }
-.political input[type=radio]:checked + .type-option-label .indicator {
-    border-color: $color-political;
+.political .sel-work-in input[type=radio]:checked + .type-option-label .indicator {
+    border-color: $white;
     .fill {
-        background-color: $white;
+        background-color: $color-political;
     }
 } 
-.research input[type=radio]:checked + .type-option-label .indicator {
+.research .sel-work-in input[type=radio]:checked + .type-option-label .indicator {
     border-color: $white;
     .fill {
         background-color: $color-research;
     }
 }
-.education input[type=radio]:checked + .type-option-label .indicator {
-    border-color: $color-education;
+.education .sel-work-in input[type=radio]:checked + .type-option-label .indicator {
+    border-color: $white;
     .fill {
         background-color: $color-education;
     }
 }
-.industry input[type=radio]:checked + .type-option-label .indicator {
-    border-color: $color-industry;
+.industry .sel-work-in input[type=radio]:checked + .type-option-label .indicator {
+    border-color: $white;
     .fill {
         background-color: $color-industry;
     }

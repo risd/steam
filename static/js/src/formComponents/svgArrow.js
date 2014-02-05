@@ -1,6 +1,4 @@
 module.exports = function svgArrow (sel) {
-    console.log('arrow');
-    console.log(sel);
     var button_size = 10;
 
     // add the closing x as svg
