@@ -1,9 +1,61 @@
 /*
-----IPHONE SPECIFIC STYLES-------------------------------
+----DESKTOP SPECIFIC STYLES-------------------------------
+
+---------------------------------------------------------
+*/
+@media only screen and (min-width: 1024px) {
+  .close-button.tablet {
+    display: none; }
+
+  .close-button.desktop {
+    display: block; } }
+/*
+----TABLET SPECIFIC STYLES-------------------------------
+
+---------------------------------------------------------
+*/
+@media only screen and (max-width: 1024px) {
+  .modal-wrapper {
+    margin-top: 30px; }
+
+  .close-button.tablet {
+    display: inline-block;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    -webkit-transform: scale(0.8); }
+
+  .close-button.desktop {
+    display: none; } }
+/*
+----MOBILE SPECIFIC STYLES-------------------------------
 
 ---------------------------------------------------------
 */
 @media only screen and (min-width: 320px) and (max-width: 600px) {
+  .modal-header-avatar {
+    text-align: left; }
+
+  .close-button.tablet {
+    -webkit-transform: scale(0.7); }
+
+  .modal-header-content.active {
+    display: inline-block; }
+
+  .modal-header-content {
+    width: 80%; }
+
+  .modal-header-text {
+    text-align: left; }
+
+  .modal-header-avatar {
+    text-align: left; }
+
+  .modal-header-button {
+    text-align: right;
+    width: 20%; }
+
   .four-column-one,
   .four-column-two,
   .four-column-three,

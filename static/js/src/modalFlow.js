@@ -88,7 +88,7 @@ function ModalFlow (context) {
     var el = self.el = {
         button: {
             close_modal: {
-                el: d3.select('#close-modal'),
+                el: d3.selectAll('.close-button'),
                 on_click: function () {
                     if (context.user.profile.built()) {
                         self.state('inactive_with_profile');
