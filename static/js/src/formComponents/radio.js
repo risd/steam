@@ -32,10 +32,6 @@ module.exports = function radioSelection () {
             selected = initial_selected;
         }
 
-        console.log('render radio');
-        console.log(initial_selected);
-        console.log(selected);
-
         var sel = node
             .selectAll('.type-option')
             .data(data)

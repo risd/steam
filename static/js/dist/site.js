@@ -1205,10 +1205,6 @@ module.exports = function radioSelection () {
             selected = initial_selected;
         }
 
-        console.log('render radio');
-        console.log(initial_selected);
-        console.log(selected);
-
         var sel = node
             .selectAll('.type-option')
             .data(data)
@@ -2752,18 +2748,26 @@ function Network (context) {
     network.nodes = function (x) {
         if(!arguments.length) return nodes;
 
+        width = window.innerWidth;
+        height = window.innerHeight;
+
+        console.log('any individuals?');
+
         // give an initial position
         x.forEach(function (d) {
+            console.log(d);
             d.x = width/2 + random_around_zero(30);
             d.y = height/2 + random_around_zero(30);
             d.dx = width/2 + random_around_zero(30);
             d.dy = height/2 + random_around_zero(30);
 
             // also setup type
-            if (d.indiviual) {
-                d.type = 'indiviual';
-            } else {
+            if (d.individual) {
+                d.type = 'individual';
+            } else if (d.institution) {
                 d.type = 'institution';
+            } else {
+                d.type = '';
             }
         });
 
@@ -3125,9 +3129,7 @@ function Network (context) {
         sel.append('img')
             .attr('class', 'avatar')
             .attr('src', function (d) {
-                return d.avatar ? d.avatar :
-                    "https://pbs.twimg.com" +
-                    "/profile_images/2216753469/ruben_face_normal.png";
+                return d.avatar_url;
             });
 
         var inner_div = sel.append('div')
@@ -3136,15 +3138,22 @@ function Network (context) {
         inner_div.append('p')
             .attr('class', 'name')
             .text(function (d) {
-                return (d.first_name || '') + ' ' +
-                       (d.last_name || '');
+                var name;
+                if (d.type === 'individual') {
+                    name = (d.individual.first_name || '') + ' ' +
+                       (d.individual.last_name || '');
+                } else if (d.type === 'institution') {
+                    name = (d.institution.name || '');
+                } else {
+                    name = '';
+                }
+                return name;
             });
 
         inner_div.append('p')
             .attr('class', 'description')
             .text(function (d) {
-                return d.description || 'This is a tweets length'+
-                    ' description about why I am interested in STEAM';
+                return d.description;
             });
     }
 
