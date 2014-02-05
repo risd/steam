@@ -22,6 +22,9 @@
     .modal-wrapper {
         margin-top: 30px;
     }
+    .modal-header-text.active {
+        width: 90%;
+    }
     .close-button.tablet {
         display: inline-block;
         padding: 0;
@@ -32,7 +35,7 @@
     }
     .close-button.desktop {
         display: none;
-    }      
+    }
 }
 
 
@@ -50,6 +53,13 @@
     }
     .modal-header-content.active {
         display: inline-block;
+    }
+    .modal-header h1 {
+        font-size: 80px;
+        line-height: 80px;
+    }
+    .modal-header-text.active {
+        margin-top: 40px;
     }
     .modal-header-content {
         width: 80%;
@@ -74,6 +84,10 @@
         width: 100%;
         margin-right: 0;
     }
+    .main-nav .four-column-one {
+        width: 45%;
+        margin-right: 2.779862674784%;
+    }
 
     .sel-work-in .type-option {
         margin-bottom: 12px;
@@ -84,14 +98,14 @@
     .type-option-label {
         position: relative;
     }
-    .type-option-label > span:first-child {
+    .type-option-label > .text {
         position: absolute;
-        left: 95px;
+        left: 82px;
     }
-    .type-option-label > span:last-child {
+    .type-option-label > .indicator {
         position: absolute;
         top: 0;
-        left: 50px;
+        left: 34px;
         margin-top: 3px;
     }
 
@@ -100,7 +114,60 @@
         margin: 0;
         height: 0;
     }
+}
 
 
+// styles for sidebars based on height
+@media only screen and (max-height:768px) {
+    .leaflet-top {
+        // top: 75px;
+        top: 10%;
+    }
+    .filter_bar {
+        // top: 155px;
+        top: 26%;
 
+        &.all-active {
+            .button.active {
+                background-color: rgba($white,
+                                       $fullscreen-color-opacity);
+            }
+        }   
+    }
+
+    .top-right {
+        top: 26%;
+    }
+    .bottom-left {
+        bottom: auto;
+        // top: 410px;
+        top: 80%;
+    }
+}
+@media only screen and (max-height:420px) {
+    .leaflet-top {
+        top: 50px;
+    }
+    .leaflet-left {
+        left: 23px;
+    }
+    .filter_bar {
+        top: 122px;
+
+        &.all-active {
+            .button.active {
+                background-color: rgba($white,
+                                       $fullscreen-color-opacity);
+            }
+        }   
+    }
+    .top-right {
+        top: 122px;
+    }
+    .bottom-left {
+        bottom: auto;
+        top: 338px;
+        -webkit-transform: scale(0.8);
+        left: 6px;
+    }
 }

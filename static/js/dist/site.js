@@ -1025,7 +1025,7 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../ui/checkmark":26,"./text":15}],10:[function(require,module,exports){
+},{"../ui/checkmark":27,"./text":15}],10:[function(require,module,exports){
 module.exports = function flowAnimation () {
     var self = {},
         selection,
@@ -1448,7 +1448,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":26}],13:[function(require,module,exports){
+},{"../ui/checkmark":27}],13:[function(require,module,exports){
 module.exports = function svgCross (sel) {
     console.log('cross');
     console.log(sel);
@@ -1737,6 +1737,7 @@ var filters = require('./filters'),
 
     api = require('./backend')(),
 
+    Nav = require('./nav'),
     filterUI = require('./filterUI'),
     network = require('./network'),
     clusters = require('./clusters'),
@@ -1775,6 +1776,15 @@ function STEAMMap() {
     context.user = user(context);
 
     function init () {
+        context.nav = Nav()
+            .container(d3.select('.main-nav-container'))
+            .toggleMobile(d3.select('.mobile-logo'))
+            .mobileHiddenClass('mobile-hidden')
+            .blanket(d3.select('.mobile-blanket'))
+            .blanketClass('blanketed')
+            .scrollDistanceHideMobile(100)
+            .setup();
+
         context.clusters
             .bindArcs()
             .init();
@@ -1790,7 +1800,7 @@ function STEAMMap() {
 
     init();
 }
-},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./filterUI":7,"./filters":8,"./map":19,"./modalFlow":20,"./network":21,"./user":27,"./util/clone":28,"./util/getTSV":29}],19:[function(require,module,exports){
+},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./filterUI":7,"./filters":8,"./map":19,"./modalFlow":20,"./nav":21,"./network":22,"./user":28,"./util/clone":29,"./util/getTSV":30}],19:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -2509,6 +2519,103 @@ function ModalFlow (context) {
     return self;
 }
 },{"./formComponents/dropdownConditionalText":9,"./formComponents/modalAnimation":10,"./formComponents/radio":11,"./formComponents/socialAuthSelection":12,"./formComponents/svgCross":13,"./formComponents/svgNextArrow":14}],21:[function(require,module,exports){
+var Nav = function () {
+    // blanket is the element that should appear
+    //         when the mobile toggle is enabled
+    //         and should close the mobile nav 
+    //         when its touched
+    // blanket class is the name of the class
+    //         that enables the blanket
+    // container el is the element that the mobile
+    //         hidden class gets applied to
+    // enable mobile el is the element that shows
+    //         the mobile nav
+    // mobile hidden class is the class that is
+    //         applied to the nav in the mobile
+    //         range that hides the nav.
+    // scroll_distance hide mobile is the distance
+    //         down the page one would have to scroll
+    //         in order for the mobile nav to be engaged.
+    var nav = {},
+        blanket_el,
+        blanket_class,
+        container_el,
+        toggle_mobile_el,
+        mobile_hidden_class,
+        scroll_distance_hide_mobile;
+
+    nav.blanket = function (x) {
+        if (!arguments.length) return blanket_el;
+        blanket_el = x;
+        return nav;
+    };
+
+    nav.blanketClass = function (x) {
+        if (!arguments.length) return blanket_class;
+        blanket_class = x;
+        return nav;
+    };
+
+    nav.container = function (x) {
+        if (!arguments.length) return container_el;
+        container_el = x;
+        return nav;
+    };
+
+    nav.mobileHiddenClass = function (x) {
+        if (!arguments.length) return mobile_hidden_class;
+        mobile_hidden_class = x;
+        return nav;
+    };
+
+    nav.toggleMobile = function (x) {
+        if (!arguments.length) return toggle_mobile_el;
+        toggle_mobile_el = x;
+        return nav;
+    };
+
+    nav.scrollDistanceHideMobile = function (x) {
+        if (!arguments.length) return scroll_distance_hide_mobile;
+        scroll_distance_hide_mobile = x;
+        return nav;
+    };
+
+    nav.setup = function () {
+        toggle_mobile_el
+            .on('click.toggleMobile', function () {
+                if (container_el.classed(mobile_hidden_class)) {
+                    // show the mobile nav
+                    container_el.classed(mobile_hidden_class, false);
+                    blanket_el.classed(blanket_class, true);
+                } else {
+                    // hide the mobile nav
+                    container_el.classed(mobile_hidden_class, true);
+                    blanket_el.classed(blanket_class, false);
+                }
+                
+            });
+
+        d3.select(window)
+            .on('scroll.mobileNav', function () {
+                if (pageYOffset > scroll_distance_hide_mobile) {
+                    container_el.classed(mobile_hidden_class, true);
+                } else {
+                    container_el.classed(mobile_hidden_class, false);
+                }
+            });
+
+        blanket_el
+            .on('click.hideMobile', function () {
+                container_el.classed(mobile_hidden_class, true);
+                blanket_el.classed(blanket_class, false);
+            });
+    };
+
+    return nav;
+};
+
+module.exports = Nav;
+},{}],22:[function(require,module,exports){
 var svg_cross = require('./formComponents/svgCross');
 
 module.exports = Network;
@@ -2990,7 +3097,7 @@ function Network (context) {
 
     return network;
 }
-},{"./formComponents/svgCross":13}],22:[function(require,module,exports){
+},{"./formComponents/svgCross":13}],23:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution'),
     Settings = require('./profile_settings'),
@@ -3260,7 +3367,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./formComponents/svgNextArrow":14,"./profile_individual":23,"./profile_institution":24,"./profile_settings":25}],23:[function(require,module,exports){
+},{"./formComponents/svgNextArrow":14,"./profile_individual":24,"./profile_institution":25,"./profile_settings":26}],24:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3501,7 +3608,7 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":15,"./formComponents/textarea":16,"./formComponents/updatableManager":17}],24:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":15,"./formComponents/textarea":16,"./formComponents/updatableManager":17}],25:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3796,7 +3903,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":15,"./formComponents/textarea":16,"./formComponents/updatableManager":17}],25:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":15,"./formComponents/textarea":16,"./formComponents/updatableManager":17}],26:[function(require,module,exports){
 module.exports = function ProfileSettings () {
     var self = {},
         selection;
@@ -3809,7 +3916,7 @@ module.exports = function ProfileSettings () {
 
     return self;
 };
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -3865,7 +3972,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -4020,7 +4127,7 @@ function User (context) {
 
     return user;
 }
-},{"./profile":22}],28:[function(require,module,exports){
+},{"./profile":23}],29:[function(require,module,exports){
 var clone = function clone (obj) {
     // Thanks to stackoverflow:
     // http://stackoverflow.com/questions/
@@ -4055,7 +4162,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.clone = clone;
 }
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
         data;

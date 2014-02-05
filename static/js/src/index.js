@@ -5,6 +5,7 @@ var filters = require('./filters'),
 
     api = require('./backend')(),
 
+    Nav = require('./nav'),
     filterUI = require('./filterUI'),
     network = require('./network'),
     clusters = require('./clusters'),
@@ -43,6 +44,15 @@ function STEAMMap() {
     context.user = user(context);
 
     function init () {
+        context.nav = Nav()
+            .container(d3.select('.main-nav-container'))
+            .toggleMobile(d3.select('.mobile-logo'))
+            .mobileHiddenClass('mobile-hidden')
+            .blanket(d3.select('.mobile-blanket'))
+            .blanketClass('blanketed')
+            .scrollDistanceHideMobile(100)
+            .setup();
+
         context.clusters
             .bindArcs()
             .init();
