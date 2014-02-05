@@ -2853,13 +2853,26 @@ function Network (context) {
             .append('div')
                 .attr('class', 'header-wrapper');
 
-        title_wrapper_sel
+        var title_grid_sel = title_wrapper_sel
             .append('div')
-                .attr('class', 'grid full-width clearfix')
+                .attr('class', 'grid full-width clearfix');
+
+        title_grid_sel
             .append('div')
                 .attr('class', 'four-column clearfix offset-one')
             .append('h3')
                 .html(title);
+
+        title_grid_sel
+            .selectAll('.close-button')
+            .data([{ f: network.remove }])
+            .enter()
+            .append('div')
+            .attr('class', 'close-button')
+            .on('click', function (d) {
+                d.f();
+            })
+            .call(svg_cross);
 
         force = d3.layout.force()
             .friction(friction)

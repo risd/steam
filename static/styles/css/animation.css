@@ -1,100 +1,77 @@
-.next-button {
-  opacity: 0;
-  margin-top: 0px;
-  background-color: transparent;
-  -webkit-transition-property: opacity, margin-top;
-  -webkit-transition-duration: 0.3s;
-  -webkit-transition-delay: 0s;
-  -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
-  .next-button.enabled {
-    opacity: 1;
-    margin-top: 40px;
-    -webkit-transition-property: opacity, margin-top;
-    -webkit-transition-duration: 0.2s;
-    -webkit-transition-delay: 0s;
-    -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
-  .next-button svg {
-    -webkit-transform: translateX(0px);
-    -webkit-transition-property: -webkit-transform;
-    -webkit-transition-duration: 0.2s;
-    -webkit-transition-delay: 0s;
-    -webkit-transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
-  .next-button:hover svg {
-    -webkit-transform: translateX(4px);
-    -webkit-transition-property: -webkit-transform;
-    -webkit-transition-duration: 0.2s;
-    -webkit-transition-delay: 0s;
-    -webkit-transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
+/*
+Syntax error: Undefined variable: "$white".
+        on line 119 of static/styles/scss/animation.scss
 
-.logout-button svg,
-.button-go-to-profile svg,
-.button-explore-map svg,
-.button-explore-region svg {
-  -webkit-transform: translateX(0px);
-  -webkit-transition-property: -webkit-transform;
-  -webkit-transition-duration: 0.2s;
-  -webkit-transition-delay: 0s;
-  -webkit-transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
-.logout-button:hover svg,
-.button-go-to-profile:hover svg,
-.button-explore-map:hover svg,
-.button-explore-region:hover svg {
-  -webkit-transform: translateX(4px);
-  -webkit-transition-property: -webkit-transform;
-  -webkit-transition-duration: 0.2s;
-  -webkit-transition-delay: 0s;
-  -webkit-transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
+114:     //     -webkit-transition-delay: 0.3s;
+115:     //     -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);
+116:     // }
+117: }
+118: .animate-in-out.modal {
+119:     background: rgba($white, 0.0);
+120:     border-radius: 100%;
+121:     -webkit-transform: scale(0) translateY(-50px);
+122:     -webkit-transition-property: top, background-color, -webkit-transform, opacity, border-radius;
+123:     -webkit-transition-duration: 0s, 0.0s, 0.3s, 0.3s, 0.3s;
+124:     -webkit-transition-delay: 0.3s, 0s, 0s, 0s, 0s;
 
-.button-activate {
-  opacity: 0;
-  -webkit-transition-property: opacity;
-  -webkit-transition-duration: 0.3s;
-  -webkit-transition-delay: 0s;
-  -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
-  .button-activate.active {
-    opacity: 1;
-    -webkit-transition-property: opacity;
-    -webkit-transition-duration: 0.2s;
-    -webkit-transition-delay: 0s;
-    -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
-
-.animate-out-in.modal {
-  -webkit-transform: scale(1.5) translateY(-20px);
-  -webkit-transition-property: top, background-color, -webkit-transform, opacity;
-  -webkit-transition-duration: 0s, 0.3s, 0.3s, 0.3s;
-  -webkit-transition-delay: 0.3s, 0s, 0s, 0s;
-  -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
-  .animate-out-in.modal.active {
-    -webkit-transform: scale(1) translateY(0px);
-    -webkit-transition-property: top, opacity, -webkit-transform, background-color;
-    -webkit-transition-duration: 0s, 0.2s, 0.2s, 0.2s;
-    -webkit-transition-delay: 0s, 0s, 0s, 0s;
-    -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
-
-.animate-in-out.modal {
-  border-radius: 100%;
-  -webkit-transform: scale(0) translateY(-50px);
-  -webkit-transition-property: top, background-color, -webkit-transform, opacity, border-radius;
-  -webkit-transition-duration: 0s, 0.3s, 0.3s, 0.3s, 0.3s;
-  -webkit-transition-delay: 0.3s, 0s, 0s, 0s, 0s;
-  -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
-  .animate-in-out.modal.active {
-    border-radius: 0;
-    -webkit-transform: scale(1) translateY(0px);
-    -webkit-transition-property: top, opacity, -webkit-transform, background-color, border-radius;
-    -webkit-transition-duration: 0s, 0.2s, 0.2s, 0.2s, 0.2s;
-    -webkit-transition-delay: 0s, 0s, 0s, 0s, 0s;
-    -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
-
-.save-button,
-.logout-button {
-  -webkit-transition-property: background-color, color;
-  -webkit-transition-duration: 0.3s;
-  -webkit-transition-delay: 0s;
-  -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
-  .save-button.enabled,
-  .logout-button.enabled {
-    -webkit-transition-property: background-color, color;
-    -webkit-transition-duration: 0.2s;
-    -webkit-transition-delay: 0s;
-    -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
+Backtrace:
+static/styles/scss/animation.scss:119
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/variable.rb:49:in `_perform'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/node.rb:50:in `perform'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/funcall.rb:169:in `perform_arg'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/funcall.rb:124:in `block in _perform'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/funcall.rb:123:in `each'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/funcall.rb:123:in `each_with_index'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/funcall.rb:123:in `each'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/funcall.rb:123:in `map'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/funcall.rb:123:in `_perform'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/node.rb:50:in `perform'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:369:in `visit_prop'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `block in visit'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `block in with_base'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:115:in `with_frame'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `with_base'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `visit'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:392:in `block (2 levels) in visit_rule'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:392:in `map'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:392:in `block in visit_rule'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:174:in `with_environment'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:390:in `visit_rule'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `block in visit'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `block in with_base'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:115:in `with_frame'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `with_base'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `visit'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:162:in `block in visit_children'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:174:in `with_environment'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:161:in `visit_children'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:181:in `visit_root'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:152:in `visit'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:8:in `visit'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/root_node.rb:36:in `css_tree'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/root_node.rb:20:in `render'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/engine.rb:277:in `render'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/plugin/compiler.rb:348:in `update_stylesheet'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/plugin/compiler.rb:192:in `block in update_stylesheets'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/plugin/compiler.rb:189:in `each'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/plugin/compiler.rb:189:in `update_stylesheets'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/plugin/compiler.rb:277:in `block in watch'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/listener.rb:236:in `call'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/listener.rb:236:in `on_change'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/listener.rb:271:in `block in initialize_adapter'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapter.rb:244:in `call'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapter.rb:244:in `report_changes'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapter.rb:313:in `poll_changed_directories'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapter.rb:289:in `block in start_poller'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Syntax error: Undefined variable: \"$white\".\A         on line 119 of static/styles/scss/animation.scss\A \A 114:     //     -webkit-transition-delay: 0.3s;\A 115:     //     -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);\A 116:     // }\A 117: }\A 118: .animate-in-out.modal {\A 119:     background: rgba($white, 0.0);\A 120:     border-radius: 100%;\A 121:     -webkit-transform: scale(0) translateY(-50px);\A 122:     -webkit-transition-property: top, background-color, -webkit-transform, opacity, border-radius;\A 123:     -webkit-transition-duration: 0s, 0.0s, 0.3s, 0.3s, 0.3s;\A 124:     -webkit-transition-delay: 0.3s, 0s, 0s, 0s, 0s;"; }
