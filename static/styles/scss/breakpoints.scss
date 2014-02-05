@@ -1,0 +1,47 @@
+/*
+----IPHONE SPECIFIC STYLES-------------------------------
+
+---------------------------------------------------------
+*/
+
+@media only screen and (min-width:320px) and (max-width:600px){
+    .four-column-one,
+    .four-column-two,
+    .four-column-three,
+    .four-column-four,
+    .input-select,
+    .input-text,
+    .sel-work-in .type-option {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .sel-work-in .type-option {
+        margin-bottom: 12px;
+    }
+    .type-option > span {
+        display: inline-block;
+    }
+    .type-option-label {
+        position: relative;
+    }
+    .type-option-label > span:first-child {
+        position: absolute;
+        left: 95px;
+    }
+    .type-option-label > span:last-child {
+        position: absolute;
+        top: 0;
+        left: 50px;
+        margin-top: 3px;
+    }
+
+    input[type=radio] {
+        position: relative;
+        margin: 0;
+        height: 0;
+    }
+
+
+
+}
