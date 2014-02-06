@@ -2699,7 +2699,7 @@ function Network (context) {
         },
         opacity = {
             default: 1,
-            unselected: 0.5,
+            unselected: 0.3,
             selected: 1
         };
 
