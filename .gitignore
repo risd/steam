@@ -1,6 +1,7 @@
 .DS_Store
 *.pyc
 .env
+.penv/*
 
 .sass-cache
 

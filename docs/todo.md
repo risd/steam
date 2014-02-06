@@ -1,11 +1,5 @@
 ### left off
 
-- button in profile to show you in network
-
-- make files for micah to do work
-    - env_setup
-    - do_work
-
 - delegate
     - what does an incapable browser do? or do you polyfill it until it works?
     - mobile style sheets that disable filtering?

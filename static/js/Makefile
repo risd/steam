@@ -1,9 +1,13 @@
 BROWSERIFY = node_modules/.bin/browserify
+WATCHIFY = node_modules/.bin/watchify
 UGLIFY = node_modules/.bin/uglifyjs
 
-all: dist clean dist/libs.js dist/site.js
+all: dist/site.js
 
-node_modules: package.json
+watch: dist dist/libs.js
+	$(WATCHIFY) src/index.js -o dist/site.js -v
+
+dependencies: package.json
 	npm install
 
 dist:

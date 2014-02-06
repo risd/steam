@@ -1,0 +1,32 @@
+{
+  "name": "STEAM",
+  "version": "0.0.1",
+  "description": "Frontend code for stemtosteam.org",
+  "main": "src/index.js",
+  "dependencies": {
+    "browserify": "~2.36.1",
+    "d3": "~3.3.11",
+    "leaflet": "~0.7.2",
+    "leaflet.markercluster": "~0.4.0",
+    "lgtm": "~0.1.0",
+    "mapbox.js": "~1.6.1",
+    "q": "~0.9.7"
+  },
+  "devDependencies": {
+    "uglify-js": "~2.4.6",
+    "watchify": "~0.5.6"
+  },
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/risd/steam"
+  },
+  "author": "Ruben Rodriguez",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/risd/steam/issues"
+  },
+  "homepage": "https://github.com/risd/steam"
+}
