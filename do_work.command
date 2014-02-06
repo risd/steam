@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# setup python
+source .penv/bin/activate
+
 # setup ruby
 source ~/.rvm/scripts/rvm
 rvm use 1.9.3
@@ -9,15 +12,6 @@ rvm gemset use steam-proto
 
 # open browser to URL defined in Procfile.dev
 open http://localhost:5000/map/
-
-## Change directory to application
-## -
-ROOT="$( dirname "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )")"
-
-cd "$ROOT"
-
-# setup python
-source .penv/bin/activate
 
 # start the party
 foreman start --procfile Procfile.dev

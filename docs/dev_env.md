@@ -39,3 +39,20 @@ Either run ./dev_env/do_work.command, or run:
     rvm gemset use steam-proto
     open http://localhost:5000/map/
     foreman start --procfile Procfile.dev
+
+## Deploying
+
+Push to heroku
+
+    git push heroku master
+
+### Database
+
+Runs on postgres. To setup the database from scratch, have a database url set in your `.env` file and on heroku's config
+
+    heroku config set:DATABASE_URL=
+
+Run syncdb to setup the inital tables.
+
+    foreman run python manage.py syncdb
+    foreman run python manage.py migrate

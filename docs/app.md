@@ -7,7 +7,9 @@ The map application uses Social Auth for the authentication layer.
 The news application uses tumblr and twitter.
 
 
-## going ssl
+## Going ssl
+
+Not using SSL at the moment. Check out the following links as a starting point for how to do so.
 
 [How to make python on Heroku https only?][heroku-https-so]
 [Tastypie POST Location HTTPS vs. HTTP][tastypie-https-so]
