@@ -16,5 +16,8 @@ ROOT="$( dirname "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )")"
 
 cd "$ROOT"
 
+# setup python
+source .penv/bin/activate
+
 # start the party
 foreman start --procfile Procfile.dev
