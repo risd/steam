@@ -149,13 +149,14 @@ function ModalFlow (context) {
             explore_region: {
                 el: d3.select('#explore-region'),
                 on_click: function () {
-                    console.log('explore region');
                     self.state('inactive_with_profile');
+                    
                     var d = context.user.data();
-                    console.log(d);
-                    context.network.init({
-                        tlg_id: d.top_level.id
-                    });
+
+                    context.network
+                        .init({
+                            tlg_id: d.top_level.id
+                        });
                 },
                 append_to_el: svg_next_arrow
             },

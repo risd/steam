@@ -565,6 +565,7 @@ form / profile
 .next-button,
 .save-button,
 .logout-button,
+.find-me-button,
 .close-button,
 .cancel-add-button,
 .button-go-to-profile {
@@ -601,6 +602,7 @@ form / profile
     color: $color-slate;
     background-color: $white;
 }
+.find-me-button line,
 .logout-button line,
 .button-explore-region line,
 .button-explore-map line,
@@ -612,6 +614,7 @@ form / profile
 .button-explore-region,
 .button-explore-map,
 .button-go-to-profile,
+.find-me-button,
 .logout-button,
 .next-button {
     text-align: center;
@@ -637,6 +640,7 @@ form / profile
 .modal .button-explore-map,
 .modal .button-go-to-profile,
 .modal .save-button,
+.modal .find-me-button,
 .modal .logout-button {
     @include antenna-medium;
     font-size: 35px;

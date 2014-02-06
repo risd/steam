@@ -117,7 +117,8 @@ class InstitutionResource(ModelResource):
     #     related_name='institution')
     class Meta(CommonOpenResourceMeta):
         queryset = Institution.objects.all()
-        fields = ['name']
+        fields = ['name',
+                  'id']
 
 
 class IndividualResource(ModelResource):
@@ -132,7 +133,8 @@ class IndividualResource(ModelResource):
     class Meta(CommonOpenResourceMeta):
         queryset = Individual.objects.all()
         fields = ['first_name',
-                  'last_name']
+                  'last_name',
+                  'id']
 
 
 class NetworkResource(ModelResource):

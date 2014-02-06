@@ -66,6 +66,33 @@ module.exports = function Profile (context) {
             .attr('class', 'save-button')
             .text('Save');
 
+        // add find me button
+        var find_me = profile.selection()
+            .append('div')
+            .attr('class', 'four-column-two offset-one ' +
+                           'find-me-button');
+
+        find_me
+            .append('p')
+            .attr('class', 'find-me')
+            .text('Show me on the map.')
+            .on('click', function () {
+                context.modal_flow
+                    .state('inactive_with_profile');
+                    
+                var d = context.user.data(),
+                    type  = context.user.type();
+
+                context.network
+                    .highlight({
+                        tlg_id: d.top_level.id,
+                        steamie_type: type,
+                        steamie_id: d[type].id
+                    });
+            });
+
+        find_me.call(svg_next_arrow);
+
         // add a sign out button
         var sign_out = profile.selection()
                 .append('div')

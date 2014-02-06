@@ -56,6 +56,13 @@ function User (context) {
         } else {
             data = x;
         }
+
+        if (data.individual) {
+            steamie_type = 'individual';
+        } else if (data.institution) {
+            steamie_type = 'institution';
+        }
+
         return user;
     };
 

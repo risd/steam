@@ -524,7 +524,7 @@ function Clusters (context) {
     clusters_group.on('click', function (event) {
         // click cluster
         // d3.select('#steam-map').classed('active', false);
-        context.network.init(event);
+        context.network.init(event.layer.feature.properties);
     });
 
     clusters_group.on('clusterclick', function (d) {
@@ -2027,13 +2027,14 @@ function ModalFlow (context) {
             explore_region: {
                 el: d3.select('#explore-region'),
                 on_click: function () {
-                    console.log('explore region');
                     self.state('inactive_with_profile');
+                    
                     var d = context.user.data();
-                    console.log(d);
-                    context.network.init({
-                        tlg_id: d.top_level.id
-                    });
+
+                    context.network
+                        .init({
+                            tlg_id: d.top_level.id
+                        });
                 },
                 append_to_el: svg_next_arrow
             },
@@ -2675,6 +2676,8 @@ function Network (context) {
         request,
         built = false;
 
+    var dispatch = d3.dispatch('create');
+
     var random_around_zero = function (range) {
         var val = Math.floor(Math.random() * range);
         if (Math.random() > 0.5) {
@@ -2751,11 +2754,8 @@ function Network (context) {
         width = window.innerWidth;
         height = window.innerHeight;
 
-        console.log('any individuals?');
-
         // give an initial position
         x.forEach(function (d) {
-            console.log(d);
             d.x = width/2 + random_around_zero(30);
             d.y = height/2 + random_around_zero(30);
             d.dx = width/2 + random_around_zero(30);
@@ -2900,79 +2900,7 @@ function Network (context) {
                 .style('opacity', set_opacity)
                 .attr('transform', transform)
                 .call(force.drag)
-                .on('click', function (d) {
-                    // reset value that will be used
-                    // to set the opacity
-                    nodes_sel.each(function (nd) {
-                        nd.solo_selected_status = 'unselected';
-                    });
-                    d.solo_selected_status = 'selected';
-
-                    // set opacity based on above value
-                    nodes_sel
-                        .transition()
-                        .duration(500)
-                        .style('opacity', set_opacity_solo);
-
-                    // clear user data
-                    if (info_tip_sel) {
-                        remove_info_tip();
-                    }
-
-                    var mouse_position =
-                        d3.mouse(canvas_wrapper.node());
-
-                    var infotip_position = new Array(2);
-
-                    if (mouse_position[1] < (window.innerHeight/2)) {
-                        infotip_position[1] = {
-                            offset_from: 'top',
-                            offset_distance: mouse_position[1] + 20,
-                            offset_reset: 'bottom',
-                            offset_reset_value: 'auto'
-                        };
-                    } else {
-                        infotip_position[1] = {
-                            offset_from: 'bottom',
-                            offset_distance: window.innerHeight -
-                                             mouse_position[1],
-                            offset_reset: 'top',
-                            offset_reset_value: 'auto'
-                        };
-                    }
-
-                    // show user data
-                    info_tip_sel =
-                        canvas_wrapper
-                            .selectAll('.info_tip')
-                            .data([d])
-                            .enter()
-                            .append('div')
-                            .attr('class', function (d) {
-                                return 'info_tip z-200 ' + d.work_in;
-                            })
-                            .style('left', mouse_position[0] + 'px')
-                            .style(infotip_position[1]
-                                            .offset_from,
-                                   infotip_position[1]
-                                            .offset_distance +
-                                   'px')
-                            .style(infotip_position[1]
-                                            .offset_reset,
-                                   infotip_position[1]
-                                            .offset_reset_value)
-                            .call(update_info_tip);
-
-                    // add blanket
-                    canvas_blanket_sel =
-                        canvas.insert('rect', 'g:first-child')
-                            .attr('class', 'blanket')
-                            .attr('height', height)
-                            .attr('width', width)
-                            .attr('x', 0)
-                            .attr('y', 0)
-                            .on('click', blanket_interaction);
-                })
+                .on('click', highlight)
                 .call(add_symbols);
 
         force.on('tick', function () {
@@ -2981,6 +2909,7 @@ function Network (context) {
         });
 
         built = true;
+        dispatch.create();
 
         return network;
     };
@@ -3026,6 +2955,22 @@ function Network (context) {
         return network;
     };
 
+    network.highlight = function (data) {
+        // data = { steamie_id: , tlg_id: , steamie_type: }
+        network.init(data);
+        dispatch.on('create.highlight', function () {
+            var highlight_node = nodes_sel.filter(function (d,i) {
+                console.log(d);
+                if (d[data.steamie_type]) {
+                    return d[data.steamie_type].id ===
+                            data.steamie_id;
+                }
+            });
+            console.log(highlight_node);
+            highlight_node.each(highlight);
+        });
+    };
+
     network.init = function (data) {
         // used to initialize a network graph
         // data is passed in from the cluster
@@ -3035,10 +2980,7 @@ function Network (context) {
         }
 
         request = context.api
-            .network_request(data.layer
-                                .feature
-                                .properties
-                                .tlg_id, function (err, results) {
+            .network_request(data.tlg_id, function (err, results) {
                 console.log('returned data');
                 console.log(results);
                 network
@@ -3157,6 +3099,77 @@ function Network (context) {
             });
     }
 
+    function highlight (d, i) {
+        // reset value that will be used
+        // to set the opacity
+        nodes_sel.each(function (nd) {
+            nd.solo_selected_status = 'unselected';
+        });
+        d.solo_selected_status = 'selected';
+
+        // set opacity based on above value
+        nodes_sel
+            .transition()
+            .duration(500)
+            .style('opacity', set_opacity_solo);
+
+        // clear user data
+        if (info_tip_sel) {
+            remove_info_tip();
+        }
+
+        var infotip_position = new Array(2);
+
+        if (d.y < (window.innerHeight/2)) {
+            infotip_position[1] = {
+                offset_from: 'top',
+                offset_distance: d.y + 20,
+                offset_reset: 'bottom',
+                offset_reset_value: 'auto'
+            };
+        } else {
+            infotip_position[1] = {
+                offset_from: 'bottom',
+                offset_distance: window.innerHeight -
+                                 d.y,
+                offset_reset: 'top',
+                offset_reset_value: 'auto'
+            };
+        }
+
+        // show user data
+        info_tip_sel =
+            canvas_wrapper
+                .selectAll('.info_tip')
+                .data([d])
+                .enter()
+                .append('div')
+                .attr('class', function (d) {
+                    return 'info_tip z-200 ' + d.work_in;
+                })
+                .style('left', d.x + 'px')
+                .style(infotip_position[1]
+                                .offset_from,
+                       infotip_position[1]
+                                .offset_distance +
+                       'px')
+                .style(infotip_position[1]
+                                .offset_reset,
+                       infotip_position[1]
+                                .offset_reset_value)
+                .call(update_info_tip);
+
+        // add blanket
+        canvas_blanket_sel =
+            canvas.insert('rect', 'g:first-child')
+                .attr('class', 'blanket')
+                .attr('height', height)
+                .attr('width', width)
+                .attr('x', 0)
+                .attr('y', 0)
+                .on('click', blanket_interaction);
+    }
+
     return network;
 }
 },{"./formComponents/svgCross":14}],24:[function(require,module,exports){
@@ -3227,6 +3240,33 @@ module.exports = function Profile (context) {
             .append('p')
             .attr('class', 'save-button')
             .text('Save');
+
+        // add find me button
+        var find_me = profile.selection()
+            .append('div')
+            .attr('class', 'four-column-two offset-one ' +
+                           'find-me-button');
+
+        find_me
+            .append('p')
+            .attr('class', 'find-me')
+            .text('Show me on the map.')
+            .on('click', function () {
+                context.modal_flow
+                    .state('inactive_with_profile');
+                    
+                var d = context.user.data(),
+                    type  = context.user.type();
+
+                context.network
+                    .highlight({
+                        tlg_id: d.top_level.id,
+                        steamie_type: type,
+                        steamie_id: d[type].id
+                    });
+            });
+
+        find_me.call(svg_next_arrow);
 
         // add a sign out button
         var sign_out = profile.selection()
@@ -4093,6 +4133,13 @@ function User (context) {
         } else {
             data = x;
         }
+
+        if (data.individual) {
+            steamie_type = 'individual';
+        } else if (data.institution) {
+            steamie_type = 'institution';
+        }
+
         return user;
     };
 

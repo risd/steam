@@ -143,7 +143,7 @@ function Clusters (context) {
     clusters_group.on('click', function (event) {
         // click cluster
         // d3.select('#steam-map').classed('active', false);
-        context.network.init(event);
+        context.network.init(event.layer.feature.properties);
     });
 
     clusters_group.on('clusterclick', function (d) {
