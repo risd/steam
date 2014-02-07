@@ -6,10 +6,22 @@
 
 ### Setup JavaScript
 
+Ensure Node.js is installed.
+    
+    brew install node
+
+Install dependencies
+
     cd steam/static/js && make dependencies
 
 ### Setup Python
-    
+
+Ensure Python is installed
+
+    brew install python
+
+Install dependencies
+
     cd ../../
     virtualenv .penv
     source .penv/bin/activate
@@ -20,6 +32,12 @@
 Send use the .env file for the project. put it at /steam/
 
 ### Setup Ruby
+
+Ensure Ruby is installed
+    
+    brew install ruby
+
+Install dependencies
 
     curl -L https://get.rvm.io | bash
     source ~/.rvm/scripts/rvm
