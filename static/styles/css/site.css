@@ -2117,7 +2117,8 @@ header {
   -webkit-font-smoothing: antialiased;
   font-size: 120px;
   line-height: 95px;
-  margin: 0; }
+  margin: 0;
+  text-align: center; }
 
 .modal p {
   font-family: 'Sentinel SSm A', 'Sentinel SSm B';
@@ -2715,7 +2716,7 @@ form / profile
     font-style: normal;
     font-weight: normal;
     -webkit-font-smoothing: antialiased;
-    font-size: 35px;
+    font-size: 60px;
     line-height: 35px;
     margin: 0; }
   .button-explore-region svg,
@@ -2736,7 +2737,7 @@ form / profile
   font-style: normal;
   font-weight: normal;
   -webkit-font-smoothing: antialiased;
-  font-size: 35px;
+  font-size: 60px;
   margin-top: 20px;
   margin-bottom: 20px;
   padding: 10px; }
@@ -2795,7 +2796,7 @@ form / profile
   -webkit-font-smoothing: antialiased;
   font-size: 100px;
   line-height: 95px;
-  margin: 0 20px 0 0;
+  margin: 0 38px 0 0;
   color: rgba(255, 255, 255, 0.5); }
   .login-option:last-child {
     margin-right: 0; }
@@ -2810,8 +2811,8 @@ form / profile
   height: 110px;
   width: 1px;
   top: -5px;
-  right: -10px;
-  border-right: 1px solid #c8c8c8;
+  right: -24px;
+  border-right: 2px solid white;
   -moz-transform: rotate(10deg);
   -o-transform: rotate(10deg);
   -webkit-transform: rotate(10deg);

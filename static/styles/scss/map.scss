@@ -85,6 +85,7 @@ header {
     font-size: 120px;
     line-height: 95px;
     margin: 0;
+    text-align:center;
 }
 .modal p {
     @include sentinel;
@@ -636,7 +637,7 @@ form / profile
 
     p {
         @include antenna-medium;
-        font-size: 35px;
+        font-size: 60px;
         line-height: 35px;
         margin: 0;
     }
@@ -652,7 +653,7 @@ form / profile
 .modal .find-me-button,
 .modal .logout-button {
     @include antenna-medium;
-    font-size: 35px;
+    font-size: 60px;
     margin-top: 20px;
     margin-bottom: 20px;
     padding: 10px;
@@ -742,7 +743,7 @@ form / profile
 
     font-size: 100px;
     line-height: 95px;
-    margin: 0 20px 0 0;
+    margin: 0 38px 0 0;
 
     color: rgba($white ,0.5);
 
@@ -768,8 +769,8 @@ form / profile
     width: 1px;
 
     top: -5px;
-    right: -10px;
-    border-right: 1px solid $off-white;
+    right: -24px;
+    border-right: 2px solid $white;
     
     @include rotate(10);
 }
