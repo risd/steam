@@ -141,14 +141,16 @@ Global filters
 .filter-bar .button {
     cursor: pointer;
     width: 124px;
+    @include sentinel;
 
-    font-family: "Mercury Display";
+   /* font-family: "Mercury Display";
     font-weight: "light";
-    font-size: 18px;
+    font-size: 18px;*/
 
     text-align: left;
-
-    border-top: 1px dashed rgb(204, 204, 204);
+    border-bottom:1px solid rgb(230,230,230);
+    border-top: 1px solid rgb(240, 240, 240);
+    border-right:2px solid rgb(240,240,240);
 
     padding: 11px 0 11px 18px;
     margin: 0;
@@ -158,7 +160,7 @@ Global filters
     display: none;
 }
 .filter-bar .button {
-    background-color: transparent;
+    background-color: rgba(255,255,255,0.97);
     opacity: 0.5;
 }
 .filter-bar .button.active {
@@ -190,7 +192,7 @@ Global filters
                         linear);
 }
 .filter-bar.all-active .button.active {
-    background-color: transparent;
+    background-color: rgba(255,255,255,0.98);
     color: rgb(128, 130, 133);
     opacity: 1.0;
 
@@ -201,7 +203,10 @@ Global filters
 h3.filter-by {
     @include sentinel;
 
-    font-size: 22px;
+    font-size: 12px;
+    text-transform:uppercase;
+    letter-spacing: 1px;
+    line-height:32px;
 
     color: rgb(165,165,165);
 
@@ -272,25 +277,26 @@ Leaflet map styles
     text-align: center;
     text-indent: 0;
 
-    height: 23px;
-    width: 23px;
+    height: 28px;
+    width: 28px;
 
-    border-width: 1px;
+    border-width: 2px;
     border-color: rgb(204, 204, 204);
     border-style: solid;
     border-radius: 50%;
-    
-    color: rgb(204, 204, 204);
-    background-color: transparent;
 
-    @include sentinel;
+    opacity:1.0;
+    color: rgb(204, 204, 204);
+    background-color: $white;
+
+    font-weight:bold;
 
     line-height: 21px;
 }
 .leaflet-bar > a.leaflet-control-zoom-in:hover ,
 .leaflet-bar > a.leaflet-control-zoom-out:hover {
-        height: 23px;
-        width: 23px;
+        height: 28px;
+        width: 28px;
         background-color: rgb(240, 240, 240);
 
         line-height: 21px;
@@ -433,9 +439,10 @@ network graph
 .avatar {
     width: 60px;
     height: auto;
-    border-radius: 30px;
-    border-width: 1px;
+    border-radius: 100%;
+    border-width: 2px;
     border-style: solid;
+    border-color:$white;
 }
 .info_tip {
     position: fixed;
@@ -451,7 +458,7 @@ network graph
 .info_tip .avatar {
     position: absolute;
     top: 0;
-    left: -65px;
+    left: -71px;
 }
 .info_tip p {
     font-size: 1.1em;
@@ -463,6 +470,8 @@ network graph
 .info_tip p.description {
     padding-left: 15px;
     margin-top: 10px;
+    margin-left:6px;
+    margin-bottom:10px;
     border-left-width: 1px;
     border-left-style: solid;
     color: $color-slate;
@@ -665,6 +674,15 @@ form / profile
     padding: 20px;
 }
 
+.close-button svg{
+    padding:3px;
+
+    line{
+        stroke-width:2px;
+        stroke-linecap:square;
+    }
+}
+
 .canvas-wrapper .close-button {
     position: absolute;
     top: 100px;
@@ -672,8 +690,13 @@ form / profile
 
     line {
         stroke: $color-slate;
+        
     }
+
+   
 }
+
+
 .canvas-wrapper .header-wrapper .close-button {
     display: none;
 }

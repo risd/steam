@@ -44,7 +44,7 @@ function Network (context) {
         },
         opacity = {
             default: 1,
-            unselected: 0.3,
+            unselected: 0.15,
             selected: 1
         };
 
