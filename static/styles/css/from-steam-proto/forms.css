@@ -24,7 +24,7 @@ input:focus {
 input {
   border: none;
   padding: 10px 0px 10px 0px;
-  border-bottom: 1px dotted #c8c8c8;
+  border-bottom: 1px solid white;
   margin-bottom: 20px;
   color: #fafafa; }
 
@@ -48,7 +48,7 @@ label {
   margin-right: 24px;
   float: left;
   text-align: center;
-  color: gainsboro;
+  color: white;
   -webkit-font-smoothing: antialiased; }
 
 label:last-child {

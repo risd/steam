@@ -73,7 +73,7 @@ function ModalFlow (context) {
                     value: 'education',
                     selected: false
                 }, {
-                    label: 'Political',
+                    label: 'Policy',
                     value: 'political',
                     selected: false
                 }, {
