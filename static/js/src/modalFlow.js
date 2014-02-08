@@ -103,10 +103,11 @@ function ModalFlow (context) {
                 on_click: function () {
                     console.log('open modal click');
                     console.log(previous_state);
-                    if ((previous_state === 'inactive_no_profile') |
+                    if ((typeof(previous_state) === 'undefined') |
+                        (previous_state === 'inactive_no_profile') |
                         (previous_state === 'just_logged_out') |
                         (previous_state === 'about')) {
-                        // first time through
+
                         self.state('call_to_action');
                     } else {
                         self.state(previous_state);
