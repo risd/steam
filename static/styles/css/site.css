@@ -2637,6 +2637,11 @@ form / profile
   top: 100px;
   right: 30px; }
 
+.top-right-second {
+  position: absolute;
+  top: 150px;
+  right: 30px; }
+
 .button-explore-region,
 .button-explore-map,
 .button-activate,
@@ -3201,6 +3206,9 @@ input[type=radio] {
 
   .top-right {
     top: 26%; }
+
+  .top-right-second {
+    top: 32%; }
 
   .bottom-left {
     bottom: auto;

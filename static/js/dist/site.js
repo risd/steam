@@ -1994,13 +1994,31 @@ function ModalFlow (context) {
                     console.log('open modal click');
                     console.log(previous_state);
                     if ((previous_state === 'inactive_no_profile') |
-                        (previous_state === 'just_logged_out')) {
+                        (previous_state === 'just_logged_out') |
+                        (previous_state === 'about')) {
                         // first time through
                         self.state('call_to_action');
                     } else {
                         self.state(previous_state);
                     }
                     console.log(self.state());
+                },
+                append_to_el: function () {}
+            },
+
+            about: {
+                el: d3.select('#activate-about'),
+                on_click: function () {
+                    console.log('change state to about');
+                    self.state('about');
+                },
+                append_to_el: function () {}
+            },
+
+            about_to_action: {
+                el: d3.select('#about_to_action'),
+                on_click: function () {
+                    self.state('call_to_action');
                 },
                 append_to_el: function () {}
             },
@@ -2085,6 +2103,9 @@ function ModalFlow (context) {
             },
             logging_out: {
                 el: d3.select('#modal-header-logging-out')
+            },
+            about: {
+                el: d3.select('#modal-header-about')
             }
         },
         display: {
@@ -2105,6 +2126,9 @@ function ModalFlow (context) {
             },
             profile_institution: {
                 el: d3.select('#profile-institution')
+            },
+            about: {
+                el: d3.select('#about')
             }
         }
     };
@@ -2131,6 +2155,9 @@ function ModalFlow (context) {
             var active = [{
                 el_type: 'button',
                 el_name: 'open_modal'
+            }, {
+                el_type: 'button',
+                el_name: 'about'
             }];
             apply_state(active);
         },
@@ -2138,7 +2165,36 @@ function ModalFlow (context) {
             var active = [{
                 el_type: 'button',
                 el_name: 'profile_link'
+            }, {
+                el_type: 'button',
+                el_name: 'about'
             }];
+            apply_state(active);
+        },
+        about: function () {
+            var active = [{
+                el_type: 'display',
+                el_name: 'modal'
+            }, {
+                el_type: 'display',
+                el_name: 'about'
+            }, {
+                el_type: 'modal_header',
+                el_name: 'about'
+            }, {
+                el_type: 'button',
+                el_name: 'close_modal'
+            }];
+
+            if (!context.user.profile.built()) {
+                // if someone isn't logged in, 
+                // give them the button to do so
+                active = active.concat([{
+                    el_type: 'button',
+                    el_name: 'about_to_action'
+                }]);
+            }
+
             apply_state(active);
         },
         call_to_action: function () {
@@ -2372,7 +2428,7 @@ function ModalFlow (context) {
                 // has not been authenticated
                 // assume the user has never been
                 // and ask them to sign up
-                self.state('call_to_action');
+                self.state('inactive_no_profile');
 
                 // self.state('thank_you');
                 // self.state('waiting_for_add_me_flow');

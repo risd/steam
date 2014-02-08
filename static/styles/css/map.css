@@ -58,9 +58,8 @@ static/styles/scss/map.scss:47
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/listener.rb:236:in `call'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/listener.rb:236:in `on_change'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/listener.rb:271:in `block in initialize_adapter'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapter.rb:244:in `call'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapter.rb:244:in `report_changes'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapter.rb:313:in `poll_changed_directories'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapters/polling.rb:48:in `call'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapters/polling.rb:48:in `poll_changed_directories'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapter.rb:289:in `block in start_poller'
 */
 body:before {

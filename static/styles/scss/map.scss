@@ -443,7 +443,7 @@ network graph
     border-radius: 100%;
     border-width: 2px;
     border-style: solid;
-    border-color:$white;
+    border-color: $white;
 }
 .info_tip {
     position: fixed;
@@ -573,6 +573,11 @@ form / profile
 .top-right {
     position: absolute;
     top: 100px;
+    right: 30px;
+}
+.top-right-second {
+    position: absolute;
+    top: 150px;
     right: 30px;
 }
 

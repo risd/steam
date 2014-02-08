@@ -32,8 +32,13 @@
             {% include 'steam/main-nav.html' %}
         </nav>
 
+        <div id="activate-about"
+             class="z-250 button-activate top-right active">
+            <p class="button-about">STEAM?</p>
+        </div>
+
         <!-- humble host of the button to add oneself -->
-        <div id="activate-add-yourself" class="z-10 button-activate top-right active">
+        <div id="activate-add-yourself" class="z-10 button-activate top-right-second active">
             {% include 'steam/orb.html' %}
             <p class="add-me hide-til-active">Add me!</p>
         </div>
@@ -56,7 +61,7 @@
         </div>
 
         <div id="profile-link"
-             class="bottom-left z-150 button-activate clickable">
+             class="bottom-left z-150 button-activate">
             <img src="" alt="" class="avatar">
         </div>
 
@@ -79,6 +84,9 @@
                             <h1 id="modal-header-logging-out"
                                 class="hide-til-active modal-header-content modal-header-text"
                                 >Signing out.</h1>
+                            <h1 id="modal-header-about"
+                                class="hide-til-active modal-header-content modal-header-text"
+                                >STEAM?</h1>
                             <div id="modal-header-avatar"
                                 class="hide-til-active modal-header-avatar modal-header-content">
                                 <img src="" alt=""
@@ -88,6 +96,16 @@
                         </header>
 
                         <div class="modal-content">
+
+                            <section id="about"
+                                class="hide-til-active clearfix">
+                                <p>Discuss Steam here.</p>
+                                
+                                <p id="about_to_action"
+                                   class="button-large four-column-four enabled hide-til-active"
+                                   >'Bout that action, boss.</p>
+
+                            </section>
                             
                             <section id="call-to-action"
                                  class="hide-til-active clearfix">
