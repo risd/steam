@@ -30,6 +30,9 @@ def create_steamie(request,
         avatar_url = ''
 
         if isinstance(backend, FacebookAppOAuth2):
+            logger.info('facebook response')
+            logger.info(response)
+
             avatar_url = 'http://graph.facebook.com/%s/picture?type=small' \
                 % response['id']
 
@@ -41,10 +44,7 @@ def create_steamie(request,
             logger.info("Authenticated. Twitter.")
 
         elif isinstance(backend, GoogleOAuth2):
-            size = 60
-            # https://gist.github.com/jcsrb/1081548
-            avatar_url = "http://profiles.google.com/s2/photos/profile/" +\
-                response['id'] + "?sz=" + size;
+            avatar_url = response.get('picture');
 
             logger.info("Authenticated. Google.")
 
