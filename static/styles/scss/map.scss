@@ -525,8 +525,15 @@ network graph
 .canvas-wrapper {
     
 }
-.canvas-wrapper .button {
-
+.canvas-wrapper .close-button {
+    // get it to line up the .modal .close-button
+    // whose position is deterined by the 
+    // margin-top value of .modal-wrapper.
+    // this .close-button's top position is
+    // determined by the top value of .header-wrapper
+    // so the math for the margin-top here goes:
+    // .modal-wrapper margin-top - .header-wrapper top 
+    margin-top: 48px;
 }
 .header-wrapper {
     text-align: center;
@@ -685,21 +692,10 @@ form / profile
 }
 
 .canvas-wrapper .close-button {
-    position: absolute;
-    top: 100px;
-    right: 100px;
-
     line {
         stroke: $color-slate;
         
-    }
-
-   
-}
-
-
-.canvas-wrapper .header-wrapper .close-button {
-    display: none;
+    }  
 }
 
 // .political .enabled,

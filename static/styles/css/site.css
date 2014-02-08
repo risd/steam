@@ -555,7 +555,6 @@ textarea {
 
   @page {
     margin: 0.5cm; }
-
   p,
   h2,
   h3 {
@@ -1382,7 +1381,6 @@ textarea {
 @font-face {
   font-family: "ModernPictograms";
   src: url("../../fonts/modernpics.otf"); }
-
 body {
   margin: 0px; }
 
@@ -2058,7 +2056,6 @@ input[type="submit"]:hover {
     -ms-transform: scale(1.3);
     -o-transform: scale(1.3);
     transform: scale(1.3); } }
-
 .center-in-parent {
   position: relative;
   margin: 0 auto;
@@ -2597,6 +2594,9 @@ network graph
 .info_tip.industry .avatar {
   border-color: #27b4f2; }
 
+.canvas-wrapper .close-button {
+  margin-top: 48px; }
+
 .header-wrapper {
   text-align: center;
   position: absolute;
@@ -2767,15 +2767,8 @@ form / profile
     stroke-width: 2px;
     stroke-linecap: square; }
 
-.canvas-wrapper .close-button {
-  position: absolute;
-  top: 100px;
-  right: 100px; }
-  .canvas-wrapper .close-button line {
-    stroke: #516272; }
-
-.canvas-wrapper .header-wrapper .close-button {
-  display: none; }
+.canvas-wrapper .close-button line {
+  stroke: #516272; }
 
 .checkmark {
   position: absolute;
@@ -3105,7 +3098,7 @@ input[type=radio] {
   .modal-header-text.active {
     width: 90%; }
 
-  .modal .close-button.tablet {
+  .close-button.tablet {
     display: inline-block;
     padding: 0;
     position: absolute;
@@ -3113,20 +3106,11 @@ input[type=radio] {
     top: 0;
     -webkit-transform: scale(0.8); }
 
-  .modal .close-button.desktop {
+  .close-button.desktop {
     display: none; }
 
-  .canvas-wrapper > .close-button {
-    display: none; }
-
-  .canvas-wrapper .header-wrapper .close-button {
-    display: block;
-    -webkit-transform: scale(0.65);
-    position: absolute;
-    top: -10px;
-    right: 0;
-    padding: 0;
-    cursor: pointer; } }
+  .canvas-wrapper .close-button {
+    margin-top: -6px; } }
 /*
 ----MOBILE SPECIFIC STYLES-------------------------------
 

@@ -180,18 +180,6 @@ function Network (context) {
                     .attr('width', width)
                     .attr('height', height);
 
-        // add a close button
-        canvas_wrapper
-            .selectAll('.close-button')
-            .data([{ f: network.remove }])
-            .enter()
-            .append('div')
-            .attr('class', 'close-button')
-            .on('click', function (d) {
-                d.f();
-            })
-            .call(svg_cross);
-
         title_wrapper_sel = canvas_wrapper
             .append('div')
                 .attr('class', 'header-wrapper');
@@ -200,22 +188,32 @@ function Network (context) {
             .append('div')
                 .attr('class', 'grid full-width clearfix');
 
-        title_grid_sel
+        var four_col_sel = title_grid_sel
             .append('div')
-                .attr('class', 'four-column clearfix offset-one')
+                .attr('class', 'four-column clearfix offset-one');
+
+        four_col_sel
             .append('h3')
                 .html(title);
 
-        title_grid_sel
-            .selectAll('.close-button')
-            .data([{ f: network.remove }])
-            .enter()
+        four_col_sel
             .append('div')
-            .attr('class', 'close-button')
-            .on('click', function (d) {
-                d.f();
+                .attr('class', 'close-button tablet ' +
+                               'modal-header-button')
+            .on('click', function () {
+                network.remove();
             })
             .call(svg_cross);
+
+        title_grid_sel
+            .append('div')
+                .attr('class', 'one-column omega')
+            .append('div')
+                .attr('class', 'close-button desktop')
+                .on('click', function () {
+                    network.remove();
+                })
+                .call(svg_cross);
 
         force = d3.layout.force()
             .friction(friction)

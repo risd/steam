@@ -25,7 +25,7 @@
     .modal-header-text.active {
         width: 90%;
     }
-    .modal .close-button.tablet {
+    .close-button.tablet {
         display: inline-block;
         padding: 0;
         position: absolute;
@@ -33,20 +33,11 @@
         top: 0;
         -webkit-transform: scale(0.8);
     }
-    .modal .close-button.desktop {
+    .close-button.desktop {
         display: none;
     }
-    .canvas-wrapper > .close-button {
-        display: none;
-    }
-    .canvas-wrapper .header-wrapper .close-button {
-        display: block;
-        -webkit-transform: scale(0.65);
-        position: absolute;
-        top: -10px;
-        right: 0;
-        padding: 0;
-        cursor: pointer;
+    .canvas-wrapper .close-button {
+        margin-top: -6px;
     }
 }
 
