@@ -2625,7 +2625,7 @@ rect.blanket {
 /************
 form / profile
 */
-.add-me {
+.add-me, .button-about {
   font-family: "Antenna Comp Medium";
   font-style: normal;
   font-weight: normal;

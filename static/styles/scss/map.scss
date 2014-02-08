@@ -563,7 +563,7 @@ rect.blanket {
 /************
 form / profile
 */
-.add-me {
+.add-me, .button-about {
     @include antenna-medium;
     font-size: 35px;
     color: $color-slate;

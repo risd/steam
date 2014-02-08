@@ -1394,15 +1394,15 @@ module.exports = function socialAuthSelection (context) {
         node,
         dispatch = social.dispatch = d3.dispatch('valid'),
         data = [{
-            name: 'twitter',
+            name: 'Twitter',
             url: context.api.base + '/login/twitter/',
             selected: false
         },{
-            name: 'facebook',
+            name: 'Facebook',
             url: context.api.base + '/login/facebook/',
             selected: false
         },{
-            name: 'google',
+            name: 'Google',
             url: context.api.base + '/login/google-oauth2/',
             selected: false
         }],
