@@ -77,6 +77,18 @@ module.exports = function radioSelection () {
     self.data = function (x) {
         if (!arguments.length) return data;
         data = x;
+
+        // if there is an initially
+        // selected element, make the
+        // object aware of it
+        var initial;
+        data.forEach(function (d, i) {
+            if (d.selected === true) {
+                initial = d;
+            }
+        });
+        self.initialSelected(initial);
+
         return self;
     };
 
