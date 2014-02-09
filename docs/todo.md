@@ -1,5 +1,9 @@
 ### left off
 
+- when user updates zip code, upon response, reset the value such that if they do "locate me", it will find them
+
+- remove main-nav header
+
 - delegate
     - what does an incapable browser do? or do you polyfill it until it works?
     - mobile style sheets that disable filtering?
@@ -23,11 +27,3 @@
 
 @babette, ask about what kind of links you want to send out?
     - WA state? WA 8th district? both?
-
-@micah, work-in profile selections
-    - white inside, color outside?
-    - color inside, color outside?
-    - color inside, white outside?
-    - white inside, white outside?
-
-@micah, what to do with the header?

@@ -1,7 +1,7 @@
 # Pipeline processing
 import logging
 
-from social.backends.facebook import FacebookAppOAuth2
+from social.backends.facebook import FacebookOAuth2
 from social.backends.twitter import TwitterOAuth
 from social.backends.google import GoogleOAuth2
 
@@ -29,7 +29,7 @@ def create_steamie(request,
     if created:
         avatar_url = ''
 
-        if isinstance(backend, FacebookAppOAuth2):
+        if isinstance(backend, FacebookOAuth2):
             logger.info('facebook response')
             logger.info(response)
 
