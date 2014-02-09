@@ -363,6 +363,10 @@ def update_steamie_related(sender, instance, *args, **kwargs):
     based on user input, which can change. If 
     it does update the relationship and the
     count associated with it.
+    Adds first and last name to individual
+    object if they have just signed up as
+    and individual. Add username as organization
+    name if signed up as an organization.
     """
 
     if instance.pk:
@@ -388,7 +392,17 @@ def update_steamie_related(sender, instance, *args, **kwargs):
 
         old.change_work_in_count(amount=-1)
         instance.change_work_in_count(amount=1)
-        
+
+    if ((old.individual is None) and\
+        (not (instance.individual is None))):
+
+        instance.individual.first_name = instance.user.first_name
+        instance.individual.last_name = instance.user.last_name
+
+    elif ((old.institution is None) and\
+          (not (instance.institution is None))):
+
+        instance.institution.name = instance.user.username
 
 models.signals.pre_save.connect(update_steamie_related,
                                 sender=Steamies)
