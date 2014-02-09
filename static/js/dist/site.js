@@ -3027,13 +3027,11 @@ function Network (context) {
         network.init(data);
         dispatch.on('create.highlight', function () {
             var highlight_node = nodes_sel.filter(function (d,i) {
-                console.log(d);
                 if (d[data.steamie_type]) {
                     return d[data.steamie_type].id ===
                             data.steamie_id;
                 }
             });
-            console.log(highlight_node);
             highlight_node.each(highlight);
         });
     };
@@ -3472,6 +3470,12 @@ module.exports = function Profile (context) {
 
             var results = JSON.parse(response.responseText);
             console.log(results);
+            // reset user data
+            // useful since the top_level_geo value
+            // might have been udpated, and that
+            // should be reflected when the user asks
+            // to locate themselves.
+            context.user.data(results);
 
             // resets the initial values to the ones saved
             // to the server. in case the user continues to

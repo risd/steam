@@ -316,6 +316,10 @@ class Steamies(models.Model):
         verbose_name_plural = _("Steamies'")
 
     def change_work_in_count(self, amount=1):
+        logger.info('Updating work in count')
+        logger.info('work_in = {0}'.format(self.work_in))
+        logger.info('top_lev = {0}'.format(self.top_level))
+        logger.info('amount  = {0}'.format(amount))
         if (self.work_in and self.top_level):
             setattr(
                 self.top_level,
@@ -326,6 +330,7 @@ class Steamies(models.Model):
                     ) + amount
                 )
             self.top_level.save()
+
 
         logger.info('Updated work_in count')
 

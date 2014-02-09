@@ -303,13 +303,11 @@ function Network (context) {
         network.init(data);
         dispatch.on('create.highlight', function () {
             var highlight_node = nodes_sel.filter(function (d,i) {
-                console.log(d);
                 if (d[data.steamie_type]) {
                     return d[data.steamie_type].id ===
                             data.steamie_id;
                 }
             });
-            console.log(highlight_node);
             highlight_node.each(highlight);
         });
     };

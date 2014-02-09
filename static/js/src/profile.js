@@ -230,6 +230,12 @@ module.exports = function Profile (context) {
 
             var results = JSON.parse(response.responseText);
             console.log(results);
+            // reset user data
+            // useful since the top_level_geo value
+            // might have been udpated, and that
+            // should be reflected when the user asks
+            // to locate themselves.
+            context.user.data(results);
 
             // resets the initial values to the ones saved
             // to the server. in case the user continues to
