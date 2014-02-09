@@ -9,3 +9,5 @@ logfile
 
 static/js/node_modules/*
 staticfiles/*
+
+static/styles/css/map.css
