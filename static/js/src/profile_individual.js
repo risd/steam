@@ -116,7 +116,7 @@ module.exports = function ProfileIndividual (context) {
 
         var work_in_sel = sel
             .append('div')
-            .attr('class', 'four-column-four sel-work-in')
+            .attr('class', 'four-column-two sel-work-in')
             .attr('id', 'individual-work-in');
 
         var work_in_options = [{
@@ -128,7 +128,7 @@ module.exports = function ProfileIndividual (context) {
                     value: 'education',
                     selected: false
                 }, {
-                    label: 'Political',
+                    label: 'Policy',
                     value: 'political',
                     selected: false
                 }, {
@@ -161,7 +161,7 @@ module.exports = function ProfileIndividual (context) {
 
         var description_sel = sel
             .append('div')
-            .attr('class', 'four-column-four steamie-description')
+            .attr('class', 'four-column-two omega steamie-description')
             .attr('id', 'individual-description');
 
         description = textAreaComponent()

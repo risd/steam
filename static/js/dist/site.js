@@ -805,7 +805,7 @@ var filters = [{
         active: 1
     }, {
         value: 'political',
-        display: 'political',
+        display: 'policy',
         active: 1
     }, {
         value: 'industry',
@@ -1394,15 +1394,15 @@ module.exports = function socialAuthSelection (context) {
         node,
         dispatch = social.dispatch = d3.dispatch('valid'),
         data = [{
-            name: 'twitter',
+            name: 'Twitter',
             url: context.api.base + '/login/twitter/',
             selected: false
         },{
-            name: 'facebook',
+            name: 'Facebook',
             url: context.api.base + '/login/facebook/',
             selected: false
         },{
-            name: 'google',
+            name: 'Google',
             url: context.api.base + '/login/google-oauth2/',
             selected: false
         }],
@@ -1963,7 +1963,7 @@ function ModalFlow (context) {
                     value: 'education',
                     selected: false
                 }, {
-                    label: 'Political',
+                    label: 'Policy',
                     value: 'political',
                     selected: false
                 }, {
@@ -3303,7 +3303,7 @@ module.exports = function Profile (context) {
         // add save button
         save_button = profile.selection()
             .append('div')
-            .attr('class', 'four-column-four')
+            .attr('class', 'four-column-one')
             .append('p')
             .attr('class', 'save-button')
             .text('Save');
@@ -3311,13 +3311,13 @@ module.exports = function Profile (context) {
         // add find me button
         var find_me = profile.selection()
             .append('div')
-            .attr('class', 'four-column-two offset-one ' +
+            .attr('class', 'four-column-two ' +
                            'find-me-button');
 
         find_me
             .append('p')
             .attr('class', 'find-me')
-            .text('Show me on the map.')
+            .text('Locate Me')
             .on('click', function () {
                 context.modal_flow
                     .state('inactive_with_profile');
@@ -3339,11 +3339,11 @@ module.exports = function Profile (context) {
         var sign_out = profile.selection()
                 .append('div')
                 .attr('class',
-                      'logout-button four-column-two offset-one');
+                      'logout-button four-column-one omega');
         sign_out
             .append('p')
             .attr('class', '')
-            .text('Sign out.')
+            .text('Sign Out')
             .on('click', function () {
                 context.modal_flow
                     .state('logging_out');
@@ -3655,7 +3655,7 @@ module.exports = function ProfileIndividual (context) {
 
         var work_in_sel = sel
             .append('div')
-            .attr('class', 'four-column-four sel-work-in')
+            .attr('class', 'four-column-two sel-work-in')
             .attr('id', 'individual-work-in');
 
         var work_in_options = [{
@@ -3667,7 +3667,7 @@ module.exports = function ProfileIndividual (context) {
                     value: 'education',
                     selected: false
                 }, {
-                    label: 'Political',
+                    label: 'Policy',
                     value: 'political',
                     selected: false
                 }, {
@@ -3700,7 +3700,7 @@ module.exports = function ProfileIndividual (context) {
 
         var description_sel = sel
             .append('div')
-            .attr('class', 'four-column-four steamie-description')
+            .attr('class', 'four-column-two omega steamie-description')
             .attr('id', 'individual-description');
 
         description = textAreaComponent()
@@ -3926,7 +3926,7 @@ module.exports = function ProfileInstitution (context) {
 
         var work_in_sel = sel
             .append('div')
-            .attr('class', 'four-column-four sel-work-in')
+            .attr('class', 'four-column-two sel-work-in')
             .attr('id', 'institution-work-in');
 
         var work_in_options = [{
@@ -3938,7 +3938,7 @@ module.exports = function ProfileInstitution (context) {
                     value: 'education',
                     selected: false
                 }, {
-                    label: 'Political',
+                    label: 'Policy',
                     value: 'political',
                     selected: false
                 }, {
@@ -3970,7 +3970,7 @@ module.exports = function ProfileInstitution (context) {
 
         var description_sel = sel
             .append('div')
-            .attr('class', 'four-column-four steamie-description')
+            .attr('class', 'four-column-two omega steamie-description')
             .attr('id', 'institution-description');
 
         description = textAreaComponent()

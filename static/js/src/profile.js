@@ -61,7 +61,7 @@ module.exports = function Profile (context) {
         // add save button
         save_button = profile.selection()
             .append('div')
-            .attr('class', 'four-column-four')
+            .attr('class', 'four-column-one')
             .append('p')
             .attr('class', 'save-button')
             .text('Save');
@@ -69,13 +69,13 @@ module.exports = function Profile (context) {
         // add find me button
         var find_me = profile.selection()
             .append('div')
-            .attr('class', 'four-column-two offset-one ' +
+            .attr('class', 'four-column-two ' +
                            'find-me-button');
 
         find_me
             .append('p')
             .attr('class', 'find-me')
-            .text('Show me on the map.')
+            .text('Locate Me')
             .on('click', function () {
                 context.modal_flow
                     .state('inactive_with_profile');
@@ -97,11 +97,11 @@ module.exports = function Profile (context) {
         var sign_out = profile.selection()
                 .append('div')
                 .attr('class',
-                      'logout-button four-column-two offset-one');
+                      'logout-button four-column-one omega');
         sign_out
             .append('p')
             .attr('class', '')
-            .text('Sign out.')
+            .text('Sign Out')
             .on('click', function () {
                 context.modal_flow
                     .state('logging_out');

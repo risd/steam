@@ -8,7 +8,7 @@ var filters = [{
         active: 1
     }, {
         value: 'political',
-        display: 'political',
+        display: 'policy',
         active: 1
     }, {
         value: 'industry',
