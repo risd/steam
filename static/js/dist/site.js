@@ -2088,7 +2088,6 @@ function ModalFlow (context) {
                 el: d3.select('#auth-me-button'),
                 on_click: function () {},
                 append_to_el: function (sel) {
-                    sel.call(svg_next_arrow);
                     sel.select('p').text('Next');
                 }
             },
@@ -2098,7 +2097,7 @@ function ModalFlow (context) {
                 on_click: function () {
                     self.state('profile_' + context.user.type());
                 },
-                append_to_el: svg_next_arrow
+                append_to_el: function () {}
             },
 
             explore_map: {
@@ -2106,7 +2105,7 @@ function ModalFlow (context) {
                 on_click: function () {
                     self.state('inactive_with_profile');
                 },
-                append_to_el: svg_next_arrow
+                append_to_el: function () {}
             },
 
             explore_region: {
@@ -2121,7 +2120,7 @@ function ModalFlow (context) {
                             tlg_id: d.top_level.id
                         });
                 },
-                append_to_el: svg_next_arrow
+                append_to_el: function () {}
             },
 
             profile_link: {
@@ -3393,7 +3392,7 @@ module.exports = function Profile (context) {
                     });
             });
 
-        find_me.call(svg_next_arrow);
+        
 
         // add a sign out button
         var sign_out = profile.selection()
@@ -3421,7 +3420,7 @@ module.exports = function Profile (context) {
                 });
             });
 
-        sign_out.call(svg_next_arrow);
+       
 
         profile.work_in.dispatch
             .on('valueChange.profile', function () {
@@ -3916,7 +3915,7 @@ module.exports = function ProfileInstitution (context) {
         
         name = textComponent()
             .selection(name_sel)
-            .placeholder('institution name')
+            .placeholder('name of organization')
             .initialValue(
                 data.institution.name ?
                 data.institution.name : '')
@@ -4029,7 +4028,7 @@ module.exports = function ProfileInstitution (context) {
         work_in = self.work_in = radioComponent()
             .node(work_in_sel)
             .label({
-                label: 'My organization works in the following area',
+                label: 'My organization works in:',
                 type: 'p',
                 klass: ''
             })
@@ -4046,7 +4045,7 @@ module.exports = function ProfileInstitution (context) {
         description = textAreaComponent()
             .selection(description_sel)
             .label({
-                label: 'Why does STEAM matter to your organization?',
+                label: 'Why does STEAM matter to you?',
                 type: 'p',
                 klass: ''
             })

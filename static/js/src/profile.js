@@ -91,7 +91,7 @@ module.exports = function Profile (context) {
                     });
             });
 
-        find_me.call(svg_next_arrow);
+        
 
         // add a sign out button
         var sign_out = profile.selection()
@@ -119,7 +119,7 @@ module.exports = function Profile (context) {
                 });
             });
 
-        sign_out.call(svg_next_arrow);
+       
 
         profile.work_in.dispatch
             .on('valueChange.profile', function () {
