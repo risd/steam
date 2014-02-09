@@ -222,11 +222,14 @@ module.exports = function ProfileIndividual (context) {
             position_in_data: ['work_in'],
             reset_initial: work_in.initialSelected
         });
+
+        // reset the initial value of geo manually
+        // since it gets validated server side
         updatable.add({
             isDifferent: geo.isDifferent,
             value: geo.validatedData,
             position_in_data: ['top_level_input'],
-            reset_initial: geo.initialValue
+            reset_initial: function () {}
         });
         updatable.add({
             isDifferent: description.isDifferent,

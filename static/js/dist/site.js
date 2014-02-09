@@ -836,7 +836,8 @@ module.exports = function dropdownConditionalText () {
         select,
         select_options,
         placeholder,
-        initial_value;
+        initial_value,
+        rendered = false;
 
     self.dispatch = d3.dispatch('valueChange');
 
@@ -871,6 +872,11 @@ module.exports = function dropdownConditionalText () {
         return self;
     };
 
+    self.updateDOM = function () {
+        update_visual_display();
+        return self;
+    };
+
     self.isDifferent = function () {
         if (self.initialValue() === self.validatedData()){
             return false;
@@ -895,6 +901,11 @@ module.exports = function dropdownConditionalText () {
     self.options = function (x) {
         if (!arguments.length) return options;
         options = x;
+
+        if (options[options.length-1].country === '') {
+            options.pop();
+        }
+
         return self;
     };
 
@@ -907,45 +918,7 @@ module.exports = function dropdownConditionalText () {
 
     self.render = function () {
         // set the initial values for rendering
-        var initial_text_selection_data,
-            initial_edtiable_text,
-            initial_value_select;
-
-        if (options[options.length-1].country === '') {
-            options.pop();
-        }
-        options.forEach(function (d, i) {
-            if (d.country === 'United States of America') {
-                return;
-            }
-            // to make this reusable, you would
-            // want to be able to set this function
-            // dynamically.
-            if (initial_value === d.country) {
-
-                initial_text_selection_data = [{
-                    active: false
-                }];
-
-                initial_edtiable_text = '';
-
-                initial_value_select = d.country;
-            }
-        });
-
-        // initial value is not in the options
-        // field, so the value does not need to change
-        if (!initial_text_selection_data) {
-            
-            initial_text_selection_data = [{
-                active: true
-            }];
-
-            initial_edtiable_text = initial_value;
-
-            initial_value_select = 'United States of America';
-        }
-        // end set the initial values for rendering
+        var render_args = args_for_rendering();
 
         // add validation visualization
         if (checkmark_bool) {
@@ -962,9 +935,11 @@ module.exports = function dropdownConditionalText () {
         text_selection =
             root_selection
                 .selectAll('.input-text')
-                .data(initial_text_selection_data)
+                .data(render_args.text_selection_data)
                 .enter()
-                .append('div')
+                .append('div');
+
+        text_selection
                 .attr('class', function (d) {
                     var active = d.active ? ' active' : '';
                     return 'input-text hide-til-active' + active;
@@ -974,7 +949,7 @@ module.exports = function dropdownConditionalText () {
         editable_text = textComponent()
                             .selection(text_selection)
                             .placeholder(placeholder)
-                            .initialValue(initial_edtiable_text)
+                            .initialValue(render_args.editable_text)
                             .valid(function (val) {
                                 // only accepts 5 digit
                                 // zipcode as a valid one
@@ -1020,10 +995,12 @@ module.exports = function dropdownConditionalText () {
             .property('value', options_key);
 
         // select initial
-        select.property('value', initial_value_select);
+        select.property('value', render_args.value_selected);
 
         // set state based on render
         validate();
+
+        rendered = true;
 
         return self;
     };
@@ -1043,6 +1020,59 @@ module.exports = function dropdownConditionalText () {
         }
 
         return valid;
+    }
+
+    function args_for_rendering () {
+        // based on an initial value, there are
+        // three arguments needed for rendering
+        // this component
+
+        // defaults assume a zipcode is present
+        var args = {
+            text_selection_data: [{
+                active: true
+            }],
+            editable_text: initial_value,
+            value_selected: 'United States of America'
+        };
+
+        options.forEach(function (d, i) {
+            if (d.country === 'United States of America') {
+                return;
+            }
+
+            // 
+            if (initial_value === d.country) {
+
+                args.text_selection_data = [{
+                    active: false
+                }];
+
+                args.editable_text = '';
+
+                args.value_selectd = d.country;
+            }
+        });
+
+        return args;
+    }
+
+    function update_visual_display () {
+        var args = args_for_rendering();
+
+        text_selection
+            .selectAll('.input-text')
+            .data(args.text_selection_data);
+
+        text_selection
+            .attr('class', function (d) {
+                var active = d.active ? ' active' : '';
+                return 'input-text hide-til-active' + active;
+            });
+
+        editable_text.value(args.editable_text);
+
+        select.property('value', args.value_selected);
     }
 
     return self;
@@ -1626,7 +1656,11 @@ module.exports = function TextInput () {
     };
 
     self.value = function (x) {
-        return input_selection.property('value');
+        if (!arguments.length) {
+            return input_selection.property('value');
+        }
+        input_selection.property('value', x);
+        return self;
     };
 
     self.isDifferent = function () {
@@ -1647,7 +1681,9 @@ module.exports = function TextInput () {
     };
 
     self.valid = function (x) {
-        if (!arguments.length) return valid_function(self.value());
+        if (!arguments.length) {
+            return valid_function(self.value());
+        }
         // pass in a function that will validate
         // this text box
         valid_function = x;
@@ -2503,11 +2539,17 @@ function ModalFlow (context) {
         context.api.steamie_update(
             context.user.data(),
             function (err, results_raw) {
+                if (err) {
+                    console.log('error');
+                    console.log(err);
+                    return;
+                }
+
                 var results = JSON.parse(results_raw.responseText);
 
                 console.log('add me flow');
                 console.log(results);
-                if ((err) || (!results.top_level_input)) {
+                if (!results.top_level_input) {
                     console.log('error');
                     console.log(err);
 
@@ -3477,9 +3519,7 @@ module.exports = function Profile (context) {
             .api
             .steamie_update(data_to_submit,
                              function (err, response) {
-
-
-            if (err){
+            if (err) {
                 console.log('err');
                 console.log(err);
                 return;
@@ -3489,6 +3529,7 @@ module.exports = function Profile (context) {
             console.log(response);
 
             var results = JSON.parse(response.responseText);
+
             console.log(results);
             // reset user data
             // useful since the top_level_geo value
@@ -3496,6 +3537,13 @@ module.exports = function Profile (context) {
             // should be reflected when the user asks
             // to locate themselves.
             context.user.data(results);
+            profile.data(results);
+
+            // reset the initial value of geo manually
+            // since it gets validated server side
+            profile.geo
+                .initialValue(results.top_level_input)
+                .updateDOM();
 
             // resets the initial values to the ones saved
             // to the server. in case the user continues to
@@ -3549,11 +3597,6 @@ module.exports = function Profile (context) {
                     cur_value;
             }
         });
-
-        // make those changes out
-        // to the context.user module
-        context.user.data(data);
-        profile.data(data);
 
         return data_for_server;
     }
@@ -3785,11 +3828,14 @@ module.exports = function ProfileIndividual (context) {
             position_in_data: ['work_in'],
             reset_initial: work_in.initialSelected
         });
+
+        // reset the initial value of geo manually
+        // since it gets validated server side
         updatable.add({
             isDifferent: geo.isDifferent,
             value: geo.validatedData,
             position_in_data: ['top_level_input'],
-            reset_initial: geo.initialValue
+            reset_initial: function () {}
         });
         updatable.add({
             isDifferent: description.isDifferent,

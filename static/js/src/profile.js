@@ -217,9 +217,7 @@ module.exports = function Profile (context) {
             .api
             .steamie_update(data_to_submit,
                              function (err, response) {
-
-
-            if (err){
+            if (err) {
                 console.log('err');
                 console.log(err);
                 return;
@@ -229,6 +227,7 @@ module.exports = function Profile (context) {
             console.log(response);
 
             var results = JSON.parse(response.responseText);
+
             console.log(results);
             // reset user data
             // useful since the top_level_geo value
@@ -236,6 +235,13 @@ module.exports = function Profile (context) {
             // should be reflected when the user asks
             // to locate themselves.
             context.user.data(results);
+            profile.data(results);
+
+            // reset the initial value of geo manually
+            // since it gets validated server side
+            profile.geo
+                .initialValue(results.top_level_input)
+                .updateDOM();
 
             // resets the initial values to the ones saved
             // to the server. in case the user continues to
@@ -289,11 +295,6 @@ module.exports = function Profile (context) {
                     cur_value;
             }
         });
-
-        // make those changes out
-        // to the context.user module
-        context.user.data(data);
-        profile.data(data);
 
         return data_for_server;
     }

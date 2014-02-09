@@ -15,7 +15,8 @@ module.exports = function dropdownConditionalText () {
         select,
         select_options,
         placeholder,
-        initial_value;
+        initial_value,
+        rendered = false;
 
     self.dispatch = d3.dispatch('valueChange');
 
@@ -50,6 +51,11 @@ module.exports = function dropdownConditionalText () {
         return self;
     };
 
+    self.updateDOM = function () {
+        update_visual_display();
+        return self;
+    };
+
     self.isDifferent = function () {
         if (self.initialValue() === self.validatedData()){
             return false;
@@ -74,6 +80,11 @@ module.exports = function dropdownConditionalText () {
     self.options = function (x) {
         if (!arguments.length) return options;
         options = x;
+
+        if (options[options.length-1].country === '') {
+            options.pop();
+        }
+
         return self;
     };
 
@@ -86,45 +97,7 @@ module.exports = function dropdownConditionalText () {
 
     self.render = function () {
         // set the initial values for rendering
-        var initial_text_selection_data,
-            initial_edtiable_text,
-            initial_value_select;
-
-        if (options[options.length-1].country === '') {
-            options.pop();
-        }
-        options.forEach(function (d, i) {
-            if (d.country === 'United States of America') {
-                return;
-            }
-            // to make this reusable, you would
-            // want to be able to set this function
-            // dynamically.
-            if (initial_value === d.country) {
-
-                initial_text_selection_data = [{
-                    active: false
-                }];
-
-                initial_edtiable_text = '';
-
-                initial_value_select = d.country;
-            }
-        });
-
-        // initial value is not in the options
-        // field, so the value does not need to change
-        if (!initial_text_selection_data) {
-            
-            initial_text_selection_data = [{
-                active: true
-            }];
-
-            initial_edtiable_text = initial_value;
-
-            initial_value_select = 'United States of America';
-        }
-        // end set the initial values for rendering
+        var render_args = args_for_rendering();
 
         // add validation visualization
         if (checkmark_bool) {
@@ -141,9 +114,11 @@ module.exports = function dropdownConditionalText () {
         text_selection =
             root_selection
                 .selectAll('.input-text')
-                .data(initial_text_selection_data)
+                .data(render_args.text_selection_data)
                 .enter()
-                .append('div')
+                .append('div');
+
+        text_selection
                 .attr('class', function (d) {
                     var active = d.active ? ' active' : '';
                     return 'input-text hide-til-active' + active;
@@ -153,7 +128,7 @@ module.exports = function dropdownConditionalText () {
         editable_text = textComponent()
                             .selection(text_selection)
                             .placeholder(placeholder)
-                            .initialValue(initial_edtiable_text)
+                            .initialValue(render_args.editable_text)
                             .valid(function (val) {
                                 // only accepts 5 digit
                                 // zipcode as a valid one
@@ -199,10 +174,12 @@ module.exports = function dropdownConditionalText () {
             .property('value', options_key);
 
         // select initial
-        select.property('value', initial_value_select);
+        select.property('value', render_args.value_selected);
 
         // set state based on render
         validate();
+
+        rendered = true;
 
         return self;
     };
@@ -222,6 +199,59 @@ module.exports = function dropdownConditionalText () {
         }
 
         return valid;
+    }
+
+    function args_for_rendering () {
+        // based on an initial value, there are
+        // three arguments needed for rendering
+        // this component
+
+        // defaults assume a zipcode is present
+        var args = {
+            text_selection_data: [{
+                active: true
+            }],
+            editable_text: initial_value,
+            value_selected: 'United States of America'
+        };
+
+        options.forEach(function (d, i) {
+            if (d.country === 'United States of America') {
+                return;
+            }
+
+            // 
+            if (initial_value === d.country) {
+
+                args.text_selection_data = [{
+                    active: false
+                }];
+
+                args.editable_text = '';
+
+                args.value_selectd = d.country;
+            }
+        });
+
+        return args;
+    }
+
+    function update_visual_display () {
+        var args = args_for_rendering();
+
+        text_selection
+            .selectAll('.input-text')
+            .data(args.text_selection_data);
+
+        text_selection
+            .attr('class', function (d) {
+                var active = d.active ? ' active' : '';
+                return 'input-text hide-til-active' + active;
+            });
+
+        editable_text.value(args.editable_text);
+
+        select.property('value', args.value_selected);
     }
 
     return self;

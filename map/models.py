@@ -405,8 +405,14 @@ def update_steamie_related(sender, instance, *args, **kwargs):
 
     if old.top_level_input != instance.top_level_input:
 
-        top_level_input_change = True
         instance.set_geo()
+        if instance.top_level_input is None:
+            # if an invalid value is passed,
+            # then it didn't actually change
+            instance.top_level_input = old.top_level_input
+        else:
+            top_level_input_change = True
+
 
     if (old.work_in != instance.work_in) or\
         top_level_input_change:

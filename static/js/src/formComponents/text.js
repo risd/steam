@@ -52,7 +52,11 @@ module.exports = function TextInput () {
     };
 
     self.value = function (x) {
-        return input_selection.property('value');
+        if (!arguments.length) {
+            return input_selection.property('value');
+        }
+        input_selection.property('value', x);
+        return self;
     };
 
     self.isDifferent = function () {
@@ -73,7 +77,9 @@ module.exports = function TextInput () {
     };
 
     self.valid = function (x) {
-        if (!arguments.length) return valid_function(self.value());
+        if (!arguments.length) {
+            return valid_function(self.value());
+        }
         // pass in a function that will validate
         // this text box
         valid_function = x;

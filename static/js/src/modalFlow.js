@@ -595,11 +595,17 @@ function ModalFlow (context) {
         context.api.steamie_update(
             context.user.data(),
             function (err, results_raw) {
+                if (err) {
+                    console.log('error');
+                    console.log(err);
+                    return;
+                }
+
                 var results = JSON.parse(results_raw.responseText);
 
                 console.log('add me flow');
                 console.log(results);
-                if ((err) || (!results.top_level_input)) {
+                if (!results.top_level_input) {
                     console.log('error');
                     console.log(err);
 

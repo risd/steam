@@ -1,6 +1,6 @@
 ### left off
 
-- when user updates zip code, upon response, reset the value such that if they do "locate me", it will find them
+- cancel button on auth, what does that redirect look like.
 
 - remove main-nav header
 
