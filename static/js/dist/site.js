@@ -975,6 +975,15 @@ module.exports = function dropdownConditionalText () {
                             .selection(text_selection)
                             .placeholder(placeholder)
                             .initialValue(initial_edtiable_text)
+                            .valid(function (val) {
+                                // only accepts 5 digit
+                                // zipcode as a valid one
+                                if (val.length === 5) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            })
                             .render();
 
         editable_text
@@ -1020,7 +1029,7 @@ module.exports = function dropdownConditionalText () {
     };
 
     function validate () {
-        if ((editable_text.isNotEmpty() &&
+        if ((editable_text.valid() &&
              text_selection.classed('active')) ||
             (text_selection.classed('active') === false)) {
 
@@ -1576,7 +1585,8 @@ module.exports = function TextInput () {
         input_selection,
         placeholder,
         value,
-        initial_value;
+        initial_value,
+        valid_function = function (val) { return true; };
 
     self.dispatch = d3.dispatch('valueChange');
 
@@ -1634,6 +1644,14 @@ module.exports = function TextInput () {
         } else {
             return false;
         }
+    };
+
+    self.valid = function (x) {
+        if (!arguments.length) return valid_function(self.value());
+        // pass in a function that will validate
+        // this text box
+        valid_function = x;
+        return self;
     };
 
     return self;

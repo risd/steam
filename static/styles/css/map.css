@@ -1,21 +1,35 @@
 /*
-Syntax error: Undefined variable: "$color-slate".
-        on line 3 of static/styles/scss/from-steam-proto/platonic.scss
+Syntax error: Undefined variable: "$white".
+        on line 47 of static/styles/scss/map.scss
 
-1: @import '../css3';
-2: 
-3: $orb: $color-slate;;
-4: 
-5: .platonic .orb{
-6: 	fill: rgba($orb, 1);
-7: 	stroke: rgba($orb, 1);
-8: 	@include transformOrigin(50%, 50%);
+42: }
+43: 
+44: .modal {
+45:     overflow-y: scroll;
+46:     
+47:     color: $white;
+48: 
+49:     background-color: rgba($color-slate,
+50:                            $fullscreen-color-opacity);
+51: 
+52:     // &.research {
 
 Backtrace:
-static/styles/scss/from-steam-proto/platonic.scss:3
+static/styles/scss/map.scss:47
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/variable.rb:49:in `_perform'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/node.rb:50:in `perform'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:437:in `visit_variable'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:369:in `visit_prop'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `block in visit'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `block in with_base'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:115:in `with_frame'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `with_base'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `visit'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:392:in `block (2 levels) in visit_rule'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:392:in `map'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:392:in `block in visit_rule'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:174:in `with_environment'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:390:in `visit_rule'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:37:in `visit'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `block in visit'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `block in with_base'
@@ -52,4 +66,4 @@ static/styles/scss/from-steam-proto/platonic.scss:3
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Undefined variable: \"$color-slate\".\A         on line 3 of static/styles/scss/from-steam-proto/platonic.scss\A \A 1: @import '../css3';\A 2: \A 3: $orb: $color-slate;;\A 4: \A 5: .platonic .orb{\A 6: 	fill: rgba($orb, 1);\A 7: 	stroke: rgba($orb, 1);\A 8: 	@include transformOrigin(50%, 50%);"; }
+  content: "Syntax error: Undefined variable: \"$white\".\A         on line 47 of static/styles/scss/map.scss\A \A 42: }\A 43: \A 44: .modal {\A 45:     overflow-y: scroll;\A 46:     \A 47:     color: $white;\A 48: \A 49:     background-color: rgba($color-slate,\A 50:                            $fullscreen-color-opacity);\A 51: \A 52:     // &.research {"; }

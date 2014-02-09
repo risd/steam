@@ -11,7 +11,8 @@ module.exports = function TextInput () {
         input_selection,
         placeholder,
         value,
-        initial_value;
+        initial_value,
+        valid_function = function (val) { return true; };
 
     self.dispatch = d3.dispatch('valueChange');
 
@@ -69,6 +70,14 @@ module.exports = function TextInput () {
         } else {
             return false;
         }
+    };
+
+    self.valid = function (x) {
+        if (!arguments.length) return valid_function(self.value());
+        // pass in a function that will validate
+        // this text box
+        valid_function = x;
+        return self;
     };
 
     return self;

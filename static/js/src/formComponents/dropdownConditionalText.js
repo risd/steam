@@ -154,6 +154,15 @@ module.exports = function dropdownConditionalText () {
                             .selection(text_selection)
                             .placeholder(placeholder)
                             .initialValue(initial_edtiable_text)
+                            .valid(function (val) {
+                                // only accepts 5 digit
+                                // zipcode as a valid one
+                                if (val.length === 5) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            })
                             .render();
 
         editable_text
@@ -199,7 +208,7 @@ module.exports = function dropdownConditionalText () {
     };
 
     function validate () {
-        if ((editable_text.isNotEmpty() &&
+        if ((editable_text.valid() &&
              text_selection.classed('active')) ||
             (text_selection.classed('active') === false)) {
 
