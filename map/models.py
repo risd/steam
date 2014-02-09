@@ -316,11 +316,15 @@ class Steamies(models.Model):
         verbose_name_plural = _("Steamies'")
 
     def change_work_in_count(self, amount=1):
-        logger.info('Updating work in count')
-        logger.info('work_in = {0}'.format(self.work_in))
-        logger.info('top_lev = {0}'.format(self.top_level))
-        logger.info('amount  = {0}'.format(amount))
         if (self.work_in and self.top_level):
+            logger.info('Updating work in count')
+            logger.info('work_in   = {0}'.format(self.work_in))
+            logger.info('top_lev   = {0}'.format(self.top_level))
+            logger.info('amount    = {0}'.format(amount))
+            logger.info('to change = {0}'.format(getattr(
+                self.top_level,
+                'work_in_{0}'.format(self.work_in))))
+
             setattr(
                 self.top_level,
                 'work_in_{0}'.format(self.work_in),
@@ -329,8 +333,12 @@ class Steamies(models.Model):
                     'work_in_{0}'.format(self.work_in)
                     ) + amount
                 )
+
             self.top_level.save()
 
+            logger.info('changed   = {0}'.format(getattr(
+                self.top_level,
+                'work_in_{0}'.format(self.work_in))))
 
         logger.info('Updated work_in count')
 
@@ -395,7 +403,9 @@ def update_steamie_related(sender, instance, *args, **kwargs):
     if (old.work_in != instance.work_in) or\
         top_level_input_change:
 
+        logger.info('\nChanging old')
         old.change_work_in_count(amount=-1)
+        logger.info('\nChanging new')
         instance.change_work_in_count(amount=1)
 
     if ((old.individual is None) and\
