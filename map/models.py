@@ -385,12 +385,18 @@ def update_steamie_related(sender, instance, *args, **kwargs):
     if instance.pk:
         old = Steamies.objects.get(pk=instance.pk)
     else:
+        # the first time a steamie gets saved,
+        # it has NO information in it, except
+        # for its attached user account. so
+        # nothing needs to happen to it.
+
         # fake, or computer generated STEAMies
-        # will not have a top_level_input
-        if instance.tags != 'fake':
-            instance.set_geo()
-        instance.change_work_in_count(amount=1)
-        # work here is done for new STEAMies
+        # will not have a top_level_input, nor
+        # will they have an old instace. everything
+        # gets set in one go.
+        if instance.tags == 'fake':
+            instance.change_work_in_count(amount=1)
+
         return
     
     top_level_input_change = False
