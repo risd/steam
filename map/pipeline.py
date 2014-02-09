@@ -33,7 +33,8 @@ def create_steamie(request,
             logger.info('facebook response')
             logger.info(response)
 
-            avatar_url = 'http://graph.facebook.com/%s/picture?type=small' \
+            avatar_url = 'http://graph.facebook.com' +\
+                '/%s/picture?type=square' \
                 % response['id']
 
             logger.info("Authenticated. Facebook.")
