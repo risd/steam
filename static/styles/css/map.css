@@ -1,0 +1,67 @@
+/*
+Syntax error: Undefined variable: "$white".
+        on line 47 of static/styles/scss/map.scss
+
+42: }
+43: 
+44: .modal {
+45:     overflow-y: scroll;
+46:     
+47:     color: $white;
+48: 
+49:     background-color: rgba($color-slate,
+50:                            $fullscreen-color-opacity);
+51: 
+52:     // &.research {
+
+Backtrace:
+static/styles/scss/map.scss:47
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/script/variable.rb:49:in `_perform'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/script/node.rb:40:in `perform'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:298:in `visit_prop'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:100:in `visit'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:109:in `block in visit_children'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:121:in `with_environment'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:108:in `visit_children'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:320:in `visit_rule'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:100:in `visit'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:109:in `block in visit_children'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:121:in `with_environment'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:108:in `visit_children'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:128:in `visit_root'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:100:in `visit'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:7:in `visit'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/root_node.rb:20:in `render'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/engine.rb:315:in `_render'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/engine.rb:262:in `render'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/plugin/compiler.rb:362:in `update_stylesheet'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/plugin/compiler.rb:203:in `block in update_stylesheets'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/plugin/compiler.rb:201:in `each'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/plugin/compiler.rb:201:in `update_stylesheets'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/plugin/compiler.rb:235:in `watch'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/plugin.rb:107:in `method_missing'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/exec.rb:463:in `watch_or_update'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/exec.rb:326:in `process_result'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/exec.rb:41:in `parse'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/exec.rb:21:in `parse!'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/bin/sass:13:in `<top (required)>'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/bin/sass:23:in `load'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/bin/sass:23:in `<main>'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/bin/ruby_noexec_wrapper:14:in `eval'
+/Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/bin/ruby_noexec_wrapper:14:in `<main>'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Syntax error: Undefined variable: \"$white\".\A         on line 47 of static/styles/scss/map.scss\A \A 42: }\A 43: \A 44: .modal {\A 45:     overflow-y: scroll;\A 46:     \A 47:     color: $white;\A 48: \A 49:     background-color: rgba($color-slate,\A 50:                            $fullscreen-color-opacity);\A 51: \A 52:     // &.research {"; }
