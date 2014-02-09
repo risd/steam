@@ -23,9 +23,9 @@ module.exports = function flowAnimation () {
     self.remove = function () {
         if (rendered) {
             force.stop();
-            force = undefined;
-            canvas_sel.remove();
+            selection.html('');
         }
+        rendered = false;
         return self;
     };
 

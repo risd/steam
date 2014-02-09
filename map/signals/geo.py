@@ -65,6 +65,11 @@ class Geo():
                     'us_district_ordinal':\
                         self._ordinal(int(district[0][u'district'])),
                 }
+            else:
+                geo = {
+                    'error': 'Could not find a district ' +\
+                              'for your zipcode',
+                }
         else:
             geo = {
                 'us_bool': False,

@@ -348,6 +348,8 @@ class Steamies(models.Model):
             geo = g.geo(self.top_level_input)
 
             if 'error' in geo:
+                logger.info('Could not find zipcode for: '+\
+                    '{0}'.format(self.top_level))
                 self.top_level_input = None
             else:
                 try:

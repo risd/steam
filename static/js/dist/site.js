@@ -1073,9 +1073,9 @@ module.exports = function flowAnimation () {
     self.remove = function () {
         if (rendered) {
             force.stop();
-            force = undefined;
-            canvas_sel.remove();
+            selection.html('');
         }
+        rendered = false;
         return self;
     };
 
@@ -2340,8 +2340,9 @@ function ModalFlow (context) {
             .selection(d3.select('#modal-animation'));
 
         self.dispatch
-            .on('ApplyStateWaitingForAddMeFlow.modalNetwork',
+            .on('ApplyStateWaitingForAddMeFlow',
                 function () {
+                    console.log('dispatching waiting for amf');
                     modal_animation.render();
                 });
 
@@ -2506,7 +2507,7 @@ function ModalFlow (context) {
 
                 console.log('add me flow');
                 console.log(results);
-                if (err) {
+                if ((err) || (!results.top_level_input)) {
                     console.log('error');
                     console.log(err);
 
@@ -2515,6 +2516,7 @@ function ModalFlow (context) {
                     // they left off, attempting to
                     // be added.
                     self.state('choose_type_add_zip');
+                    return;
                 }
 
                 // update the user data based on
