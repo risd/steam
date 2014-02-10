@@ -127,7 +127,7 @@ header {
 .z-250 {
     z-index: 250;
 }
-// z-900 used as the blanket
+// z-900 used for the loading div
 .z-900 {
     z-index: 900;
 }
@@ -1032,6 +1032,13 @@ input[type=radio] {
 
 .blanket {
     background-color: black;
+}
+
+.loading {
+    svg {
+        -webkit-transform: scale(3);
+        margin: 20% auto;
+    }
 }
 /* end form */
 

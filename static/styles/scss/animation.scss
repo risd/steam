@@ -152,7 +152,23 @@
     }
 }
 
+.loading {
+    top: -200%;
+    opacity: 0;
+    -webkit-transition-property: opacity, top;
+    -webkit-transition-duration: 0.3s, 0.0s;
+    -webkit-transition-delay: 0s, 0.3s;
+    -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);
 
+    &.active {
+        top: 0%;
+        opacity: 1;
+        -webkit-transition-property: opacity, top;
+        -webkit-transition-duration: 0.2s, 0.0s;
+        -webkit-transition-delay: 0s, 0.0s;
+        -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);
+    }
+}
 
 .arc-wrapper{
     -webkit-animation:slowSpin 8s infinite linear;
