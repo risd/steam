@@ -3364,3 +3364,13 @@ input[type=radio] {
     -webkit-transition-duration: 0.2s;
     -webkit-transition-delay: 0s;
     -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
+
+.arc-wrapper {
+  -webkit-animation: slowSpin 8s infinite linear; }
+
+@-webkit-keyframes slowSpin {
+  0% {
+    -webkit-transform: rotate(0deg); }
+
+  100% {
+    -webkit-transform: rotate(360deg); } }
