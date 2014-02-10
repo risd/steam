@@ -9,11 +9,20 @@
     -webkit-transition-delay: 0s;
     -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);
 
+    & p{
+        padding:0.25em 0em;
+    }
+
+    & :active{
+        background:$color-slate-dark;
+    }
+
     &.enabled {
         opacity: 1;
         margin-top: 20px;
         background:white;
         color:$color-slate;
+        
 
         -webkit-transition-property: opacity, margin-top;
         -webkit-transition-duration: 0.2s;
@@ -158,7 +167,17 @@
     -webkit-animation:slowSpin 8s infinite linear;
 }
 
+.arc-wrapper:hover{
+    -webkit-animation:slowSpin 0.2s infinite linear;
+}
+
+.marker-cluster:hover .arc-wrapper{
+    -webkit-animation-duration:0.2s;
+}
+
 @-webkit-keyframes slowSpin{
     0%    {-webkit-transform:rotate(0deg);}
     100%  {-webkit-transform:rotate(360deg);}
 }
+
+

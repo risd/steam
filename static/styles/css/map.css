@@ -1,21 +1,21 @@
 /*
-Syntax error: Undefined variable: "$white".
-        on line 47 of static/styles/scss/map.scss
+Syntax error: Undefined variable: "$color-slate-dark".
+        on line 45 of static/styles/scss/map.scss
 
+40:     bottom: 0;
+41:     opacity: 1;
 42: }
 43: 
-44: .modal {
-45:     overflow-y: scroll;
-46:     
-47:     color: $white;
-48: 
-49:     background-color: rgba($color-slate,
-50:                            $fullscreen-color-opacity);
-51: 
-52:     // &.research {
+44: ::selection {
+45:     background:$color-slate-dark;
+46: }
+47: 
+48: .modal {
+49:     overflow-y: scroll;
+50:     
 
 Backtrace:
-static/styles/scss/map.scss:47
+static/styles/scss/map.scss:45
 /Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/script/variable.rb:49:in `_perform'
 /Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/script/node.rb:40:in `perform'
 /Users/micah/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.14/lib/sass/tree/visitors/perform.rb:298:in `visit_prop'
@@ -60,4 +60,4 @@ static/styles/scss/map.scss:47
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Undefined variable: \"$white\".\A         on line 47 of static/styles/scss/map.scss\A \A 42: }\A 43: \A 44: .modal {\A 45:     overflow-y: scroll;\A 46:     \A 47:     color: $white;\A 48: \A 49:     background-color: rgba($color-slate,\A 50:                            $fullscreen-color-opacity);\A 51: \A 52:     // &.research {"; }
+  content: "Syntax error: Undefined variable: \"$color-slate-dark\".\A         on line 45 of static/styles/scss/map.scss\A \A 40:     bottom: 0;\A 41:     opacity: 1;\A 42: }\A 43: \A 44: ::selection {\A 45:     background:$color-slate-dark;\A 46: }\A 47: \A 48: .modal {\A 49:     overflow-y: scroll;\A 50:     "; }

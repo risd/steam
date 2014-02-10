@@ -41,6 +41,10 @@ header {
     opacity: 1;
 }
 
+::selection {
+    background:$color-slate-dark;
+}
+
 .modal {
     overflow-y: scroll;
     
@@ -662,9 +666,10 @@ form / profile
 
     p {
         @include antenna-medium;
-        font-size: 60px;
+        font-size: 56px;
         line-height: 35px;
         margin: 0;
+        padding:0.25em 0em;
     }
     svg {
         margin-left: 5px;
@@ -684,11 +689,18 @@ form / profile
     margin-top: 20px;
     line-height:35px;
     margin-bottom: 20px;
-    padding: 0.25em 0em;
+    /*padding: 0.25em 0em;*/
 
     p:active{
         color:$color-slate-dark;
 
+    }
+    &:hover{
+        background:$white;
+    }
+
+    &:hover p{
+        color:$color-slate;
     }
 
 }
@@ -696,10 +708,16 @@ form / profile
     cursor: default;
     color: $color-slate;
 }
+
+.modal p.save-button{
+    padding:0.25em 0em;
+    border:1px solid $color-slate;
+}
 .modal .save-button.enabled {
     color: $color-slate;
     background-color: $white;
     cursor: pointer;
+    border:none;
 }
 .modal .cancel-add-button {
     @include antenna-medium;
