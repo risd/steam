@@ -86,6 +86,25 @@
         -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);
     }
 }
+.bottom-left,
+.top-left,
+.top-left-second {
+    left: -100%;
+
+    -webkit-transition-property: left;
+    -webkit-transition-duration: 0.0s;
+    -webkit-transition-delay: 0.3s;
+    -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);
+
+    &.active {
+        left: 30px;
+
+        -webkit-transition-property: left;
+        -webkit-transition-duration: 0.0s;
+        -webkit-transition-delay: 0.3s;
+        -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);
+    }
+}
 
 .animate-out-in.modal {
     -webkit-transform: scale(1.5) translateY(-20px);

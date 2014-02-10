@@ -2206,9 +2206,11 @@ function ModalFlow (context) {
             apply_state(active);
         },
         just_logged_out: function () {
+            console.log('just logged out');
             self.state('inactive_no_profile');
         },
         inactive_no_profile: function () {
+            console.log('inactive_no_profile');
             var active = [{
                 el_type: 'button',
                 el_name: 'open_modal'
@@ -2232,9 +2234,6 @@ function ModalFlow (context) {
             var active = [{
                 el_type: 'display',
                 el_name: 'modal'
-            }, {
-                el_type: 'display',
-                el_name: 'about'
             }, {
                 el_type: 'modal_header',
                 el_name: 'about'

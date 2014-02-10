@@ -2,6 +2,9 @@
 
 - cancel button on auth, what does that redirect look like.
 
+- locate me 
+    - Add bounding box info to TopLevelGeo so that it can zoom to each network on click
+
 - remove main-nav header
 
 - delegate
