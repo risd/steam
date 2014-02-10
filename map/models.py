@@ -427,11 +427,13 @@ def update_steamie_related(sender, instance, *args, **kwargs):
 
         instance.individual.first_name = instance.user.first_name
         instance.individual.last_name = instance.user.last_name
+        instance.individual.save()
 
     elif ((old.institution is None) and\
           (not (instance.institution is None))):
 
         instance.institution.name = instance.user.username
+        instance.institution.save()
 
 models.signals.pre_save.connect(update_steamie_related,
                                 sender=Steamies)
