@@ -39,7 +39,6 @@
 
         <!-- humble host of the button to add oneself -->
         <div id="activate-add-yourself" class="z-10 button-activate top-left-second active">
-            {% include 'steam/orb.html' %}
             <p class="add-me hide-til-active">Add Me!</p>
         </div>
 
@@ -207,8 +206,10 @@
             </div>
         </section>
 
-        <div id="blanket"
-             class="fullscreen animate blanket z-900"></div>
+        <div id="loading"
+             class="fullscreen loading z-900 active">
+             {% include 'steam/orb.html' %}
+         </div>
 
         {# <script src="{% static "js/dist/delegate.js" %}"></script> #}
         <script src="{% static "js/dist/libs.js" %}"></script>

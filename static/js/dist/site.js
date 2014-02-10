@@ -2493,10 +2493,8 @@ function ModalFlow (context) {
                 // self.state('choose_type_add_zip');
             }
 
-            // remove loading icon
-            d3.select('#activate-add-yourself .add-me')
-                .classed('active', true);
-            d3.select('#activate-add-yourself .loading')
+            // remove loading splash
+            d3.select('#loading')
                 .classed('active', false);
         });
 
