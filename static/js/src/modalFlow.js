@@ -164,16 +164,19 @@ function ModalFlow (context) {
                 append_to_el: function () {}
             },
 
-            explore_region: {
-                el: d3.select('#explore-region'),
+            explore_locate_me: {
+                el: d3.select('#explore-locate-me'),
                 on_click: function () {
                     self.state('inactive_with_profile');
-                    
-                    var d = context.user.data();
+                        
+                    var d = context.user.data(),
+                        type  = context.user.type();
 
                     context.network
-                        .init({
-                            tlg_id: d.top_level.id
+                        .highlight({
+                            tlg_id: d.top_level.id,
+                            steamie_type: type,
+                            steamie_id: d[type].id
                         });
                 },
                 append_to_el: function () {}
