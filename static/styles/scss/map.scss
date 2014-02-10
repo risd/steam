@@ -448,6 +448,11 @@ network graph
     border-width: 2px;
     border-style: solid;
     border-color: $white;
+
+    &:active{
+        @include scale(0.95);
+
+    }
 }
 .info_tip {
     position: fixed;

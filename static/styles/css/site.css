@@ -2540,6 +2540,12 @@ network graph
   border-width: 2px;
   border-style: solid;
   border-color: white; }
+  .avatar:active {
+    -webkit-transform: scale(0.95);
+    -moz-transform: scale(0.95);
+    -ms-transform: scale(0.95);
+    -o-transform: scale(0.95);
+    transform: scale(0.95); }
 
 .info_tip {
   position: fixed;
