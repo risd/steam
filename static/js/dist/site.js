@@ -3372,12 +3372,7 @@ module.exports = function Profile (context) {
         var find_me = profile.selection()
             .append('div')
             .attr('class', 'four-column-two ' +
-                           'find-me-button');
-
-        find_me
-            .append('p')
-            .attr('class', 'find-me')
-            .text('Locate Me')
+                           'find-me-button')
             .on('click', function () {
                 context.modal_flow
                     .state('inactive_with_profile');
@@ -3392,6 +3387,11 @@ module.exports = function Profile (context) {
                         steamie_id: d[type].id
                     });
             });
+
+        find_me
+            .append('p')
+            .attr('class', 'find-me')
+            .text('Locate Me');
 
         find_me.call(svg_next_arrow);
 
