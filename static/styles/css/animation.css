@@ -1,21 +1,21 @@
 /*
-Syntax error: Undefined variable: "$color-slate".
-        on line 16 of static/styles/scss/animation.scss
+Syntax error: Undefined variable: "$color-slate-dark".
+        on line 17 of static/styles/scss/animation.scss
 
-11: 
-12:     &.enabled {
-13:         opacity: 1;
-14:         margin-top: 20px;
-15:         background:white;
-16:         color:$color-slate;
-17: 
-18:         -webkit-transition-property: opacity, margin-top;
-19:         -webkit-transition-duration: 0.2s;
-20:         -webkit-transition-delay: 0s;
-21:         -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);
+12:     & p{
+13:         padding:0.25em 0em;
+14:     }
+15: 
+16:     & :active{
+17:         background:$color-slate-dark;
+18:     }
+19: 
+20:     &.enabled {
+21:         opacity: 1;
+22:         margin-top: 20px;
 
 Backtrace:
-static/styles/scss/animation.scss:16
+static/styles/scss/animation.scss:17
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/variable.rb:49:in `_perform'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/node.rb:50:in `perform'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:369:in `visit_prop'
@@ -77,4 +77,4 @@ static/styles/scss/animation.scss:16
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Undefined variable: \"$color-slate\".\A         on line 16 of static/styles/scss/animation.scss\A \A 11: \A 12:     &.enabled {\A 13:         opacity: 1;\A 14:         margin-top: 20px;\A 15:         background:white;\A 16:         color:$color-slate;\A 17: \A 18:         -webkit-transition-property: opacity, margin-top;\A 19:         -webkit-transition-duration: 0.2s;\A 20:         -webkit-transition-delay: 0s;\A 21:         -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);"; }
+  content: "Syntax error: Undefined variable: \"$color-slate-dark\".\A         on line 17 of static/styles/scss/animation.scss\A \A 12:     & p{\A 13:         padding:0.25em 0em;\A 14:     }\A 15: \A 16:     & :active{\A 17:         background:$color-slate-dark;\A 18:     }\A 19: \A 20:     &.enabled {\A 21:         opacity: 1;\A 22:         margin-top: 20px;"; }

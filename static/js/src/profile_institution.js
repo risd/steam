@@ -196,7 +196,7 @@ module.exports = function ProfileInstitution (context) {
         description = textAreaComponent()
             .selection(description_sel)
             .label({
-                label: 'Why does STEAM matter to you?',
+                label: 'Why STEAM matters to your organization:',
                 type: 'p',
                 klass: ''
             })
