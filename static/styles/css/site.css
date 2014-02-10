@@ -555,6 +555,7 @@ textarea {
 
   @page {
     margin: 0.5cm; }
+
   p,
   h2,
   h3 {
@@ -1381,6 +1382,7 @@ textarea {
 @font-face {
   font-family: "ModernPictograms";
   src: url("../../fonts/modernpics.otf"); }
+
 body {
   margin: 0px; }
 
@@ -2056,6 +2058,7 @@ input[type="submit"]:hover {
     -ms-transform: scale(1.3);
     -o-transform: scale(1.3);
     transform: scale(1.3); } }
+
 .center-in-parent {
   position: relative;
   margin: 0 auto;
@@ -3412,7 +3415,7 @@ input[type=radio] {
     -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
 
 .arc-wrapper {
-  -webkit-animation: slowSpin 8s infinite linear; }
+  -webkit-animation: slowSpin 12s infinite linear; }
 
 .arc-wrapper:hover {
   -webkit-animation: slowSpin 0.2s infinite linear; }
