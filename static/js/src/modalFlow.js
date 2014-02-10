@@ -144,7 +144,6 @@ function ModalFlow (context) {
                 el: d3.select('#auth-me-button'),
                 on_click: function () {},
                 append_to_el: function (sel) {
-                    sel.call(svg_next_arrow);
                     sel.select('p').text('Next');
                 }
             },
@@ -154,7 +153,7 @@ function ModalFlow (context) {
                 on_click: function () {
                     self.state('profile_' + context.user.type());
                 },
-                append_to_el: svg_next_arrow
+                append_to_el: function () {}
             },
 
             explore_map: {
@@ -162,7 +161,7 @@ function ModalFlow (context) {
                 on_click: function () {
                     self.state('inactive_with_profile');
                 },
-                append_to_el: svg_next_arrow
+                append_to_el: function () {}
             },
 
             explore_region: {
@@ -177,7 +176,7 @@ function ModalFlow (context) {
                             tlg_id: d.top_level.id
                         });
                 },
-                append_to_el: svg_next_arrow
+                append_to_el: function () {}
             },
 
             profile_link: {

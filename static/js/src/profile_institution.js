@@ -66,7 +66,7 @@ module.exports = function ProfileInstitution (context) {
         
         name = textComponent()
             .selection(name_sel)
-            .placeholder('institution name')
+            .placeholder('name of organization')
             .initialValue(
                 data.institution.name ?
                 data.institution.name : '')
@@ -179,7 +179,7 @@ module.exports = function ProfileInstitution (context) {
         work_in = self.work_in = radioComponent()
             .node(work_in_sel)
             .label({
-                label: 'My organization works in the following area',
+                label: 'My organization works in:',
                 type: 'p',
                 klass: ''
             })
@@ -196,7 +196,7 @@ module.exports = function ProfileInstitution (context) {
         description = textAreaComponent()
             .selection(description_sel)
             .label({
-                label: 'Why does STEAM matter to your organization?',
+                label: 'Why does STEAM matter to you?',
                 type: 'p',
                 klass: ''
             })
