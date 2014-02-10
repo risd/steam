@@ -570,19 +570,24 @@ form / profile
 .add-me, .button-about {
     @include antenna-medium;
     font-size: 35px;
-    color: $color-slate;
+    color: rgb(165,165,165);
     margin: 0;
     padding: 0;
+
+    &:hover{
+        color:$color-slate;
+    }
 }
-.top-right {
+
+.top-left {
     position: absolute;
-    top: 100px;
-    right: 30px;
+    bottom: 380px;
+    left: 30px;
 }
-.top-right-second {
+.top-left-second {
     position: absolute;
-    top: 150px;
-    right: 30px;
+    bottom: 150px;
+    left: 30px;
 }
 
 .button-explore-region,
@@ -691,10 +696,7 @@ form / profile
     margin-bottom: 20px;
     /*padding: 0.25em 0em;*/
 
-    p:active{
-        color:$color-slate-dark;
-
-    }
+   
     &:hover{
         background:$white;
     }
@@ -702,6 +704,13 @@ form / profile
     &:hover p{
         color:$color-slate;
     }
+
+     &:active{
+        background:$color-slate-dark;
+        border:1px solid $color-slate-dark;
+
+    }
+
 
 }
 .modal .save-button {

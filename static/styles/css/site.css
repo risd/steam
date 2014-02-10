@@ -2634,19 +2634,21 @@ form / profile
   font-weight: normal;
   -webkit-font-smoothing: antialiased;
   font-size: 35px;
-  color: #516272;
+  color: #a5a5a5;
   margin: 0;
   padding: 0; }
+  .add-me:hover, .button-about:hover {
+    color: #516272; }
 
-.top-right {
+.top-left {
   position: absolute;
-  top: 100px;
-  right: 30px; }
+  bottom: 380px;
+  left: 30px; }
 
-.top-right-second {
+.top-left-second {
   position: absolute;
-  top: 150px;
-  right: 30px; }
+  bottom: 150px;
+  left: 30px; }
 
 .button-explore-region,
 .button-explore-map,
@@ -2762,13 +2764,6 @@ form / profile
   line-height: 35px;
   margin-bottom: 20px;
   /*padding: 0.25em 0em;*/ }
-  .modal .button-explore-region p:active,
-  .modal .button-explore-map p:active,
-  .modal .button-go-to-profile p:active,
-  .modal .save-button p:active,
-  .modal .find-me-button p:active,
-  .modal .logout-button p:active {
-    color: #293947; }
   .modal .button-explore-region:hover,
   .modal .button-explore-map:hover,
   .modal .button-go-to-profile:hover,
@@ -2783,6 +2778,14 @@ form / profile
   .modal .find-me-button:hover p,
   .modal .logout-button:hover p {
     color: #516272; }
+  .modal .button-explore-region:active,
+  .modal .button-explore-map:active,
+  .modal .button-go-to-profile:active,
+  .modal .save-button:active,
+  .modal .find-me-button:active,
+  .modal .logout-button:active {
+    background: #293947;
+    border: 1px solid #293947; }
 
 .modal .save-button {
   cursor: default;
