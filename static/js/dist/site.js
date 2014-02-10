@@ -1978,8 +1978,8 @@ function ModalFlow (context) {
         input_data;         // object that tracks input data
 
     self.dispatch = d3.dispatch('ApplyStateWaitingForAddMeFlow',
-                                'ApplyStateProfile',
-                                'ApplyStateChooseTypeAddZip');
+                                'ApplyStateChooseTypeAddZip',
+                                'ApplyStateLeavingThankYou');
 
     // form components
     var social_auth =
@@ -2105,6 +2105,7 @@ function ModalFlow (context) {
                 el: d3.select('#go-to-profile'),
                 on_click: function () {
                     self.state('profile_' + context.user.type());
+                    self.dispatch.ApplyStateLeavingThankYou();
                 },
                 append_to_el: function () {}
             },
@@ -2113,6 +2114,7 @@ function ModalFlow (context) {
                 el: d3.select('#explore-map'),
                 on_click: function () {
                     self.state('inactive_with_profile');
+                    self.dispatch.ApplyStateLeavingThankYou();
                 },
                 append_to_el: function () {}
             },
@@ -2131,6 +2133,7 @@ function ModalFlow (context) {
                             steamie_type: type,
                             steamie_id: d[type].id
                         });
+                    self.dispatch.ApplyStateLeavingThankYou();
                 },
                 append_to_el: function () {}
             },
@@ -2350,7 +2353,6 @@ function ModalFlow (context) {
             }];
 
             apply_state(active);
-            self.dispatch.ApplyStateProfile();
         },
         profile_institution: function () {
             var active = [{
@@ -2368,7 +2370,6 @@ function ModalFlow (context) {
             }];
 
             apply_state(active);
-            self.dispatch.ApplyStateProfile();
         }
     };
 
@@ -2396,14 +2397,14 @@ function ModalFlow (context) {
                 });
 
         self.dispatch
-            .on('ApplyStateProfile', function () {
+            .on('ApplyStateChooseTypeAddZip', function () {
+                // if you get kicked back to this state,
+                // you shouldn't have the animation
                 modal_animation.remove();
             });
 
         self.dispatch
-            .on('ApplyStateChooseTypeAddZip', function () {
-                // if you get kicked back to this state,
-                // you shouldn't have the animation
+            .on('ApplyStateLeavingThankYou', function () {
                 modal_animation.remove();
             });
 
