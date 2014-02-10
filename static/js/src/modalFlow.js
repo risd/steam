@@ -291,6 +291,9 @@ function ModalFlow (context) {
                 el_type: 'display',
                 el_name: 'modal'
             }, {
+                el_type: 'display',
+                el_name: 'about'
+            }, {
                 el_type: 'modal_header',
                 el_name: 'about'
             }, {

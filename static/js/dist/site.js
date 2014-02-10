@@ -524,6 +524,15 @@ function Clusters (context) {
     clusters_group.on('click', function (event) {
         // click cluster
         // d3.select('#steam-map').classed('active', false);
+        var sw = L.latLng(
+                event.layer.feature.properties.miny,
+                event.layer.feature.properties.minx),
+
+            ne = L.latLng(
+                event.layer.feature.properties.maxy,
+                event.layer.feature.properties.maxx);
+
+        context.map.fitBounds(L.latLngBounds(sw, ne));
         context.network.init(event.layer.feature.properties);
     });
 
@@ -585,7 +594,7 @@ function Clusters (context) {
     clusters.init = function () {
         // show initial map data
         // d3.json('/static/geo/fake_level_1_pnt.geojson',
-        d3.json('/static/geo/fake_top_level_geo.geojson',
+        d3.json('/static/geo/top_level_geo.geojson',
                 clusters.data);
 
         return clusters;
@@ -1866,7 +1875,7 @@ function STEAMMap() {
     context.icon_size = icon_size;
 
     context.countries = getTSV(context.api.base +
-                               '/static/geo/countries_geocodable.tsv');
+                               '/static/geo/countries.tsv');
 
     // ui
     context.network = network(context);
@@ -2234,6 +2243,9 @@ function ModalFlow (context) {
             var active = [{
                 el_type: 'display',
                 el_name: 'modal'
+            }, {
+                el_type: 'display',
+                el_name: 'about'
             }, {
                 el_type: 'modal_header',
                 el_name: 'about'

@@ -8,6 +8,7 @@ STEAMie to. Run to set that up:
 
 python manage.py populate_toplevelgeo.py
 """
+import logging
 
 from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
@@ -15,6 +16,9 @@ from django.core.management.base import BaseCommand, CommandError
 from ...models import TopLevelGeo
 
 import geojson
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -25,8 +29,7 @@ class Command(BaseCommand):
         
         features = []
         try:
-            print "get all features for feature collection"
-            tlgs = TopLevelGeo.objects.get(
+            tlgs = TopLevelGeo.objects.filter(
                 Q(work_in_education__gt=0) |
                 Q(work_in_research__gt=0) |
                 Q(work_in_industry__gt=0) |
@@ -48,6 +51,10 @@ class Command(BaseCommand):
 
                 gj_out.write(geojson.dumps(gj))
 
+            logger.info('Wrote new top_level_geo.geojson file. '+\
+                        '{0} features.'.format(len(features)))
+
         except CommandError as detail:
-            print 'Error writing data! ' +\
+            err = 'Error writing data! ' +\
                     '{0}'.format(detail)
+            logger.error(err)

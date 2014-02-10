@@ -1,10 +1,5 @@
 ### left off
 
-- locate me 
-    - Add bounding box info to TopLevelGeo so that it can zoom to each network on click
-
-- steam user name is being saved from social auth, but not showing up on the info_tip
-
 - remove main-nav header
 
 - delegate

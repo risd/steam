@@ -86,6 +86,38 @@ class TopLevelGeo(models.Model):
         blank=False,
         null=False)
 
+    minx = models.DecimalField(
+        'Bounding Box Minimum Longitude',
+        max_digits=8,
+        decimal_places=5,
+        blank=False,
+        null=False,
+        default=-999)
+
+    miny = models.DecimalField(
+        'Bounding Box Minimum Latitude',
+        max_digits=8,
+        decimal_places=5,
+        blank=False,
+        null=False,
+        default=-999)
+
+    maxx = models.DecimalField(
+        'Bounding Box Maximum Longitude',
+        max_digits=8,
+        decimal_places=5,
+        blank=False,
+        null=False,
+        default=-999)
+
+    maxy = models.DecimalField(
+        'Bounding Box Maximum Latitude',
+        max_digits=8,
+        decimal_places=5,
+        blank=False,
+        null=False,
+        default=-999)
+
 
     class Meta:
         verbose_name = _('TopLevelGeo')
@@ -102,12 +134,24 @@ class TopLevelGeo(models.Model):
                 'research': self.work_in_research,
                 'political': self.work_in_political,
                 'industry': self.work_in_industry,
+                'minx': float(self.minx),
+                'miny': float(self.miny),
+                'maxx': float(self.maxx),
+                'maxy': float(self.maxy),
             },
             'type': 'Feature',
         }
 
     def as_geometry(self):
         return self.__geo_interface__()
+
+    def bbox(self):
+        return {
+            'minx': float(self.minx),
+            'miny': float(self.miny),
+            'maxx': float(self.maxx),
+            'maxy': float(self.maxy),
+        }
 
     def __geo_interface__(self):
         return {

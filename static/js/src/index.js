@@ -32,7 +32,7 @@ function STEAMMap() {
     context.icon_size = icon_size;
 
     context.countries = getTSV(context.api.base +
-                               '/static/geo/countries_geocodable.tsv');
+                               '/static/geo/countries.tsv');
 
     // ui
     context.network = network(context);
