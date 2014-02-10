@@ -3118,7 +3118,7 @@ input[type=radio] {
   background-color: black; }
 
 .loading svg {
-  -webkit-transform: scale(3);
+  /*-webkit-transform: scale(1);*/
   margin: 20% auto; }
 
 /* end form */
