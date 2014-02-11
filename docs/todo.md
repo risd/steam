@@ -1,5 +1,9 @@
 ### left off
 
+- consider mobile network display
+    - Make force network a single, vertical line, with names visible.
+        - https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/overflow
+
 - remove main-nav header
 
 - delegate
@@ -12,9 +16,6 @@
 
 - put css fallbacks in place for svg in stylesheet and modal_flow
 
-- modalflow
-    - go through a clean sign up.
-
 - push state? how does the back button work through all of this?
     - http://programming.oreilly.com/2014/01/pushstate-to-the-future-progressive-enhancement-using-html5-pushstate-at-twitter.html
 
@@ -25,3 +26,5 @@
 
 @babette, ask about what kind of links you want to send out?
     - WA state? WA 8th district? both?
+
+- map to proper domain
