@@ -2813,11 +2813,26 @@ function Network (context) {
         node_sel,
         info_tip_sel,
         canvas_blanket_sel,
+        grid_sel,
         // name of the overlay
         title,
         title_wrapper_sel,
         request,
-        built = false;
+        built = false,
+        network_display = 'list',
+        network_options = ['force', 'list'],
+        network_create = {
+            'force': force_create,
+            'list': list_create
+        },
+        network_remove = {
+            'force': force_remove,
+            'list': list_remove
+        },
+        network_filter = {
+            'force': force_filter,
+            'list': list_filter
+        };
 
     var dispatch = d3.dispatch('create');
 
@@ -2847,72 +2862,14 @@ function Network (context) {
         };
 
     network.filter = function () {
-        try {
-            // only include/exclude if there is
-            // an instance of nodes having been
-            // selected
-
-            var active_count = 0;
-            for (var i = context.filters.length - 1; i >= 0; i--) {
-                if (context.filters[i].active) {
-                    active_count += 1;
-                }
-            }
-
-            if (active_count === 4) {
-                // reset all to default
-                nodes_sel.each(function (d) {
-                    d.status = 'default';
-                });
-
-            } else {
-
-                nodes_sel
-                    .each(function (d) {
-                        if (active(d)) {
-                            d.status = 'selected';
-                        } else {
-                            d.status = 'unselected';
-                        }
-                    });
-            }
-
-            nodes_sel
-                .transition()
-                .duration(1000)
-                .style('opacity', set_opacity)
-                .attr('transform', transform);
-
-        } catch (e) {
-            console.log(
-                'Can not filter the non-existent network.');
-        }
+        network_filter[network_display]();
+        
 
         return network;
     };
 
     network.nodes = function (x) {
         if(!arguments.length) return nodes;
-
-        width = window.innerWidth;
-        height = window.innerHeight;
-
-        // give an initial position
-        x.forEach(function (d) {
-            d.x = width/2 + random_around_zero(30);
-            d.y = height/2 + random_around_zero(30);
-            d.dx = width/2 + random_around_zero(30);
-            d.dy = height/2 + random_around_zero(30);
-
-            // also setup type
-            if (d.individual) {
-                d.type = 'individual';
-            } else if (d.institution) {
-                d.type = 'institution';
-            } else {
-                d.type = '';
-            }
-        });
 
         nodes = x;
 
@@ -2942,35 +2899,7 @@ function Network (context) {
             network.remove();
         }
 
-        // set gravity of force based on the
-        // number of nodes
-        if (nodes.length > 500 &
-            nodes.length <= 800) {
-
-            gravity = 0.2;
-        }
-        else if (nodes.length > 800 &
-            nodes.length <= 1100) {
-
-            gravity = 0.3;
-        }
-        else if (nodes.length > 800 &
-            nodes.length <= 1100) {
-
-            gravity = 0.4;
-        }
-        else if (nodes.length > 1100 &
-            nodes.length <= 2000) {
-
-            gravity = 0.5;
-        } else if (nodes.length > 2000) {
-            // greater than 2000
-            gravity = 0.6;
-        }
-
-        height = window.innerHeight;
-        width = window.innerWidth;
-
+        // create divs
         canvas = canvas_wrapper
                     .classed('active', true)
                     .append('svg')
@@ -2982,11 +2911,11 @@ function Network (context) {
             .append('div')
                 .attr('class', 'header-wrapper');
 
-        var title_grid_sel = title_wrapper_sel
+        grid_sel = title_wrapper_sel
             .append('div')
                 .attr('class', 'grid full-width clearfix');
 
-        var four_col_sel = title_grid_sel
+        var four_col_sel = grid_sel
             .append('div')
                 .attr('class', 'four-column clearfix offset-one');
 
@@ -3003,7 +2932,7 @@ function Network (context) {
             })
             .call(svg_cross);
 
-        title_grid_sel
+        grid_sel
             .append('div')
                 .attr('class', 'one-column omega')
             .append('div')
@@ -3013,51 +2942,56 @@ function Network (context) {
                 })
                 .call(svg_cross);
 
-        force = d3.layout.force()
-            .friction(friction)
-            .charge(charge)
-            .gravity(gravity)
-            .size([width, height])
-            .links([])
-            .nodes(nodes)
-            .start();
-
-        nodes_sel = canvas.selectAll('.node')
-                .data(nodes)
+        var buttons_sel = grid_sel
+            .append('div')
+                .attr('class', 'four-column-two offset-two clearfix');
+        var buttons = buttons_sel
+            .selectAll('.network-display-button')
+            .data([{
+                klass: 'force',
+                click: function () {
+                    network.display('force')
+                        .remove()
+                        .create();
+                }
+            }, {
+                klass: 'list',
+                click: function () {
+                    network.display('list')
+                        .remove()
+                        .create();
+                }
+            }])
             .enter()
-            .append('g')
-                .attr('class', function (d) {
-                    return 'node ' +
-                            d.work_in + ' ' +
-                            d.type;
-                })
-                .each(function (d, i) {
-                    if (active(d)) {
-                        d.status = 'selected';
-                    } else {
-                        d.status = 'unselected';
-                    }
-                })
-                .style('opacity', set_opacity)
-                .attr('transform', transform)
-                .call(force.drag)
-                .on('click', highlight)
-                .call(add_symbols);
+            .append('a')
+            .attr('class', function (d) {
+                return 'network-display-button ' + d.klass;
+            })
+            .on('click', function (d) {
+                d.click();
+            });
 
-        force.on('tick', function () {
-            nodes_sel
-                .attr('transform', transform);
-        });
+        // end create divs
 
+        network_create[network_display]();
+        
         built = true;
         dispatch.create();
 
         return network;
     };
 
+    network.display = function (x) {
+        if (!arguments.length) return network_display;
+        network_display = x;
+        return network;
+    };
+
     network.remove = function () {
         // no draw on the map
         // d3.select('#steam-map').classed('active', true);
+
+        network_remove[network_display]();
 
         // deactivate wrapper
         canvas_wrapper.classed('active', false);
@@ -3107,6 +3041,9 @@ function Network (context) {
                 }
             });
             highlight_node.each(highlight);
+
+            // reset the dispatch;
+            // dispatch.on('create.highlight', null);
         });
     };
 
@@ -3209,33 +3146,18 @@ function Network (context) {
     function update_info_tip (sel) {
         sel.append('img')
             .attr('class', 'avatar')
-            .attr('src', function (d) {
-                return d.avatar_url;
-            });
+            .attr('src', steamie_avatar);
 
         var inner_div = sel.append('div')
                            .attr('class', 'user_info');
 
         inner_div.append('p')
             .attr('class', 'name')
-            .text(function (d) {
-                var name;
-                if (d.type === 'individual') {
-                    name = (d.individual.first_name || '') + ' ' +
-                       (d.individual.last_name || '');
-                } else if (d.type === 'institution') {
-                    name = (d.institution.name || '');
-                } else {
-                    name = '';
-                }
-                return name;
-            });
+            .text(steamie_name);
 
         inner_div.append('p')
             .attr('class', 'description')
-            .text(function (d) {
-                return d.description;
-            });
+            .text(steamie_description);
     }
 
     function highlight (d, i) {
@@ -3307,6 +3229,250 @@ function Network (context) {
                 .attr('x', 0)
                 .attr('y', 0)
                 .on('click', blanket_interaction);
+    }
+
+    function force_coordinates (x) {
+        // x:   all nodes
+        x.forEach(function (d, i) {
+
+            d.x = width/2 + random_around_zero(30);
+            d.y = height/2 + random_around_zero(30);
+            // define px for more 'splosion
+            // d.px = width/2;
+            // d.py = height/2;
+
+            // setup type
+            d = node_add_type(d);
+        });
+        return x;
+    }
+
+    function node_add_type (x) {
+        if (x.individual) {
+            x.type = 'individual';
+        } else if (x.institution) {
+            x.type = 'institution';
+        } else {
+            x.type = '';
+        }
+        return x;
+    }
+
+    function gravity_based_on_node_count (count) {
+        // set gravity of force based on the
+        // number of nodes
+        var g = 0.1;
+        if (count > 500 &
+            count <= 800) {
+
+            g = 0.2;
+        }
+        else if (count > 800 &
+            count <= 1100) {
+
+            g = 0.3;
+        }
+        else if (count > 800 &
+            count <= 1100) {
+
+            g = 0.4;
+        }
+        else if (count > 1100 &
+            count <= 2000) {
+
+            g = 0.5;
+        } else if (count > 2000) {
+            // greater than 2000
+            g = 0.6;
+        }
+        return g;
+    }
+
+    function force_create () {
+        // create force graph
+        width = window.innerWidth;
+        height = window.innerHeight;
+
+        gravity = gravity_based_on_node_count(nodes.length);
+
+        nodes = force_coordinates(nodes);
+
+        force = d3.layout.force()
+            .friction(friction)
+            .charge(charge)
+            .gravity(gravity)
+            .size([width, height])
+            .links([])
+            .nodes(nodes);
+
+        nodes_sel = canvas.selectAll('.node')
+                .data(nodes)
+            .enter()
+            .append('g')
+                .attr('class', function (d) {
+                    return 'node ' +
+                            d.work_in + ' ' +
+                            d.type;
+                })
+                .each(function (d, i) {
+                    if (active(d)) {
+                        d.status = 'selected';
+                    } else {
+                        d.status = 'unselected';
+                    }
+                })
+                .style('opacity', set_opacity)
+                .attr('transform', transform)
+                .call(force.drag)
+                .on('click', highlight)
+                .call(add_symbols);
+
+        force.start();
+        force.on('tick', function () {
+            nodes_sel
+                .attr('transform', transform);
+        });
+    }
+
+    function list_create () {
+
+        var svg_dimensions = ((radius_outter * 2) * scale['selected']);
+
+        var list_col_sel = grid_sel.append('div')
+            .attr('class', 'four-column clearfix offset-one');
+
+        nodes_sel = list_col_sel.selectAll('.steamie')
+            .data(nodes)
+            .enter()
+            .append('div')
+            .each(function (d, i) {
+                if (active(d)) {
+                    d.status = 'selected';
+                } else {
+                    d.status = 'unselected';
+                }
+                d.x = 0;
+                d.y = 0;
+            })
+            .attr('class', function (d) {
+                return 'steamie ' + d.status;
+            });
+
+        nodes_sel.append('svg')
+            .attr('width', svg_dimensions)
+            .attr('height', svg_dimensions)
+            .append('g')
+                .attr('class', function (d) {
+                    return 'node ' +
+                            d.work_in + ' ' +
+                            d.type;
+                })
+                .style('opacity', set_opacity)
+                .attr('transform', transform)
+                .call(add_symbols);
+
+        nodes_sel.append('img')
+            .attr('class', 'avatar')
+            .attr('src', steamie_avatar);
+
+        var inner_div = nodes_sel.append('div')
+                           .attr('class', 'user_info');
+
+        inner_div.append('p')
+            .attr('class', 'name')
+            .text(steamie_name);
+
+        inner_div.append('p')
+            .attr('class', 'description')
+            .text(steamie_description);
+    }
+
+    function list_filter () {
+        try {
+            update_node_status();
+
+            nodes_sel.attr('class', function (d) {
+                return 'steamie ' + d.status;
+            });
+        } catch (e) {
+            console.log('Can not filter the non non-existent list');
+        }
+    }
+
+    function force_remove () {
+
+    }
+
+    function force_filter () {
+        try {
+            // only include/exclude if there is
+            // an instance of nodes having been
+            // selected
+
+            update_node_status();
+
+            nodes_sel
+                .transition()
+                .duration(1000)
+                .style('opacity', set_opacity)
+                .attr('transform', transform);
+
+        } catch (e) {
+            console.log(
+                'Can not filter the non-existent network.');
+        }
+    }
+
+    function list_remove () {
+
+    }
+
+    function steamie_name (d) {
+        var name;
+        if (d.type === 'individual') {
+            name = (d.individual.first_name || '') + ' ' +
+               (d.individual.last_name || '');
+        } else if (d.type === 'institution') {
+            name = (d.institution.name || '');
+        } else {
+            name = '';
+        }
+        return name;
+    }
+
+    function steamie_description (d) {
+        return d.description;
+    }
+
+    function steamie_avatar (d) {
+        return d.avatar_url;
+    }
+
+    function update_node_status () {
+        var active_count = 0;
+        for (var i = context.filters.length - 1; i >= 0; i--) {
+            if (context.filters[i].active) {
+                active_count += 1;
+            }
+        }
+
+        if (active_count === 4) {
+            // reset all to default
+            nodes_sel.each(function (d) {
+                d.status = 'default';
+            });
+
+        } else {
+
+            nodes_sel
+                .each(function (d) {
+                    if (active(d)) {
+                        d.status = 'selected';
+                    } else {
+                        d.status = 'unselected';
+                    }
+                });
+        }
     }
 
     return network;

@@ -567,6 +567,13 @@ rect.blanket {
     fill: transparent;
     stroke: transparent;
 }
+.network-display-button {
+    height: 20px;
+    width: 20px;
+    background: red;
+    cursor: pointer;
+    display: inline-block;
+}
 
 
 /************
