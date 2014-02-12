@@ -64,12 +64,20 @@ module.exports = function ProfileIndividual (context) {
             .append('div')
             .attr('class', 'four-column-two');
         
-        first_name = textComponent()
+        first_name = self.required_name = textComponent()
             .selection(first_name_sel)
             .placeholder('first name')
             .initialValue(
                 data.individual.first_name ?
                 data.individual.first_name : '')
+            .valid(function (val) {
+                console.log('value');
+                console.log(val);
+                if (val.length > 0) {
+                    return true;
+                }
+                return false;
+            })
             .render();
 
         var last_name_sel = sel

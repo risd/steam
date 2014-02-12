@@ -64,12 +64,18 @@ module.exports = function ProfileInstitution (context) {
             .append('div')
             .attr('class', 'four-column-two');
         
-        name = textComponent()
+        name = self.required_name = textComponent()
             .selection(name_sel)
             .placeholder('name of organization')
             .initialValue(
                 data.institution.name ?
                 data.institution.name : '')
+            .valid(function (val) {
+                if (val.length > 0) {
+                    return true;
+                }
+                return false;
+            })
             .render();
 
         var representative_email_sel = sel

@@ -1,7 +1,9 @@
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution'),
     Settings = require('./profile_settings'),
-    svg_next_arrow = require('./formComponents/svgNextArrow');
+    svg_next_arrow = require('./formComponents/svgNextArrow'),
+    validatableManager =
+        require('./formComponents/validatableManager');
 
 module.exports = function Profile (context) {
     var self = {},
@@ -11,7 +13,8 @@ module.exports = function Profile (context) {
         built = false,
         prev_valid,
         valid,
-        save_button;
+        save_button,
+        validatable = validatableManager();
 
     self.built = function (x) {
         // tell the world whether or not
@@ -48,6 +51,7 @@ module.exports = function Profile (context) {
                 .selection(d3.select('#profile-institution'))
                 .geoOptions(geo_options)
                 .data(context.user.data());
+
         } else {
             return self.built(false);
         }
@@ -55,6 +59,17 @@ module.exports = function Profile (context) {
         // set validator
         profile.validate = validate;
         profile.build();
+
+        // common components that must
+        // be valid to submit
+        validatable.batchAdd([{
+            isValid: profile.work_in.isValid,
+
+        }, {
+            isValid: profile.geo.isValid
+        }, {
+            isValid: profile.required_name.valid
+        }]);
 
         set_modal_color();
 
@@ -174,8 +189,7 @@ module.exports = function Profile (context) {
 
     function validate () {
         // deal with validation
-        if (profile.work_in.isValid() &&
-            profile.geo.isValid()) {
+        if (validatable.areValid()) {
             valid = true;
         } else {
             valid = false;

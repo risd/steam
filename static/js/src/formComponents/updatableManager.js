@@ -20,7 +20,7 @@ module.exports = function UpdatableComponentManager () {
 
     self.batchAdd = function (x) {
         x.forEach(function (n, i) {
-            updatable.push(x);
+            updatable.push(n);
         });
         return self;
     };
