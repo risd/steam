@@ -2819,7 +2819,7 @@ function Network (context) {
         title_wrapper_sel,
         request,
         built = false,
-        network_display = 'list',
+        network_display = 'force',
         network_options = ['force', 'list'],
         network_create = {
             'force': force_create,
@@ -2944,7 +2944,8 @@ function Network (context) {
 
         var buttons_sel = grid_sel
             .append('div')
-                .attr('class', 'four-column-two offset-two clearfix');
+                .attr('class', 'four-column offset-one '+
+                               'network-button-wrapper clearfix');
         var buttons = buttons_sel
             .selectAll('.network-display-button')
             .data([{
