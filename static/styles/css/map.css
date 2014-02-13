@@ -10,10 +10,10 @@ Syntax error: Undefined mixin 'antenna-medium'.
 19:     display: block;
 20:     @include antenna-medium;
 21:     color: $color-slate;
-22: 
-23:     a {
-24:         text-decoration: none;
-25:     }
+22: }
+23: 
+24: header {
+25:     margin: 0;
 
 Backtrace:
 static/styles/scss/map.scss:20:in `antenna-medium'
@@ -70,4 +70,4 @@ static/styles/scss/map.scss:20
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Undefined mixin 'antenna-medium'.\A         on line 20 of static/styles/scss/map.scss, in `antenna-medium'\A         from line 20 of static/styles/scss/map.scss\A \A 15:     overflow: hidden;\A 16: }\A 17: \A 18: .title {\A 19:     display: block;\A 20:     @include antenna-medium;\A 21:     color: $color-slate;\A 22: \A 23:     a {\A 24:         text-decoration: none;\A 25:     }"; }
+  content: "Syntax error: Undefined mixin 'antenna-medium'.\A         on line 20 of static/styles/scss/map.scss, in `antenna-medium'\A         from line 20 of static/styles/scss/map.scss\A \A 15:     overflow: hidden;\A 16: }\A 17: \A 18: .title {\A 19:     display: block;\A 20:     @include antenna-medium;\A 21:     color: $color-slate;\A 22: }\A 23: \A 24: header {\A 25:     margin: 0;"; }

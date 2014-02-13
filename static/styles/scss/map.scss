@@ -19,10 +19,6 @@ html, body {
     display: block;
     @include antenna-medium;
     color: $color-slate;
-
-    a {
-        text-decoration: none;
-    }
 }
 
 header {
@@ -648,10 +644,10 @@ form / profile
 
 .top-left {
     position: absolute;
-    bottom: 200px;
-    left: 30px;
+    top: 22px;
+    left: 118px;
 }
-.top-left-second {
+.bottom-left {
     position: absolute;
     bottom: 150px;
     left: 30px;

@@ -86,9 +86,7 @@
         -webkit-transition-timing-function: cubic-bezier(.95, .05, .795, .035);
     }
 }
-.bottom-left,
-.top-left,
-.top-left-second {
+.bottom-left {
     left: -100%;
 
     -webkit-transition-property: left;

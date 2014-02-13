@@ -120,7 +120,6 @@ function ModalFlow (context) {
             about: {
                 el: d3.select('#activate-about'),
                 on_click: function () {
-                    console.log('change state to about');
                     self.state('about');
                 },
                 append_to_el: function () {}

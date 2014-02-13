@@ -1,7 +1,5 @@
 ### left off
 
-- make "STEM to STEAM" the "ABOUT"
-
 - look into other tile providers for competative prices
     - cloudmade?
 

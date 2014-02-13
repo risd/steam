@@ -2076,8 +2076,6 @@ html, body {
   font-weight: normal;
   -webkit-font-smoothing: antialiased;
   color: #516272; }
-  .title a {
-    text-decoration: none; }
 
 header {
   margin: 0;
@@ -2702,10 +2700,10 @@ form / profile
 
 .top-left {
   position: absolute;
-  bottom: 200px;
-  left: 30px; }
+  top: 22px;
+  left: 118px; }
 
-.top-left-second {
+.bottom-left {
   position: absolute;
   bottom: 150px;
   left: 30px; }
@@ -3418,17 +3416,13 @@ div.blanket {
     -webkit-transition-delay: 0s;
     -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
 
-.bottom-left,
-.top-left,
-.top-left-second {
+.bottom-left {
   left: -100%;
   -webkit-transition-property: left;
   -webkit-transition-duration: 0.0s;
   -webkit-transition-delay: 0.3s;
   -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
-  .bottom-left.active,
-  .top-left.active,
-  .top-left-second.active {
+  .bottom-left.active {
     left: 30px;
     -webkit-transition-property: left;
     -webkit-transition-duration: 0.0s;
