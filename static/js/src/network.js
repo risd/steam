@@ -880,6 +880,9 @@ function Network (context) {
             .duration(800)
             .each(function () {
                 d3.transition(nodes_sel)
+                    // .delay(function (d, i) {
+                    //     return i * 50;
+                    // })
                     .tween('x', function (d) {
                         return function (t) {
                             d.x = d.interpolateX(t);

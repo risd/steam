@@ -1,10 +1,9 @@
 ### left off
 
+- make "STEM to STEAM" the "ABOUT"
+
 - look into other tile providers for competative prices
     - cloudmade?
-
-- remove main-nav header
-    - replace with "STEM to STEAM" text in h1
 
 - consider media queries
 
@@ -17,8 +16,6 @@
 - add mixins for all transitions.
 
 - remove `window.state` from `modalFlow.js`
-
-- put css fallbacks in place for svg in stylesheet and modal_flow
 
 - push state? how does the back button work through all of this?
     - http://programming.oreilly.com/2014/01/pushstate-to-the-future-progressive-enhancement-using-html5-pushstate-at-twitter.html

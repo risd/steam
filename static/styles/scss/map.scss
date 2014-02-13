@@ -15,6 +15,16 @@ html, body {
     overflow: hidden;
 }
 
+.title {
+    display: block;
+    @include antenna-medium;
+    color: $color-slate;
+
+    a {
+        text-decoration: none;
+    }
+}
+
 header {
     margin: 0;
     padding: 0;

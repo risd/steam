@@ -2069,6 +2069,16 @@ html, body {
   width: 100%;
   overflow: hidden; }
 
+.title {
+  display: block;
+  font-family: "Antenna Comp Medium";
+  font-style: normal;
+  font-weight: normal;
+  -webkit-font-smoothing: antialiased;
+  color: #516272; }
+  .title a {
+    text-decoration: none; }
+
 header {
   margin: 0;
   padding: 0;
