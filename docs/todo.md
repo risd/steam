@@ -1,8 +1,7 @@
 ### left off
 
-- consider mobile network display
-    - Make force network a single, vertical line, with names visible.
-        - https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/overflow
+- look into other tile providers for competative prices
+    - cloudmade?
 
 - remove main-nav header
     - replace with "STEM to STEAM" text in h1
@@ -38,6 +37,8 @@
 
 - performance monitoring
     - http://newrelic.com/backtowork
+
+- [`waitress` over `gunicorn`?](http://thechangelog.com/waitress-a-better-python-wsgi-server-for-heroku/?utm_content=bufferdb582&utm_medium=social&utm_source=twitter.com&utm_campaign=buffer)
 
 - map to proper domain
     - map.stemtosteam.org

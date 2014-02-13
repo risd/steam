@@ -470,14 +470,16 @@ network graph
     top: 0;
     left: -71px;
 }
-.info_tip p {
+.info_tip p,
+.steamie p {
     font-size: 1.1em;
     line-height: 1.5em;
 
     font-style: italic;
     margin: 0;
 }
-.info_tip p.description {
+.info_tip p.description,
+.steamie p.description {
     padding-left: 15px;
     margin-top: 10px;
     margin-left:6px;
@@ -486,7 +488,8 @@ network graph
     border-left-style: solid;
     color: $color-slate;
 }
-.info_tip.research {
+.info_tip.research,
+.steamie.research {
     p.name {
         color: $color-research;   
     }
@@ -497,7 +500,8 @@ network graph
         border-color: $color-research;
     }
 }
-.info_tip.political {
+.info_tip.political,
+.steamie.political {
     p.name {
         color: $color-political;
     }
@@ -508,7 +512,8 @@ network graph
         border-color: $color-political;
     }
 }
-.info_tip.education {
+.info_tip.education,
+.steamie.education {
     p.name {
         color: $color-education;
     }
@@ -519,7 +524,8 @@ network graph
         border-color: $color-education;
     }
 }
-.info_tip.industry {
+.info_tip.industry,
+.steamie.industry {
     p.name {
         color: $color-industry;
     }
@@ -531,6 +537,39 @@ network graph
     }
 }
 
+
+// list styles
+.steamie {
+    position: relative;
+    text-align: left;
+    margin-bottom: 25px;
+
+    svg {
+        position: relative;
+        left: 10px;
+        top: 23px;
+        padding: 2px;
+        display: inline-block;
+        margin-right: 30px;
+        vertical-align: top;
+    }
+
+    .avatar {
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 25px;
+    }
+
+    .user_info {
+        display: inline-block;
+        width: 58%;
+    }
+
+    p.description {
+        margin-left: 0;
+        margin-bottom: 0;
+    }
+}
 .canvas-wrapper {
     
 }
@@ -570,11 +609,17 @@ rect.blanket {
 .network-display-button {
     height: 20px;
     width: 20px;
-    background: red;
     cursor: pointer;
     display: inline-block;
-}
 
+    &.force {
+        background-color: yellow;
+    }
+
+    &.list {
+        background-color: slateblue;
+    }
+}
 
 /************
 form / profile
@@ -1066,8 +1111,13 @@ input[type=radio] {
     border-bottom:1px solid $white;
 }
 
-.blanket {
-    background-color: black;
+div.blanket {
+    background-color: rgba(0,0,0,0.5);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
 }
 
 .loading {
