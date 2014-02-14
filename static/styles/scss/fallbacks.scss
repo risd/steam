@@ -1,0 +1,38 @@
+.no-csstransitions {
+    .next-button {
+        display: none;
+
+        &.enabled {
+            display: block;
+        }
+    }
+
+    .animate-out-in.modal {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+    }
+    .animate-in-out.modal {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+    }
+}
+
+.no-svg {
+    .loading {
+
+        svg {
+
+        }
+
+
+        &.active {
+
+        }
+    }
+}

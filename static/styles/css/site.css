@@ -3345,7 +3345,7 @@ div.blanket {
   transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
   .next-button p {
     padding: 0.25em 0em; }
-  .next-button :active {
+  .next-button:active {
     background: #293947; }
   .next-button.enabled {
     opacity: 1;
@@ -3747,3 +3747,15 @@ div.blanket {
 
   100% {
     -webkit-transform: rotate(360deg); } }
+.no-csstransitions .next-button {
+  display: none; }
+  .no-csstransitions .next-button.enabled {
+    display: block; }
+.no-csstransitions .animate-out-in.modal {
+  display: none; }
+  .no-csstransitions .animate-out-in.modal.active {
+    display: block; }
+.no-csstransitions .animate-in-out.modal {
+  display: none; }
+  .no-csstransitions .animate-in-out.modal.active {
+    display: block; }

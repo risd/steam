@@ -1,5 +1,7 @@
 ### left off
 
+- | uglify > `site.min.js` and link to that in map.html
+
 - remove `window.state` from `modalFlow.js`
 
 - push state? how does the back button work through all of this?
@@ -9,8 +11,6 @@
         - current network being shown? go back between them?
 
         - most of the application is a single state. you are logged in, you can log out. you are looking at a network, you can close it. you aren't flipping through a bunch of lists.
-
-- google analytics
 
 - error reporting
     - https://www.getsentry.com/pricing/
@@ -27,8 +27,6 @@
     - update stemtosteam.org to link to map
         - home page, "what can you do"
         - Take Action page, "what can you do"
-
-- map.html, include search engine metadata
 
 - language considerations
     - work in, make it clear to simply choose one above all

@@ -522,6 +522,7 @@ function Clusters (context) {
 
     // on click of individual clusters
     clusters_group.on('click', function (event) {
+        console.log('splode click');
         // click cluster
         // d3.select('#steam-map').classed('active', false);
         var sw = L.latLng(
@@ -537,6 +538,7 @@ function Clusters (context) {
     });
 
     clusters_group.on('clusterclick', function (d) {
+        console.log('cluster click');
         var bounds = d.layer.getBounds().pad(0.5);
 
         context.map.fitBounds(bounds);
