@@ -1,18 +1,23 @@
 @import '../css3';
 
-$orb: $color-slate;;
+$orb: $color-slate;
 
 .platonic .orb{
 	fill: rgba($orb, 1);
 	stroke: rgba($orb, 1);
 	@include transformOrigin(50%, 50%);
-	@include animation(pulse,1.5s,ease-in-out,infinite,alternate);
-	@include transition(all,0.5s,ease-in-out);
+	@include animation(pulse,
+					   1.5s,
+					   0s,
+					   ease-in-out,
+					   infinite,
+					   alternate);
+	@include transition(all, 0.5s, ease-in-out);
 }
 
 .frame line, .frame polygon{
 	stroke-width:1.2;
-	@include transition(all,0.5s,ease-in-out);
+	@include transition(all, 0.5s, ease-in-out);
 }
 
 .platonic:hover .frame line, .platonic:hover .frame polygon{
@@ -23,7 +28,8 @@ $orb: $color-slate;;
 	fill: rgba($orb, 0.4);
 }
 
-@-webkit-keyframes pulse{
+
+@-webkit-keyframes pulse {
 	from{
 		@include scale(0.5);
 	}

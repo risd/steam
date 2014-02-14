@@ -403,7 +403,7 @@ $cluster-fill: rgba(78,91,109,0.8);
 }
 .cluster-polygon {
     color: $color-slate;
-    fillColor: $color-slate;
+    fill: $color-slate;
 }
 /* end Leaflet Marker Cluster Styles */
 
@@ -688,7 +688,9 @@ form / profile
     padding: 20px;
     border-radius: 2px;
 
-    box-sizing:border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     cursor: pointer;
     text-align: center;
     background-color: transparent;
@@ -722,7 +724,9 @@ form / profile
 .next-button {
     text-align: center;
     background-color: transparent;
-    box-sizing:border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     border:1px solid $white;
     /*padding:1em 0em;*/
 
@@ -917,8 +921,13 @@ select {
     border: 0 solid transparent;
     border-bottom: 1px solid $off-white;
     outline: none;
+
     -webkit-appearance: none;
     -moz-appearance: none;
+    &::-ms-expand {
+        display: none;
+    }
+
     text-indent: 0.01px;
     text-overflow: '';
 
@@ -927,6 +936,7 @@ select {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+
     padding-top: 10px;
     padding-bottom: 10px;
     padding-right: 30px;
@@ -1111,6 +1121,8 @@ input[type=radio] {
 .sel-work-in p,
 .individual-description p,
 .steamie-description p {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
     padding-left: 10px;
     padding-bottom:10px;

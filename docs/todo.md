@@ -1,18 +1,5 @@
 ### left off
 
-- look into other tile providers for competative prices
-    - cloudmade?
-
-- consider media queries
-
-- delegate
-    - no css animations?
-        - fall back to css that does display: none/block
-    - no svg support?
-        - fall back to javascript that only gets you through sign up process. no map. no networks.
-
-- add mixins for all transitions.
-
 - remove `window.state` from `modalFlow.js`
 
 - push state? how does the back button work through all of this?

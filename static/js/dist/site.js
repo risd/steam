@@ -1086,7 +1086,7 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../ui/checkmark":28,"./text":16}],10:[function(require,module,exports){
+},{"../ui/checkmark":29,"./text":16}],10:[function(require,module,exports){
 module.exports = function flowAnimation () {
     var self = {},
         selection,
@@ -1517,7 +1517,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":28}],13:[function(require,module,exports){
+},{"../ui/checkmark":29}],13:[function(require,module,exports){
 module.exports = function svgArrow (sel) {
     var button_size = 10;
 
@@ -1896,7 +1896,8 @@ module.exports = function ValidatableComponentManager () {
     return self;
 };
 },{}],20:[function(require,module,exports){
-var filters = require('./filters'),
+var polyfills = require('./polyfills'),
+    filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./util/clone'),
     icon_size = require('./clusterIconSize')(),
@@ -1913,6 +1914,8 @@ var filters = require('./filters'),
 
     modal_flow = require('./modalFlow'),
     user = require('./user');
+
+polyfills();
 
 STEAMMap();
 
@@ -1966,7 +1969,7 @@ function STEAMMap() {
 
     init();
 }
-},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./filterUI":7,"./filters":8,"./map":21,"./modalFlow":22,"./network":23,"./user":29,"./util/clone":30,"./util/getTSV":31}],21:[function(require,module,exports){
+},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./filterUI":7,"./filters":8,"./map":21,"./modalFlow":22,"./network":23,"./polyfills":24,"./user":30,"./util/clone":31,"./util/getTSV":32}],21:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -1981,6 +1984,7 @@ function Map (context) {
         // console.log('zoomlevel: ', map.getZoom());
     };
 
+    //// Mapbox
     // var mabox_id = "",
     var mabox_id = "mgdevelopers.map-6m0pmhd7",
         map = L.mapbox
@@ -1990,6 +1994,31 @@ function Map (context) {
             .setView([39.16, -95.0], 4)
             .on('zoomstart', zoomstart)
             .on('zoomend', zoomend);
+    //// end Mapbox
+
+    //// CloudMade
+    // var map = L.map('steam-map', {
+    //             'maxZoom': 12
+    //         })
+    //         .setView([39.16, -95.0], 4)
+    //         .on('zoomstart', zoomstart)
+    //         .on('zoomend', zoomend);
+
+    // var cloudMadeBase = 'http://{s}.tile.cloudmade.com';
+    // var cloudMadeAPI = '9e9c00943dfb4531a9769893c92b78c4';
+    // var cloudMadeStyleId = '121934';
+    // var retina_prefix = L.Browser.retina ? '@2x' : '';
+    // var cloudMadeTileSize = '256';
+
+    // var tileUrl = cloudMadeBase + '/' +
+    //               cloudMadeAPI + '/' +
+    //               cloudMadeStyleId +
+    //               retina_prefix + '/' +
+    //               cloudMadeTileSize + '/' +
+    //               '{z}/{x}/{y}.png';
+
+    // L.tileLayer(tileUrl).addTo(map);
+    //// end CloudMade
 
     // define max bounds
     // disables users ability to continually pan
@@ -3671,6 +3700,32 @@ function Network (context) {
     return network;
 }
 },{"./formComponents/svgCross":14}],24:[function(require,module,exports){
+module.exports = function polyfills () {
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
+    if (!Array.prototype.forEach)
+    {
+      Array.prototype.forEach = function(fun /*, thisArg */)
+      {
+        "use strict";
+
+        if (this === void 0 || this === null)
+          throw new TypeError();
+
+        var t = Object(this);
+        var len = t.length >>> 0;
+        if (typeof fun !== "function")
+          throw new TypeError();
+
+        var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+        for (var i = 0; i < len; i++)
+        {
+          if (i in t)
+            fun.call(thisArg, t[i], i, t);
+        }
+      };
+    }
+};
+},{}],25:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution'),
     Settings = require('./profile_settings'),
@@ -3986,7 +4041,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./formComponents/svgNextArrow":15,"./formComponents/validatableManager":19,"./profile_individual":25,"./profile_institution":26,"./profile_settings":27}],25:[function(require,module,exports){
+},{"./formComponents/svgNextArrow":15,"./formComponents/validatableManager":19,"./profile_individual":26,"./profile_institution":27,"./profile_settings":28}],26:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -4238,7 +4293,7 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":16,"./formComponents/textarea":17,"./formComponents/updatableManager":18}],26:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":16,"./formComponents/textarea":17,"./formComponents/updatableManager":18}],27:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
     radioComponent =
@@ -4539,7 +4594,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":16,"./formComponents/textarea":17,"./formComponents/updatableManager":18}],27:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":16,"./formComponents/textarea":17,"./formComponents/updatableManager":18}],28:[function(require,module,exports){
 module.exports = function ProfileSettings () {
     var self = {},
         selection;
@@ -4552,7 +4607,7 @@ module.exports = function ProfileSettings () {
 
     return self;
 };
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -4608,7 +4663,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -4770,7 +4825,7 @@ function User (context) {
 
     return user;
 }
-},{"./profile":24}],30:[function(require,module,exports){
+},{"./profile":25}],31:[function(require,module,exports){
 var clone = function clone (obj) {
     // Thanks to stackoverflow:
     // http://stackoverflow.com/questions/
@@ -4805,7 +4860,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.clone = clone;
 }
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
         data;

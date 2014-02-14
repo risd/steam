@@ -1,14 +1,44 @@
 @mixin animation($name,
-                 $time,
-                 $easing,
-                 $iterations,
+                 $duration,
+                 $timing-function,
+                 $delay,
+                 $iteration-count,
                  $direction) {
 
-    -webkit-animation: $name $time $easing $iterations $direction;
-    -moz-animation: $name $time $easing $iterations $direction;
-    -ms-animation: $name $time $easing $iterations $direction;
-    -o-animation: $name $time $easing $iterations $direction;
-    animation: $name $time $easing $iterations $direction;
+    -webkit-animation-name: $name;
+    -webkit-animation-duration: $duration;
+    -webkit-animation-timing-function: $timing-function;
+    -webkit-animation-delay: $delay;
+    -webkit-animation-iteration-count: $iteration-count;
+    -webkit-animation-direction: $direction;
+    
+    -moz-animation-name: $name;
+    -moz-animation-duration: $duration;
+    -moz-animation-timing-function: $timing-function;
+    -moz-animation-delay: $delay;
+    -moz-animation-iteration-count: $iteration-count;
+    -moz-animation-direction: $direction;
+    
+    -ms-animation-name: $name;
+    -ms-animation-duration: $duration;
+    -ms-animation-timing-function: $timing-function;
+    -ms-animation-delay: $delay;
+    -ms-animation-iteration-count: $iteration-count;
+    -ms-animation-direction: $direction;
+    
+    -o-animation-name: $name;
+    -o-animation-duration: $duration;
+    -o-animation-timing-function: $timing-function;
+    -o-animation-delay: $delay;
+    -o-animation-iteration-count: $iteration-count;
+    -o-animation-direction: $direction;
+
+    animation-name: $name;
+    animation-duration: $duration;
+    animation-timing-function: $timing-function;
+    animation-delay: $delay;
+    animation-iteration-count: $iteration-count;
+    animation-direction: $direction;
 }
 
 @mixin transformOrigin($perX, $perY) {
@@ -27,13 +57,35 @@
     transform: scale($size);
 }
 
-@mixin transition($what, $length, $easing) {
-    -moz-transition:    $what $length $easing;
-    -o-transition:      $what $length $easing;
-    -webkit-transition: $what $length $easing;
-    -ms-transition:     $what $length $easing;
-    transition:         $what $length $easing;
+@mixin transitionSeperate($property, $duration, $delay, $timing) {
+    -o-transition-property: $property;
+    -o-transition-duration: $duration;
+    -o-transition-delay: $delay;
+    -o-transition-timing-function: $timing;
+    -ms-transition-property: $property;
+    -ms-transition-duration: $duration;
+    -ms-transition-delay: $delay;
+    -ms-transition-timing-function: $timing;
+    -moz-transition-property: $property;
+    -moz-transition-duration: $duration;
+    -moz-transition-delay: $delay;
+    -moz-transition-timing-function: $timing;
+    -webkit-transition-property: $property;
+    -webkit-transition-duration: $duration;
+    -webkit-transition-delay: $delay;
+    -webkit-transition-timing-function: $timing;
+    transition-property: $property;
+    transition-duration: $duration;
+    transition-delay: $delay;
+    transition-timing-function: $timing;
+}
 
+@mixin transition($what, $length, $easing) {
+    -webkit-transition: $what $length $easing;
+    -moz-transition:    $what $length $easing;
+    -ms-transition:     $what $length $easing;
+    -o-transition:      $what $length $easing;
+    transition:         $what $length $easing;
 }
 
 @mixin rotate($deg: 0, $m11: 0, $m12: 0, $m21: 0, $m22: 0) {

@@ -1,35 +1,28 @@
 /*
-Syntax error: Undefined variable: "$color-slate-dark".
-        on line 17 of static/styles/scss/animation.scss
+Syntax error: Undefined mixin 'transitionSeperate'.
+        on line 7 of static/styles/scss/animation.scss, in `transitionSeperate'
+        from line 7 of static/styles/scss/animation.scss
 
-12:     & p{
-13:         padding:0.25em 0em;
-14:     }
-15: 
-16:     & :active{
-17:         background:$color-slate-dark;
-18:     }
-19: 
-20:     &.enabled {
-21:         opacity: 1;
-22:         margin-top: 20px;
+2:     opacity: 0;
+3:     margin-top: 0px;
+4: 
+5:     background-color: transparent;
+6: 
+7:     @include transitionSeperate(
+8:             (opacity, margin-top),
+9:             (0.3s),
+10:             (0s),
+11:             (cubic-bezier(.95, .05, .795, .035)));
+12: 
 
 Backtrace:
-static/styles/scss/animation.scss:17
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/variable.rb:49:in `_perform'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/script/tree/node.rb:50:in `perform'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:369:in `visit_prop'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:37:in `visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `block in visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `block in with_base'
+static/styles/scss/animation.scss:7:in `transitionSeperate'
+static/styles/scss/animation.scss:7
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:321:in `block in visit_mixin'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:98:in `block in with_mixin'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:115:in `with_frame'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `with_base'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:392:in `block (2 levels) in visit_rule'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:392:in `map'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:392:in `block in visit_rule'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:174:in `with_environment'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:390:in `visit_rule'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:98:in `with_mixin'
+/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:319:in `visit_mixin'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:37:in `visit'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `block in visit'
 /Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `block in with_base'
@@ -77,4 +70,4 @@ static/styles/scss/animation.scss:17
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Undefined variable: \"$color-slate-dark\".\A         on line 17 of static/styles/scss/animation.scss\A \A 12:     & p{\A 13:         padding:0.25em 0em;\A 14:     }\A 15: \A 16:     & :active{\A 17:         background:$color-slate-dark;\A 18:     }\A 19: \A 20:     &.enabled {\A 21:         opacity: 1;\A 22:         margin-top: 20px;"; }
+  content: "Syntax error: Undefined mixin 'transitionSeperate'.\A         on line 7 of static/styles/scss/animation.scss, in `transitionSeperate'\A         from line 7 of static/styles/scss/animation.scss\A \A 2:     opacity: 0;\A 3:     margin-top: 0px;\A 4: \A 5:     background-color: transparent;\A 6: \A 7:     @include transitionSeperate(\A 8:             (opacity, margin-top),\A 9:             (0.3s),\A 10:             (0s),\A 11:             (cubic-bezier(.95, .05, .795, .035)));\A 12: "; }

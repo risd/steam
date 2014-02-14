@@ -1,4 +1,5 @@
-var filters = require('./filters'),
+var polyfills = require('./polyfills'),
+    filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./util/clone'),
     icon_size = require('./clusterIconSize')(),
@@ -15,6 +16,8 @@ var filters = require('./filters'),
 
     modal_flow = require('./modalFlow'),
     user = require('./user');
+
+polyfills();
 
 STEAMMap();
 
