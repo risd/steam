@@ -150,6 +150,11 @@ function Arcs (context) {
                   d.dimensions / 2 + ')';
             });
 
+        g.append('rect')
+            .attr('class', 'blanket')
+            .attr('height', svg_dimensions[0].dimensions)
+            .attr('width', svg_dimensions[0].dimensions);
+
         // add the prev_status, and status
         // attributes to the data object
         // for appropriate scaling based on

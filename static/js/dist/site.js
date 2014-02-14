@@ -151,6 +151,11 @@ function Arcs (context) {
                   d.dimensions / 2 + ')';
             });
 
+        g.append('rect')
+            .attr('class', 'blanket')
+            .attr('height', svg_dimensions[0].dimensions)
+            .attr('width', svg_dimensions[0].dimensions);
+
         // add the prev_status, and status
         // attributes to the data object
         // for appropriate scaling based on
@@ -522,7 +527,6 @@ function Clusters (context) {
 
     // on click of individual clusters
     clusters_group.on('click', function (event) {
-        console.log('splode click');
         // click cluster
         // d3.select('#steam-map').classed('active', false);
         var sw = L.latLng(
@@ -538,7 +542,6 @@ function Clusters (context) {
     });
 
     clusters_group.on('clusterclick', function (d) {
-        console.log('cluster click');
         var bounds = d.layer.getBounds().pad(0.5);
 
         context.map.fitBounds(bounds);
@@ -1580,6 +1583,12 @@ module.exports = function svgCross (sel) {
                 return d.y2;
             })
             .attr('stroke-width', 1);
+
+    sel.select('svg')
+        .append('rect')
+        .attr('class', 'blanket')
+        .attr('height', button_size)
+        .attr('width', button_size);
 };
 },{}],15:[function(require,module,exports){
 module.exports = function svgNextArrow (sel) {

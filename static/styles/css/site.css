@@ -3573,6 +3573,7 @@ div.blanket {
     transition-delay: 0s, 0s, 0.2s, 0s, 0s, 0s, 0s, 0s, 0s;
     transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
 
+.button-large,
 .save-button,
 .logout-button {
   -o-transition-property: background-color, color;
@@ -3595,6 +3596,7 @@ div.blanket {
   transition-duration: 0.3s;
   transition-delay: 0s;
   transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
+  .button-large.enabled,
   .save-button.enabled,
   .logout-button.enabled {
     -o-transition-property: background-color, color;

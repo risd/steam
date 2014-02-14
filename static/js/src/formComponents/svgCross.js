@@ -27,4 +27,10 @@ module.exports = function svgCross (sel) {
                 return d.y2;
             })
             .attr('stroke-width', 1);
+
+    sel.select('svg')
+        .append('rect')
+        .attr('class', 'blanket')
+        .attr('height', button_size)
+        .attr('width', button_size);
 };
