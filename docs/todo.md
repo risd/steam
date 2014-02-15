@@ -1,7 +1,5 @@
 ### left off
 
-- make the lib and site directory loaded based on modernizer.load, and if the browser has svg support or not.
-
 - | uglify > `site.min.js` and link to that in map.html
 
 - remove `window.state` from `modalFlow.js`
