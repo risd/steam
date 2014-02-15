@@ -57,24 +57,30 @@
     transform: scale($size);
 }
 
-@mixin transitionSeperate($property, $duration, $delay, $timing) {
-    -o-transition-property: $property;
+@mixin transitionSeperate($property, $duration, $delay, $timing,
+                          $-property: "",
+                          $o-property: "",
+                          $ms-property: "",
+                          $moz-proptery: "",
+                          $webkit-property: "") {
+    
+    -o-transition-property: $property #{$o-property};
     -o-transition-duration: $duration;
     -o-transition-delay: $delay;
     -o-transition-timing-function: $timing;
-    -ms-transition-property: $property;
+    -ms-transition-property: $property #{$ms-property};
     -ms-transition-duration: $duration;
     -ms-transition-delay: $delay;
     -ms-transition-timing-function: $timing;
-    -moz-transition-property: $property;
+    -moz-transition-property: $property #{$moz-proptery};
     -moz-transition-duration: $duration;
     -moz-transition-delay: $delay;
     -moz-transition-timing-function: $timing;
-    -webkit-transition-property: $property;
+    -webkit-transition-property: $property #{$webkit-property};
     -webkit-transition-duration: $duration;
     -webkit-transition-delay: $delay;
     -webkit-transition-timing-function: $timing;
-    transition-property: $property;
+    transition-property: $property #{$-property};
     transition-duration: $duration;
     transition-delay: $delay;
     transition-timing-function: $timing;

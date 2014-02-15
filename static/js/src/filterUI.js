@@ -10,13 +10,20 @@ function filterUI (context) {
         active_count = 4,
         prev_active_count,
         clicked = 0,
-        collapsed = false;
+        collapsed = false,
+        filterable = true;
 
     var filter_bar = d3.select('.filter-bar'),
         filter_bar_header = d3.select('.filter-bar-header'),
         filter_collapsable_visual = d3.select('.filter-bar .collapse');
 
     ui.filter_bar = filter_bar;
+
+    ui.filterable = function (x) {
+        if (!arguments.length) return filterable;
+        filterable = x;
+        return ui;
+    };
 
     ui.init = function () {
         filter_bar.classed('all-active', true);
@@ -37,7 +44,10 @@ function filterUI (context) {
             .html(function (d) {
                 return  "<span class='indicator'></span>" +
                     "<span class='label'>" + d.display + "</span>";
-            })
+            });
+
+        if (filterable) {
+            filter_buttons
             .on('click', function (d) {
 
                 prev_active_count = active_count;
@@ -132,6 +142,7 @@ function filterUI (context) {
                 context.network.filter();
                 context.clusters.filter();
             });
+        }
     };
 
     return ui;

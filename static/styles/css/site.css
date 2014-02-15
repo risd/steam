@@ -3323,23 +3323,23 @@ div.blanket {
   opacity: 0;
   margin-top: 0px;
   background-color: transparent;
-  -o-transition-property: opacity, margin-top;
+  -o-transition-property: opacity, margin-top ;
   -o-transition-duration: 0.3s;
   -o-transition-delay: 0s;
   -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -ms-transition-property: opacity, margin-top;
+  -ms-transition-property: opacity, margin-top ;
   -ms-transition-duration: 0.3s;
   -ms-transition-delay: 0s;
   -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -moz-transition-property: opacity, margin-top;
+  -moz-transition-property: opacity, margin-top ;
   -moz-transition-duration: 0.3s;
   -moz-transition-delay: 0s;
   -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -webkit-transition-property: opacity, margin-top;
+  -webkit-transition-property: opacity, margin-top ;
   -webkit-transition-duration: 0.3s;
   -webkit-transition-delay: 0s;
   -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  transition-property: opacity, margin-top;
+  transition-property: opacity, margin-top ;
   transition-duration: 0.3s;
   transition-delay: 0s;
   transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
@@ -3352,113 +3352,113 @@ div.blanket {
     margin-top: 20px;
     background: white;
     color: #516272;
-    -o-transition-property: opacity, margin-top;
+    -o-transition-property: opacity, margin-top ;
     -o-transition-duration: 0.2s;
     -o-transition-delay: 0s;
     -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -ms-transition-property: opacity, margin-top;
+    -ms-transition-property: opacity, margin-top ;
     -ms-transition-duration: 0.2s;
     -ms-transition-delay: 0s;
     -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -moz-transition-property: opacity, margin-top;
+    -moz-transition-property: opacity, margin-top ;
     -moz-transition-duration: 0.2s;
     -moz-transition-delay: 0s;
     -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -webkit-transition-property: opacity, margin-top;
+    -webkit-transition-property: opacity, margin-top ;
     -webkit-transition-duration: 0.2s;
     -webkit-transition-delay: 0s;
     -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    transition-property: opacity, margin-top;
+    transition-property: opacity, margin-top ;
     transition-duration: 0.2s;
     transition-delay: 0s;
     transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
 
 .button-activate {
   opacity: 0;
-  -o-transition-property: opacity;
+  -o-transition-property: opacity ;
   -o-transition-duration: 0.3s;
   -o-transition-delay: 0s;
   -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -ms-transition-property: opacity;
+  -ms-transition-property: opacity ;
   -ms-transition-duration: 0.3s;
   -ms-transition-delay: 0s;
   -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -moz-transition-property: opacity;
+  -moz-transition-property: opacity ;
   -moz-transition-duration: 0.3s;
   -moz-transition-delay: 0s;
   -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -webkit-transition-property: opacity;
+  -webkit-transition-property: opacity ;
   -webkit-transition-duration: 0.3s;
   -webkit-transition-delay: 0s;
   -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  transition-property: opacity;
+  transition-property: opacity ;
   transition-duration: 0.3s;
   transition-delay: 0s;
   transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
   .button-activate.active {
     opacity: 1;
-    -o-transition-property: opacity;
+    -o-transition-property: opacity ;
     -o-transition-duration: 0.2s;
     -o-transition-delay: 0s;
     -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -ms-transition-property: opacity;
+    -ms-transition-property: opacity ;
     -ms-transition-duration: 0.2s;
     -ms-transition-delay: 0s;
     -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -moz-transition-property: opacity;
+    -moz-transition-property: opacity ;
     -moz-transition-duration: 0.2s;
     -moz-transition-delay: 0s;
     -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -webkit-transition-property: opacity;
+    -webkit-transition-property: opacity ;
     -webkit-transition-duration: 0.2s;
     -webkit-transition-delay: 0s;
     -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    transition-property: opacity;
+    transition-property: opacity ;
     transition-duration: 0.2s;
     transition-delay: 0s;
     transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
 
 .bottom-left {
   left: -100%;
-  -o-transition-property: left;
+  -o-transition-property: left ;
   -o-transition-duration: 0s;
   -o-transition-delay: 0.3s;
   -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -ms-transition-property: left;
+  -ms-transition-property: left ;
   -ms-transition-duration: 0s;
   -ms-transition-delay: 0.3s;
   -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -moz-transition-property: left;
+  -moz-transition-property: left ;
   -moz-transition-duration: 0s;
   -moz-transition-delay: 0.3s;
   -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -webkit-transition-property: left;
+  -webkit-transition-property: left ;
   -webkit-transition-duration: 0s;
   -webkit-transition-delay: 0.3s;
   -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  transition-property: left;
+  transition-property: left ;
   transition-duration: 0s;
   transition-delay: 0.3s;
   transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
   .bottom-left.active {
     left: 30px;
-    -o-transition-property: left;
+    -o-transition-property: left ;
     -o-transition-duration: 0s;
     -o-transition-delay: 0.3s;
     -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -ms-transition-property: left;
+    -ms-transition-property: left ;
     -ms-transition-duration: 0s;
     -ms-transition-delay: 0.3s;
     -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -moz-transition-property: left;
+    -moz-transition-property: left ;
     -moz-transition-duration: 0s;
     -moz-transition-delay: 0.3s;
     -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -webkit-transition-property: left;
+    -webkit-transition-property: left ;
     -webkit-transition-duration: 0s;
     -webkit-transition-delay: 0.3s;
     -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    transition-property: left;
+    transition-property: left ;
     transition-duration: 0s;
     transition-delay: 0.3s;
     transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
@@ -3469,25 +3469,25 @@ div.blanket {
   -ms-transform: scale(1.5) translateY(-20px);
   -o-transform: scale(1.5) translateY(-20px);
   transform: scale(1.5) translateY(-20px);
-  -o-transition-property: top, background-color, opacity, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-  -o-transition-duration: 0s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s;
-  -o-transition-delay: 0.3s, 0s, 0s, 0s, 0s, 0s, 0s, 0s;
+  -o-transition-property: top, background-color, opacity , -o-transform;
+  -o-transition-duration: 0s, 0.3s, 0.3s, 0.3s;
+  -o-transition-delay: 0.3s, 0s, 0s, 0s;
   -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -ms-transition-property: top, background-color, opacity, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-  -ms-transition-duration: 0s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s;
-  -ms-transition-delay: 0.3s, 0s, 0s, 0s, 0s, 0s, 0s, 0s;
+  -ms-transition-property: top, background-color, opacity , -ms-transform;
+  -ms-transition-duration: 0s, 0.3s, 0.3s, 0.3s;
+  -ms-transition-delay: 0.3s, 0s, 0s, 0s;
   -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -moz-transition-property: top, background-color, opacity, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-  -moz-transition-duration: 0s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s;
-  -moz-transition-delay: 0.3s, 0s, 0s, 0s, 0s, 0s, 0s, 0s;
+  -moz-transition-property: top, background-color, opacity , -moz-transform;
+  -moz-transition-duration: 0s, 0.3s, 0.3s, 0.3s;
+  -moz-transition-delay: 0.3s, 0s, 0s, 0s;
   -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -webkit-transition-property: top, background-color, opacity, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-  -webkit-transition-duration: 0s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s;
-  -webkit-transition-delay: 0.3s, 0s, 0s, 0s, 0s, 0s, 0s, 0s;
+  -webkit-transition-property: top, background-color, opacity , -webkit-transform;
+  -webkit-transition-duration: 0s, 0.3s, 0.3s, 0.3s;
+  -webkit-transition-delay: 0.3s, 0s, 0s, 0s;
   -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  transition-property: top, background-color, opacity, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-  transition-duration: 0s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s;
-  transition-delay: 0.3s, 0s, 0s, 0s, 0s, 0s, 0s, 0s;
+  transition-property: top, background-color, opacity , -transform;
+  transition-duration: 0s, 0.3s, 0.3s, 0.3s;
+  transition-delay: 0.3s, 0s, 0s, 0s;
   transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
   .animate-out-in.modal.active {
     -webkit-transform: scale(1) translateY(0px);
@@ -3495,23 +3495,23 @@ div.blanket {
     -ms-transform: scale(1) translateY(0px);
     -o-transform: scale(1) translateY(0px);
     transform: scale(1) translateY(0px);
-    -o-transition-property: top, background-color, opacity, -webkit-transform;
+    -o-transition-property: top, background-color, opacity , -o-transform;
     -o-transition-duration: 0s, 0.2s, 0.2s, 0.2s;
     -o-transition-delay: 0s, 0s, 0s, 0s;
     -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -ms-transition-property: top, background-color, opacity, -webkit-transform;
+    -ms-transition-property: top, background-color, opacity , -ms-transform;
     -ms-transition-duration: 0s, 0.2s, 0.2s, 0.2s;
     -ms-transition-delay: 0s, 0s, 0s, 0s;
     -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -moz-transition-property: top, background-color, opacity, -webkit-transform;
+    -moz-transition-property: top, background-color, opacity , -moz-transform;
     -moz-transition-duration: 0s, 0.2s, 0.2s, 0.2s;
     -moz-transition-delay: 0s, 0s, 0s, 0s;
     -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -webkit-transition-property: top, background-color, opacity, -webkit-transform;
+    -webkit-transition-property: top, background-color, opacity , -webkit-transform;
     -webkit-transition-duration: 0s, 0.2s, 0.2s, 0.2s;
     -webkit-transition-delay: 0s, 0s, 0s, 0s;
     -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    transition-property: top, background-color, opacity, -webkit-transform;
+    transition-property: top, background-color, opacity , -transform;
     transition-duration: 0s, 0.2s, 0.2s, 0.2s;
     transition-delay: 0s, 0s, 0s, 0s;
     transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
@@ -3524,25 +3524,25 @@ div.blanket {
   -ms-transform: scale(0) translateY(-50px);
   -o-transform: scale(0) translateY(-50px);
   transform: scale(0) translateY(-50px);
-  -o-transition-property: top, background-color, opacity, border-radius, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-  -o-transition-duration: 0s, 0s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s;
-  -o-transition-delay: 0.3s, 0s, 0s, 0s, 0s, 0s, 0s, 0s, 0s;
+  -o-transition-property: top, background-color, opacity, border-radius , -o-transform;
+  -o-transition-duration: 0s, 0s, 0.3s, 0.3s, 0.3s;
+  -o-transition-delay: 0.3s, 0s, 0s, 0s, 0s;
   -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -ms-transition-property: top, background-color, opacity, border-radius, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-  -ms-transition-duration: 0s, 0s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s;
-  -ms-transition-delay: 0.3s, 0s, 0s, 0s, 0s, 0s, 0s, 0s, 0s;
+  -ms-transition-property: top, background-color, opacity, border-radius , -ms-transform;
+  -ms-transition-duration: 0s, 0s, 0.3s, 0.3s, 0.3s;
+  -ms-transition-delay: 0.3s, 0s, 0s, 0s, 0s;
   -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -moz-transition-property: top, background-color, opacity, border-radius, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-  -moz-transition-duration: 0s, 0s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s;
-  -moz-transition-delay: 0.3s, 0s, 0s, 0s, 0s, 0s, 0s, 0s, 0s;
+  -moz-transition-property: top, background-color, opacity, border-radius , -moz-transform;
+  -moz-transition-duration: 0s, 0s, 0.3s, 0.3s, 0.3s;
+  -moz-transition-delay: 0.3s, 0s, 0s, 0s, 0s;
   -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -webkit-transition-property: top, background-color, opacity, border-radius, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-  -webkit-transition-duration: 0s, 0s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s;
-  -webkit-transition-delay: 0.3s, 0s, 0s, 0s, 0s, 0s, 0s, 0s, 0s;
+  -webkit-transition-property: top, background-color, opacity, border-radius , -webkit-transform;
+  -webkit-transition-duration: 0s, 0s, 0.3s, 0.3s, 0.3s;
+  -webkit-transition-delay: 0.3s, 0s, 0s, 0s, 0s;
   -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  transition-property: top, background-color, opacity, border-radius, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-  transition-duration: 0s, 0s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s;
-  transition-delay: 0.3s, 0s, 0s, 0s, 0s, 0s, 0s, 0s, 0s;
+  transition-property: top, background-color, opacity, border-radius , -transform;
+  transition-duration: 0s, 0s, 0.3s, 0.3s, 0.3s;
+  transition-delay: 0.3s, 0s, 0s, 0s, 0s;
   transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
   .animate-in-out.modal.active {
     background: rgba(255, 255, 255, 0.9);
@@ -3552,70 +3552,70 @@ div.blanket {
     -ms-transform: scale(1) translateY(0px);
     -o-transform: scale(1) translateY(0px);
     transform: scale(1) translateY(0px);
-    -o-transition-property: top, opacity, background-color, border-radius, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-    -o-transition-duration: 0s, 0.2s, 0s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s;
-    -o-transition-delay: 0s, 0s, 0.2s, 0s, 0s, 0s, 0s, 0s, 0s;
-    -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -ms-transition-property: top, opacity, background-color, border-radius, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-    -ms-transition-duration: 0s, 0.2s, 0s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s;
-    -ms-transition-delay: 0s, 0s, 0.2s, 0s, 0s, 0s, 0s, 0s, 0s;
-    -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -moz-transition-property: top, opacity, background-color, border-radius, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-    -moz-transition-duration: 0s, 0.2s, 0s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s;
-    -moz-transition-delay: 0s, 0s, 0.2s, 0s, 0s, 0s, 0s, 0s, 0s;
-    -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -webkit-transition-property: top, opacity, background-color, border-radius, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-    -webkit-transition-duration: 0s, 0.2s, 0s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s;
-    -webkit-transition-delay: 0s, 0s, 0.2s, 0s, 0s, 0s, 0s, 0s, 0s;
-    -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    transition-property: top, opacity, background-color, border-radius, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform;
-    transition-duration: 0s, 0.2s, 0s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s;
-    transition-delay: 0s, 0s, 0.2s, 0s, 0s, 0s, 0s, 0s, 0s;
-    transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
+    -o-transition-property: top, opacity, background-color, border-radius , -ms-transform;
+    -o-transition-duration: 0s, 0.2s, 0s, 0.2s, 0.2s;
+    -o-transition-delay: 0s, 0s, 0.2s, 0s, 0s;
+    -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035) ", -transform";
+    -ms-transition-property: top, opacity, background-color, border-radius , -moz-transform;
+    -ms-transition-duration: 0s, 0.2s, 0s, 0.2s, 0.2s;
+    -ms-transition-delay: 0s, 0s, 0.2s, 0s, 0s;
+    -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035) ", -transform";
+    -moz-transition-property: top, opacity, background-color, border-radius , -webkit-transform;
+    -moz-transition-duration: 0s, 0.2s, 0s, 0.2s, 0.2s;
+    -moz-transition-delay: 0s, 0s, 0.2s, 0s, 0s;
+    -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035) ", -transform";
+    -webkit-transition-property: top, opacity, background-color, border-radius ;
+    -webkit-transition-duration: 0s, 0.2s, 0s, 0.2s, 0.2s;
+    -webkit-transition-delay: 0s, 0s, 0.2s, 0s, 0s;
+    -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035) ", -transform";
+    transition-property: top, opacity, background-color, border-radius , -o-transform;
+    transition-duration: 0s, 0.2s, 0s, 0.2s, 0.2s;
+    transition-delay: 0s, 0s, 0.2s, 0s, 0s;
+    transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035) ", -transform"; }
 
 .button-large,
 .save-button,
 .logout-button {
-  -o-transition-property: background-color, color;
+  -o-transition-property: background-color, color ;
   -o-transition-duration: 0.3s;
   -o-transition-delay: 0s;
   -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -ms-transition-property: background-color, color;
+  -ms-transition-property: background-color, color ;
   -ms-transition-duration: 0.3s;
   -ms-transition-delay: 0s;
   -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -moz-transition-property: background-color, color;
+  -moz-transition-property: background-color, color ;
   -moz-transition-duration: 0.3s;
   -moz-transition-delay: 0s;
   -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -webkit-transition-property: background-color, color;
+  -webkit-transition-property: background-color, color ;
   -webkit-transition-duration: 0.3s;
   -webkit-transition-delay: 0s;
   -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  transition-property: background-color, color;
+  transition-property: background-color, color ;
   transition-duration: 0.3s;
   transition-delay: 0s;
   transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
   .button-large.enabled,
   .save-button.enabled,
   .logout-button.enabled {
-    -o-transition-property: background-color, color;
+    -o-transition-property: background-color, color ;
     -o-transition-duration: 0.2s;
     -o-transition-delay: 0s;
     -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -ms-transition-property: background-color, color;
+    -ms-transition-property: background-color, color ;
     -ms-transition-duration: 0.2s;
     -ms-transition-delay: 0s;
     -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -moz-transition-property: background-color, color;
+    -moz-transition-property: background-color, color ;
     -moz-transition-duration: 0.2s;
     -moz-transition-delay: 0s;
     -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -webkit-transition-property: background-color, color;
+    -webkit-transition-property: background-color, color ;
     -webkit-transition-duration: 0.2s;
     -webkit-transition-delay: 0s;
     -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    transition-property: background-color, color;
+    transition-property: background-color, color ;
     transition-duration: 0.2s;
     transition-delay: 0s;
     transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
@@ -3623,90 +3623,90 @@ div.blanket {
 .loading {
   top: -200%;
   opacity: 0;
-  -o-transition-property: opacity, top;
+  -o-transition-property: opacity, top ;
   -o-transition-duration: 0.3s, 0s;
   -o-transition-delay: 0s, 0.3s;
   -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -ms-transition-property: opacity, top;
+  -ms-transition-property: opacity, top ;
   -ms-transition-duration: 0.3s, 0s;
   -ms-transition-delay: 0s, 0.3s;
   -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -moz-transition-property: opacity, top;
+  -moz-transition-property: opacity, top ;
   -moz-transition-duration: 0.3s, 0s;
   -moz-transition-delay: 0s, 0.3s;
   -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  -webkit-transition-property: opacity, top;
+  -webkit-transition-property: opacity, top ;
   -webkit-transition-duration: 0.3s, 0s;
   -webkit-transition-delay: 0s, 0.3s;
   -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-  transition-property: opacity, top;
+  transition-property: opacity, top ;
   transition-duration: 0.3s, 0s;
   transition-delay: 0s, 0.3s;
   transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
   .loading svg {
-    -o-transition-property: opacity, top;
+    -o-transition-property: opacity, top ;
     -o-transition-duration: 0.3s, 0s;
     -o-transition-delay: 0s, 0.3s;
     -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -ms-transition-property: opacity, top;
+    -ms-transition-property: opacity, top ;
     -ms-transition-duration: 0.3s, 0s;
     -ms-transition-delay: 0s, 0.3s;
     -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -moz-transition-property: opacity, top;
+    -moz-transition-property: opacity, top ;
     -moz-transition-duration: 0.3s, 0s;
     -moz-transition-delay: 0s, 0.3s;
     -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -webkit-transition-property: opacity, top;
+    -webkit-transition-property: opacity, top ;
     -webkit-transition-duration: 0.3s, 0s;
     -webkit-transition-delay: 0s, 0.3s;
     -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    transition-property: opacity, top;
+    transition-property: opacity, top ;
     transition-duration: 0.3s, 0s;
     transition-delay: 0s, 0.3s;
     transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
   .loading.active {
     top: 0;
     opacity: 1;
-    -o-transition-property: opacity, top;
+    -o-transition-property: opacity, top ;
     -o-transition-duration: 0.2s, 0s;
     -o-transition-delay: 0s, 0s;
     -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -ms-transition-property: opacity, top;
+    -ms-transition-property: opacity, top ;
     -ms-transition-duration: 0.2s, 0s;
     -ms-transition-delay: 0s, 0s;
     -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -moz-transition-property: opacity, top;
+    -moz-transition-property: opacity, top ;
     -moz-transition-duration: 0.2s, 0s;
     -moz-transition-delay: 0s, 0s;
     -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -webkit-transition-property: opacity, top;
+    -webkit-transition-property: opacity, top ;
     -webkit-transition-duration: 0.2s, 0s;
     -webkit-transition-delay: 0s, 0s;
     -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    transition-property: opacity, top;
+    transition-property: opacity, top ;
     transition-duration: 0.2s, 0s;
     transition-delay: 0s, 0s;
     transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
     .loading.active svg {
       top: 0;
       opacity: 1;
-      -o-transition-property: opacity, top;
+      -o-transition-property: opacity, top ;
       -o-transition-duration: 0.2s, 0s;
       -o-transition-delay: 0s, 0s;
       -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-      -ms-transition-property: opacity, top;
+      -ms-transition-property: opacity, top ;
       -ms-transition-duration: 0.2s, 0s;
       -ms-transition-delay: 0s, 0s;
       -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-      -moz-transition-property: opacity, top;
+      -moz-transition-property: opacity, top ;
       -moz-transition-duration: 0.2s, 0s;
       -moz-transition-delay: 0s, 0s;
       -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-      -webkit-transition-property: opacity, top;
+      -webkit-transition-property: opacity, top ;
       -webkit-transition-duration: 0.2s, 0s;
       -webkit-transition-delay: 0s, 0s;
       -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-      transition-property: opacity, top;
+      transition-property: opacity, top ;
       transition-duration: 0.2s, 0s;
       transition-delay: 0s, 0s;
       transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
@@ -3761,3 +3761,15 @@ div.blanket {
   display: none; }
   .no-csstransitions .animate-in-out.modal.active {
     display: block; }
+
+.no-svg .loading {
+  display: none; }
+  .no-svg .loading svg {
+    display: none; }
+  .no-svg .loading.active {
+    display: block; }
+.no-svg #profile-link,
+.no-svg .canvas-wrapper .network-button-wrapper,
+.no-svg .modal .close-button,
+.no-svg #explore-map {
+  display: none; }

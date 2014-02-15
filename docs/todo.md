@@ -1,5 +1,7 @@
 ### left off
 
+- make the lib and site directory loaded based on modernizer.load, and if the browser has svg support or not.
+
 - | uglify > `site.min.js` and link to that in map.html
 
 - remove `window.state` from `modalFlow.js`
@@ -21,12 +23,6 @@
     - http://newrelic.com/backtowork
 
 - [`waitress` over `gunicorn`?](http://thechangelog.com/waitress-a-better-python-wsgi-server-for-heroku/?utm_content=bufferdb582&utm_medium=social&utm_source=twitter.com&utm_campaign=buffer)
-
-- map to proper domain
-    - map.stemtosteam.org
-    - update stemtosteam.org to link to map
-        - home page, "what can you do"
-        - Take Action page, "what can you do"
 
 - language considerations
     - work in, make it clear to simply choose one above all

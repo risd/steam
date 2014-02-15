@@ -2,20 +2,20 @@ var polyfills = require('./polyfills'),
     filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./util/clone'),
-    icon_size = require('./clusterIconSize')(),
+    icon_size = require('./map/clusterIconSize')(),
 
-    api = require('./backend')(),
+    api = require('./util/backend')(),
 
     // Nav = require('./nav'),
     filterUI = require('./filterUI'),
     network = require('./network'),
-    clusters = require('./clusters'),
-    arcs = require('./arcs'),
-    map = require('./map'),
+    clusters = require('./map/clusters'),
+    arcs = require('./map/arcs'),
+    map = require('./map/map'),
     getTSV = require('./util/getTSV'),
 
     modal_flow = require('./modalFlow'),
-    user = require('./user');
+    user = require('./user/user');
 
 polyfills();
 

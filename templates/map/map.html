@@ -12,6 +12,11 @@
         <meta name="description" content="Art + Design are poised to transform our economy in the 21st century just as science and technology did in the last century. We need to add Art + Design to the equation — to transform STEM into STEAM.">
         <meta name="viewport" content="width=device-width">
 
+        <!--[if lt IE 9]>
+        <script type="text/javascript"
+                src="{% static "js/dist/aight.min.js" %}"></script>
+        <![endif]-->
+
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
         <!-- Antenna -->
@@ -105,7 +110,7 @@
                             
                             <section id="call-to-action"
                                  class="hide-til-active clearfix">
-                                <div class="four-column-two">
+                                <div class="four-column-two clearfix">
                                     <p>Add your organization and yourself to the map to show members of congress that people in their districts think art and design education is critical to innovation in the 21st century.</p>
                                 </div>
                                 <div class="four-column-two clearfix omega">
@@ -208,18 +213,24 @@
              {% include 'steam/orb.html' %}
          </div>
 
-        {# <script src="{% static "js/dist/delegate.js" %}"></script> #}
-        <script src="{% static "js/dist/libs.js" %}"></script>
-        <script src="{% static "js/dist/site.js" %}"></script>
+         <script>
+         Modernizr.load({
+            test: Modernizr.svg,
+            yep: ['{% static "js/dist/libs.js" %}',
+                  '{% static "js/dist/site.js" %}'],
+            nope: ['{% static "js/dist/libs.nosvg.js" %}',
+                   '{% static "js/dist/site.nosvg.js" %}']
+         });
+         </script>
         <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-34702353-1']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-34702353-1', 'stemtosteam.org');
+          ga('send', 'pageview');
+
         </script>
     </body>
 </html>

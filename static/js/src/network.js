@@ -24,6 +24,7 @@ function Network (context) {
         built = false,
         highlighted = false,
         transition = false,
+        render_svg = true,
         network_display = 'force',
         prev_network_display = 'force',
         network_options = ['force', 'list'],
@@ -86,6 +87,14 @@ function Network (context) {
         if(!arguments.length) return nodes;
 
         nodes = x;
+
+        return network;
+    };
+
+    network.renderSvg = function (x) {
+        if(!arguments.length) return render_svg;
+
+        render_svg = x;
 
         return network;
     };
@@ -594,18 +603,20 @@ function Network (context) {
                         d.work_in;
             });
 
-        nodes_sel.append('svg')
-            .attr('width', svg_dimensions)
-            .attr('height', svg_dimensions)
-            .append('g')
-                .attr('class', function (d) {
-                    return 'node ' +
-                            d.work_in + ' ' +
-                            d.type;
-                })
-                .style('opacity', set_opacity)
-                .attr('transform', transform)
-                .call(add_symbols);
+        if (render_svg) {
+            nodes_sel.append('svg')
+                .attr('width', svg_dimensions)
+                .attr('height', svg_dimensions)
+                .append('g')
+                    .attr('class', function (d) {
+                        return 'node ' +
+                                d.work_in + ' ' +
+                                d.type;
+                    })
+                    .style('opacity', set_opacity)
+                    .attr('transform', transform)
+                    .call(add_symbols);
+        }
 
         nodes_sel.append('img')
             .attr('class', 'avatar')

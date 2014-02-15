@@ -1,648 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-module.exports = Arcs;
-
-// Manage the arcs that wrap clusters
-// to show proportion of population
-function Arcs (context) {
-
-    var arcs = {},
-        arc = d3.svg.arc(),
-        τ = 2 * Math.PI,
-        arc_scale = d3.scale.linear()
-            .range([0, τ]),
-        format = d3.format(',');
-
-    arcs.draw = function () {
-        console.log('draw');
-
-        // adding arcs
-        d3.selectAll('.marker-cluster')
-            .each(draw);
-    };
-
-    function tweenArc(b) {
-        return function(a, i) {
-            var d = b.call(this, a, i),
-                i = d3.interpolate(a, d);
-            for (var k in d) {
-                // update data
-                a[k] = d[k];
-            }
-            return function(t) {
-                return arc(i(t));
-            };
-        };
-    }
-
-    function add_status (node_data) {
-        // answers the question, what size
-        // does this need to be?
-        // @param d: data obj to create arcs
-        // 
-        // possible values
-        // 'unselected'
-        // 'default'
-        // 'selected'
-        // 
-        // value is found in the filters
-        // array, alongside each object.
-        // 'status' and 'status_size'
-
-        for (var j = node_data.length - 1; j >= 0; j--) {
-
-            // check for all being active
-            var active_count = 0;
-            for (var i = context.filters.length - 1; i >= 0; i--) {
-
-                var cur_active = false;
-                if(context.filters[i].active) {
-                    active_count += 1;
-                    cur_active = true;
-                }
-                if(context.filters[i].value ===
-                   node_data[j].value) {
-
-                    if (cur_active) {
-                        node_data[j].status = 'selected';
-                    } else {
-                        node_data[j].status = 'unselected';
-                    }
-                }
-            }
-
-            // check for all being active
-            var prev_active_count = 0;
-            for (var i = context.prev_filters.length - 1;
-                 i >= 0;
-                 i--) {
-
-                var cur_active = false;
-                if(context.prev_filters[i].active) {
-                    prev_active_count += 1;
-                    cur_active = true;
-                }
-                if(context.prev_filters[i].value ===
-                   node_data[j].value) {
-
-                    if (cur_active) {
-                        node_data[j].prev_status = 'selected';
-                    } else {
-                        node_data[j].prev_status = 'unselected';
-                    }
-                }
-            }
-
-            if (active_count === 4) {
-                node_data[j].status = 'default';
-            }
-            if (prev_active_count === 4) {
-                node_data[j].prev_status = 'default';
-            }
-
-        }
-
-        // return node_data;
-    }
-
-    function draw (d, i) {
-        var node = d3.select(this);
-        var node_data = d;
-        var svg_wrapper = node.select('.arc-wrapper');
-        var svg = svg_wrapper.select('svg');
-        var g = svg_wrapper.select('g');
-
-        if (svg.node()) {
-            // if there is an svg, that means that
-            // the data has not been updated.
-            // since the markerclustergroup will
-            // redraw all of the clusters if the
-            // data is changed, which would
-            // mean there is no svg node.
-            return;
-        }
-        
-        // there is NO an svg here
-        svg_dimensions = [{
-            dimensions:
-                context.icon_size[node_data
-                                   .meta
-                                   .icon_category].total
-           }];
-
-        svg = svg_wrapper.selectAll('svg')
-            .data(svg_dimensions)
-            .enter()
-            .append('svg')
-            .attr('class', 'arc-svg')
-            .attr('width', function (d) {
-                return d.dimensions;
-            })
-            .attr('height', function (d) {
-                return d.dimensions;
-            });
-
-        g = svg.selectAll('g')
-            .data(svg_dimensions)
-            .enter()
-            .append('g')
-            .attr('transform', function (d) {
-                return 'translate(' +
-                  d.dimensions / 2 + ',' +
-                  d.dimensions / 2 + ')';
-            });
-
-        g.append('rect')
-            .attr('class', 'blanket')
-            .attr('height', svg_dimensions[0].dimensions)
-            .attr('width', svg_dimensions[0].dimensions);
-
-        // add the prev_status, and status
-        // attributes to the data object
-        // for appropriate scaling based on
-        // the filter settings
-        add_status(node_data.filters);
-
-        // update the domain to set the
-        // arc start and end angles
-        arc_scale.domain([0, node_data.meta.total]);
-
-        // add arc specific data to the
-        // data to be bound and drawn.
-        var accounted_for = 0;
-        node_data.filters.forEach(function (d, i) {
-            d.startAngle = accounted_for;
-
-            var slice = arc_scale(d.count);
-            accounted_for += slice;
-            
-            d.endAngle = accounted_for;
-
-            d.innerRadius = context.icon_size
-                                [node_data.meta.icon_category]
-                                [d.prev_status]
-                                .innerRadius;
-            d.outerRadius = context.icon_size
-                                [node_data.meta.icon_category]
-                                [d.prev_status]
-                                .outerRadius;
-        });
-        
-        var arc_sel = g.selectAll('.arc-segment')
-            .data(node_data.filters)
-            .enter()
-            .append('path')
-            .attr('class', 'arc-segment')
-            .style('fill', function (d) {
-                return context.colors[d.value];
-            })
-            .attr('d', arc);
-
-        
-        var span_sel = node
-            .selectAll('span')
-            .datum({
-                start: node_data.meta.prev_total_active,
-                end: node_data.meta.total_active
-            });
-
-        d3.transition()
-            .duration(800)
-            .each(function () {
-                // text transition is a little misleading.
-                // on zoom, its not actually counting from
-                // the parent cluster total to the individual
-                // child cluster values. its just taking those
-                // child cluster values, and animating between
-                // the prev_active_total (which was never seen
-                // by the user), and the active_total, which
-                // the user is about to see.
-                // not a show stopper for now.
-                d3.transition(span_sel)
-                    .tween('text', function (d) {
-                        var i = d3.interpolateRound(d.start,
-                                                    d.end);
-                        return function (t) {
-                            this.textContent = format(i(t));
-                        };
-                    });
-
-                d3.transition(arc_sel)
-                    .attrTween('d', tweenArc(function (d, i) {
-                        return {
-                            innerRadius:
-                                context.icon_size
-                                   [node_data.meta.icon_category]
-                                   [d.status]
-                                   .innerRadius,
-                            outerRadius:
-                                context.icon_size
-                                   [node_data.meta.icon_category]
-                                   [d.status]
-                                   .outerRadius
-                        };
-                    }));
-            });
-    }
-
-    return arcs;
-}
-},{}],2:[function(require,module,exports){
-var config = require('./config')(location.hostname);
-
-module.exports = Backend;
-
-function Backend () {
-
-    var api = {};
-
-    api.base = config.backend_url;
-
-    api.api_url = config.backend_url + '/api/' + config.version;
-
-    api.steamie = api.api_url + '/steamie/?format=json';
-    api.geo = api.api_url + '/geo/?format=json';
-    api.network = api.api_url + '/network/?format=json';
-
-    api.steamie_user = function (x) {
-        return api.api_url + '/steamie/' + x + '/?format=json';
-    };
-
-    api.network_url = function (x) {
-        return api.api_url + '/network/' + x + '/?format=json';
-    };
-
-    api.logout = function (callback) {
-        d3.json(api.base + '/map/logout/', callback);
-    };
-
-    api.network_request = function (network_id, callback) {
-        console.log('network request');
-        console.log('url: ', api.network_url(network_id));
-        var request = d3.json(api.network_url(network_id), callback);
-        return request;
-    };
-
-    api.steamie_update = function (data_to_submit, callback) {
-        var csrf_token = get_cookie('csrftoken');
-
-        console.log('data');
-        console.log(data_to_submit);
-        console.log('url');
-        console.log(api.steamie_user(data_to_submit.id));
-
-        // submit this data against the steamie endpoint
-        var xhr = d3.xhr(api.steamie_user(data_to_submit.id))
-            .mimeType('application/json')
-            .header('X-CSRFToken', csrf_token)
-            .header('Content-type', 'application/json')
-            .send('PATCH',
-                  JSON.stringify(data_to_submit),
-                  callback);
-    };
-
-    function get_cookie (c_name) {
-        var c_value = document.cookie;
-        var c_start = c_value.indexOf(" " + c_name + "=");
-        if (c_start == -1) {
-            c_start = c_value.indexOf(c_name + "=");
-        }
-        if (c_start == -1) {
-            c_value = null;
-        } else {
-            c_start = c_value.indexOf("=", c_start) + 1;
-            var c_end = c_value.indexOf(";", c_start);
-            if (c_end == -1) {
-                c_end = c_value.length;
-            }
-            c_value = unescape(c_value.substring(c_start, c_end));
-        }
-        return c_value;
-    }
-
-    return api;
-}
-},{"./config":6}],3:[function(require,module,exports){
-module.exports = ClusterIconSize;
-
-// Defines cluster sizes, for both
-// selected and unselsected states
-function ClusterIconSize () {
-    var size = {
-        inner_diameter: {
-            two_digit: 36,
-            three_digit: 42,
-            four_digit: 50,
-            five_digit: 54,
-            six_digit: 61
-        },
-        // gap between inner icon and arc
-        // based on arc.status
-        gap_width: {
-            unselected: 4,
-            default: 2,
-            selected: 1
-        },
-        // width of the arc
-        arc_width: {
-            unselected: 1,
-            default: 4,
-            selected: 10
-        }
-    };
-
-    (function set_size (size) {
-        for (var key in size.inner_diameter) {
-            size[key] = {
-                total: size.inner_diameter[key] +
-                       ((size.gap_width.selected +
-                         size.arc_width.selected) * 2),
-                unselected: {
-                    innerRadius: ((size.inner_diameter[key] / 2) +
-                                  (size.gap_width.unselected)),
-                    outerRadius: ((size.inner_diameter[key] / 2) +
-                                  (size.gap_width.unselected) +
-                                  (size.arc_width.unselected))
-                },
-                default: {
-                    innerRadius: ((size.inner_diameter[key] / 2) +
-                                  (size.gap_width.default)),
-                    outerRadius: ((size.inner_diameter[key] / 2) +
-                                  (size.gap_width.default) +
-                                  (size.arc_width.default))
-                },
-                selected: {
-                    innerRadius: ((size.inner_diameter[key] / 2) +
-                                  (size.gap_width.selected)),
-                    outerRadius: ((size.inner_diameter[key] / 2) +
-                                  (size.gap_width.selected) +
-                                  (size.arc_width.selected))
-                }
-            };
-        }
-    })(size);
-
-    return size;
-}
-},{}],4:[function(require,module,exports){
-module.exports = Clusters;
-
-function Clusters (context) {
-
-    var clusters = {},
-        geojson,    // L.geojson of data
-        data,       // raw data
-        max;        // max of data
-
-    var format = d3.format(',');
-
-    // clustering settings
-    var clusters_group = L.markerClusterGroup({
-        // gives single markers the same
-        // symbology as the clusters
-        singleMarkerMode: true,
-
-        // does not pass any padding,
-        // so writing a seperate clusterclick
-        // function to replicate this, but with
-        // padding, so user isnt lost in the
-        // middle of two points when they click.
-        zoomToBoundsOnClick: false,
-
-        // function used to create cluster symbology
-        // defines classes for differentiating scale
-        // and whether a cluster is representing
-        // a single entity (country or district)
-        // or more than one.
-        iconCreateFunction: function (cluster) {
-
-            var steamie_count = {
-                research: 0,
-                political: 0,
-                education: 0,
-                industry: 0,
-                total: 0,
-                total_active: 0,
-                prev_total_active: 0
-            };
-            var children = cluster.getAllChildMarkers(),
-                child_count = cluster.getChildCount();
-
-            for (var i = 0; i < children.length; i++) {
-                steamie_count =
-                    calculate_steamies(
-                        children[i].feature,
-                        steamie_count);
-            }
-
-
-            // start class list
-            var c = ' mc-',
-                icon_category;
-
-            // set the scale of the cluster
-            if (steamie_count.total < 100) {
-
-                c += '2-digit';
-                icon_category = 'two_digit';
-            }
-
-            else if (steamie_count.total < 1000) {
-
-                c += '3-digit';
-                icon_category = 'three_digit';
-            }
-
-            else if (steamie_count.total < 10000) {
-
-                c += '4-digit';
-                icon_category = 'four_digit';
-            }
-
-            else if (steamie_count.total < 100000) {
-
-                c += '5-digit';
-                icon_category = 'five_digit';
-            }
-
-            else {
-
-                c += '6-digit';
-                icon_category = 'six_digit';
-            }
-
-            if (child_count === 1) {
-                c += ' represents-one-entity';
-            } else {
-                c += ' represents-multiple-entities';
-            }
-
-            return new L.DivIconWithData({
-                html: '<div class="span-wrapper">' +
-                    '<span>' +
-                    format(steamie_count.prev_total_active) +
-                    '</span>' +
-                    '</div>' +
-                    '<div class="arc-wrapper"></div>',
-                className: 'marker-cluster' + c,
-                iconSize: new L.Point(
-                             context.icon_size[icon_category].total,
-                             context.icon_size[icon_category].total),
-                data: {
-                    meta: {
-                        total: steamie_count.total,
-                        total_active: steamie_count.total_active,
-                        prev_total_active:
-                            steamie_count.prev_total_active,
-                        icon_category: icon_category
-                    },
-                    filters: [{
-                            'value': 'research',
-                            'count': steamie_count.research
-                        }, {
-                            'value': 'political',
-                            'count': steamie_count.political
-                        }, {
-                            'value': 'education',
-                            'count': steamie_count.education
-                        }, {
-                            'value': 'industry',
-                            'count': steamie_count.industry
-                        }]
-                    }
-                });
-        },
-
-        // for the polygon that shows the area
-        // of entities captured
-        polygonOptions: {
-            opacity: 0.6,
-            weight: 0,
-            className: 'cluster-polygon'
-        },
-
-        //A cluster will cover at most 
-        // this many pixels from its center
-        maxClusterRadius: 80
-    });
-
-    // on click of individual clusters
-    clusters_group.on('click', function (event) {
-        // click cluster
-        // d3.select('#steam-map').classed('active', false);
-        var sw = L.latLng(
-                event.layer.feature.properties.miny,
-                event.layer.feature.properties.minx),
-
-            ne = L.latLng(
-                event.layer.feature.properties.maxy,
-                event.layer.feature.properties.maxx);
-
-        context.map.fitBounds(L.latLngBounds(sw, ne));
-        context.network.init(event.layer.feature.properties);
-    });
-
-    clusters_group.on('clusterclick', function (d) {
-        var bounds = d.layer.getBounds().pad(0.5);
-
-        context.map.fitBounds(bounds);
-    });
-
-    clusters.bindArcs = function () {
-        // arcs get updated on 
-
-        // map move
-        context.map
-            .on('dragend', function () {
-                context.arcs.draw();
-            });
-
-        // cluster animation, which occurs
-        // on map zoom.
-        clusters_group
-            .on('animationend', function () {
-                context.arcs.draw();
-            });
-
-        return clusters;
-    };
-
-    clusters.data = function (x) {
-        // initialize data on the map
-
-        if (!arguments.length) return data;
-
-        data = x;
-        add_to_map();
-
-        return clusters;
-    };
-
-    clusters.filter = function () {
-
-        // clear clusters
-        clusters.clear();
-        // add clusters
-        add_to_map();
-
-        return clusters;
-    };
-
-    clusters.clear = function () {
-        // remove cluster layers
-        clusters_group.clearLayers();
-
-        context.map.removeLayer(clusters_group);
-
-        return clusters;
-    };
-
-    clusters.init = function () {
-        // show initial map data
-        // d3.json('/static/geo/fake_level_1_pnt.geojson',
-        d3.json('/static/geo/top_level_geo.geojson',
-                clusters.data);
-
-        return clusters;
-    };
-
-    function add_to_map () {
-
-        geojson = L.geoJson(data);
-
-        clusters_group.addLayer(geojson);
-
-        context.map.addLayer(clusters_group);
-        context.arcs.draw();
-    }
-
-    function calculate_steamies (d, count) {
-        // d - is the current cluster's data
-        // count - is the cumulative count of cluster data
-        // count.res, count.pol, count.total, ect
-        for (var i = 0; i < context.filters.length; i++) {
-            if (context.filters[i].active) {
-                count.total_active +=
-                    d.properties[context.filters[i].value];
-            }
-            count.total +=
-                d.properties[context.filters[i].value];
-            count[context.filters[i].value] +=
-                d.properties[context.filters[i].value];
-
-            // also set prev_filters
-            // context.filters.length === context.prev_filters.length
-            if (context.prev_filters[i].active) {
-                count.prev_total_active +=
-                    d.properties[context.prev_filters[i].value];
-            }
-        }
-
-        return count;
-    }
-
-    return clusters;
-}
-},{}],5:[function(require,module,exports){
 var colors = {
     research: 'rgb(105,230,64)',
     political: 'rgb(255,97,127)',
@@ -655,21 +11,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.colors = colors;
 }
-},{}],6:[function(require,module,exports){
-module.exports = Config;
-
-function Config (hostname) {
-    var local = (hostname === 'localhost');
-
-    return {
-        backend_url: local ?
-            'http://localhost:5000' :
-            'http://stemtosteam.herokuapp.com',
-
-        version: 'v1'
-    };
-}
-},{}],7:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 module.exports = filterUI;
 
 
@@ -682,13 +24,20 @@ function filterUI (context) {
         active_count = 4,
         prev_active_count,
         clicked = 0,
-        collapsed = false;
+        collapsed = false,
+        filterable = true;
 
     var filter_bar = d3.select('.filter-bar'),
         filter_bar_header = d3.select('.filter-bar-header'),
         filter_collapsable_visual = d3.select('.filter-bar .collapse');
 
     ui.filter_bar = filter_bar;
+
+    ui.filterable = function (x) {
+        if (!arguments.length) return filterable;
+        filterable = x;
+        return ui;
+    };
 
     ui.init = function () {
         filter_bar.classed('all-active', true);
@@ -709,7 +58,10 @@ function filterUI (context) {
             .html(function (d) {
                 return  "<span class='indicator'></span>" +
                     "<span class='label'>" + d.display + "</span>";
-            })
+            });
+
+        if (filterable) {
+            filter_buttons
             .on('click', function (d) {
 
                 prev_active_count = active_count;
@@ -804,11 +156,12 @@ function filterUI (context) {
                 context.network.filter();
                 context.clusters.filter();
             });
+        }
     };
 
     return ui;
 }
-},{"./formComponents/svgArrow":13}],8:[function(require,module,exports){
+},{"./formComponents/svgArrow":8}],3:[function(require,module,exports){
 var filters = [{
         value: 'research',
         display: 'research',
@@ -832,7 +185,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.filters = filters;
 }
-},{}],9:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var textComponent = require('./text'),
     Checkmark = require('../ui/checkmark');
 
@@ -1091,7 +444,7 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../ui/checkmark":29,"./text":16}],10:[function(require,module,exports){
+},{"../ui/checkmark":21,"./text":11}],5:[function(require,module,exports){
 module.exports = function flowAnimation () {
     var self = {},
         selection,
@@ -1223,7 +576,7 @@ module.exports = function flowAnimation () {
 
     return self;
 };
-},{}],11:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = function radioSelection () {
     var self = {},
         valid = false,
@@ -1435,7 +788,7 @@ module.exports = function radioSelection () {
 
     return self;
 };
-},{}],12:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 var Checkmark = require('../ui/checkmark');
 
 module.exports = function socialAuthSelection (context) {
@@ -1522,7 +875,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":29}],13:[function(require,module,exports){
+},{"../ui/checkmark":21}],8:[function(require,module,exports){
 module.exports = function svgArrow (sel) {
     var button_size = 10;
 
@@ -1553,7 +906,7 @@ module.exports = function svgArrow (sel) {
             })
             .attr('stroke-width', 2);
 };
-},{}],14:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = function svgCross (sel) {
     var button_size = 45;
 
@@ -1590,7 +943,7 @@ module.exports = function svgCross (sel) {
         .attr('height', button_size)
         .attr('width', button_size);
 };
-},{}],15:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = function svgNextArrow (sel) {
     var button_size = 20;
 
@@ -1621,7 +974,7 @@ module.exports = function svgNextArrow (sel) {
             })
             .attr('stroke-width', 1);
 };
-},{}],16:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // text input, with placeholder
 // dispatches when the value changes
 // against the initial value
@@ -1712,7 +1065,7 @@ module.exports = function TextInput () {
 
     return self;
 };
-},{}],17:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 // textarea, with placeholder, and label
 // dispatches when the value changes
 // against the initial value
@@ -1797,134 +1150,25 @@ module.exports = function TextArea () {
 
     return self;
 };
-},{}],18:[function(require,module,exports){
-module.exports = function UpdatableComponentManager () {
-    var self = {},
-        updatable = [],
-        updated = [];
-
-    self.add = function (x) {
-        // add objects that include links to functions
-        // and arrays that describe the component,
-        // and its relationship to the data structu
-        // it comes from
-        // {
-        //     isDifferent: function
-        //     value: function
-        //     position_in_data: []
-        //     reset_initial: function
-        // }
-        updatable.push(x);
-        return self;
-    };
-
-    self.batchAdd = function (x) {
-        x.forEach(function (n, i) {
-            updatable.push(n);
-        });
-        return self;
-    };
-
-    self.all = function () {
-        return updatable;
-    };
-
-    self.check = function () {
-        updated = [];
-        updatable.forEach(function (n, i) {
-            if (n.isDifferent()) {
-                updated.push(n);
-            }
-        });
-        return self;
-    };
-
-    self.updated = function () {
-        return updated;
-    };
-
-    self.resetInitialValues = function () {
-        updated.forEach(function (n, i) {
-            n.reset_initial(n.value_being_saved);
-        });
-    };
-
-    return self;
-};
-},{}],19:[function(require,module,exports){
-module.exports = function ValidatableComponentManager () {
-    var self = {},
-        validatable = [],
-        validated = [];
-
-    self.add = function (x) {
-        // add objects that include links to functions
-        // and arrays that describe the component,
-        // and its relationship to the data structu
-        // it comes from
-        // {
-        //     isValid: function
-        // }
-        validatable.push(x);
-        return self;
-    };
-
-    self.batchAdd = function (x) {
-        x.forEach(function (n, i) {
-            validatable.push(n);
-        });
-        return self;
-    };
-
-    self.all = function () {
-        return validatable;
-    };
-
-    self.check = function () {
-        validated = [];
-        validatable.forEach(function (n, i) {
-            if (n.isValid()) {
-                console.log('n');
-                console.log(n);
-                validated.push(n);
-            }
-        });
-        return self;
-    };
-
-    self.validated = function () {
-        return validated;
-    };
-
-    self.areValid = function () {
-        self.check();
-        if (self.validated().length === self.all().length) {
-            return true;
-        }
-        return false;
-    };
-
-    return self;
-};
-},{}],20:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var polyfills = require('./polyfills'),
     filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./util/clone'),
-    icon_size = require('./clusterIconSize')(),
+    icon_size = require('./map/clusterIconSize')(),
 
-    api = require('./backend')(),
+    api = require('./util/backend')(),
 
     // Nav = require('./nav'),
     filterUI = require('./filterUI'),
     network = require('./network'),
-    clusters = require('./clusters'),
-    arcs = require('./arcs'),
-    map = require('./map'),
+    clusters = require('./map/clusters'),
+    arcs = require('./map/arcs'),
+    map = require('./map/map'),
     getTSV = require('./util/getTSV'),
 
     modal_flow = require('./modalFlow'),
-    user = require('./user');
+    user = require('./user/user');
 
 polyfills();
 
@@ -1980,7 +1224,576 @@ function STEAMMap() {
 
     init();
 }
-},{"./arcs":1,"./backend":2,"./clusterIconSize":3,"./clusters":4,"./colors":5,"./filterUI":7,"./filters":8,"./map":21,"./modalFlow":22,"./network":23,"./polyfills":24,"./user":30,"./util/clone":31,"./util/getTSV":32}],21:[function(require,module,exports){
+},{"./colors":1,"./filterUI":2,"./filters":3,"./map/arcs":14,"./map/clusterIconSize":15,"./map/clusters":16,"./map/map":17,"./modalFlow":18,"./network":19,"./polyfills":20,"./user/user":27,"./util/backend":29,"./util/clone":30,"./util/getTSV":32}],14:[function(require,module,exports){
+module.exports = Arcs;
+
+// Manage the arcs that wrap clusters
+// to show proportion of population
+function Arcs (context) {
+
+    var arcs = {},
+        arc = d3.svg.arc(),
+        τ = 2 * Math.PI,
+        arc_scale = d3.scale.linear()
+            .range([0, τ]),
+        format = d3.format(',');
+
+    arcs.draw = function () {
+        console.log('draw');
+
+        // adding arcs
+        d3.selectAll('.marker-cluster')
+            .each(draw);
+    };
+
+    function tweenArc(b) {
+        return function(a, i) {
+            var d = b.call(this, a, i),
+                i = d3.interpolate(a, d);
+            for (var k in d) {
+                // update data
+                a[k] = d[k];
+            }
+            return function(t) {
+                return arc(i(t));
+            };
+        };
+    }
+
+    function add_status (node_data) {
+        // answers the question, what size
+        // does this need to be?
+        // @param d: data obj to create arcs
+        // 
+        // possible values
+        // 'unselected'
+        // 'default'
+        // 'selected'
+        // 
+        // value is found in the filters
+        // array, alongside each object.
+        // 'status' and 'status_size'
+
+        for (var j = node_data.length - 1; j >= 0; j--) {
+
+            // check for all being active
+            var active_count = 0;
+            for (var i = context.filters.length - 1; i >= 0; i--) {
+
+                var cur_active = false;
+                if(context.filters[i].active) {
+                    active_count += 1;
+                    cur_active = true;
+                }
+                if(context.filters[i].value ===
+                   node_data[j].value) {
+
+                    if (cur_active) {
+                        node_data[j].status = 'selected';
+                    } else {
+                        node_data[j].status = 'unselected';
+                    }
+                }
+            }
+
+            // check for all being active
+            var prev_active_count = 0;
+            for (var i = context.prev_filters.length - 1;
+                 i >= 0;
+                 i--) {
+
+                var cur_active = false;
+                if(context.prev_filters[i].active) {
+                    prev_active_count += 1;
+                    cur_active = true;
+                }
+                if(context.prev_filters[i].value ===
+                   node_data[j].value) {
+
+                    if (cur_active) {
+                        node_data[j].prev_status = 'selected';
+                    } else {
+                        node_data[j].prev_status = 'unselected';
+                    }
+                }
+            }
+
+            if (active_count === 4) {
+                node_data[j].status = 'default';
+            }
+            if (prev_active_count === 4) {
+                node_data[j].prev_status = 'default';
+            }
+
+        }
+
+        // return node_data;
+    }
+
+    function draw (d, i) {
+        var node = d3.select(this);
+        var node_data = d;
+        var svg_wrapper = node.select('.arc-wrapper');
+        var svg = svg_wrapper.select('svg');
+        var g = svg_wrapper.select('g');
+
+        if (svg.node()) {
+            // if there is an svg, that means that
+            // the data has not been updated.
+            // since the markerclustergroup will
+            // redraw all of the clusters if the
+            // data is changed, which would
+            // mean there is no svg node.
+            return;
+        }
+        
+        // there is NO an svg here
+        svg_dimensions = [{
+            dimensions:
+                context.icon_size[node_data
+                                   .meta
+                                   .icon_category].total
+           }];
+
+        svg = svg_wrapper.selectAll('svg')
+            .data(svg_dimensions)
+            .enter()
+            .append('svg')
+            .attr('class', 'arc-svg')
+            .attr('width', function (d) {
+                return d.dimensions;
+            })
+            .attr('height', function (d) {
+                return d.dimensions;
+            });
+
+        g = svg.selectAll('g')
+            .data(svg_dimensions)
+            .enter()
+            .append('g')
+            .attr('transform', function (d) {
+                return 'translate(' +
+                  d.dimensions / 2 + ',' +
+                  d.dimensions / 2 + ')';
+            });
+
+        g.append('rect')
+            .attr('class', 'blanket')
+            .attr('height', svg_dimensions[0].dimensions)
+            .attr('width', svg_dimensions[0].dimensions);
+
+        // add the prev_status, and status
+        // attributes to the data object
+        // for appropriate scaling based on
+        // the filter settings
+        add_status(node_data.filters);
+
+        // update the domain to set the
+        // arc start and end angles
+        arc_scale.domain([0, node_data.meta.total]);
+
+        // add arc specific data to the
+        // data to be bound and drawn.
+        var accounted_for = 0;
+        node_data.filters.forEach(function (d, i) {
+            d.startAngle = accounted_for;
+
+            var slice = arc_scale(d.count);
+            accounted_for += slice;
+            
+            d.endAngle = accounted_for;
+
+            d.innerRadius = context.icon_size
+                                [node_data.meta.icon_category]
+                                [d.prev_status]
+                                .innerRadius;
+            d.outerRadius = context.icon_size
+                                [node_data.meta.icon_category]
+                                [d.prev_status]
+                                .outerRadius;
+        });
+        
+        var arc_sel = g.selectAll('.arc-segment')
+            .data(node_data.filters)
+            .enter()
+            .append('path')
+            .attr('class', 'arc-segment')
+            .style('fill', function (d) {
+                return context.colors[d.value];
+            })
+            .attr('d', arc);
+
+        
+        var span_sel = node
+            .selectAll('span')
+            .datum({
+                start: node_data.meta.prev_total_active,
+                end: node_data.meta.total_active
+            });
+
+        d3.transition()
+            .duration(800)
+            .each(function () {
+                // text transition is a little misleading.
+                // on zoom, its not actually counting from
+                // the parent cluster total to the individual
+                // child cluster values. its just taking those
+                // child cluster values, and animating between
+                // the prev_active_total (which was never seen
+                // by the user), and the active_total, which
+                // the user is about to see.
+                // not a show stopper for now.
+                d3.transition(span_sel)
+                    .tween('text', function (d) {
+                        var i = d3.interpolateRound(d.start,
+                                                    d.end);
+                        return function (t) {
+                            this.textContent = format(i(t));
+                        };
+                    });
+
+                d3.transition(arc_sel)
+                    .attrTween('d', tweenArc(function (d, i) {
+                        return {
+                            innerRadius:
+                                context.icon_size
+                                   [node_data.meta.icon_category]
+                                   [d.status]
+                                   .innerRadius,
+                            outerRadius:
+                                context.icon_size
+                                   [node_data.meta.icon_category]
+                                   [d.status]
+                                   .outerRadius
+                        };
+                    }));
+            });
+    }
+
+    return arcs;
+}
+},{}],15:[function(require,module,exports){
+module.exports = ClusterIconSize;
+
+// Defines cluster sizes, for both
+// selected and unselsected states
+function ClusterIconSize () {
+    var size = {
+        inner_diameter: {
+            two_digit: 36,
+            three_digit: 42,
+            four_digit: 50,
+            five_digit: 54,
+            six_digit: 61
+        },
+        // gap between inner icon and arc
+        // based on arc.status
+        gap_width: {
+            unselected: 4,
+            default: 2,
+            selected: 1
+        },
+        // width of the arc
+        arc_width: {
+            unselected: 1,
+            default: 4,
+            selected: 10
+        }
+    };
+
+    (function set_size (size) {
+        for (var key in size.inner_diameter) {
+            size[key] = {
+                total: size.inner_diameter[key] +
+                       ((size.gap_width.selected +
+                         size.arc_width.selected) * 2),
+                unselected: {
+                    innerRadius: ((size.inner_diameter[key] / 2) +
+                                  (size.gap_width.unselected)),
+                    outerRadius: ((size.inner_diameter[key] / 2) +
+                                  (size.gap_width.unselected) +
+                                  (size.arc_width.unselected))
+                },
+                default: {
+                    innerRadius: ((size.inner_diameter[key] / 2) +
+                                  (size.gap_width.default)),
+                    outerRadius: ((size.inner_diameter[key] / 2) +
+                                  (size.gap_width.default) +
+                                  (size.arc_width.default))
+                },
+                selected: {
+                    innerRadius: ((size.inner_diameter[key] / 2) +
+                                  (size.gap_width.selected)),
+                    outerRadius: ((size.inner_diameter[key] / 2) +
+                                  (size.gap_width.selected) +
+                                  (size.arc_width.selected))
+                }
+            };
+        }
+    })(size);
+
+    return size;
+}
+},{}],16:[function(require,module,exports){
+module.exports = Clusters;
+
+function Clusters (context) {
+
+    var clusters = {},
+        geojson,    // L.geojson of data
+        data,       // raw data
+        max;        // max of data
+
+    var format = d3.format(',');
+
+    // clustering settings
+    var clusters_group = L.markerClusterGroup({
+        // gives single markers the same
+        // symbology as the clusters
+        singleMarkerMode: true,
+
+        // does not pass any padding,
+        // so writing a seperate clusterclick
+        // function to replicate this, but with
+        // padding, so user isnt lost in the
+        // middle of two points when they click.
+        zoomToBoundsOnClick: false,
+
+        // function used to create cluster symbology
+        // defines classes for differentiating scale
+        // and whether a cluster is representing
+        // a single entity (country or district)
+        // or more than one.
+        iconCreateFunction: function (cluster) {
+
+            var steamie_count = {
+                research: 0,
+                political: 0,
+                education: 0,
+                industry: 0,
+                total: 0,
+                total_active: 0,
+                prev_total_active: 0
+            };
+            var children = cluster.getAllChildMarkers(),
+                child_count = cluster.getChildCount();
+
+            for (var i = 0; i < children.length; i++) {
+                steamie_count =
+                    calculate_steamies(
+                        children[i].feature,
+                        steamie_count);
+            }
+
+
+            // start class list
+            var c = ' mc-',
+                icon_category;
+
+            // set the scale of the cluster
+            if (steamie_count.total < 100) {
+
+                c += '2-digit';
+                icon_category = 'two_digit';
+            }
+
+            else if (steamie_count.total < 1000) {
+
+                c += '3-digit';
+                icon_category = 'three_digit';
+            }
+
+            else if (steamie_count.total < 10000) {
+
+                c += '4-digit';
+                icon_category = 'four_digit';
+            }
+
+            else if (steamie_count.total < 100000) {
+
+                c += '5-digit';
+                icon_category = 'five_digit';
+            }
+
+            else {
+
+                c += '6-digit';
+                icon_category = 'six_digit';
+            }
+
+            if (child_count === 1) {
+                c += ' represents-one-entity';
+            } else {
+                c += ' represents-multiple-entities';
+            }
+
+            return new L.DivIconWithData({
+                html: '<div class="span-wrapper">' +
+                    '<span>' +
+                    format(steamie_count.prev_total_active) +
+                    '</span>' +
+                    '</div>' +
+                    '<div class="arc-wrapper"></div>',
+                className: 'marker-cluster' + c,
+                iconSize: new L.Point(
+                             context.icon_size[icon_category].total,
+                             context.icon_size[icon_category].total),
+                data: {
+                    meta: {
+                        total: steamie_count.total,
+                        total_active: steamie_count.total_active,
+                        prev_total_active:
+                            steamie_count.prev_total_active,
+                        icon_category: icon_category
+                    },
+                    filters: [{
+                            'value': 'research',
+                            'count': steamie_count.research
+                        }, {
+                            'value': 'political',
+                            'count': steamie_count.political
+                        }, {
+                            'value': 'education',
+                            'count': steamie_count.education
+                        }, {
+                            'value': 'industry',
+                            'count': steamie_count.industry
+                        }]
+                    }
+                });
+        },
+
+        // for the polygon that shows the area
+        // of entities captured
+        polygonOptions: {
+            opacity: 0.6,
+            weight: 0,
+            className: 'cluster-polygon'
+        },
+
+        //A cluster will cover at most 
+        // this many pixels from its center
+        maxClusterRadius: 80
+    });
+
+    // on click of individual clusters
+    clusters_group.on('click', function (event) {
+        // click cluster
+        // d3.select('#steam-map').classed('active', false);
+        var sw = L.latLng(
+                event.layer.feature.properties.miny,
+                event.layer.feature.properties.minx),
+
+            ne = L.latLng(
+                event.layer.feature.properties.maxy,
+                event.layer.feature.properties.maxx);
+
+        context.map.fitBounds(L.latLngBounds(sw, ne));
+        context.network.init(event.layer.feature.properties);
+    });
+
+    clusters_group.on('clusterclick', function (d) {
+        var bounds = d.layer.getBounds().pad(0.5);
+
+        context.map.fitBounds(bounds);
+    });
+
+    clusters.bindArcs = function () {
+        // arcs get updated on 
+
+        // map move
+        context.map
+            .on('dragend', function () {
+                context.arcs.draw();
+            });
+
+        // cluster animation, which occurs
+        // on map zoom.
+        clusters_group
+            .on('animationend', function () {
+                context.arcs.draw();
+            });
+
+        return clusters;
+    };
+
+    clusters.data = function (x) {
+        // initialize data on the map
+
+        if (!arguments.length) return data;
+
+        data = x;
+        add_to_map();
+
+        return clusters;
+    };
+
+    clusters.filter = function () {
+
+        // clear clusters
+        clusters.clear();
+        // add clusters
+        add_to_map();
+
+        return clusters;
+    };
+
+    clusters.clear = function () {
+        // remove cluster layers
+        clusters_group.clearLayers();
+
+        context.map.removeLayer(clusters_group);
+
+        return clusters;
+    };
+
+    clusters.init = function () {
+        // show initial map data
+        // d3.json('/static/geo/fake_level_1_pnt.geojson',
+        d3.json('/static/geo/top_level_geo.geojson',
+                clusters.data);
+
+        return clusters;
+    };
+
+    function add_to_map () {
+
+        geojson = L.geoJson(data);
+
+        clusters_group.addLayer(geojson);
+
+        context.map.addLayer(clusters_group);
+        context.arcs.draw();
+    }
+
+    function calculate_steamies (d, count) {
+        // d - is the current cluster's data
+        // count - is the cumulative count of cluster data
+        // count.res, count.pol, count.total, ect
+        for (var i = 0; i < context.filters.length; i++) {
+            if (context.filters[i].active) {
+                count.total_active +=
+                    d.properties[context.filters[i].value];
+            }
+            count.total +=
+                d.properties[context.filters[i].value];
+            count[context.filters[i].value] +=
+                d.properties[context.filters[i].value];
+
+            // also set prev_filters
+            // context.filters.length === context.prev_filters.length
+            if (context.prev_filters[i].active) {
+                count.prev_total_active +=
+                    d.properties[context.prev_filters[i].value];
+            }
+        }
+
+        return count;
+    }
+
+    return clusters;
+}
+},{}],17:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -2045,7 +1858,7 @@ function Map (context) {
 
     return map;
 }
-},{}],22:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
 
@@ -2792,7 +2605,7 @@ function ModalFlow (context) {
 
     return self;
 }
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/modalAnimation":10,"./formComponents/radio":11,"./formComponents/socialAuthSelection":12,"./formComponents/svgCross":14,"./formComponents/svgNextArrow":15}],23:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":4,"./formComponents/modalAnimation":5,"./formComponents/radio":6,"./formComponents/socialAuthSelection":7,"./formComponents/svgCross":9,"./formComponents/svgNextArrow":10}],19:[function(require,module,exports){
 var svg_cross = require('./formComponents/svgCross');
 
 module.exports = Network;
@@ -2819,6 +2632,7 @@ function Network (context) {
         built = false,
         highlighted = false,
         transition = false,
+        render_svg = true,
         network_display = 'force',
         prev_network_display = 'force',
         network_options = ['force', 'list'],
@@ -2881,6 +2695,14 @@ function Network (context) {
         if(!arguments.length) return nodes;
 
         nodes = x;
+
+        return network;
+    };
+
+    network.renderSvg = function (x) {
+        if(!arguments.length) return render_svg;
+
+        render_svg = x;
 
         return network;
     };
@@ -3389,18 +3211,20 @@ function Network (context) {
                         d.work_in;
             });
 
-        nodes_sel.append('svg')
-            .attr('width', svg_dimensions)
-            .attr('height', svg_dimensions)
-            .append('g')
-                .attr('class', function (d) {
-                    return 'node ' +
-                            d.work_in + ' ' +
-                            d.type;
-                })
-                .style('opacity', set_opacity)
-                .attr('transform', transform)
-                .call(add_symbols);
+        if (render_svg) {
+            nodes_sel.append('svg')
+                .attr('width', svg_dimensions)
+                .attr('height', svg_dimensions)
+                .append('g')
+                    .attr('class', function (d) {
+                        return 'node ' +
+                                d.work_in + ' ' +
+                                d.type;
+                    })
+                    .style('opacity', set_opacity)
+                    .attr('transform', transform)
+                    .call(add_symbols);
+        }
 
         nodes_sel.append('img')
             .attr('class', 'avatar')
@@ -3710,7 +3534,7 @@ function Network (context) {
 
     return network;
 }
-},{"./formComponents/svgCross":14}],24:[function(require,module,exports){
+},{"./formComponents/svgCross":9}],20:[function(require,module,exports){
 module.exports = function polyfills () {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
     if (!Array.prototype.forEach)
@@ -3736,13 +3560,68 @@ module.exports = function polyfills () {
       };
     }
 };
-},{}],25:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
+module.exports = function addCheckmarks () {
+    var size = 30,
+        stroke = 'white',
+        stroke_width = 1;
+
+    function add (sel) {
+        var svg = sel.append('svg')
+            .attr('width', size)
+            .attr('height', size)
+            .attr('class', 'checkmark')
+            .selectAll('line')
+            .data([
+                { x1: (size * 0.25), y1: (size * 0.75),
+                  x2: size/2, y2: size },
+                { x1: size/2, y1: size,
+                  x2: size, y2: (size * 0.4) }
+            ])
+            .enter()
+            .append('line')
+                .attr('x1', function (d) {
+                    return d.x1;
+                })
+                .attr('y1', function (d) {
+                    return d.y1;
+                })
+                .attr('x2', function (d) {
+                    return d.x2;
+                })
+                .attr('y2', function (d) {
+                    return d.y2;
+                })
+                .attr('stroke-width', stroke_width)
+                .attr('stroke', stroke);
+    }
+
+    add.stroke = function (x) {
+        if (!arguments.length) return stroke;
+        stroke = x;
+        return add;
+    };
+
+    add.stroke_width = function (x) {
+        if (!arguments.length) return stroke_width;
+        stroke_width = x;
+        return add;
+    };
+
+    add.size = function (x) {
+        if (!arguments.length) return size;
+        size = x;
+        return add;
+    };
+
+    return add;
+};
+},{}],22:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution'),
     Settings = require('./profile_settings'),
-    svg_next_arrow = require('./formComponents/svgNextArrow'),
     validatableManager =
-        require('./formComponents/validatableManager');
+        require('./validatableManager');
 
 module.exports = function Profile (context) {
     var self = {},
@@ -4052,17 +3931,17 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./formComponents/svgNextArrow":15,"./formComponents/validatableManager":19,"./profile_individual":26,"./profile_institution":27,"./profile_settings":28}],26:[function(require,module,exports){
+},{"./profile_individual":23,"./profile_institution":24,"./profile_settings":25,"./validatableManager":28}],23:[function(require,module,exports){
 var geoComponent =
-        require('./formComponents/dropdownConditionalText'),
+        require('../formComponents/dropdownConditionalText'),
     radioComponent =
-        require('./formComponents/radio'),
+        require('../formComponents/radio'),
     textComponent =
-        require('./formComponents/text'),
+        require('../formComponents/text'),
     textAreaComponent =
-        require('./formComponents/textarea'),
+        require('../formComponents/textarea'),
     updatableManager =
-        require('./formComponents/updatableManager');
+        require('./updatableManager');
 
 module.exports = function ProfileIndividual (context) {
     var self = {},
@@ -4304,17 +4183,17 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":16,"./formComponents/textarea":17,"./formComponents/updatableManager":18}],27:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":6,"../formComponents/text":11,"../formComponents/textarea":12,"./updatableManager":26}],24:[function(require,module,exports){
 var geoComponent =
-        require('./formComponents/dropdownConditionalText'),
+        require('../formComponents/dropdownConditionalText'),
     radioComponent =
-        require('./formComponents/radio'),
+        require('../formComponents/radio'),
     textComponent =
-        require('./formComponents/text'),
+        require('../formComponents/text'),
     textAreaComponent =
-        require('./formComponents/textarea'),
+        require('../formComponents/textarea'),
     updatableManager =
-        require('./formComponents/updatableManager');
+        require('./updatableManager');
 
 module.exports = function ProfileInstitution (context) {
     var self = {},
@@ -4605,7 +4484,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"./formComponents/dropdownConditionalText":9,"./formComponents/radio":11,"./formComponents/text":16,"./formComponents/textarea":17,"./formComponents/updatableManager":18}],28:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":6,"../formComponents/text":11,"../formComponents/textarea":12,"./updatableManager":26}],25:[function(require,module,exports){
 module.exports = function ProfileSettings () {
     var self = {},
         selection;
@@ -4618,63 +4497,61 @@ module.exports = function ProfileSettings () {
 
     return self;
 };
-},{}],29:[function(require,module,exports){
-module.exports = function addCheckmarks () {
-    var size = 30,
-        stroke = 'white',
-        stroke_width = 1;
+},{}],26:[function(require,module,exports){
+module.exports = function UpdatableComponentManager () {
+    var self = {},
+        updatable = [],
+        updated = [];
 
-    function add (sel) {
-        var svg = sel.append('svg')
-            .attr('width', size)
-            .attr('height', size)
-            .attr('class', 'checkmark')
-            .selectAll('line')
-            .data([
-                { x1: (size * 0.25), y1: (size * 0.75),
-                  x2: size/2, y2: size },
-                { x1: size/2, y1: size,
-                  x2: size, y2: (size * 0.4) }
-            ])
-            .enter()
-            .append('line')
-                .attr('x1', function (d) {
-                    return d.x1;
-                })
-                .attr('y1', function (d) {
-                    return d.y1;
-                })
-                .attr('x2', function (d) {
-                    return d.x2;
-                })
-                .attr('y2', function (d) {
-                    return d.y2;
-                })
-                .attr('stroke-width', stroke_width)
-                .attr('stroke', stroke);
-    }
-
-    add.stroke = function (x) {
-        if (!arguments.length) return stroke;
-        stroke = x;
-        return add;
+    self.add = function (x) {
+        // add objects that include links to functions
+        // and arrays that describe the component,
+        // and its relationship to the data structu
+        // it comes from
+        // {
+        //     isDifferent: function
+        //     value: function
+        //     position_in_data: []
+        //     reset_initial: function
+        // }
+        updatable.push(x);
+        return self;
     };
 
-    add.stroke_width = function (x) {
-        if (!arguments.length) return stroke_width;
-        stroke_width = x;
-        return add;
+    self.batchAdd = function (x) {
+        x.forEach(function (n, i) {
+            updatable.push(n);
+        });
+        return self;
     };
 
-    add.size = function (x) {
-        if (!arguments.length) return size;
-        size = x;
-        return add;
+    self.all = function () {
+        return updatable;
     };
 
-    return add;
+    self.check = function () {
+        updated = [];
+        updatable.forEach(function (n, i) {
+            if (n.isDifferent()) {
+                updated.push(n);
+            }
+        });
+        return self;
+    };
+
+    self.updated = function () {
+        return updated;
+    };
+
+    self.resetInitialValues = function () {
+        updated.forEach(function (n, i) {
+            n.reset_initial(n.value_being_saved);
+        });
+    };
+
+    return self;
 };
-},{}],30:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -4836,7 +4713,137 @@ function User (context) {
 
     return user;
 }
-},{"./profile":25}],31:[function(require,module,exports){
+},{"./profile":22}],28:[function(require,module,exports){
+module.exports = function ValidatableComponentManager () {
+    var self = {},
+        validatable = [],
+        validated = [];
+
+    self.add = function (x) {
+        // add objects that include links to functions
+        // and arrays that describe the component,
+        // and its relationship to the data structu
+        // it comes from
+        // {
+        //     isValid: function
+        // }
+        validatable.push(x);
+        return self;
+    };
+
+    self.batchAdd = function (x) {
+        x.forEach(function (n, i) {
+            validatable.push(n);
+        });
+        return self;
+    };
+
+    self.all = function () {
+        return validatable;
+    };
+
+    self.check = function () {
+        validated = [];
+        validatable.forEach(function (n, i) {
+            if (n.isValid()) {
+                console.log('n');
+                console.log(n);
+                validated.push(n);
+            }
+        });
+        return self;
+    };
+
+    self.validated = function () {
+        return validated;
+    };
+
+    self.areValid = function () {
+        self.check();
+        if (self.validated().length === self.all().length) {
+            return true;
+        }
+        return false;
+    };
+
+    return self;
+};
+},{}],29:[function(require,module,exports){
+var config = require('./config')(location.hostname);
+
+module.exports = Backend;
+
+function Backend () {
+
+    var api = {};
+
+    api.base = config.backend_url;
+
+    api.api_url = config.backend_url + '/api/' + config.version;
+
+    api.steamie = api.api_url + '/steamie/?format=json';
+    api.geo = api.api_url + '/geo/?format=json';
+    api.network = api.api_url + '/network/?format=json';
+
+    api.steamie_user = function (x) {
+        return api.api_url + '/steamie/' + x + '/?format=json';
+    };
+
+    api.network_url = function (x) {
+        return api.api_url + '/network/' + x + '/?format=json';
+    };
+
+    api.logout = function (callback) {
+        d3.json(api.base + '/map/logout/', callback);
+    };
+
+    api.network_request = function (network_id, callback) {
+        console.log('network request');
+        console.log('url: ', api.network_url(network_id));
+        var request = d3.json(api.network_url(network_id), callback);
+        return request;
+    };
+
+    api.steamie_update = function (data_to_submit, callback) {
+        var csrf_token = get_cookie('csrftoken');
+
+        console.log('data');
+        console.log(data_to_submit);
+        console.log('url');
+        console.log(api.steamie_user(data_to_submit.id));
+
+        // submit this data against the steamie endpoint
+        var xhr = d3.xhr(api.steamie_user(data_to_submit.id))
+            .mimeType('application/json')
+            .header('X-CSRFToken', csrf_token)
+            .header('Content-type', 'application/json')
+            .send('PATCH',
+                  JSON.stringify(data_to_submit),
+                  callback);
+    };
+
+    function get_cookie (c_name) {
+        var c_value = document.cookie;
+        var c_start = c_value.indexOf(" " + c_name + "=");
+        if (c_start == -1) {
+            c_start = c_value.indexOf(c_name + "=");
+        }
+        if (c_start == -1) {
+            c_value = null;
+        } else {
+            c_start = c_value.indexOf("=", c_start) + 1;
+            var c_end = c_value.indexOf(";", c_start);
+            if (c_end == -1) {
+                c_end = c_value.length;
+            }
+            c_value = unescape(c_value.substring(c_start, c_end));
+        }
+        return c_value;
+    }
+
+    return api;
+}
+},{"./config":31}],30:[function(require,module,exports){
 var clone = function clone (obj) {
     // Thanks to stackoverflow:
     // http://stackoverflow.com/questions/
@@ -4871,6 +4878,20 @@ if (typeof module !== 'undefined') {
 } else {
     window.clone = clone;
 }
+},{}],31:[function(require,module,exports){
+module.exports = Config;
+
+function Config (hostname) {
+    var local = (hostname === 'localhost');
+
+    return {
+        backend_url: local ?
+            'http://localhost:5000' :
+            'http://stemtosteam.herokuapp.com',
+
+        version: 'v1'
+    };
+}
 },{}],32:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
@@ -4896,4 +4917,4 @@ module.exports = function dataTSV (url) {
 
     return self;
 };
-},{}]},{},[20])
+},{}]},{},[13])

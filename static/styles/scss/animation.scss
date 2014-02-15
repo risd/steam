@@ -79,10 +79,15 @@
     transform: scale(1.5) translateY(-20px);
 
     @include transitionSeperate(
-                (top, background-color, opacity, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform),
-                (0s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s),
-                (0.3s, 0s, 0s, 0s, 0s, 0s, 0s, 0s),
-                (cubic-bezier(.95, .05, .795, .035)));
+                (top, background-color, opacity),
+                (0s, 0.3s, 0.3s, 0.3s),
+                (0.3s, 0s, 0s, 0s),
+                (cubic-bezier(.95, .05, .795, .035)),
+                (', -transform'),
+                (', -o-transform'),
+                (', -ms-transform'),
+                (', -moz-transform'),
+                (', -webkit-transform'));
 
     &.active {
         -webkit-transform: scale(1.0) translateY(0px);
@@ -92,10 +97,15 @@
         transform: scale(1.0) translateY(0px);
 
         @include transitionSeperate(
-                    (top, background-color, opacity, -webkit-transform),
+                    (top, background-color, opacity),
                     (0s, 0.2s, 0.2s, 0.2s),
                     (0s, 0s, 0s, 0s),
-                    (cubic-bezier(.95, .05, .795, .035)));
+                    (cubic-bezier(.95, .05, .795, .035)),
+                    (', -transform'),
+                    (', -o-transform'),
+                    (', -ms-transform'),
+                    (', -moz-transform'),
+                    (', -webkit-transform'));
     }
 }
 .animate-in-out.modal {
@@ -108,10 +118,15 @@
     transform: scale(0) translateY(-50px);
 
     @include transitionSeperate(
-                (top, background-color, opacity, border-radius, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform),
-                (0s, 0.0s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s, 0.3s),
-                (0.3s, 0s, 0s, 0s, 0s, 0s, 0s, 0s, 0s),
-                (cubic-bezier(.95, .05, .795, .035)));
+                (top, background-color, opacity, border-radius),
+                (0s, 0.0s, 0.3s, 0.3s, 0.3s),
+                (0.3s, 0s, 0s, 0s, 0s),
+                (cubic-bezier(.95, .05, .795, .035)),
+                (', -transform'),
+                (', -o-transform'),
+                (', -ms-transform'),
+                (', -moz-transform'),
+                (', -webkit-transform'));
 
     &.active {
         background: rgba($white, 0.9);
@@ -123,10 +138,15 @@
         transform: scale(1.0) translateY(0px);
 
         @include transitionSeperate(
-                    (top, opacity, background-color, border-radius, -webkit-transform, -moz-transform, -ms-transform, -o-transform, transform),
-                    (0s, 0.2s, 0.0s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s, 0.2s),
-                    (0s, 0s, 0.2s, 0s, 0s, 0s, 0s, 0s, 0s),
-                    (cubic-bezier(.95, .05, .795, .035)));
+                    (top, opacity, background-color, border-radius),
+                    (0s, 0.2s, 0s, 0.2s, 0.2s),
+                    (0s, 0s, 0.2s, 0s, 0s),
+                    (cubic-bezier(.95, .05, .795, .035))
+                    (', -transform'),
+                    (', -o-transform'),
+                    (', -ms-transform'),
+                    (', -moz-transform'),
+                    (', -webkit-transform'));
     }
 }
 
