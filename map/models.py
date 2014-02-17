@@ -416,7 +416,18 @@ class Steamies(models.Model):
         return unicode(self.user) or unicode(self.zip_code)
 
 
-def update_steamie_related(sender, instance, *args, **kwargs):
+def update_steamie_related_delete(sender,instance, *args, **kwargs):
+    if instance.institution is not None:
+        instance.institution.delete()
+
+    if instance.individual is not None:
+        instance.individual.delete()
+
+    if instance.top_level is not None:
+        instance.change_work_in_count(amount=-1)
+
+
+def update_steamie_related_save(sender, instance, *args, **kwargs):
     """
     TopLevelGeo and the work_in counts are
     based on user input, which can change. If 
@@ -479,5 +490,7 @@ def update_steamie_related(sender, instance, *args, **kwargs):
         instance.institution.name = instance.user.username
         instance.institution.save()
 
-models.signals.pre_save.connect(update_steamie_related,
+models.signals.pre_save.connect(update_steamie_related_save,
                                 sender=Steamies)
+models.signals.pre_delete.connect(update_steamie_related_delete,
+                                  sender=Steamies)

@@ -3,14 +3,6 @@
 - fake names for all people in database
 - providence as a hotspot
 - model pre-delete hook to adjust the related counts
-- monthly prices for
-    - heroku
-        - 1 clock, 1 web
-        - 1 clock, 2 web
-    - mapbox
-        - 10 tiles
-        - 100,000 tiles
-        - gradient pricing between
 
 - be sure no svgs are being appended to the DOM, seems to cause real problems.
 
