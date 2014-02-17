@@ -361,28 +361,37 @@ class Steamies(models.Model):
 
     def change_work_in_count(self, amount=1):
         if (self.work_in and self.top_level):
+            to_change = 'work_in_{0}'.format(self.work_in)
+
             logger.info('Updating work in count')
             logger.info('work_in   = {0}'.format(self.work_in))
             logger.info('top_lev   = {0}'.format(self.top_level))
             logger.info('amount    = {0}'.format(amount))
             logger.info('to change = {0}'.format(getattr(
                 self.top_level,
-                'work_in_{0}'.format(self.work_in))))
+                to_change)))
 
             setattr(
                 self.top_level,
-                'work_in_{0}'.format(self.work_in),
+                to_change,
                 getattr(
                     self.top_level,
-                    'work_in_{0}'.format(self.work_in)
+                    to_change
                     ) + amount
                 )
+
+            # thought this would be better, but count is off
+            # setattr(
+            #     self.top_level,
+            #     to_change,
+            #     models.F(to_change) + amount
+            # )
 
             self.top_level.save()
 
             logger.info('changed   = {0}'.format(getattr(
                 self.top_level,
-                'work_in_{0}'.format(self.work_in))))
+                to_change)))
 
         logger.info('Updated work_in count')
 

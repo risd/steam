@@ -1,9 +1,5 @@
 ### left off
 
-- fake names for all people in database
-- providence as a hotspot
-- model pre-delete hook to adjust the related counts
-
 - be sure no svgs are being appended to the DOM, seems to cause real problems.
 
 - | uglify > `site.min.js` and link to that in map.html

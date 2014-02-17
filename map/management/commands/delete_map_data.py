@@ -32,21 +32,24 @@ class Command(BaseCommand):
             print 'Deleting User'
             User.objects.filter(id__gte=2).delete()
 
+            # deleting steamies now also
+            # deletes the associated institution 
+            # and individual model instances.
             # print 'commented out: Deleting Steamie models'
             print 'Deleting Steamie models'
             Steamies.objects.all().delete()
 
             # print 'commented out: Deleting Initiative models'
-            print 'Deleting Initiative models'
-            Initiative.objects.all().delete()
+            # print 'Deleting Initiative models'
+            # Initiative.objects.all().delete()
 
             # print 'commented out: Deleting Institution models'
-            print 'Deleting Institution models'
-            Institution.objects.all().delete()
+            # print 'Deleting Institution models'
+            # Institution.objects.all().delete()
 
             # print 'commented out: Deleting Individual models'
-            print 'Deleting Individual models'
-            Individual.objects.all().delete()
+            # print 'Deleting Individual models'
+            # Individual.objects.all().delete()
 
             print 'Deleting Social Auth Business'
             UserSocialAuth.objects.all().delete()
