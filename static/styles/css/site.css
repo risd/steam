@@ -555,6 +555,7 @@ textarea {
 
   @page {
     margin: 0.5cm; }
+
   p,
   h2,
   h3 {
@@ -1381,6 +1382,7 @@ textarea {
 @font-face {
   font-family: "ModernPictograms";
   src: url("../../fonts/modernpics.otf"); }
+
 body {
   margin: 0px; }
 
@@ -2056,6 +2058,7 @@ input[type="submit"]:hover {
     -ms-transform: scale(1.3);
     -o-transform: scale(1.3);
     transform: scale(1.3); } }
+
 .center-in-parent {
   position: relative;
   margin: 0 auto;
@@ -3144,6 +3147,10 @@ input[type=radio] {
   .modal-animation circle.highlight {
     fill: #c8c8c8; }
 
+/*re-order*/
+.steamie.selected {
+  text-align: left; }
+
 /*
 ----DESKTOP SPECIFIC STYLES-------------------------------
 
@@ -3453,6 +3460,7 @@ input[type=radio] {
 
   100% {
     -webkit-transform: rotate(360deg); } }
+
 .canvas-wrapper .steamie {
   opacity: 1;
   -webkit-transition-property: opacity;
