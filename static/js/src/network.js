@@ -66,12 +66,12 @@ function Network (context) {
         radius_outter = 4.5,
         radius_inner = 2,
         scale = {
-            default: 1,
+            defaulted: 1,
             unselected: 0.666666667,
             selected: 1.333333333
         },
         opacity = {
-            default: 1,
+            defaulted: 1,
             unselected: 0.15,
             selected: 1
         };
@@ -706,9 +706,9 @@ function Network (context) {
         }
 
         if (active_count === 4) {
-            // reset all to default
+            // reset all to defaulted
             sel.each(function (d) {
-                d.status = 'default';
+                d.status = 'defaulted';
             });
 
         } else {

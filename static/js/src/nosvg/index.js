@@ -6,7 +6,8 @@ var polyfills = require('../polyfills'),
     network = require('../network'),
     modal_flow = require('./modalFlow'),
     user = require('../user/user'),
-    getTSV = require('../util/getTSV');
+    getTSV = require('../util/getTSV'),
+    filterUI = require('../filterUI');
 
 polyfills();
 

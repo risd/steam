@@ -15,13 +15,13 @@ function ClusterIconSize () {
         // based on arc.status
         gap_width: {
             unselected: 4,
-            default: 2,
+            defaulted: 2,
             selected: 1
         },
         // width of the arc
         arc_width: {
             unselected: 1,
-            default: 4,
+            defaulted: 4,
             selected: 10
         }
     };
@@ -39,12 +39,12 @@ function ClusterIconSize () {
                                   (size.gap_width.unselected) +
                                   (size.arc_width.unselected))
                 },
-                default: {
+                defaulted: {
                     innerRadius: ((size.inner_diameter[key] / 2) +
-                                  (size.gap_width.default)),
+                                  (size.gap_width.defaulted)),
                     outerRadius: ((size.inner_diameter[key] / 2) +
-                                  (size.gap_width.default) +
-                                  (size.arc_width.default))
+                                  (size.gap_width.defaulted) +
+                                  (size.arc_width.defaulted))
                 },
                 selected: {
                     innerRadius: ((size.inner_diameter[key] / 2) +

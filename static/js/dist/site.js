@@ -14,9 +14,6 @@ if (typeof module !== 'undefined') {
 },{}],2:[function(require,module,exports){
 module.exports = filterUI;
 
-
-var svg_arrow = require('./formComponents/svgArrow');
-
 // UI for manipulating data
 function filterUI (context) {
 
@@ -46,7 +43,6 @@ function filterUI (context) {
                 collapsed = collapsed ? false : true;
                 filter_bar.classed('collapse', collapsed);
             });
-        filter_collapsable_visual.call(svg_arrow);
 
         var filter_buttons = filter_bar.selectAll('.button')
             .data(context.filters)
@@ -161,7 +157,7 @@ function filterUI (context) {
 
     return ui;
 }
-},{"./formComponents/svgArrow":8}],3:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 var filters = [{
         value: 'research',
         display: 'research',
@@ -444,7 +440,7 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../ui/checkmark":21,"./text":11}],5:[function(require,module,exports){
+},{"../ui/checkmark":20,"./text":10}],5:[function(require,module,exports){
 module.exports = function flowAnimation () {
     var self = {},
         selection,
@@ -875,38 +871,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":21}],8:[function(require,module,exports){
-module.exports = function svgArrow (sel) {
-    var button_size = 10;
-
-    // add the closing x as svg
-    sel.append('svg')
-        .attr('width', button_size)
-        .attr('height', button_size)
-        .selectAll('line')
-        .data([
-            { x1: button_size, y1: 0,
-              x2: button_size/2, y2: button_size/2 },
-            { x1: button_size/2, y1: button_size/2,
-              x2: button_size, y2: button_size }
-        ])
-        .enter()
-        .append('line')
-            .attr('x1', function (d) {
-                return d.x1;
-            })
-            .attr('y1', function (d) {
-                return d.y1;
-            })
-            .attr('x2', function (d) {
-                return d.x2;
-            })
-            .attr('y2', function (d) {
-                return d.y2;
-            })
-            .attr('stroke-width', 2);
-};
-},{}],9:[function(require,module,exports){
+},{"../ui/checkmark":20}],8:[function(require,module,exports){
 module.exports = function svgCross (sel) {
     var button_size = 45;
 
@@ -943,7 +908,7 @@ module.exports = function svgCross (sel) {
         .attr('height', button_size)
         .attr('width', button_size);
 };
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = function svgNextArrow (sel) {
     var button_size = 20;
 
@@ -974,7 +939,7 @@ module.exports = function svgNextArrow (sel) {
             })
             .attr('stroke-width', 1);
 };
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 // text input, with placeholder
 // dispatches when the value changes
 // against the initial value
@@ -1065,7 +1030,7 @@ module.exports = function TextInput () {
 
     return self;
 };
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // textarea, with placeholder, and label
 // dispatches when the value changes
 // against the initial value
@@ -1150,7 +1115,7 @@ module.exports = function TextArea () {
 
     return self;
 };
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var polyfills = require('./polyfills'),
     filters = require('./filters'),
     colors = require('./colors'),
@@ -1224,7 +1189,7 @@ function STEAMMap() {
 
     init();
 }
-},{"./colors":1,"./filterUI":2,"./filters":3,"./map/arcs":14,"./map/clusterIconSize":15,"./map/clusters":16,"./map/map":17,"./modalFlow":18,"./network":19,"./polyfills":20,"./user/user":27,"./util/backend":29,"./util/clone":30,"./util/getTSV":32}],14:[function(require,module,exports){
+},{"./colors":1,"./filterUI":2,"./filters":3,"./map/arcs":13,"./map/clusterIconSize":14,"./map/clusters":15,"./map/map":16,"./modalFlow":17,"./network":18,"./polyfills":19,"./user/user":26,"./util/backend":28,"./util/clone":29,"./util/getTSV":31}],13:[function(require,module,exports){
 module.exports = Arcs;
 
 // Manage the arcs that wrap clusters
@@ -1267,7 +1232,7 @@ function Arcs (context) {
         // 
         // possible values
         // 'unselected'
-        // 'default'
+        // 'defaulted'
         // 'selected'
         // 
         // value is found in the filters
@@ -1319,10 +1284,10 @@ function Arcs (context) {
             }
 
             if (active_count === 4) {
-                node_data[j].status = 'default';
+                node_data[j].status = 'defaulted';
             }
             if (prev_active_count === 4) {
-                node_data[j].prev_status = 'default';
+                node_data[j].prev_status = 'defaulted';
             }
 
         }
@@ -1472,7 +1437,7 @@ function Arcs (context) {
 
     return arcs;
 }
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = ClusterIconSize;
 
 // Defines cluster sizes, for both
@@ -1490,13 +1455,13 @@ function ClusterIconSize () {
         // based on arc.status
         gap_width: {
             unselected: 4,
-            default: 2,
+            defaulted: 2,
             selected: 1
         },
         // width of the arc
         arc_width: {
             unselected: 1,
-            default: 4,
+            defaulted: 4,
             selected: 10
         }
     };
@@ -1514,12 +1479,12 @@ function ClusterIconSize () {
                                   (size.gap_width.unselected) +
                                   (size.arc_width.unselected))
                 },
-                default: {
+                defaulted: {
                     innerRadius: ((size.inner_diameter[key] / 2) +
-                                  (size.gap_width.default)),
+                                  (size.gap_width.defaulted)),
                     outerRadius: ((size.inner_diameter[key] / 2) +
-                                  (size.gap_width.default) +
-                                  (size.arc_width.default))
+                                  (size.gap_width.defaulted) +
+                                  (size.arc_width.defaulted))
                 },
                 selected: {
                     innerRadius: ((size.inner_diameter[key] / 2) +
@@ -1534,7 +1499,7 @@ function ClusterIconSize () {
 
     return size;
 }
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = Clusters;
 
 function Clusters (context) {
@@ -1793,7 +1758,7 @@ function Clusters (context) {
 
     return clusters;
 }
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -1858,7 +1823,7 @@ function Map (context) {
 
     return map;
 }
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
 
@@ -2605,7 +2570,7 @@ function ModalFlow (context) {
 
     return self;
 }
-},{"./formComponents/dropdownConditionalText":4,"./formComponents/modalAnimation":5,"./formComponents/radio":6,"./formComponents/socialAuthSelection":7,"./formComponents/svgCross":9,"./formComponents/svgNextArrow":10}],19:[function(require,module,exports){
+},{"./formComponents/dropdownConditionalText":4,"./formComponents/modalAnimation":5,"./formComponents/radio":6,"./formComponents/socialAuthSelection":7,"./formComponents/svgCross":8,"./formComponents/svgNextArrow":9}],18:[function(require,module,exports){
 var svg_cross = require('./formComponents/svgCross');
 
 module.exports = Network;
@@ -2674,12 +2639,12 @@ function Network (context) {
         radius_outter = 4.5,
         radius_inner = 2,
         scale = {
-            default: 1,
+            defaulted: 1,
             unselected: 0.666666667,
             selected: 1.333333333
         },
         opacity = {
-            default: 1,
+            defaulted: 1,
             unselected: 0.15,
             selected: 1
         };
@@ -3314,9 +3279,9 @@ function Network (context) {
         }
 
         if (active_count === 4) {
-            // reset all to default
+            // reset all to defaulted
             sel.each(function (d) {
-                d.status = 'default';
+                d.status = 'defaulted';
             });
 
         } else {
@@ -3534,7 +3499,7 @@ function Network (context) {
 
     return network;
 }
-},{"./formComponents/svgCross":9}],20:[function(require,module,exports){
+},{"./formComponents/svgCross":8}],19:[function(require,module,exports){
 module.exports = function polyfills () {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
     if (!Array.prototype.forEach)
@@ -3560,7 +3525,7 @@ module.exports = function polyfills () {
       };
     }
 };
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -3616,7 +3581,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution'),
     Settings = require('./profile_settings'),
@@ -3931,7 +3896,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./profile_individual":23,"./profile_institution":24,"./profile_settings":25,"./validatableManager":28}],23:[function(require,module,exports){
+},{"./profile_individual":22,"./profile_institution":23,"./profile_settings":24,"./validatableManager":27}],22:[function(require,module,exports){
 var geoComponent =
         require('../formComponents/dropdownConditionalText'),
     radioComponent =
@@ -4183,7 +4148,7 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":6,"../formComponents/text":11,"../formComponents/textarea":12,"./updatableManager":26}],24:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":6,"../formComponents/text":10,"../formComponents/textarea":11,"./updatableManager":25}],23:[function(require,module,exports){
 var geoComponent =
         require('../formComponents/dropdownConditionalText'),
     radioComponent =
@@ -4484,7 +4449,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":6,"../formComponents/text":11,"../formComponents/textarea":12,"./updatableManager":26}],25:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":6,"../formComponents/text":10,"../formComponents/textarea":11,"./updatableManager":25}],24:[function(require,module,exports){
 module.exports = function ProfileSettings () {
     var self = {},
         selection;
@@ -4497,7 +4462,7 @@ module.exports = function ProfileSettings () {
 
     return self;
 };
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 module.exports = function UpdatableComponentManager () {
     var self = {},
         updatable = [],
@@ -4551,7 +4516,7 @@ module.exports = function UpdatableComponentManager () {
 
     return self;
 };
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -4713,7 +4678,7 @@ function User (context) {
 
     return user;
 }
-},{"./profile":22}],28:[function(require,module,exports){
+},{"./profile":21}],27:[function(require,module,exports){
 module.exports = function ValidatableComponentManager () {
     var self = {},
         validatable = [],
@@ -4768,7 +4733,7 @@ module.exports = function ValidatableComponentManager () {
 
     return self;
 };
-},{}],29:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var config = require('./config')(location.hostname);
 
 module.exports = Backend;
@@ -4843,7 +4808,7 @@ function Backend () {
 
     return api;
 }
-},{"./config":31}],30:[function(require,module,exports){
+},{"./config":30}],29:[function(require,module,exports){
 var clone = function clone (obj) {
     // Thanks to stackoverflow:
     // http://stackoverflow.com/questions/
@@ -4878,7 +4843,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.clone = clone;
 }
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 module.exports = Config;
 
 function Config (hostname) {
@@ -4892,7 +4857,7 @@ function Config (hostname) {
         version: 'v1'
     };
 }
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
         data;
@@ -4917,4 +4882,4 @@ module.exports = function dataTSV (url) {
 
     return self;
 };
-},{}]},{},[13])
+},{}]},{},[12])

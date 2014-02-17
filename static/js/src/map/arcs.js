@@ -40,7 +40,7 @@ function Arcs (context) {
         // 
         // possible values
         // 'unselected'
-        // 'default'
+        // 'defaulted'
         // 'selected'
         // 
         // value is found in the filters
@@ -92,10 +92,10 @@ function Arcs (context) {
             }
 
             if (active_count === 4) {
-                node_data[j].status = 'default';
+                node_data[j].status = 'defaulted';
             }
             if (prev_active_count === 4) {
-                node_data[j].prev_status = 'default';
+                node_data[j].prev_status = 'defaulted';
             }
 
         }

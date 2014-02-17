@@ -1,8 +1,5 @@
 module.exports = filterUI;
 
-
-var svg_arrow = require('./formComponents/svgArrow');
-
 // UI for manipulating data
 function filterUI (context) {
 
@@ -32,7 +29,6 @@ function filterUI (context) {
                 collapsed = collapsed ? false : true;
                 filter_bar.classed('collapse', collapsed);
             });
-        filter_collapsable_visual.call(svg_arrow);
 
         var filter_buttons = filter_bar.selectAll('.button')
             .data(context.filters)

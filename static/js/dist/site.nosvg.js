@@ -12,6 +12,152 @@ if (typeof module !== 'undefined') {
     window.colors = colors;
 }
 },{}],2:[function(require,module,exports){
+module.exports = filterUI;
+
+// UI for manipulating data
+function filterUI (context) {
+
+    var ui = {},
+        active_count = 4,
+        prev_active_count,
+        clicked = 0,
+        collapsed = false,
+        filterable = true;
+
+    var filter_bar = d3.select('.filter-bar'),
+        filter_bar_header = d3.select('.filter-bar-header'),
+        filter_collapsable_visual = d3.select('.filter-bar .collapse');
+
+    ui.filter_bar = filter_bar;
+
+    ui.filterable = function (x) {
+        if (!arguments.length) return filterable;
+        filterable = x;
+        return ui;
+    };
+
+    ui.init = function () {
+        filter_bar.classed('all-active', true);
+        filter_bar_header
+            .on('click', function () {
+                collapsed = collapsed ? false : true;
+                filter_bar.classed('collapse', collapsed);
+            });
+
+        var filter_buttons = filter_bar.selectAll('.button')
+            .data(context.filters)
+            .enter()
+            .append('div')
+            .attr('class', function (d) {
+                return 'button active ' + d.value;
+            })
+            .html(function (d) {
+                return  "<span class='indicator'></span>" +
+                    "<span class='label'>" + d.display + "</span>";
+            });
+
+        if (filterable) {
+            filter_buttons
+            .on('click', function (d) {
+
+                prev_active_count = active_count;
+                context.prev_filters = context.clone(context.filters);
+
+                if (prev_active_count === 4) {
+                    // all filters were active
+                    // set only one filter to active
+                    var i;
+                    // reset active count to get an 
+                    // update as we loop through filters
+                    active_count = 0;
+                    for (i=0; i < context.filters.length; i++) {
+                        // set the active attribute
+                        // of filters based on click
+                        if (context.filters[i].value === d.value) {
+                            context.filters[i].active = 1;
+                            active_count += 1;
+                        } else {
+                            context.filters[i].active = 0;
+                            filter_bar
+                                .select('.button.' +
+                                        context.filters[i].value)
+                                .classed('active', false);
+                        }
+                    }
+
+                } else if (prev_active_count === 1) {
+                    // one filter was active
+
+                    if (d.active) {
+                        // if that one active filter, is the
+                        // on that was just pressed, reactivate
+                        // all of the filters
+
+                        filter_bar
+                            .selectAll('.button')
+                            .classed('active', true);
+
+                        var i;
+                        active_count = 0;
+                        for (i=0; i < context.filters.length; i++) {
+                            context.filters[i].active = 1;
+                            active_count += 1;
+                        }
+
+                    } else {
+                        // if the one active filter is NOT the
+                        // one that was just pressed, add
+                        // the newly clicked filter as active too
+                        
+                        var i;
+                        for (i=0; i < context.filters.length; i++) {
+
+                            if (context.filters[i].value === d.value) {
+                                context.filters[i].active = 1;
+                                active_count += 1;
+                            }
+                        }
+
+                        d3.select(this)
+                            .classed('active', d.active);
+
+                    }
+                } else {
+                    // subsequent clicks add or remove based
+                    // on active state
+
+                    // toggle state
+                    d.active = d.active ? 0 : 1;
+
+                    if (d.active) {
+                        active_count += 1;
+                    } else {
+                        active_count -= 1;
+                    }
+
+                    // toggle visual
+                    d3.select(this)
+                        .classed('active', d.active);
+                }
+
+                if (active_count === 4) {
+                    filter_bar
+                        .classed('all-active', true);
+                } else {
+                    filter_bar
+                        .classed('all-active', false);
+                }
+
+                // apply filter to network and map
+                context.network.filter();
+                context.clusters.filter();
+            });
+        }
+    };
+
+    return ui;
+}
+},{}],3:[function(require,module,exports){
 var filters = [{
         value: 'research',
         display: 'research',
@@ -35,7 +181,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.filters = filters;
 }
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var textComponent = require('./text'),
     Checkmark = require('../ui/checkmark');
 
@@ -294,7 +440,7 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../ui/checkmark":13,"./text":7}],4:[function(require,module,exports){
+},{"../ui/checkmark":14,"./text":8}],5:[function(require,module,exports){
 module.exports = function radioSelection () {
     var self = {},
         valid = false,
@@ -506,7 +652,7 @@ module.exports = function radioSelection () {
 
     return self;
 };
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var Checkmark = require('../ui/checkmark');
 
 module.exports = function socialAuthSelection (context) {
@@ -593,7 +739,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":13}],6:[function(require,module,exports){
+},{"../ui/checkmark":14}],7:[function(require,module,exports){
 module.exports = function svgCross (sel) {
     var button_size = 45;
 
@@ -630,7 +776,7 @@ module.exports = function svgCross (sel) {
         .attr('height', button_size)
         .attr('width', button_size);
 };
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 // text input, with placeholder
 // dispatches when the value changes
 // against the initial value
@@ -721,7 +867,7 @@ module.exports = function TextInput () {
 
     return self;
 };
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 // textarea, with placeholder, and label
 // dispatches when the value changes
 // against the initial value
@@ -806,7 +952,7 @@ module.exports = function TextArea () {
 
     return self;
 };
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var svg_cross = require('./formComponents/svgCross');
 
 module.exports = Network;
@@ -875,12 +1021,12 @@ function Network (context) {
         radius_outter = 4.5,
         radius_inner = 2,
         scale = {
-            default: 1,
+            defaulted: 1,
             unselected: 0.666666667,
             selected: 1.333333333
         },
         opacity = {
-            default: 1,
+            defaulted: 1,
             unselected: 0.15,
             selected: 1
         };
@@ -1515,9 +1661,9 @@ function Network (context) {
         }
 
         if (active_count === 4) {
-            // reset all to default
+            // reset all to defaulted
             sel.each(function (d) {
-                d.status = 'default';
+                d.status = 'defaulted';
             });
 
         } else {
@@ -1735,7 +1881,7 @@ function Network (context) {
 
     return network;
 }
-},{"./formComponents/svgCross":6}],10:[function(require,module,exports){
+},{"./formComponents/svgCross":7}],11:[function(require,module,exports){
 var polyfills = require('../polyfills'),
     filters = require('../filters'),
     colors = require('../colors'),
@@ -1744,7 +1890,8 @@ var polyfills = require('../polyfills'),
     network = require('../network'),
     modal_flow = require('./modalFlow'),
     user = require('../user/user'),
-    getTSV = require('../util/getTSV');
+    getTSV = require('../util/getTSV'),
+    filterUI = require('../filterUI');
 
 polyfills();
 
@@ -1776,7 +1923,7 @@ function STEAMMap() {
 
     init();
 }
-},{"../colors":1,"../filters":2,"../network":9,"../polyfills":12,"../user/user":19,"../util/backend":21,"../util/clone":22,"../util/getTSV":24,"./modalFlow":11}],11:[function(require,module,exports){
+},{"../colors":1,"../filterUI":2,"../filters":3,"../network":10,"../polyfills":13,"../user/user":20,"../util/backend":22,"../util/clone":23,"../util/getTSV":25,"./modalFlow":12}],12:[function(require,module,exports){
 var geoComponent =
         require('../formComponents/dropdownConditionalText'),
 
@@ -2353,8 +2500,7 @@ function ModalFlow (context) {
         el.button.auth_me.el
             .classed('enabled', true)
             .on('click', function () {
-                var p = el.button.auth_me.el.select('p'),
-                    svg = el.button.auth_me.el.select('svg');
+                var p = el.button.auth_me.el.select('p');
                 d3.transition()
                     .duration(300)
                     .each(function () {
@@ -2363,10 +2509,6 @@ function ModalFlow (context) {
                             .transition(p)
                             .text('Redirecting...')
                             .style('opacity', 1);
-
-                        d3.transition(svg)
-                            .style('opacity', 0)
-                            .remove();
                     });
                 process_authentication(social_auth.selected());
             });
@@ -2397,7 +2539,7 @@ function ModalFlow (context) {
 
     return self;
 }
-},{"../formComponents/dropdownConditionalText":3,"../formComponents/radio":4,"../formComponents/socialAuthSelection":5}],12:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/socialAuthSelection":6}],13:[function(require,module,exports){
 module.exports = function polyfills () {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
     if (!Array.prototype.forEach)
@@ -2423,7 +2565,7 @@ module.exports = function polyfills () {
       };
     }
 };
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -2479,7 +2621,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution'),
     Settings = require('./profile_settings'),
@@ -2794,7 +2936,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./profile_individual":15,"./profile_institution":16,"./profile_settings":17,"./validatableManager":20}],15:[function(require,module,exports){
+},{"./profile_individual":16,"./profile_institution":17,"./profile_settings":18,"./validatableManager":21}],16:[function(require,module,exports){
 var geoComponent =
         require('../formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3046,7 +3188,7 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"../formComponents/dropdownConditionalText":3,"../formComponents/radio":4,"../formComponents/text":7,"../formComponents/textarea":8,"./updatableManager":18}],16:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/text":8,"../formComponents/textarea":9,"./updatableManager":19}],17:[function(require,module,exports){
 var geoComponent =
         require('../formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3347,7 +3489,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"../formComponents/dropdownConditionalText":3,"../formComponents/radio":4,"../formComponents/text":7,"../formComponents/textarea":8,"./updatableManager":18}],17:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/text":8,"../formComponents/textarea":9,"./updatableManager":19}],18:[function(require,module,exports){
 module.exports = function ProfileSettings () {
     var self = {},
         selection;
@@ -3360,7 +3502,7 @@ module.exports = function ProfileSettings () {
 
     return self;
 };
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 module.exports = function UpdatableComponentManager () {
     var self = {},
         updatable = [],
@@ -3414,7 +3556,7 @@ module.exports = function UpdatableComponentManager () {
 
     return self;
 };
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -3576,7 +3718,7 @@ function User (context) {
 
     return user;
 }
-},{"./profile":14}],20:[function(require,module,exports){
+},{"./profile":15}],21:[function(require,module,exports){
 module.exports = function ValidatableComponentManager () {
     var self = {},
         validatable = [],
@@ -3631,7 +3773,7 @@ module.exports = function ValidatableComponentManager () {
 
     return self;
 };
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var config = require('./config')(location.hostname);
 
 module.exports = Backend;
@@ -3706,7 +3848,7 @@ function Backend () {
 
     return api;
 }
-},{"./config":23}],22:[function(require,module,exports){
+},{"./config":24}],23:[function(require,module,exports){
 var clone = function clone (obj) {
     // Thanks to stackoverflow:
     // http://stackoverflow.com/questions/
@@ -3741,7 +3883,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.clone = clone;
 }
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 module.exports = Config;
 
 function Config (hostname) {
@@ -3755,7 +3897,7 @@ function Config (hostname) {
         version: 'v1'
     };
 }
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
         data;
@@ -3780,4 +3922,4 @@ module.exports = function dataTSV (url) {
 
     return self;
 };
-},{}]},{},[10])
+},{}]},{},[11])

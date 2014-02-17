@@ -574,8 +574,7 @@ function ModalFlow (context) {
         el.button.auth_me.el
             .classed('enabled', true)
             .on('click', function () {
-                var p = el.button.auth_me.el.select('p'),
-                    svg = el.button.auth_me.el.select('svg');
+                var p = el.button.auth_me.el.select('p');
                 d3.transition()
                     .duration(300)
                     .each(function () {
@@ -584,10 +583,6 @@ function ModalFlow (context) {
                             .transition(p)
                             .text('Redirecting...')
                             .style('opacity', 1);
-
-                        d3.transition(svg)
-                            .style('opacity', 0)
-                            .remove();
                     });
                 process_authentication(social_auth.selected());
             });
