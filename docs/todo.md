@@ -1,8 +1,5 @@
 ### left off
 
-- ie 8
-    - add structure to browse happy banner
-        - grid > two cols > p tag in each
 - fake names for all people in database
 - providence as a hotspot
 - model pre-delete hook to adjust the related counts
