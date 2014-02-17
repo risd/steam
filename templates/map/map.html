@@ -8,9 +8,13 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>STEAM mapped</title>
-        <meta name="description" content="">
+        <title>STEM to STEAM</title>
+        <meta name="description" content="Art + Design are poised to transform our economy in the 21st century just as science and technology did in the last century. We need to add Art + Design to the equation — to transform STEM into STEAM.">
         <meta name="viewport" content="width=device-width">
+
+        <!--[if lt IE 9]>
+        <script type="text/javascript" src="{% static "js/dist/aight.min.js" %}"></script>
+        <![endif]-->
 
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
@@ -25,25 +29,32 @@
     </head>
     <body>
         <!--[if lt IE 9]>
-            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <div class="outdated">
+            <div class="grid full-width clearfix">
+                <div class="two-column offset-one">
+                    <h1 class="title"
+                    >STEM to STEAM</h1>
+                </div>
+                <div class="two-column">
+                    <p>You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+                </div>
+            </div>
+        </div>
         <![endif]-->
 
-        <nav class="z-100 clearfix">
-            {% include 'steam/main-nav.html' %}
-        </nav>
-
         <div id="activate-about"
-             class="z-250 button-activate top-left active">
-            <p class="button-about">About</p>
+             class="top-left z-250 button-activate active">
+             <h1 class="title"
+             >STEM to STEAM</h1>
         </div>
 
         <!-- humble host of the button to add oneself -->
-        <div id="activate-add-yourself" class="z-10 button-activate top-left-second active">
+        <div id="activate-add-yourself" class="z-10 button-activate bottom-left active">
             <p class="add-me hide-til-active active">Add Me!</p>
         </div>
 
         <div id="profile-link"
-             class="top-left-second z-150 button-activate">
+             class="bottom-left z-150 button-activate">
             <img src="" alt="" class="avatar">
         </div>
 
@@ -108,10 +119,10 @@
                             
                             <section id="call-to-action"
                                  class="hide-til-active clearfix">
-                                <div class="four-column-two">
+                                <div class="four-column-two clearfix">
                                     <p>Add your organization and yourself to the map to show members of congress that people in their districts think art and design education is critical to innovation in the 21st century.</p>
                                 </div>
-                                <div class="four-column-two omega">
+                                <div class="four-column-two clearfix omega">
                                     <div>
                                        <p>Sign your organization or yourself in with:</p>
                                         <div id="add-yourself-login"></div>
@@ -211,8 +222,24 @@
              {% include 'steam/orb.html' %}
          </div>
 
-        {# <script src="{% static "js/dist/delegate.js" %}"></script> #}
-        <script src="{% static "js/dist/libs.js" %}"></script>
-        <script src="{% static "js/dist/site.js" %}"></script>
+         <script>
+         Modernizr.load({
+            test: Modernizr.svg,
+            yep: ['{% static "js/dist/libs.js" %}',
+                  '{% static "js/dist/site.js" %}'],
+            nope: ['{% static "js/dist/libs.nosvg.js" %}',
+                   '{% static "js/dist/site.nosvg.js" %}']
+         });
+         </script>
+        <script type="text/javascript">
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-34702353-1', 'stemtosteam.org');
+          ga('send', 'pageview');
+
+        </script>
     </body>
 </html>

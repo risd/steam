@@ -1,0 +1,59 @@
+.no-csstransitions {
+    .next-button {
+        display: none;
+
+        &.enabled {
+            display: block;
+        }
+    }
+
+    .animate-out-in.modal {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+    }
+    .animate-in-out.modal {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+    }
+}
+
+.no-svg {
+    .loading {
+        display: none;
+
+        svg {
+            display: none;
+        }
+
+        // make svg of orb to put in here
+        &.active {
+            display: block;
+        }
+    }
+
+    #profile-link,
+    .canvas-wrapper .network-button-wrapper,
+    .modal .close-button,
+    #explore-map, {
+        display: none;
+    }
+
+    .modal-animation {
+        // perhaps have a back ground image that 
+        // gets displayed where the cluster animation
+        // is typically happening
+
+        // background-image:
+    }
+
+}
+
+.outdated {
+
+}

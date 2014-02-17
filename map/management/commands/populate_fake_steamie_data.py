@@ -21,6 +21,16 @@ class Command(BaseCommand):
     args = '<scope: us/world>'
     help = 'Populate fake STEAMie data. '
 
+    hotspots = ['Rhode Island 1st District',
+                'New York 12th District',
+                'Illinois 7th District',
+                'California 8th District']
+
+    ranges = {
+        'hotspot': range(random.randint(1300, 1600)),
+        'not_hotspot': range(random.randint(5,10)),
+    }
+
     def handle(self, *args, **options):
         print args
 
@@ -30,7 +40,11 @@ class Command(BaseCommand):
         total_count = 0
         for tlg in TLGs:
 
-            for count in range(random.randint(5, 10)):
+            cur_type = 'not_hotspot'
+            if str(tlg) in self.hotspots:
+                cur_type = 'hotspot'
+
+            for count in self.ranges[cur_type]:
                 steamie = Steamies()
                 steamie.top_level = tlg
                 # default twitter avatar
@@ -54,38 +68,33 @@ class Command(BaseCommand):
 
                 # half institution/half individual
                 if random.random() > 0.5:
-                    # half empty profiles, half populated
-                    if random.random() > 0.5:
-                        individual = {
-                            'first_name': f.first_name(),
-                            'last_name': f.last_name(),
-                        }
-                    else:
-                        individual = {}
+                    ind = {
+                        'first_name': f.first_name(),
+                        'last_name': f.last_name(),
+                    }
 
-                    steamie.individual = Individual(**individual)
+                    steamie.individual = Individual(**ind)
                     steamie.individual.save()
-
-                else:
-                    if random.random() > 0.5:
-                        institution = {
-                            'name': f.company(),
-                            'representative_first_name':\
-                                f.first_name(),
-                            'representative_last_name':\
-                                f.last_name(),
-                            'representative_email':\
-                                f.email(),
-                        }
-                    else:
-                        institution = {}
-
-                    steamie.institution = Institution(**institution)
-                    steamie.institution.save()
-
-                try:
                     steamie.tags = 'fake'
                     steamie.save()
+
+                else:
+                    ins = {
+                        'name': f.company(),
+                        'representative_first_name':\
+                            f.first_name(),
+                        'representative_last_name':\
+                            f.last_name(),
+                        'representative_email':\
+                            f.email(),
+                    }
+
+                    steamie.institution = Institution(**ins)
+                    steamie.institution.save()
+                    steamie.tags = 'fake'
+                    steamie.save()
+
+                try:
                     total_count += 1
                     if total_count < 10:
                         print "edu pol res ind"
@@ -94,6 +103,8 @@ class Command(BaseCommand):
                             steamie.top_level.work_in_political,
                             steamie.top_level.work_in_research,
                             steamie.top_level.work_in_industry)
+                    if total_count > 10:
+                        break
 
                     print "Saved: {0}".format(steamie.top_level)
 

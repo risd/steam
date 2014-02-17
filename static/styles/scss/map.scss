@@ -15,6 +15,12 @@ html, body {
     overflow: hidden;
 }
 
+.title {
+    display: block;
+    @include antenna-medium;
+    color: $color-slate;
+}
+
 header {
     margin: 0;
     padding: 0;
@@ -356,6 +362,7 @@ $cluster-fill: rgba(78,91,109,0.8);
         background-color: transparent;
         margin: 0;
     }
+
 }
 
 .marker-cluster .span-wrapper {
@@ -397,7 +404,7 @@ $cluster-fill: rgba(78,91,109,0.8);
 }
 .cluster-polygon {
     color: $color-slate;
-    fillColor: $color-slate;
+    fill: $color-slate;
 }
 /* end Leaflet Marker Cluster Styles */
 
@@ -470,14 +477,16 @@ network graph
     top: 0;
     left: -71px;
 }
-.info_tip p {
+.info_tip p,
+.steamie p {
     font-size: 1.1em;
     line-height: 1.5em;
 
     font-style: italic;
     margin: 0;
 }
-.info_tip p.description {
+.info_tip p.description,
+.steamie p.description {
     padding-left: 15px;
     margin-top: 10px;
     margin-left:6px;
@@ -486,7 +495,8 @@ network graph
     border-left-style: solid;
     color: $color-slate;
 }
-.info_tip.research {
+.info_tip.research,
+.steamie.research {
     p.name {
         color: $color-research;   
     }
@@ -497,7 +507,8 @@ network graph
         border-color: $color-research;
     }
 }
-.info_tip.political {
+.info_tip.political,
+.steamie.political {
     p.name {
         color: $color-political;
     }
@@ -508,7 +519,8 @@ network graph
         border-color: $color-political;
     }
 }
-.info_tip.education {
+.info_tip.education,
+.steamie.education {
     p.name {
         color: $color-education;
     }
@@ -519,7 +531,8 @@ network graph
         border-color: $color-education;
     }
 }
-.info_tip.industry {
+.info_tip.industry,
+.steamie.industry {
     p.name {
         color: $color-industry;
     }
@@ -531,6 +544,39 @@ network graph
     }
 }
 
+
+// list styles
+.steamie {
+    position: relative;
+    text-align: left;
+    margin-bottom: 25px;
+
+    svg {
+        position: relative;
+        left: 10px;
+        top: 23px;
+        padding: 2px;
+        display: inline-block;
+        margin-right: 30px;
+        vertical-align: top;
+    }
+
+    .avatar {
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 25px;
+    }
+
+    .user_info {
+        display: inline-block;
+        width: 58%;
+    }
+
+    p.description {
+        margin-left: 0;
+        margin-bottom: 0;
+    }
+}
 .canvas-wrapper {
     
 }
@@ -570,11 +616,17 @@ rect.blanket {
 .network-display-button {
     height: 20px;
     width: 20px;
-    background: red;
     cursor: pointer;
     display: inline-block;
-}
 
+    &.force {
+        background-color: yellow;
+    }
+
+    &.list {
+        background-color: slateblue;
+    }
+}
 
 /************
 form / profile
@@ -593,10 +645,10 @@ form / profile
 
 .top-left {
     position: absolute;
-    bottom: 200px;
-    left: 30px;
+    top: 22px;
+    left: 118px;
 }
-.top-left-second {
+.bottom-left {
     position: absolute;
     bottom: 150px;
     left: 30px;
@@ -637,7 +689,9 @@ form / profile
     padding: 20px;
     border-radius: 2px;
 
-    box-sizing:border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     cursor: pointer;
     text-align: center;
     background-color: transparent;
@@ -671,7 +725,9 @@ form / profile
 .next-button {
     text-align: center;
     background-color: transparent;
-    box-sizing:border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     border:1px solid $white;
     /*padding:1em 0em;*/
 
@@ -866,8 +922,13 @@ select {
     border: 0 solid transparent;
     border-bottom: 1px solid $off-white;
     outline: none;
+
     -webkit-appearance: none;
     -moz-appearance: none;
+    &::-ms-expand {
+        display: none;
+    }
+
     text-indent: 0.01px;
     text-overflow: '';
 
@@ -876,6 +937,7 @@ select {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+
     padding-top: 10px;
     padding-bottom: 10px;
     padding-right: 30px;
@@ -1060,14 +1122,21 @@ input[type=radio] {
 .sel-work-in p,
 .individual-description p,
 .steamie-description p {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
     padding-left: 10px;
     padding-bottom:10px;
     border-bottom:1px solid $white;
 }
 
-.blanket {
-    background-color: black;
+div.blanket {
+    background-color: rgba(0,0,0,0.5);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
 }
 
 .loading {

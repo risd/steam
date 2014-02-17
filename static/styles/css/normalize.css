@@ -189,7 +189,7 @@ img {
  * Correct overflow displayed oddly in IE 9.
  */
 svg:not(:root) {
-  overflow: hidden; }
+  overflow: visible; }
 
 /* ==========================================================================
    Figures

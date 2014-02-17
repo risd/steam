@@ -40,7 +40,7 @@ function Arcs (context) {
         // 
         // possible values
         // 'unselected'
-        // 'default'
+        // 'defaulted'
         // 'selected'
         // 
         // value is found in the filters
@@ -92,10 +92,10 @@ function Arcs (context) {
             }
 
             if (active_count === 4) {
-                node_data[j].status = 'default';
+                node_data[j].status = 'defaulted';
             }
             if (prev_active_count === 4) {
-                node_data[j].prev_status = 'default';
+                node_data[j].prev_status = 'defaulted';
             }
 
         }
@@ -149,6 +149,11 @@ function Arcs (context) {
                   d.dimensions / 2 + ',' +
                   d.dimensions / 2 + ')';
             });
+
+        g.append('rect')
+            .attr('class', 'blanket')
+            .attr('height', svg_dimensions[0].dimensions)
+            .attr('width', svg_dimensions[0].dimensions);
 
         // add the prev_status, and status
         // attributes to the data object

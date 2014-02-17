@@ -1,0 +1,24 @@
+.no-csstransitions .next-button {
+  display: none; }
+  .no-csstransitions .next-button.enabled {
+    display: block; }
+.no-csstransitions .animate-out-in.modal {
+  display: none; }
+  .no-csstransitions .animate-out-in.modal.active {
+    display: block; }
+.no-csstransitions .animate-in-out.modal {
+  display: none; }
+  .no-csstransitions .animate-in-out.modal.active {
+    display: block; }
+
+.no-svg .loading {
+  display: none; }
+  .no-svg .loading svg {
+    display: none; }
+  .no-svg .loading.active {
+    display: block; }
+.no-svg #profile-link,
+.no-svg .canvas-wrapper .network-button-wrapper,
+.no-svg .modal .close-button,
+.no-svg #explore-map {
+  display: none; }

@@ -4,7 +4,7 @@ Syntax error: Undefined variable: "$color-slate".
 
 1: @import '../css3';
 2: 
-3: $orb: $color-slate;;
+3: $orb: $color-slate;
 4: 
 5: .platonic .orb{
 6: 	fill: rgba($orb, 1);
@@ -52,4 +52,4 @@ static/styles/scss/from-steam-proto/platonic.scss:3
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Undefined variable: \"$color-slate\".\A         on line 3 of static/styles/scss/from-steam-proto/platonic.scss\A \A 1: @import '../css3';\A 2: \A 3: $orb: $color-slate;;\A 4: \A 5: .platonic .orb{\A 6: 	fill: rgba($orb, 1);\A 7: 	stroke: rgba($orb, 1);\A 8: 	@include transformOrigin(50%, 50%);"; }
+  content: "Syntax error: Undefined variable: \"$color-slate\".\A         on line 3 of static/styles/scss/from-steam-proto/platonic.scss\A \A 1: @import '../css3';\A 2: \A 3: $orb: $color-slate;\A 4: \A 5: .platonic .orb{\A 6: 	fill: rgba($orb, 1);\A 7: 	stroke: rgba($orb, 1);\A 8: 	@include transformOrigin(50%, 50%);"; }

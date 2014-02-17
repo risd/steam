@@ -1,20 +1,11 @@
 var geoComponent =
-        require('./formComponents/dropdownConditionalText'),
+        require('../formComponents/dropdownConditionalText'),
 
     radioComponent =
-        require('./formComponents/radio'),
+        require('../formComponents/radio'),
 
     socialAuthComponent =
-        require('./formComponents/socialAuthSelection'),
-
-    modalAnimation =
-        require('./formComponents/modalAnimation'),
-
-    svg_cross =
-        require('./formComponents/svgCross'),
-
-    svg_next_arrow =
-        require('./formComponents/svgNextArrow');
+        require('../formComponents/socialAuthSelection');
 
 module.exports = ModalFlow;
 
@@ -23,10 +14,6 @@ function ModalFlow (context) {
         state,              // current state
         previous_state,     // previous state
         input_data;         // object that tracks input data
-
-    self.dispatch = d3.dispatch('ApplyStateWaitingForAddMeFlow',
-                                'ApplyStateChooseTypeAddZip',
-                                'ApplyStateLeavingThankYou');
 
     // form components
     var social_auth =
@@ -80,46 +67,24 @@ function ModalFlow (context) {
                     label: 'Industry',
                     value: 'industry',
                     selected: false
-                }]),
+                }]);
 
-        modal_animation = modalAnimation();
+    var action_to_about_sel =
+        d3.select('#call-to-action div:first-child')
+            .append('div')
+            .attr('class', 'four-column-four action_to_about');
+
+    action_to_about_sel
+        .append('p')
+        .text('STEM to STEAM');
 
     // elements that need to be turned on and off
     var el = self.el = {
         button: {
-            close_modal: {
-                el: d3.selectAll('.close-button'),
-                on_click: function () {
-                    if (context.user.profile.built()) {
-                        self.state('inactive_with_profile');
-                    } else {
-                        self.state('inactive_no_profile');
-                    }
-                },
-                append_to_el: svg_cross
-            },
-            open_modal: {
-                el: d3.select('#activate-add-yourself'),
-                on_click: function () {
-                    console.log('open modal click');
-                    console.log(previous_state);
-                    if ((typeof(previous_state) === 'undefined') |
-                        (previous_state === 'inactive_no_profile') |
-                        (previous_state === 'just_logged_out') |
-                        (previous_state === 'about')) {
 
-                        self.state('call_to_action');
-                    } else {
-                        self.state(previous_state);
-                    }
-                    console.log(self.state());
-                },
-                append_to_el: function () {}
-            },
-
-            about: {
-                el: d3.select('#activate-about'),
-                on_click: function () {
+            action_to_about: {
+                el: action_to_about_sel,
+                onclick: function () {
                     self.state('about');
                 },
                 append_to_el: function () {}
@@ -151,16 +116,6 @@ function ModalFlow (context) {
                 el: d3.select('#go-to-profile'),
                 on_click: function () {
                     self.state('profile_' + context.user.type());
-                    self.dispatch.ApplyStateLeavingThankYou();
-                },
-                append_to_el: function () {}
-            },
-
-            explore_map: {
-                el: d3.select('#explore-map'),
-                on_click: function () {
-                    self.state('inactive_with_profile');
-                    self.dispatch.ApplyStateLeavingThankYou();
                 },
                 append_to_el: function () {}
             },
@@ -168,7 +123,6 @@ function ModalFlow (context) {
             explore_locate_me: {
                 el: d3.select('#explore-locate-me'),
                 on_click: function () {
-                    self.state('inactive_with_profile');
                         
                     var d = context.user.data(),
                         type  = context.user.type();
@@ -179,18 +133,10 @@ function ModalFlow (context) {
                             steamie_type: type,
                             steamie_id: d[type].id
                         });
-                    self.dispatch.ApplyStateLeavingThankYou();
                 },
                 append_to_el: function () {}
             },
 
-            profile_link: {
-                el: d3.select('#profile-link'),
-                on_click: function () {
-                    self.state('profile_' + context.user.type());
-                },
-                append_to_el: function () {}
-            },
             cancel_add_button: {
                 el: d3.select('#cancel-add-button'),
                 on_click: function () {
@@ -244,6 +190,9 @@ function ModalFlow (context) {
             },
             about: {
                 el: d3.select('#about')
+            },
+            modal_animation: {
+                el: d3.select('#modal-animation')
             }
         }
     };
@@ -256,37 +205,12 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'logging_out'
-            }, {
-                el_type: 'button',
-                el_name: 'close_modal'
             }];
 
             apply_state(active);
         },
         just_logged_out: function () {
-            console.log('just logged out');
-            self.state('inactive_no_profile');
-        },
-        inactive_no_profile: function () {
-            console.log('inactive_no_profile');
-            var active = [{
-                el_type: 'button',
-                el_name: 'open_modal'
-            }, {
-                el_type: 'button',
-                el_name: 'about'
-            }];
-            apply_state(active);
-        },
-        inactive_with_profile: function () {
-            var active = [{
-                el_type: 'button',
-                el_name: 'profile_link'
-            }, {
-                el_type: 'button',
-                el_name: 'about'
-            }];
-            apply_state(active);
+            self.state('about');
         },
         about: function () {
             var active = [{
@@ -298,19 +222,7 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'about'
-            }, {
-                el_type: 'button',
-                el_name: 'close_modal'
             }];
-
-            if (!context.user.profile.built()) {
-                // if someone isn't logged in, 
-                // give them the button to do so
-                active = active.concat([{
-                    el_type: 'button',
-                    el_name: 'about_to_action'
-                }]);
-            }
 
             apply_state(active);
         },
@@ -324,9 +236,6 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'join'
-            }, {
-                el_type: 'button',
-                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -343,28 +252,25 @@ function ModalFlow (context) {
                 el_name: 'join'
             }, {
                 el_type: 'button',
-                el_name: 'close_modal'
-            }, {
-                el_type: 'button',
                 el_name: 'cancel_add_button'
             }];
 
             apply_state(active);
-            self.dispatch.ApplyStateChooseTypeAddZip();
         },
         waiting_for_add_me_flow: function () {
-            console.log('setting waiting_for_add_me_flow');
+
             var active = [{
                 el_type: 'display',
                 el_name: 'modal'
             }, {
+                el_type: 'display',
+                el_name: 'modal_animation'
+            }, {
                 el_type: 'button',
                 el_name: 'close_modal'
             }];
-            console.log(active);
 
             apply_state(active);
-            self.dispatch.ApplyStateWaitingForAddMeFlow();
         },
         thank_you: function () {
             var active = [{
@@ -376,9 +282,6 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'thanks'
-            }, {
-                el_type: 'button',
-                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -393,9 +296,6 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'avatar'
-            }, {
-                el_type: 'button',
-                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -410,9 +310,6 @@ function ModalFlow (context) {
             }, {
                 el_type: 'modal_header',
                 el_name: 'avatar'
-            }, {
-                el_type: 'button',
-                el_name: 'close_modal'
             }];
 
             apply_state(active);
@@ -432,27 +329,6 @@ function ModalFlow (context) {
         social_auth.render();
         select_type.render();
         select_work_in.render();
-        modal_animation
-            .selection(d3.select('#modal-animation'));
-
-        self.dispatch
-            .on('ApplyStateWaitingForAddMeFlow',
-                function () {
-                    console.log('dispatching waiting for amf');
-                    modal_animation.render();
-                });
-
-        self.dispatch
-            .on('ApplyStateChooseTypeAddZip', function () {
-                // if you get kicked back to this state,
-                // you shouldn't have the animation
-                modal_animation.remove();
-            });
-
-        self.dispatch
-            .on('ApplyStateLeavingThankYou', function () {
-                modal_animation.remove();
-            });
 
         if (context.countries.data()) {
             // if the data is loaded already,
@@ -519,7 +395,6 @@ function ModalFlow (context) {
                     // should have given all info
                     // to be signed up and dont have
                     // to be sold on it
-                    self.state('inactive_with_profile');
 
                     if (d.individual) {
                         context.user.type('individual');
@@ -531,6 +406,8 @@ function ModalFlow (context) {
                     context.user
                         .profile
                             .build();
+
+                    el.button.go_to_profile.on_click();
 
                 } else {
 
@@ -544,11 +421,8 @@ function ModalFlow (context) {
                 // has not been authenticated
                 // assume the user has never been
                 // and ask them to sign up
-                self.state('inactive_no_profile');
 
-                // self.state('thank_you');
-                // self.state('waiting_for_add_me_flow');
-                // self.state('choose_type_add_zip');
+                self.state('about');
             }
 
             // remove loading splash
@@ -700,8 +574,7 @@ function ModalFlow (context) {
         el.button.auth_me.el
             .classed('enabled', true)
             .on('click', function () {
-                var p = el.button.auth_me.el.select('p'),
-                    svg = el.button.auth_me.el.select('svg');
+                var p = el.button.auth_me.el.select('p');
                 d3.transition()
                     .duration(300)
                     .each(function () {
@@ -710,10 +583,6 @@ function ModalFlow (context) {
                             .transition(p)
                             .text('Redirecting...')
                             .style('opacity', 1);
-
-                        d3.transition(svg)
-                            .style('opacity', 0)
-                            .remove();
                     });
                 process_authentication(social_auth.selected());
             });

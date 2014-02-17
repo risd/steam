@@ -1,13 +1,13 @@
 var geoComponent =
-        require('./formComponents/dropdownConditionalText'),
+        require('../formComponents/dropdownConditionalText'),
     radioComponent =
-        require('./formComponents/radio'),
+        require('../formComponents/radio'),
     textComponent =
-        require('./formComponents/text'),
+        require('../formComponents/text'),
     textAreaComponent =
-        require('./formComponents/textarea'),
+        require('../formComponents/textarea'),
     updatableManager =
-        require('./formComponents/updatableManager');
+        require('./updatableManager');
 
 module.exports = function ProfileIndividual (context) {
     var self = {},
@@ -64,12 +64,20 @@ module.exports = function ProfileIndividual (context) {
             .append('div')
             .attr('class', 'four-column-two');
         
-        first_name = textComponent()
+        first_name = self.required_name = textComponent()
             .selection(first_name_sel)
             .placeholder('first name')
             .initialValue(
                 data.individual.first_name ?
                 data.individual.first_name : '')
+            .valid(function (val) {
+                console.log('value');
+                console.log(val);
+                if (val.length > 0) {
+                    return true;
+                }
+                return false;
+            })
             .render();
 
         var last_name_sel = sel
