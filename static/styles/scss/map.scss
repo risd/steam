@@ -219,7 +219,7 @@ h3.filter-by {
     letter-spacing: 1px;
     line-height:32px;
 
-    color: rgb(165,165,165);
+    color: $color-slate-inactive;
 
     margin: 0 0 0 27px;
     padding: 0;
@@ -620,7 +620,7 @@ network graph
     overflow-y: scroll;
 
     .steamie:first-child {
-        margin-top: 200px;
+        margin-top: 230px;
     }
 }
 rect.blanket {
@@ -633,25 +633,45 @@ rect.blanket {
     cursor: pointer;
     display: inline-block;
 
+    &:first-child {
+        margin-right: -3px;
+    }
+
     // the box around svgs
-    rect {
-        stroke: pink;
+    rect,
+    circle,
+    line {
+        stroke: $off-white;
     }
 
     &:hover rect {
-        stroke: pink;
+        stroke: $color-slate;
     }
 
     &:hover.force {
         circle {
-            stroke: pink;
+            stroke: $color-slate;
+            fill: $color-slate;
         }
     }
 
     &:hover.list {
         line {
-            stroke: pink;
+            stroke: $color-slate;
         }
+    }
+}
+.network-button-wrapper {
+    margin-top: 15px;
+}
+.network-count-wrapper {
+    margin-top: -50px;
+}
+.network-count {
+    color: $color-slate-inactive;
+    .label {
+        font-size: 0.8em;
+        font-style: italic;
     }
 }
 
@@ -661,7 +681,7 @@ form / profile
 .add-me, .button-about {
     @include antenna-medium;
     font-size: 35px;
-    color: rgb(165,165,165);
+    color: $color-slate-inactive;
     margin: 0;
     padding: 0;
 

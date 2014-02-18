@@ -2639,7 +2639,7 @@ network graph
   top: 0;
   overflow-y: scroll; }
   .list-wrapper .steamie:first-child {
-    margin-top: 200px; }
+    margin-top: 230px; }
 
 rect.blanket {
   fill: transparent;
@@ -2650,14 +2650,31 @@ rect.blanket {
   width: auto;
   cursor: pointer;
   display: inline-block; }
-  .network-display-button rect {
-    stroke: pink; }
+  .network-display-button:first-child {
+    margin-right: -3px; }
+  .network-display-button rect,
+  .network-display-button circle,
+  .network-display-button line {
+    stroke: #c8c8c8; }
   .network-display-button:hover rect {
-    stroke: pink; }
+    stroke: #516272; }
   .network-display-button:hover.force circle {
-    stroke: pink; }
+    stroke: #516272;
+    fill: #516272; }
   .network-display-button:hover.list line {
-    stroke: pink; }
+    stroke: #516272; }
+
+.network-button-wrapper {
+  margin-top: 15px; }
+
+.network-count-wrapper {
+  margin-top: -50px; }
+
+.network-count {
+  color: #a5a5a5; }
+  .network-count .label {
+    font-size: 0.8em;
+    font-style: italic; }
 
 /************
 form / profile
@@ -3761,6 +3778,65 @@ div.blanket {
   animation-delay: linear;
   animation-iteration-count: infinite;
   animation-direction: normal; }
+
+.network-display-button rect,
+.network-display-button line,
+.network-display-button circle,
+.network-display-button rect,
+.network-display-button line,
+.network-display-button circle,
+.network-display-button rect,
+.network-display-button line,
+.network-display-button circle {
+  -o-transition-property: color ;
+  -o-transition-duration: 0.3s;
+  -o-transition-delay: 0s;
+  -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -ms-transition-property: color ;
+  -ms-transition-duration: 0.3s;
+  -ms-transition-delay: 0s;
+  -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -moz-transition-property: color ;
+  -moz-transition-duration: 0.3s;
+  -moz-transition-delay: 0s;
+  -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -webkit-transition-property: color ;
+  -webkit-transition-duration: 0.3s;
+  -webkit-transition-delay: 0s;
+  -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  transition-property: color ;
+  transition-duration: 0.3s;
+  transition-delay: 0s;
+  transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
+.network-display-button:hover rect,
+.network-display-button:hover line,
+.network-display-button:hover circle,
+.network-display-button:hover rect,
+.network-display-button:hover line,
+.network-display-button:hover circle,
+.network-display-button:hover rect,
+.network-display-button:hover line,
+.network-display-button:hover circle {
+  -o-transition-property: color ;
+  -o-transition-duration: 0.2s;
+  -o-transition-delay: 0s;
+  -o-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -ms-transition-property: color ;
+  -ms-transition-duration: 0.2s;
+  -ms-transition-delay: 0s;
+  -ms-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -moz-transition-property: color ;
+  -moz-transition-duration: 0.2s;
+  -moz-transition-delay: 0s;
+  -moz-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -webkit-transition-property: color ;
+  -webkit-transition-duration: 0.2s;
+  -webkit-transition-delay: 0s;
+  -webkit-transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  transition-property: color ;
+  transition-duration: 0.2s;
+  transition-delay: 0s;
+  transition-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035); }
 
 @-webkit-keyframes slowSpin {
   0% {

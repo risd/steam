@@ -219,6 +219,31 @@
                        (normal))
 }
 
+.network-display-button,
+.network-display-button,
+.network-display-button {
+    rect,
+    line,
+    circle {
+        @include transitionSeperate(
+                    (color),
+                    (0.3s),
+                    (0.0s),
+                    (cubic-bezier(.95, .05, .795, .035)));
+    }
+    &:hover {
+        rect,
+        line,
+        circle {
+            @include transitionSeperate(
+                        (color),
+                        (0.2s),
+                        (0.0s),
+                        (cubic-bezier(.95, .05, .795, .035)));
+        }
+    }
+}
+
 @-webkit-keyframes slowSpin{
     0%    {
         -webkit-transform: rotate(0deg);

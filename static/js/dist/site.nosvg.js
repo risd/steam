@@ -941,6 +941,7 @@ function Network (context) {
         title,
         grid_wrapper_sel,
         list_col_sel,
+        count_sel,
         request,
         built = false,
         highlighted = false,
@@ -1094,9 +1095,26 @@ function Network (context) {
                 })
                 .call(svg_cross);
 
+        var count_sel_wrapper = fixed_grid_sel
+            .append('div')
+                .attr('class', 'four-column offset-one ' +
+                               'network-count-wrapper clearfix');
+
+        count_sel = count_sel_wrapper.selectAll('p')
+            .data([{
+                count: nodes.length
+            }])
+            .enter()
+            .append('p')
+            .attr('class', 'network-count')
+            .html(function (d) {
+                return d.count + ' <span class="label">'+
+                                 'STEAMies</span>';
+            });
+
         var buttons_sel = fixed_grid_sel
             .append('div')
-                .attr('class', 'four-column offset-one '+
+                .attr('class', 'four-column offset-one ' +
                                'network-button-wrapper clearfix');
         var buttons = buttons_sel
             .selectAll('.network-display-button')
