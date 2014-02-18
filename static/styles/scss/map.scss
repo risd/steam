@@ -332,13 +332,17 @@ $cluster-fill: rgba(78,91,109,0.8);
 
     border-radius: ($diameter/2) + $arc-total-width;
 
-    div {
+    div,
+    .waiting-wrapper svg {
         // width of the arc
-        margin: $arc-total-width;
         height: $diameter;
         width: $diameter;
         border-radius: $diameter/2;
         background-size: $diameter $diameter;
+    }
+
+    div {
+        margin: $arc-total-width;
     }
 
     span {
@@ -349,7 +353,7 @@ $cluster-fill: rgba(78,91,109,0.8);
         font-size: 26px;
         text-align: center;
         letter-spacing: 1px;
-        color: rgb(255,255,255);
+        color: $white;
     }
 
     div.arc-wrapper {
@@ -365,10 +369,22 @@ $cluster-fill: rgba(78,91,109,0.8);
 
 }
 
-.marker-cluster .span-wrapper {
+.marker-cluster .span-wrapper,
+.marker-cluster .waiting-wrapper {
     background-color: $cluster-fill;
     background-image: none;
     background-repeat: no-repeat;
+}
+.marker-cluster .waiting-wrapper {
+    opacity: 0;
+    color: white;
+    position: absolute;
+    top:0;
+    left: 0;
+}
+.waiting-wrapper path {
+    fill: $white;
+    stroke-width: 0;
 }
 .represents-one-entity:hover {
     span {

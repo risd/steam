@@ -1257,6 +1257,8 @@ function Network (context) {
                                 country: results.country
                               }))
                       .create();
+
+                context.clusters.dispatch.clearWaiting();
             });
     };
 
@@ -2579,7 +2581,6 @@ module.exports = function polyfills () {
 };
 },{}],13:[function(require,module,exports){
 module.exports = '<svg version="1.1" ' +
-    'id="Layer_2" ' +
     'xmlns="http://www.w3.org/2000/svg" ' +
     'xmlns:xlink="http://www.w3.org/1999/xlink" ' +
     'x="0px" y="0px" width="27px" height="27px" ' +
@@ -2597,7 +2598,6 @@ module.exports = '<svg version="1.1" ' +
 '</svg>';
 },{}],14:[function(require,module,exports){
 module.exports = '<svg version="1.1" ' +
-    'id="Layer_2" ' +
     'xmlns="http://www.w3.org/2000/svg" ' +
     'xmlns:xlink="http://www.w3.org/1999/xlink" ' +
     'x="0px" y="0px" width="27px" height="27px" ' +

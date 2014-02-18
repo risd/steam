@@ -339,6 +339,8 @@ function Network (context) {
                                 country: results.country
                               }))
                       .create();
+
+                context.clusters.dispatch.clearWaiting();
             });
     };
 

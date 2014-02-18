@@ -1,3 +1,5 @@
+var svg_more = require('../svg/svgMore');
+
 module.exports = Clusters;
 
 function Clusters (context) {
@@ -5,9 +7,36 @@ function Clusters (context) {
     var clusters = {},
         geojson,    // L.geojson of data
         data,       // raw data
-        max;        // max of data
+        max,        // max of data
+        waiting_for,
+        waiting_wrapper;
 
     var format = d3.format(',');
+
+    clusters.dispatch = d3.dispatch('clearWaiting', 'setWaiting');
+
+    clusters.dispatch
+        .on('setWaiting', function () {
+            waiting_wrapper = waiting_for.append('div')
+                .attr('class', 'waiting-wrapper')
+                .html(svg_more);
+
+            waiting_wrapper
+                .transition()
+                .duration(200)
+                .style('opacity', 1);
+        });
+
+    clusters.dispatch
+        .on('clearWaiting', function () {
+            if (waiting_wrapper) {
+                waiting_wrapper
+                    .transition()
+                    .duration(300)
+                    .style('opacity', 0)
+                    .remove();
+            }
+        });
 
     // clustering settings
     var clusters_group = L.markerClusterGroup({
@@ -141,8 +170,9 @@ function Clusters (context) {
 
     // on click of individual clusters
     clusters_group.on('click', function (event) {
-        // click cluster
-        // d3.select('#steam-map').classed('active', false);
+        waiting_for = d3.select(event.layer._icon);
+        clusters.dispatch.clearWaiting();
+
         var sw = L.latLng(
                 event.layer.feature.properties.miny,
                 event.layer.feature.properties.minx),
@@ -152,6 +182,7 @@ function Clusters (context) {
                 event.layer.feature.properties.maxx);
 
         context.map.fitBounds(L.latLngBounds(sw, ne));
+        clusters.dispatch.setWaiting();
         context.network.init(event.layer.feature.properties);
     });
 
