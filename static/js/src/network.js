@@ -1,4 +1,6 @@
-var svg_cross = require('./formComponents/svgCross');
+var svg_cross = require('./svg/svgCross'),
+    svg_force = require('./svg/buttonForce'),
+    svg_list = require('./svg/buttonList');
 
 module.exports = Network;
 
@@ -176,13 +178,15 @@ function Network (context) {
                 click: function () {
                     network.display('force')
                         .transition();
-                }
+                },
+                html: svg_force
             }, {
                 klass: 'list',
                 click: function () {
                     network.display('list')
                         .transition();
-                }
+                },
+                html: svg_list
             }])
             .enter()
             .append('a')
@@ -191,7 +195,8 @@ function Network (context) {
             })
             .on('click', function (d) {
                 d.click();
-            });
+            })
+            .html(function (d) { return d.html; });
 
         // end create divs
 

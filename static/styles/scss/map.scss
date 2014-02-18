@@ -614,17 +614,30 @@ rect.blanket {
     stroke: transparent;
 }
 .network-display-button {
-    height: 20px;
-    width: 20px;
+    height: auto;
+    width: auto;
     cursor: pointer;
     display: inline-block;
 
-    &.force {
-        background-color: yellow;
+    // the box around svgs
+    rect {
+        stroke: pink;
     }
 
-    &.list {
-        background-color: slateblue;
+    &:hover rect {
+        stroke: pink;
+    }
+
+    &:hover.force {
+        circle {
+            stroke: pink;
+        }
+    }
+
+    &:hover.list {
+        line {
+            stroke: pink;
+        }
     }
 }
 

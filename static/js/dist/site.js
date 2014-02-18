@@ -440,7 +440,7 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../ui/checkmark":20,"./text":10}],5:[function(require,module,exports){
+},{"../ui/checkmark":22,"./text":8}],5:[function(require,module,exports){
 module.exports = function flowAnimation () {
     var self = {},
         selection,
@@ -871,75 +871,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":20}],8:[function(require,module,exports){
-module.exports = function svgCross (sel) {
-    var button_size = 45;
-
-    // add the closing x as svg
-    sel.append('svg')
-        .attr('width', button_size)
-        .attr('height', button_size)
-        .selectAll('line')
-        .data([
-            { x1: 0, y1: 0,
-              x2: button_size, y2: button_size },
-            { x1: button_size, y1: 0,
-              x2: 0, y2: button_size }
-        ])
-        .enter()
-        .append('line')
-            .attr('x1', function (d) {
-                return d.x1;
-            })
-            .attr('y1', function (d) {
-                return d.y1;
-            })
-            .attr('x2', function (d) {
-                return d.x2;
-            })
-            .attr('y2', function (d) {
-                return d.y2;
-            })
-            .attr('stroke-width', 1);
-
-    sel.select('svg')
-        .append('rect')
-        .attr('class', 'blanket')
-        .attr('height', button_size)
-        .attr('width', button_size);
-};
-},{}],9:[function(require,module,exports){
-module.exports = function svgNextArrow (sel) {
-    var button_size = 20;
-
-    // add the closing x as svg
-    sel.append('svg')
-        .attr('width', button_size)
-        .attr('height', button_size)
-        .selectAll('line')
-        .data([
-            { x1: 0, y1: 0,
-              x2: button_size/2, y2: button_size/2 },
-            { x1: button_size/2, y1: button_size/2,
-              x2: 0, y2: button_size }
-        ])
-        .enter()
-        .append('line')
-            .attr('x1', function (d) {
-                return d.x1;
-            })
-            .attr('y1', function (d) {
-                return d.y1;
-            })
-            .attr('x2', function (d) {
-                return d.x2;
-            })
-            .attr('y2', function (d) {
-                return d.y2;
-            })
-            .attr('stroke-width', 1);
-};
-},{}],10:[function(require,module,exports){
+},{"../ui/checkmark":22}],8:[function(require,module,exports){
 // text input, with placeholder
 // dispatches when the value changes
 // against the initial value
@@ -1030,7 +962,7 @@ module.exports = function TextInput () {
 
     return self;
 };
-},{}],11:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 // textarea, with placeholder, and label
 // dispatches when the value changes
 // against the initial value
@@ -1115,7 +1047,7 @@ module.exports = function TextArea () {
 
     return self;
 };
-},{}],12:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var polyfills = require('./polyfills'),
     filters = require('./filters'),
     colors = require('./colors'),
@@ -1189,7 +1121,7 @@ function STEAMMap() {
 
     init();
 }
-},{"./colors":1,"./filterUI":2,"./filters":3,"./map/arcs":13,"./map/clusterIconSize":14,"./map/clusters":15,"./map/map":16,"./modalFlow":17,"./network":18,"./polyfills":19,"./user/user":26,"./util/backend":28,"./util/clone":29,"./util/getTSV":31}],13:[function(require,module,exports){
+},{"./colors":1,"./filterUI":2,"./filters":3,"./map/arcs":11,"./map/clusterIconSize":12,"./map/clusters":13,"./map/map":14,"./modalFlow":15,"./network":16,"./polyfills":17,"./user/user":28,"./util/backend":30,"./util/clone":31,"./util/getTSV":33}],11:[function(require,module,exports){
 module.exports = Arcs;
 
 // Manage the arcs that wrap clusters
@@ -1437,7 +1369,7 @@ function Arcs (context) {
 
     return arcs;
 }
-},{}],14:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = ClusterIconSize;
 
 // Defines cluster sizes, for both
@@ -1499,7 +1431,7 @@ function ClusterIconSize () {
 
     return size;
 }
-},{}],15:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = Clusters;
 
 function Clusters (context) {
@@ -1758,7 +1690,7 @@ function Clusters (context) {
 
     return clusters;
 }
-},{}],16:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = Map;
 
 // returns leaflet map object
@@ -1823,7 +1755,7 @@ function Map (context) {
 
     return map;
 }
-},{}],17:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var geoComponent =
         require('./formComponents/dropdownConditionalText'),
 
@@ -1837,10 +1769,10 @@ var geoComponent =
         require('./formComponents/modalAnimation'),
 
     svg_cross =
-        require('./formComponents/svgCross'),
+        require('./svg/svgCross'),
 
     svg_next_arrow =
-        require('./formComponents/svgNextArrow');
+        require('./svg/svgNextArrow');
 
 module.exports = ModalFlow;
 
@@ -2570,8 +2502,10 @@ function ModalFlow (context) {
 
     return self;
 }
-},{"./formComponents/dropdownConditionalText":4,"./formComponents/modalAnimation":5,"./formComponents/radio":6,"./formComponents/socialAuthSelection":7,"./formComponents/svgCross":8,"./formComponents/svgNextArrow":9}],18:[function(require,module,exports){
-var svg_cross = require('./formComponents/svgCross');
+},{"./formComponents/dropdownConditionalText":4,"./formComponents/modalAnimation":5,"./formComponents/radio":6,"./formComponents/socialAuthSelection":7,"./svg/svgCross":20,"./svg/svgNextArrow":21}],16:[function(require,module,exports){
+var svg_cross = require('./svg/svgCross'),
+    svg_force = require('./svg/buttonForce'),
+    svg_list = require('./svg/buttonList');
 
 module.exports = Network;
 
@@ -2749,13 +2683,15 @@ function Network (context) {
                 click: function () {
                     network.display('force')
                         .transition();
-                }
+                },
+                html: svg_force
             }, {
                 klass: 'list',
                 click: function () {
                     network.display('list')
                         .transition();
-                }
+                },
+                html: svg_list
             }])
             .enter()
             .append('a')
@@ -2764,7 +2700,8 @@ function Network (context) {
             })
             .on('click', function (d) {
                 d.click();
-            });
+            })
+            .html(function (d) { return d.html; });
 
         // end create divs
 
@@ -3499,7 +3436,7 @@ function Network (context) {
 
     return network;
 }
-},{"./formComponents/svgCross":8}],19:[function(require,module,exports){
+},{"./svg/buttonForce":18,"./svg/buttonList":19,"./svg/svgCross":20}],17:[function(require,module,exports){
 module.exports = function polyfills () {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
     if (!Array.prototype.forEach)
@@ -3525,7 +3462,127 @@ module.exports = function polyfills () {
       };
     }
 };
+},{}],18:[function(require,module,exports){
+module.exports = '<svg version="1.1" ' +
+    'id="Layer_2" ' +
+    'xmlns="http://www.w3.org/2000/svg" ' +
+    'xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+    'x="0px" y="0px" width="27px" height="27px" ' +
+    'viewBox="0 0 27 27" enable-background="new 0 0 27 27" ' +
+    'xml:space="preserve">' +
+    '<rect x="1.5" y="1.5" fill="#FFFFFF" ' +
+        'stroke="#D1D3D4" stroke-miterlimit="10" ' +
+        'width="24" height="24"/>' +
+    '<g>' +
+	'<circle fill="#C8C8C8" cx="13.138" cy="7.31" r="2"/>' +
+	'<circle fill="#C8C8C8" cx="13.138" cy="18.31" r="2"/>' +
+	'<circle fill="#C8C8C8" cx="18.638" cy="12.81" r="2"/>' +
+	'<circle fill="#C8C8C8" cx="7.638" cy="12.81" r="2"/>' +
+'</g>' +
+'</svg>';
+},{}],19:[function(require,module,exports){
+module.exports = '<svg version="1.1" ' +
+    'id="Layer_2" ' +
+    'xmlns="http://www.w3.org/2000/svg" ' +
+    'xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+    'x="0px" y="0px" width="27px" height="27px" ' +
+    'viewBox="0 0 27 27" enable-background="new 0 0 27 27" ' +
+    'xml:space="preserve">' +
+    '<rect x="1.5" y="1.5" fill="#FFFFFF" ' +
+        'stroke="#D1D3D4" stroke-miterlimit="10" ' +
+        'width="24" height="24"/>' +
+    '<g>'+
+		'<line fill="none" ' +
+              'stroke="#C8C8C8" ' +
+              'stroke-width="2" ' +
+              'stroke-linecap="round" ' +
+              'stroke-miterlimit="10" ' +
+              'x1="7" y1="9" x2="19" y2="9"/> ' +
+
+		'<line fill="none" ' +
+              'stroke="#C8C8C8" ' +
+              'stroke-width="2" ' +
+              'stroke-linecap="round" ' +
+              'stroke-miterlimit="10" ' +
+              'x1="7" y1="14" x2="19" y2="14"/> ' +
+
+		'<line fill="none" '+
+              'stroke="#C8C8C8" ' +
+              'stroke-width="2" ' +
+              'stroke-linecap="round" ' +
+              'stroke-miterlimit="10" ' +
+              'x1="7" y1="19" x2="19" y2="19"/>' +
+    '</g>' +
+'</svg>';
 },{}],20:[function(require,module,exports){
+module.exports = function svgCross (sel) {
+    var button_size = 45;
+
+    // add the closing x as svg
+    sel.append('svg')
+        .attr('width', button_size)
+        .attr('height', button_size)
+        .selectAll('line')
+        .data([
+            { x1: 0, y1: 0,
+              x2: button_size, y2: button_size },
+            { x1: button_size, y1: 0,
+              x2: 0, y2: button_size }
+        ])
+        .enter()
+        .append('line')
+            .attr('x1', function (d) {
+                return d.x1;
+            })
+            .attr('y1', function (d) {
+                return d.y1;
+            })
+            .attr('x2', function (d) {
+                return d.x2;
+            })
+            .attr('y2', function (d) {
+                return d.y2;
+            })
+            .attr('stroke-width', 1);
+
+    sel.select('svg')
+        .append('rect')
+        .attr('class', 'blanket')
+        .attr('height', button_size)
+        .attr('width', button_size);
+};
+},{}],21:[function(require,module,exports){
+module.exports = function svgNextArrow (sel) {
+    var button_size = 20;
+
+    // add the closing x as svg
+    sel.append('svg')
+        .attr('width', button_size)
+        .attr('height', button_size)
+        .selectAll('line')
+        .data([
+            { x1: 0, y1: 0,
+              x2: button_size/2, y2: button_size/2 },
+            { x1: button_size/2, y1: button_size/2,
+              x2: 0, y2: button_size }
+        ])
+        .enter()
+        .append('line')
+            .attr('x1', function (d) {
+                return d.x1;
+            })
+            .attr('y1', function (d) {
+                return d.y1;
+            })
+            .attr('x2', function (d) {
+                return d.x2;
+            })
+            .attr('y2', function (d) {
+                return d.y2;
+            })
+            .attr('stroke-width', 1);
+};
+},{}],22:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -3581,7 +3638,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution'),
     Settings = require('./profile_settings'),
@@ -3896,7 +3953,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./profile_individual":22,"./profile_institution":23,"./profile_settings":24,"./validatableManager":27}],22:[function(require,module,exports){
+},{"./profile_individual":24,"./profile_institution":25,"./profile_settings":26,"./validatableManager":29}],24:[function(require,module,exports){
 var geoComponent =
         require('../formComponents/dropdownConditionalText'),
     radioComponent =
@@ -4148,7 +4205,7 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":6,"../formComponents/text":10,"../formComponents/textarea":11,"./updatableManager":25}],23:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":6,"../formComponents/text":8,"../formComponents/textarea":9,"./updatableManager":27}],25:[function(require,module,exports){
 var geoComponent =
         require('../formComponents/dropdownConditionalText'),
     radioComponent =
@@ -4449,7 +4506,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":6,"../formComponents/text":10,"../formComponents/textarea":11,"./updatableManager":25}],24:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":6,"../formComponents/text":8,"../formComponents/textarea":9,"./updatableManager":27}],26:[function(require,module,exports){
 module.exports = function ProfileSettings () {
     var self = {},
         selection;
@@ -4462,7 +4519,7 @@ module.exports = function ProfileSettings () {
 
     return self;
 };
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 module.exports = function UpdatableComponentManager () {
     var self = {},
         updatable = [],
@@ -4516,7 +4573,7 @@ module.exports = function UpdatableComponentManager () {
 
     return self;
 };
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -4678,7 +4735,7 @@ function User (context) {
 
     return user;
 }
-},{"./profile":21}],27:[function(require,module,exports){
+},{"./profile":23}],29:[function(require,module,exports){
 module.exports = function ValidatableComponentManager () {
     var self = {},
         validatable = [],
@@ -4733,7 +4790,7 @@ module.exports = function ValidatableComponentManager () {
 
     return self;
 };
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var config = require('./config')(location.hostname);
 
 module.exports = Backend;
@@ -4808,7 +4865,7 @@ function Backend () {
 
     return api;
 }
-},{"./config":30}],29:[function(require,module,exports){
+},{"./config":32}],31:[function(require,module,exports){
 var clone = function clone (obj) {
     // Thanks to stackoverflow:
     // http://stackoverflow.com/questions/
@@ -4843,7 +4900,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.clone = clone;
 }
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 module.exports = Config;
 
 function Config (hostname) {
@@ -4857,7 +4914,7 @@ function Config (hostname) {
         version: 'v1'
     };
 }
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
         data;
@@ -4882,4 +4939,4 @@ module.exports = function dataTSV (url) {
 
     return self;
 };
-},{}]},{},[12])
+},{}]},{},[10])

@@ -11,10 +11,10 @@ var geoComponent =
         require('./formComponents/modalAnimation'),
 
     svg_cross =
-        require('./formComponents/svgCross'),
+        require('./svg/svgCross'),
 
     svg_next_arrow =
-        require('./formComponents/svgNextArrow');
+        require('./svg/svgNextArrow');
 
 module.exports = ModalFlow;
 

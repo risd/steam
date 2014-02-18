@@ -440,7 +440,7 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../ui/checkmark":14,"./text":8}],5:[function(require,module,exports){
+},{"../ui/checkmark":16,"./text":7}],5:[function(require,module,exports){
 module.exports = function radioSelection () {
     var self = {},
         valid = false,
@@ -739,44 +739,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":14}],7:[function(require,module,exports){
-module.exports = function svgCross (sel) {
-    var button_size = 45;
-
-    // add the closing x as svg
-    sel.append('svg')
-        .attr('width', button_size)
-        .attr('height', button_size)
-        .selectAll('line')
-        .data([
-            { x1: 0, y1: 0,
-              x2: button_size, y2: button_size },
-            { x1: button_size, y1: 0,
-              x2: 0, y2: button_size }
-        ])
-        .enter()
-        .append('line')
-            .attr('x1', function (d) {
-                return d.x1;
-            })
-            .attr('y1', function (d) {
-                return d.y1;
-            })
-            .attr('x2', function (d) {
-                return d.x2;
-            })
-            .attr('y2', function (d) {
-                return d.y2;
-            })
-            .attr('stroke-width', 1);
-
-    sel.select('svg')
-        .append('rect')
-        .attr('class', 'blanket')
-        .attr('height', button_size)
-        .attr('width', button_size);
-};
-},{}],8:[function(require,module,exports){
+},{"../ui/checkmark":16}],7:[function(require,module,exports){
 // text input, with placeholder
 // dispatches when the value changes
 // against the initial value
@@ -867,7 +830,7 @@ module.exports = function TextInput () {
 
     return self;
 };
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 // textarea, with placeholder, and label
 // dispatches when the value changes
 // against the initial value
@@ -952,8 +915,10 @@ module.exports = function TextArea () {
 
     return self;
 };
-},{}],10:[function(require,module,exports){
-var svg_cross = require('./formComponents/svgCross');
+},{}],9:[function(require,module,exports){
+var svg_cross = require('./svg/svgCross'),
+    svg_force = require('./svg/buttonForce'),
+    svg_list = require('./svg/buttonList');
 
 module.exports = Network;
 
@@ -1131,13 +1096,15 @@ function Network (context) {
                 click: function () {
                     network.display('force')
                         .transition();
-                }
+                },
+                html: svg_force
             }, {
                 klass: 'list',
                 click: function () {
                     network.display('list')
                         .transition();
-                }
+                },
+                html: svg_list
             }])
             .enter()
             .append('a')
@@ -1146,7 +1113,8 @@ function Network (context) {
             })
             .on('click', function (d) {
                 d.click();
-            });
+            })
+            .html(function (d) { return d.html; });
 
         // end create divs
 
@@ -1881,7 +1849,7 @@ function Network (context) {
 
     return network;
 }
-},{"./formComponents/svgCross":7}],11:[function(require,module,exports){
+},{"./svg/buttonForce":13,"./svg/buttonList":14,"./svg/svgCross":15}],10:[function(require,module,exports){
 var polyfills = require('../polyfills'),
     filters = require('../filters'),
     colors = require('../colors'),
@@ -1923,7 +1891,7 @@ function STEAMMap() {
 
     init();
 }
-},{"../colors":1,"../filterUI":2,"../filters":3,"../network":10,"../polyfills":13,"../user/user":20,"../util/backend":22,"../util/clone":23,"../util/getTSV":25,"./modalFlow":12}],12:[function(require,module,exports){
+},{"../colors":1,"../filterUI":2,"../filters":3,"../network":9,"../polyfills":12,"../user/user":22,"../util/backend":24,"../util/clone":25,"../util/getTSV":27,"./modalFlow":11}],11:[function(require,module,exports){
 var geoComponent =
         require('../formComponents/dropdownConditionalText'),
 
@@ -2539,7 +2507,7 @@ function ModalFlow (context) {
 
     return self;
 }
-},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/socialAuthSelection":6}],13:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/socialAuthSelection":6}],12:[function(require,module,exports){
 module.exports = function polyfills () {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
     if (!Array.prototype.forEach)
@@ -2565,7 +2533,96 @@ module.exports = function polyfills () {
       };
     }
 };
+},{}],13:[function(require,module,exports){
+module.exports = '<svg version="1.1" ' +
+    'id="Layer_2" ' +
+    'xmlns="http://www.w3.org/2000/svg" ' +
+    'xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+    'x="0px" y="0px" width="27px" height="27px" ' +
+    'viewBox="0 0 27 27" enable-background="new 0 0 27 27" ' +
+    'xml:space="preserve">' +
+    '<rect x="1.5" y="1.5" fill="#FFFFFF" ' +
+        'stroke="#D1D3D4" stroke-miterlimit="10" ' +
+        'width="24" height="24"/>' +
+    '<g>' +
+	'<circle fill="#C8C8C8" cx="13.138" cy="7.31" r="2"/>' +
+	'<circle fill="#C8C8C8" cx="13.138" cy="18.31" r="2"/>' +
+	'<circle fill="#C8C8C8" cx="18.638" cy="12.81" r="2"/>' +
+	'<circle fill="#C8C8C8" cx="7.638" cy="12.81" r="2"/>' +
+'</g>' +
+'</svg>';
 },{}],14:[function(require,module,exports){
+module.exports = '<svg version="1.1" ' +
+    'id="Layer_2" ' +
+    'xmlns="http://www.w3.org/2000/svg" ' +
+    'xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+    'x="0px" y="0px" width="27px" height="27px" ' +
+    'viewBox="0 0 27 27" enable-background="new 0 0 27 27" ' +
+    'xml:space="preserve">' +
+    '<rect x="1.5" y="1.5" fill="#FFFFFF" ' +
+        'stroke="#D1D3D4" stroke-miterlimit="10" ' +
+        'width="24" height="24"/>' +
+    '<g>'+
+		'<line fill="none" ' +
+              'stroke="#C8C8C8" ' +
+              'stroke-width="2" ' +
+              'stroke-linecap="round" ' +
+              'stroke-miterlimit="10" ' +
+              'x1="7" y1="9" x2="19" y2="9"/> ' +
+
+		'<line fill="none" ' +
+              'stroke="#C8C8C8" ' +
+              'stroke-width="2" ' +
+              'stroke-linecap="round" ' +
+              'stroke-miterlimit="10" ' +
+              'x1="7" y1="14" x2="19" y2="14"/> ' +
+
+		'<line fill="none" '+
+              'stroke="#C8C8C8" ' +
+              'stroke-width="2" ' +
+              'stroke-linecap="round" ' +
+              'stroke-miterlimit="10" ' +
+              'x1="7" y1="19" x2="19" y2="19"/>' +
+    '</g>' +
+'</svg>';
+},{}],15:[function(require,module,exports){
+module.exports = function svgCross (sel) {
+    var button_size = 45;
+
+    // add the closing x as svg
+    sel.append('svg')
+        .attr('width', button_size)
+        .attr('height', button_size)
+        .selectAll('line')
+        .data([
+            { x1: 0, y1: 0,
+              x2: button_size, y2: button_size },
+            { x1: button_size, y1: 0,
+              x2: 0, y2: button_size }
+        ])
+        .enter()
+        .append('line')
+            .attr('x1', function (d) {
+                return d.x1;
+            })
+            .attr('y1', function (d) {
+                return d.y1;
+            })
+            .attr('x2', function (d) {
+                return d.x2;
+            })
+            .attr('y2', function (d) {
+                return d.y2;
+            })
+            .attr('stroke-width', 1);
+
+    sel.select('svg')
+        .append('rect')
+        .attr('class', 'blanket')
+        .attr('height', button_size)
+        .attr('width', button_size);
+};
+},{}],16:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -2621,7 +2678,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution'),
     Settings = require('./profile_settings'),
@@ -2936,7 +2993,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./profile_individual":16,"./profile_institution":17,"./profile_settings":18,"./validatableManager":21}],16:[function(require,module,exports){
+},{"./profile_individual":18,"./profile_institution":19,"./profile_settings":20,"./validatableManager":23}],18:[function(require,module,exports){
 var geoComponent =
         require('../formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3188,7 +3245,7 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/text":8,"../formComponents/textarea":9,"./updatableManager":19}],17:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/text":7,"../formComponents/textarea":8,"./updatableManager":21}],19:[function(require,module,exports){
 var geoComponent =
         require('../formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3489,7 +3546,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/text":8,"../formComponents/textarea":9,"./updatableManager":19}],18:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/text":7,"../formComponents/textarea":8,"./updatableManager":21}],20:[function(require,module,exports){
 module.exports = function ProfileSettings () {
     var self = {},
         selection;
@@ -3502,7 +3559,7 @@ module.exports = function ProfileSettings () {
 
     return self;
 };
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports = function UpdatableComponentManager () {
     var self = {},
         updatable = [],
@@ -3556,7 +3613,7 @@ module.exports = function UpdatableComponentManager () {
 
     return self;
 };
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -3718,7 +3775,7 @@ function User (context) {
 
     return user;
 }
-},{"./profile":15}],21:[function(require,module,exports){
+},{"./profile":17}],23:[function(require,module,exports){
 module.exports = function ValidatableComponentManager () {
     var self = {},
         validatable = [],
@@ -3773,7 +3830,7 @@ module.exports = function ValidatableComponentManager () {
 
     return self;
 };
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var config = require('./config')(location.hostname);
 
 module.exports = Backend;
@@ -3848,7 +3905,7 @@ function Backend () {
 
     return api;
 }
-},{"./config":24}],23:[function(require,module,exports){
+},{"./config":26}],25:[function(require,module,exports){
 var clone = function clone (obj) {
     // Thanks to stackoverflow:
     // http://stackoverflow.com/questions/
@@ -3883,7 +3940,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.clone = clone;
 }
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 module.exports = Config;
 
 function Config (hostname) {
@@ -3897,7 +3954,7 @@ function Config (hostname) {
         version: 'v1'
     };
 }
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
         data;
@@ -3922,4 +3979,4 @@ module.exports = function dataTSV (url) {
 
     return self;
 };
-},{}]},{},[11])
+},{}]},{},[10])
