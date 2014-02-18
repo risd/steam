@@ -3890,3 +3890,6 @@ div.blanket {
 .no-svg .modal .close-button,
 .no-svg #explore-map {
   display: none; }
+.no-svg .button-activate,
+.no-svg .filter-bar {
+  display: none; }

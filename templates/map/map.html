@@ -12,10 +12,6 @@
         <meta name="description" content="Art + Design are poised to transform our economy in the 21st century just as science and technology did in the last century. We need to add Art + Design to the equation — to transform STEM into STEAM.">
         <meta name="viewport" content="width=device-width">
 
-        <!--[if lt IE 9]>
-        <script type="text/javascript" src="{% static "js/dist/aight.min.js" %}"></script>
-        <![endif]-->
-
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
         <!-- Antenna -->
@@ -26,6 +22,10 @@
         <link rel="stylesheet" href="{% static "styles/css/site.css" %}">
 
         <script src="{% static "js/lib/modernizr.custom.js"%}"></script>
+        <!--[if lt IE 9]>
+        <script type="text/javascript" src="{% static "js/dist/html5shiv.js" %}"></script>
+        <script type="text/javascript" src="{% static "js/dist/aight.min.js" %}"></script>
+        <![endif]-->
     </head>
     <body>
         <!--[if lt IE 9]>
