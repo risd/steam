@@ -1,73 +1,63 @@
 /*
-Syntax error: Undefined mixin 'antenna-medium'.
-        on line 20 of static/styles/scss/map.scss, in `antenna-medium'
-        from line 20 of static/styles/scss/map.scss
+Syntax error: Undefined variable: "$color-slate-dark".
+        on line 45 of static/styles/scss/map.scss
 
-15:     overflow: hidden;
-16: }
-17: 
-18: .title {
-19:     display: block;
-20:     @include antenna-medium;
-21:     color: $color-slate;
-22: }
-23: 
-24: header {
-25:     margin: 0;
+40:     bottom: 0;
+41:     opacity: 1;
+42: }
+43: 
+44: ::selection {
+45:     background:$color-slate-dark;
+46: }
+47: 
+48: .modal {
+49:     overflow-y: scroll;
+50:     
 
 Backtrace:
-static/styles/scss/map.scss:20:in `antenna-medium'
-static/styles/scss/map.scss:20
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:321:in `block in visit_mixin'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:98:in `block in with_mixin'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:115:in `with_frame'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:98:in `with_mixin'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:319:in `visit_mixin'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:37:in `visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `block in visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `block in with_base'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:115:in `with_frame'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `with_base'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:392:in `block (2 levels) in visit_rule'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:392:in `map'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:392:in `block in visit_rule'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:174:in `with_environment'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:390:in `visit_rule'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:37:in `visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `block in visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `block in with_base'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:115:in `with_frame'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/stack.rb:79:in `with_base'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:153:in `visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:53:in `map'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:53:in `visit_children'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:162:in `block in visit_children'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:174:in `with_environment'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:161:in `visit_children'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:37:in `block in visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:181:in `visit_root'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/base.rb:37:in `visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:152:in `visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/visitors/perform.rb:8:in `visit'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/root_node.rb:36:in `css_tree'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/tree/root_node.rb:20:in `render'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/engine.rb:277:in `render'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/plugin/compiler.rb:348:in `update_stylesheet'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/plugin/compiler.rb:192:in `block in update_stylesheets'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/plugin/compiler.rb:189:in `each'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/plugin/compiler.rb:189:in `update_stylesheets'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.3.0.alpha.392/lib/sass/plugin/compiler.rb:277:in `block in watch'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/listener.rb:236:in `call'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/listener.rb:236:in `on_change'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/listener.rb:271:in `block in initialize_adapter'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapter.rb:244:in `call'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapter.rb:244:in `report_changes'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapter.rb:313:in `poll_changed_directories'
-/Users/rubenrodriguez/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/listen-1.1.6/lib/listen/adapter.rb:289:in `block in start_poller'
+static/styles/scss/map.scss:45
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/script/variable.rb:49:in `_perform'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/script/node.rb:40:in `perform'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/perform.rb:298:in `visit_prop'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/perform.rb:100:in `visit'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/perform.rb:109:in `block in visit_children'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/perform.rb:121:in `with_environment'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/perform.rb:108:in `visit_children'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/perform.rb:320:in `visit_rule'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/perform.rb:100:in `visit'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/perform.rb:109:in `block in visit_children'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/perform.rb:121:in `with_environment'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/perform.rb:108:in `visit_children'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/perform.rb:128:in `visit_root'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/perform.rb:100:in `visit'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/visitors/perform.rb:7:in `visit'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/tree/root_node.rb:20:in `render'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/engine.rb:315:in `_render'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/engine.rb:262:in `render'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/plugin/compiler.rb:362:in `update_stylesheet'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/plugin/compiler.rb:203:in `block in update_stylesheets'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/plugin/compiler.rb:201:in `each'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/plugin/compiler.rb:201:in `update_stylesheets'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/lib/sass/plugin/compiler.rb:283:in `block in watch'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/vendor/listen/lib/listen/multi_listener.rb:108:in `call'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/vendor/listen/lib/listen/multi_listener.rb:108:in `on_change'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/vendor/listen/lib/listen/multi_listener.rb:117:in `block in initialize_adapter'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/vendor/listen/lib/listen/adapters/polling.rb:56:in `call'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/vendor/listen/lib/listen/adapters/polling.rb:56:in `poll'
+/Users/mbarrett/.rvm/gems/ruby-1.9.3-p448@steam-proto/gems/sass-3.2.10/vendor/listen/lib/listen/adapters/polling.rb:32:in `block in start'
 */
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Undefined mixin 'antenna-medium'.\A         on line 20 of static/styles/scss/map.scss, in `antenna-medium'\A         from line 20 of static/styles/scss/map.scss\A \A 15:     overflow: hidden;\A 16: }\A 17: \A 18: .title {\A 19:     display: block;\A 20:     @include antenna-medium;\A 21:     color: $color-slate;\A 22: }\A 23: \A 24: header {\A 25:     margin: 0;"; }
+  content: "Syntax error: Undefined variable: \"$color-slate-dark\".\A         on line 45 of static/styles/scss/map.scss\A \A 40:     bottom: 0;\A 41:     opacity: 1;\A 42: }\A 43: \A 44: ::selection {\A 45:     background:$color-slate-dark;\A 46: }\A 47: \A 48: .modal {\A 49:     overflow-y: scroll;\A 50:     "; }
