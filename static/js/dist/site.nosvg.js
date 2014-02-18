@@ -935,7 +935,8 @@ function Network (context) {
         node_sel,
         info_tip_sel,
         canvas_blanket_sel,
-        grid_sel,
+        fixed_grid_sel,
+        overflow_grid_sel,
         // name of the overlay
         title,
         grid_wrapper_sel,
@@ -1050,15 +1051,23 @@ function Network (context) {
                     .attr('width', width)
                     .attr('height', height);
 
-        grid_wrapper_sel = canvas_wrapper
+        fixed_grid_wrapper_sel = canvas_wrapper
             .append('div')
                 .attr('class', 'header-wrapper');
 
-        grid_sel = grid_wrapper_sel
+        overflow_grid_wrapper_sel = canvas_wrapper
+            .append('div')
+                .attr('class', 'list-wrapper');
+
+        fixed_grid_sel = fixed_grid_wrapper_sel
             .append('div')
                 .attr('class', 'grid full-width clearfix');
 
-        var four_col_sel = grid_sel
+        overflow_grid_sel = overflow_grid_wrapper_sel
+            .append('div')
+                .attr('class', 'overflow grid full-width clearfix');
+
+        var four_col_sel = fixed_grid_sel
             .append('div')
                 .attr('class', 'four-column clearfix offset-one');
 
@@ -1075,7 +1084,7 @@ function Network (context) {
             })
             .call(svg_cross);
 
-        grid_sel
+        fixed_grid_sel
             .append('div')
                 .attr('class', 'one-column omega')
             .append('div')
@@ -1085,7 +1094,7 @@ function Network (context) {
                 })
                 .call(svg_cross);
 
-        var buttons_sel = grid_sel
+        var buttons_sel = fixed_grid_sel
             .append('div')
                 .attr('class', 'four-column offset-one '+
                                'network-button-wrapper clearfix');
@@ -1153,7 +1162,9 @@ function Network (context) {
                     .style('opacity', 0)
                     .remove();
 
-                d3.transition(grid_wrapper_sel)
+                d3.transition(overflow_grid_sel)
+                    .remove();
+                d3.transition(fixed_grid_wrapper_sel)
                     .remove();
 
 
@@ -1470,6 +1481,10 @@ function Network (context) {
         width = window.innerWidth;
         height = window.innerHeight;
 
+        // hide the list grid
+        overflow_grid_wrapper_sel
+            .style('top', '-200%');
+
         gravity = gravity_based_on_node_count(nodes.length);
         
         nodes = force_coordinates(nodes);
@@ -1507,9 +1522,13 @@ function Network (context) {
 
     function list_create () {
 
+        // show the list wrapper
+        overflow_grid_wrapper_sel
+            .style('top', '0');
+
         var svg_dimensions = ((radius_outter * 2) * scale['selected']);
 
-        list_col_sel = grid_sel.append('div')
+        list_col_sel = overflow_grid_sel.append('div')
             .attr('class', 'four-column clearfix offset-one');
 
         nodes_sel = list_col_sel.selectAll('.steamie')
@@ -1600,10 +1619,10 @@ function Network (context) {
 
     function steamie_name (d) {
         var name;
-        if (d.type === 'individual') {
+        if (d.individual) {
             name = (d.individual.first_name || '') + ' ' +
                (d.individual.last_name || '');
-        } else if (d.type === 'institution') {
+        } else if (d.institution) {
             name = (d.institution.name || '');
         } else {
             name = '';
@@ -1713,6 +1732,8 @@ function Network (context) {
             }).each('end', function () {
                 force.start()
                     .alpha(0.2);
+                overflow_grid_wrapper_sel
+                    .style('top', '-200%');
             });
 
         transition = false;
@@ -1720,6 +1741,11 @@ function Network (context) {
 
     function transition_force_to_list () {
         transition = true;
+
+        // put the list selection in the place
+        // where it will be populated;
+        overflow_grid_wrapper_sel
+            .style('top', '0');
 
         // if its there, remove it
         if (highlighted) {
@@ -1730,7 +1756,7 @@ function Network (context) {
         // list create
         var svg_dimensions = ((radius_outter * 2) * scale['selected']);
 
-        list_col_sel = grid_sel.append('div')
+        list_col_sel = overflow_grid_sel.append('div')
             .attr('class', 'four-column clearfix offset-one');
 
         if (transition) {

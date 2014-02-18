@@ -2613,8 +2613,9 @@ network graph
   margin-top: 48px; }
 
 .header-wrapper {
+  z-index: 20;
   text-align: center;
-  position: absolute;
+  position: fixed;
   top: 36px;
   width: 100%;
   color: #516272; }
@@ -2629,6 +2630,16 @@ network graph
     border-bottom: 1px solid #516272; }
   .header-wrapper em {
     text-style: italic; }
+
+.list-wrapper {
+  z-index: 10;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  overflow-y: scroll; }
+  .list-wrapper .steamie:first-child {
+    margin-top: 200px; }
 
 rect.blanket {
   fill: transparent;
