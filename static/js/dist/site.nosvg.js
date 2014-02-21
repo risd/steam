@@ -3679,7 +3679,7 @@ function User (context) {
         // of the form.
 
         var url = context.api.steamie;
-
+        console.log('check_auth');
         d3.json(url, function (err, data_response) {
             console.log('auth check');
             console.log(data_response);

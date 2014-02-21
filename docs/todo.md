@@ -1,5 +1,7 @@
 ### left off
 
+- click/wait notifcation works on clusters. how about "locate me"?
+
 - be sure no svgs are being appended to the DOM, seems to cause real problems.
 
 - | uglify > `site.min.js` and link to that in map.html

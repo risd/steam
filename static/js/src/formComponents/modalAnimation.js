@@ -25,11 +25,13 @@ module.exports = function flowAnimation () {
             force.stop();
             selection.html('');
         }
+        selection.style('display', 'none');
         rendered = false;
         return self;
     };
 
     self.render = function () {
+        selection.style('display', 'block');
         if (rendered) {
             force.alpha(10);
             return;
