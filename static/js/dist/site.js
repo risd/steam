@@ -2298,6 +2298,15 @@ function ModalFlow (context) {
             console.log('auth check dispatch modal');
             console.log(d);
 
+
+            // remove loading svg
+            d3.select('#loading')
+                .classed('active', false);
+            // make the modal accessible
+            el.button.open_modal
+                .el
+                .classed('active', true);
+
             if (context.user.authed()) {
                 // authenticated
 
@@ -2341,10 +2350,6 @@ function ModalFlow (context) {
                 // self.state('waiting_for_add_me_flow');
                 // self.state('choose_type_add_zip');
             }
-
-            // remove loading splash
-            d3.select('#loading')
-                .classed('active', false);
         });
 
         return self;

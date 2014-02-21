@@ -169,18 +169,18 @@
 }
 
 .loading {
-    top: -200%;
+    left: -200%;
     opacity: 0;
 
     @include transitionSeperate(
-                (opacity, top),
+                (opacity, left),
                 (0.3s, 0.0s),
                 (0s, 0.3s),
                 (cubic-bezier(.95, .05, .795, .035)));
 
     svg {
         @include transitionSeperate(
-                    (opacity, top),
+                    (opacity, left),
                     (0.3s, 0.0s),
                     (0s, 0.3s),
                     (cubic-bezier(.95, .05, .795, .035)));
@@ -188,21 +188,21 @@
 
 
     &.active {
-        top: 0;
+        left: 30px;
         opacity: 1;
 
         @include transitionSeperate(
-                    (opacity, top),
+                    (opacity, left),
                     (0.2s, 0.0s),
                     (0s, 0s),
                     (cubic-bezier(.95, .05, .795, .035)));
 
         svg {
-            top: 0;
+            left: auto;
             opacity: 1;
 
             @include transitionSeperate(
-                        (opacity, top),
+                        (opacity, left),
                         (0.2s, 0.0s),
                         (0s, 0s),
                         (cubic-bezier(.95, .05, .795, .035)));

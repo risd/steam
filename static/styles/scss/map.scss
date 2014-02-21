@@ -137,10 +137,6 @@ header {
 .z-250 {
     z-index: 250;
 }
-// z-900 used for the loading div
-.z-900 {
-    z-index: 900;
-}
 
 /************
 Global filters
@@ -1204,8 +1200,9 @@ div.blanket {
 
 .loading {
     svg {
-        /*-webkit-transform: scale(1);*/
-        margin: 20% auto;
+        @include scale(0.6);
+
+        margin: 0 auto;
     }
 }
 /* end form */

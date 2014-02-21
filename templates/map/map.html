@@ -49,8 +49,13 @@
         </div>
 
         <!-- humble host of the button to add oneself -->
-        <div id="activate-add-yourself" class="z-10 button-activate bottom-left active">
+        <div id="activate-add-yourself" class="z-10 button-activate bottom-left">
             <p class="add-me hide-til-active active">Add Me!</p>
+        </div>
+
+        <div id="loading"
+             class="loading hide-til-active active z-10 bottom-left">
+                {% include 'steam/orb.html' %}
         </div>
 
         <div id="profile-link"
@@ -216,11 +221,6 @@
                     </div>
             </div>
         </section>
-
-        <div id="loading"
-             class="fullscreen loading z-900 active">
-             {% include 'steam/orb.html' %}
-         </div>
 
          <script>
          Modernizr.load({
