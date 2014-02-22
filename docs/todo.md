@@ -1,6 +1,12 @@
 ### left off
 
-- click/wait notifcation works on clusters. how about "locate me"?
+- networkStore.
+    - deal with highlight
+    - make a network.update
+    - update resources.py for pagination on nested resources
+        https://github.com/toastdriven/django-tastypie/issues/1031
+        https://github.com/toastdriven/django-tastypie/blob/master/docs/cookbook.rst#nested-resources
+        https://gist.github.com/imom0/4432602
 
 - be sure no svgs are being appended to the DOM, seems to cause real problems.
 
