@@ -440,7 +440,7 @@ module.exports = function dropdownConditionalText () {
 
     return self;
 };
-},{"../ui/checkmark":16,"./text":7}],5:[function(require,module,exports){
+},{"../ui/checkmark":17,"./text":7}],5:[function(require,module,exports){
 module.exports = function radioSelection () {
     var self = {},
         valid = false,
@@ -739,7 +739,7 @@ module.exports = function socialAuthSelection (context) {
 
     return social;
 };
-},{"../ui/checkmark":16}],7:[function(require,module,exports){
+},{"../ui/checkmark":17}],7:[function(require,module,exports){
 // text input, with placeholder
 // dispatches when the value changes
 // against the initial value
@@ -918,7 +918,8 @@ module.exports = function TextArea () {
 },{}],9:[function(require,module,exports){
 var svg_cross = require('./svg/svgCross'),
     svg_force = require('./svg/buttonForce'),
-    svg_list = require('./svg/buttonList');
+    svg_list = require('./svg/buttonList'),
+    networkStore = require('./networkStore');
 
 module.exports = Network;
 
@@ -942,7 +943,6 @@ function Network (context) {
         grid_wrapper_sel,
         list_col_sel,
         count_sel,
-        request,
         built = false,
         highlighted = false,
         transition = false,
@@ -969,7 +969,8 @@ function Network (context) {
             'list': {
                 'force': transition_list_to_force
             }
-        };
+        },
+        store = networkStore(context);
 
     var dispatch = d3.dispatch('create');
 
@@ -1023,18 +1024,13 @@ function Network (context) {
 
     network.title = function (x) {
         if(!arguments.length) return title;
-        if (x.us_bool) {
-            if (x.us_district === 0) {
-                title = x.us_state;
-            } else {
-                title = x.us_state + ' <em>' +
-                    x.us_district_ordinal +
-                    ' District</em>';
-            }
-        } else {
-            title = x.country;
-        }
+        title = x;
+        return network;
+    };
 
+    network.built = function (x) {
+        if(!arguments.length) return built;
+        built = x;
         return network;
     };
 
@@ -1149,6 +1145,7 @@ function Network (context) {
         
         built = true;
         dispatch.create();
+        context.clusters.dispatch.clearWaiting();
 
         return network;
     };
@@ -1205,7 +1202,9 @@ function Network (context) {
 
     network.highlight = function (data) {
         // data = { steamie_id: , tlg_id: , steamie_type: }
-        network.init(data);
+        // going to require the persons ID in order to load
+        // them first
+        store.get(data);
 
         dispatch.on('create.highlight', function () {
             var highlight_sel = nodes_sel.filter(function (d,i) {
@@ -1233,33 +1232,7 @@ function Network (context) {
         // used to initialize a network graph
         // data is passed in from the cluster
         // group that is clicked.
-        if (request) {
-            request.abort();
-        }
-
-        request = context.api
-            .network_request(data.tlg_id, function (err, results) {
-                console.log('returned data');
-                console.log(results);
-                network
-                      .nodes(results.steamies)
-                      .title((results.us_bool ?
-                              {
-                                us_bool: results.us_bool,
-                                us_state: results.us_state,
-                                us_district:
-                                    results.us_district,
-                                us_district_ordinal:
-                                    results.us_district_ordinal
-                              } :
-                              {
-                                us_bool: results.us_bool,
-                                country: results.country
-                              }))
-                      .create();
-
-                context.clusters.dispatch.clearWaiting();
-            });
+        store.get(data);
     };
 
     function blanket_interaction () {
@@ -1895,7 +1868,134 @@ function Network (context) {
 
     return network;
 }
-},{"./svg/buttonForce":13,"./svg/buttonList":14,"./svg/svgCross":15}],10:[function(require,module,exports){
+},{"./networkStore":10,"./svg/buttonForce":14,"./svg/buttonList":15,"./svg/svgCross":16}],10:[function(require,module,exports){
+module.exports = NetworkStore;
+
+// Stash results from network graphs
+function NetworkStore (context) {
+
+    var self = {},
+        // stored by id
+        // {
+        //     <tlgid>: {
+        //         total: <int>,
+        //         steamies: [],
+        //         title: ,
+        //     }
+        // },
+        request,
+        data = {};
+
+    self.get = function (x) {
+
+        // x is the dat to initiliaze the business
+        // {
+        //     tlg_id: ,       <- required
+        //     steamie_id: ,   <- optional, highlight
+        //     steamie_type: , <- optional, highlight 
+        // }
+
+        if (x.tlg_id in data){
+            var current = data[x.tlg_id];
+            // has been previously loaded
+            context.network
+                .nodes(current.steamies)
+                .title(current.title)
+                // highlight?
+                .create();
+            
+
+            // more to load?
+            if (current.total === current.steamies.length) {
+                // all loaded
+            } else {
+                // load more
+                gather_steamies(
+                    x.tlg_id,
+                    current.steamies.length);
+            }
+        } else {
+            // not previously loaded
+            data[x.tlg_id] = {
+                total: undefined,
+                title: undefined,
+                steamies: []
+            };
+
+            gather_steamies(x.tlg_id, 0);
+        }
+        return self;
+    };
+
+    function gather_steamies (tlg_id, offset) {
+        if (request) {
+            request.abort();
+        }
+        request = context.api
+            .network_request(tlg_id, function (err, results) {
+                console.log('returned data');
+                console.log(results);
+
+                var current = data[tlg_id];
+
+                var so_far = add_steamies(current, results.steamies);
+
+                if (!(current.title)) {
+                    network_title(current, format_title(results));
+                }
+                if (!(current.total)) {
+                    current.total = sum_steamies(results);
+                }
+
+                if (context.network.built()) {
+                    context.network.update();
+                } else {
+                    context.network.create();
+                }
+
+                if (so_far !== data[tlg_id].total) {
+                    make_request(tlg_id, so_far);
+                }
+            });
+    }
+
+    function network_title (current, title) {
+        current.title = title;
+        context.network.title(title);
+    }
+
+    function add_steamies (current, steamies) {
+        current.steamies = current.steamies.concat(steamies);
+        context.network.nodes(current.steamies);
+        return current.steamies.length;
+    }
+
+    function sum_steamies(x) {
+        return x.work_in_education +
+               x.work_in_research +
+               x.work_in_political +
+               x.work_in_industry;
+    }
+
+    function format_title (x) {
+        var title;
+        if (x.us_bool) {
+            if (x.us_district === 0) {
+                title = x.us_state;
+            } else {
+                title = x.us_state + ' <em>' +
+                    x.us_district_ordinal +
+                    ' District</em>';
+            }
+        } else {
+            title = x.country;
+        }
+        return title;
+    }
+
+    return self;
+}
+},{}],11:[function(require,module,exports){
 var polyfills = require('../polyfills'),
     filters = require('../filters'),
     colors = require('../colors'),
@@ -1937,7 +2037,7 @@ function STEAMMap() {
 
     init();
 }
-},{"../colors":1,"../filterUI":2,"../filters":3,"../network":9,"../polyfills":12,"../user/user":22,"../util/backend":24,"../util/clone":25,"../util/getTSV":27,"./modalFlow":11}],11:[function(require,module,exports){
+},{"../colors":1,"../filterUI":2,"../filters":3,"../network":9,"../polyfills":13,"../user/user":23,"../util/backend":25,"../util/clone":26,"../util/getTSV":28,"./modalFlow":12}],12:[function(require,module,exports){
 var geoComponent =
         require('../formComponents/dropdownConditionalText'),
 
@@ -2553,7 +2653,7 @@ function ModalFlow (context) {
 
     return self;
 }
-},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/socialAuthSelection":6}],12:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/socialAuthSelection":6}],13:[function(require,module,exports){
 module.exports = function polyfills () {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
     if (!Array.prototype.forEach)
@@ -2579,7 +2679,7 @@ module.exports = function polyfills () {
       };
     }
 };
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = '<svg version="1.1" ' +
     'xmlns="http://www.w3.org/2000/svg" ' +
     'xmlns:xlink="http://www.w3.org/1999/xlink" ' +
@@ -2596,7 +2696,7 @@ module.exports = '<svg version="1.1" ' +
 	'<circle fill="#C8C8C8" cx="7.638" cy="12.81" r="2"/>' +
 '</g>' +
 '</svg>';
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = '<svg version="1.1" ' +
     'xmlns="http://www.w3.org/2000/svg" ' +
     'xmlns:xlink="http://www.w3.org/1999/xlink" ' +
@@ -2629,7 +2729,7 @@ module.exports = '<svg version="1.1" ' +
               'x1="7" y1="19" x2="19" y2="19"/>' +
     '</g>' +
 '</svg>';
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = function svgCross (sel) {
     var button_size = 45;
 
@@ -2666,7 +2766,7 @@ module.exports = function svgCross (sel) {
         .attr('height', button_size)
         .attr('width', button_size);
 };
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = function addCheckmarks () {
     var size = 30,
         stroke = 'white',
@@ -2722,7 +2822,7 @@ module.exports = function addCheckmarks () {
 
     return add;
 };
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var Individual = require('./profile_individual'),
     Institution = require('./profile_institution'),
     Settings = require('./profile_settings'),
@@ -3037,7 +3137,7 @@ module.exports = function Profile (context) {
 
     return self;
 };
-},{"./profile_individual":18,"./profile_institution":19,"./profile_settings":20,"./validatableManager":23}],18:[function(require,module,exports){
+},{"./profile_individual":19,"./profile_institution":20,"./profile_settings":21,"./validatableManager":24}],19:[function(require,module,exports){
 var geoComponent =
         require('../formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3289,7 +3389,7 @@ module.exports = function ProfileIndividual (context) {
 
     return self;
 };
-},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/text":7,"../formComponents/textarea":8,"./updatableManager":21}],19:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/text":7,"../formComponents/textarea":8,"./updatableManager":22}],20:[function(require,module,exports){
 var geoComponent =
         require('../formComponents/dropdownConditionalText'),
     radioComponent =
@@ -3590,7 +3690,7 @@ module.exports = function ProfileInstitution (context) {
 
     return self;
 };
-},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/text":7,"../formComponents/textarea":8,"./updatableManager":21}],20:[function(require,module,exports){
+},{"../formComponents/dropdownConditionalText":4,"../formComponents/radio":5,"../formComponents/text":7,"../formComponents/textarea":8,"./updatableManager":22}],21:[function(require,module,exports){
 module.exports = function ProfileSettings () {
     var self = {},
         selection;
@@ -3603,7 +3703,7 @@ module.exports = function ProfileSettings () {
 
     return self;
 };
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports = function UpdatableComponentManager () {
     var self = {},
         updatable = [],
@@ -3657,7 +3757,7 @@ module.exports = function UpdatableComponentManager () {
 
     return self;
 };
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var profile = require('./profile');
 
 module.exports = User;
@@ -3819,7 +3919,7 @@ function User (context) {
 
     return user;
 }
-},{"./profile":17}],23:[function(require,module,exports){
+},{"./profile":18}],24:[function(require,module,exports){
 module.exports = function ValidatableComponentManager () {
     var self = {},
         validatable = [],
@@ -3874,7 +3974,7 @@ module.exports = function ValidatableComponentManager () {
 
     return self;
 };
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var config = require('./config')(location.hostname);
 
 module.exports = Backend;
@@ -3949,7 +4049,7 @@ function Backend () {
 
     return api;
 }
-},{"./config":26}],25:[function(require,module,exports){
+},{"./config":27}],26:[function(require,module,exports){
 var clone = function clone (obj) {
     // Thanks to stackoverflow:
     // http://stackoverflow.com/questions/
@@ -3984,7 +4084,7 @@ if (typeof module !== 'undefined') {
 } else {
     window.clone = clone;
 }
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 module.exports = Config;
 
 function Config (hostname) {
@@ -3998,7 +4098,7 @@ function Config (hostname) {
         version: 'v1'
     };
 }
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 module.exports = function dataTSV (url) {
     var self = {},
         data;
@@ -4023,4 +4123,4 @@ module.exports = function dataTSV (url) {
 
     return self;
 };
-},{}]},{},[10])
+},{}]},{},[11])

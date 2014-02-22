@@ -156,7 +156,11 @@ class NetworkResource(ModelResource):
                   'us_district_ordinal',
                   'us_bool',
                   'country',
-                  'steamies']
+                  'steamies',
+                  'work_in_education',
+                  'work_in_research',
+                  'work_in_political',
+                  'work_in_industry',]
 
 
 class SteamiesResource(ModelResource):

@@ -1,6 +1,7 @@
 var svg_cross = require('./svg/svgCross'),
     svg_force = require('./svg/buttonForce'),
-    svg_list = require('./svg/buttonList');
+    svg_list = require('./svg/buttonList'),
+    networkStore = require('./networkStore');
 
 module.exports = Network;
 
@@ -24,7 +25,6 @@ function Network (context) {
         grid_wrapper_sel,
         list_col_sel,
         count_sel,
-        request,
         built = false,
         highlighted = false,
         transition = false,
@@ -51,7 +51,8 @@ function Network (context) {
             'list': {
                 'force': transition_list_to_force
             }
-        };
+        },
+        store = networkStore(context);
 
     var dispatch = d3.dispatch('create');
 
@@ -105,18 +106,13 @@ function Network (context) {
 
     network.title = function (x) {
         if(!arguments.length) return title;
-        if (x.us_bool) {
-            if (x.us_district === 0) {
-                title = x.us_state;
-            } else {
-                title = x.us_state + ' <em>' +
-                    x.us_district_ordinal +
-                    ' District</em>';
-            }
-        } else {
-            title = x.country;
-        }
+        title = x;
+        return network;
+    };
 
+    network.built = function (x) {
+        if(!arguments.length) return built;
+        built = x;
         return network;
     };
 
@@ -231,6 +227,7 @@ function Network (context) {
         
         built = true;
         dispatch.create();
+        context.clusters.dispatch.clearWaiting();
 
         return network;
     };
@@ -287,7 +284,9 @@ function Network (context) {
 
     network.highlight = function (data) {
         // data = { steamie_id: , tlg_id: , steamie_type: }
-        network.init(data);
+        // going to require the persons ID in order to load
+        // them first
+        store.get(data);
 
         dispatch.on('create.highlight', function () {
             var highlight_sel = nodes_sel.filter(function (d,i) {
@@ -315,33 +314,7 @@ function Network (context) {
         // used to initialize a network graph
         // data is passed in from the cluster
         // group that is clicked.
-        if (request) {
-            request.abort();
-        }
-
-        request = context.api
-            .network_request(data.tlg_id, function (err, results) {
-                console.log('returned data');
-                console.log(results);
-                network
-                      .nodes(results.steamies)
-                      .title((results.us_bool ?
-                              {
-                                us_bool: results.us_bool,
-                                us_state: results.us_state,
-                                us_district:
-                                    results.us_district,
-                                us_district_ordinal:
-                                    results.us_district_ordinal
-                              } :
-                              {
-                                us_bool: results.us_bool,
-                                country: results.country
-                              }))
-                      .create();
-
-                context.clusters.dispatch.clearWaiting();
-            });
+        store.get(data);
     };
 
     function blanket_interaction () {
