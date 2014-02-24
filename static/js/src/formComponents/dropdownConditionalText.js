@@ -229,7 +229,7 @@ module.exports = function dropdownConditionalText () {
 
                 args.editable_text = '';
 
-                args.value_selectd = d.country;
+                args.value_selected = d.country;
             }
         });
 
