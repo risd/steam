@@ -1,12 +1,26 @@
 ### left off
 
+- sorted bug on frontend, select_geo wasn't returning a value out of the united states.
+
+- make multiple requests for networks
+    - highlight
+        - you have user data, just wait for tlg metadata
+    - create
+        - get tlg metadata
+            api.toplevelgeo_request
+            http://localhost:5000/api/v1/toplevelgeo/342/?format=json
+        - first batch of steamies
+            network_steamies_request
+            http://localhost:5000/api/v1/network/342/steamies/?format=json
+
+
 - networkStore.
-    - deal with highlight
-    - make a network.update
     - update resources.py for pagination on nested resources
         https://github.com/toastdriven/django-tastypie/issues/1031
         https://github.com/toastdriven/django-tastypie/blob/master/docs/cookbook.rst#nested-resources
         https://gist.github.com/imom0/4432602
+    - deal with highlight
+    - make a network.update
 
 - be sure no svgs are being appended to the DOM, seems to cause real problems.
 

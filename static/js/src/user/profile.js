@@ -63,7 +63,6 @@ module.exports = function Profile (context) {
         // be valid to submit
         validatable.batchAdd([{
             isValid: profile.work_in.isValid,
-
         }, {
             isValid: profile.geo.isValid
         }, {
@@ -96,7 +95,8 @@ module.exports = function Profile (context) {
                     .highlight({
                         tlg_id: d.top_level.id,
                         steamie_type: type,
-                        steamie_id: d[type].id
+                        steamie_id: d[type].id,
+                        steamie: [d]
                     });
             });
 

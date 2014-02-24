@@ -41,7 +41,7 @@ module.exports = function dropdownConditionalText () {
         if (text_selection.classed('active')) {
             return editable_text.value();
         } else {
-            select.property('value');
+            return select.property('value');
         }
     };
 

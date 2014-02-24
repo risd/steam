@@ -177,7 +177,8 @@ function ModalFlow (context) {
                         .highlight({
                             tlg_id: d.top_level.id,
                             steamie_type: type,
-                            steamie_id: d[type].id
+                            steamie_id: d[type].id,
+                            steamie: [d]
                         });
                     self.dispatch.ApplyStateLeavingThankYou();
                 },

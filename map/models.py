@@ -410,7 +410,6 @@ class Steamies(models.Model):
                     # if it does not find an object
                     top_level_geo = TopLevelGeo.objects.get(**geo)
                     self.top_level = top_level_geo
-
                 except ObjectDoesNotExist:
                     logger.error(
                         'Setting TopLevelGeo relationship to' +\

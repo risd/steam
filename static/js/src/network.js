@@ -283,9 +283,10 @@ function Network (context) {
     };
 
     network.highlight = function (data) {
-        // data = { steamie_id: , tlg_id: , steamie_type: }
-        // going to require the persons ID in order to load
-        // them first
+        // data = .steamie_id, .tlg_id .steamie_type .steamie }
+        // you have the users data, just need tlg_id metadata
+        // to load and highlight them. then subsequently load others
+        // can also pan the map with the tlg request
         store.get(data);
 
         dispatch.on('create.highlight', function () {

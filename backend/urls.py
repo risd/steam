@@ -7,8 +7,8 @@ admin.autodiscover()
 from tastypie.api import Api
 
 from map.resources import AuthSteamieResource
-from map.resources import GeoResource
 from map.resources import NetworkResource
+from map.resources import TopLevelGeoResource
 
 from news.resources import HashTweetResource
 from news.resources import NewsTumblResource
@@ -17,8 +17,8 @@ from news.resources import AnnounceTumblResource
 
 v1_api = Api(api_name='v1')
 v1_api.register(AuthSteamieResource())
-v1_api.register(GeoResource())
 v1_api.register(NetworkResource())
+v1_api.register(TopLevelGeoResource())
 
 v1_api.register(HashTweetResource())
 v1_api.register(NewsTumblResource())

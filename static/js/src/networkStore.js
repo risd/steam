@@ -15,7 +15,13 @@ function NetworkStore (context) {
         request,
         data = {};
 
+    self.highlight = function (x) {
+        // make it work
+    };
+
     self.get = function (x) {
+        console.log('network store get');
+        console.log(x);
 
         // x is the dat to initiliaze the business
         // {
@@ -57,11 +63,15 @@ function NetworkStore (context) {
     };
 
     function gather_steamies (tlg_id, offset) {
+        var args = {
+            tlg_id: tlg_id,
+            offset: offset
+        };
         if (request) {
             request.abort();
         }
         request = context.api
-            .network_request(tlg_id, function (err, results) {
+            .network_steamies_request(args, function (err, results) {
                 console.log('returned data');
                 console.log(results);
 

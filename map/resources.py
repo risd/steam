@@ -1,3 +1,5 @@
+from django.conf.urls import url
+
 from tastypie import fields
 
 from tastypie.authentication import Authentication
@@ -7,9 +9,12 @@ from tastypie.authorization import Authorization
 
 from tastypie.exceptions import Unauthorized
 
-from tastypie.resources import ModelResource, ALL
+from tastypie.resources import ModelResource
 
 from tastypie.serializers import Serializer
+
+from tastypie.http import *
+from tastypie.utils.urls import trailing_slash
 
 from django.contrib.auth.models import User
 from .models import Steamies, Institution, Individual, TopLevelGeo
@@ -82,27 +87,15 @@ class CommonAuthResourceMeta:
     always_return_data = True
 
 
-class GeoResource(ModelResource):
-    """
-    Returns geojson of top_level steaminess
-    steaminess is the count of individual
-    and institution steamies. Broken down
-    by their 'work in' field
-
-    Currently generating a static file for this.
-    """
-    class Meta(CommonOpenResourceMeta):
-
-        queryset = Steamies.objects.all()
-        resource_name = 'geo'
-
-
 class TopLevelGeoResource(ModelResource):
     """
     Returns TopLevelGeo objects to AuthSteamieResource
     to fill out a users profile
+    Also used to return TopLevelGeo metadata to
+    network initiation requests
     """
     class Meta(CommonOpenResourceMeta):
+        resource_name = 'toplevelgeo'
         queryset = TopLevelGeo.objects.all()
 
 
@@ -148,9 +141,38 @@ class NetworkResource(ModelResource):
         'top_level',
         related_name='top_level',
         full=True)
+    def prepend_urls(self):
+        return [
+            url(
+            r"^(?P<resource_name>%s)/" % (self._meta.resource_name) +\
+            r"(?P<pk>\w[\w/-]*)" +\
+            r"/steamies%s$" % (trailing_slash()),
+            self.wrap_view('gather_steamies'),
+            name="api_get_steamies"),
+        ]
+
+    def gather_steamies(self, request, **kwargs):
+        try:
+            bundle = self.build_bundle(data={'pk': kwargs['pk']},
+                                       request=request)
+            obj = self.cached_obj_get(
+                bundle=bundle,
+                **self.remove_api_resource_names(kwargs))
+        except ObjectDoesNotExist:
+            return HttpGone()
+        # except MultipleObjectsReturned:
+        #     return HttpMultipleChoices(
+        #             "More than one resource is found at this URI")
+
+        steamies_resource = SteamiesResource()
+        return steamies_resource.get_list(request,
+                                          top_level_id=obj.pk)
+
+
     class Meta(CommonOpenResourceMeta):
         queryset = TopLevelGeo.objects.all()
         resource_name = 'network'
+        limit = 20
         fields = ['us_state',
                   'us_district',
                   'us_district_ordinal',
@@ -182,6 +204,7 @@ class SteamiesResource(ModelResource):
 
     class Meta(CommonOpenResourceMeta):
         queryset = Steamies.objects.all()
+        limit = 20
         fields = ['description',
                   'institution',
                   'individual',

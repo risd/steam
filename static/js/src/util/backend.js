@@ -18,18 +18,34 @@ function Backend () {
         return api.api_url + '/steamie/' + x + '/?format=json';
     };
 
-    api.network_url = function (x) {
-        return api.api_url + '/network/' + x + '/?format=json';
+    api.toplevelgeo_url = function (tlg_id) {
+        return api.api_url + '/toplevelgeo/' +
+               tlg_id + '/?format=json';
+    };
+
+    api.network_steamies_url = function (args) {
+        // args - .tlg_id, .offset
+        return api.api_url +
+            '/network/' + args.tlg_id +
+            '/?format=json' +
+            (args.offset ? ('&offset=' + args.offset) : '');
     };
 
     api.logout = function (callback) {
         d3.json(api.base + '/map/logout/', callback);
     };
 
-    api.network_request = function (network_id, callback) {
+    api.network_steamies_request = function (args, callback) {
+        // args - .tlg_id, .offset
         console.log('network request');
-        console.log('url: ', api.network_url(network_id));
-        var request = d3.json(api.network_url(network_id), callback);
+        console.log('url: ', api.network_steamies_url(args));
+        var request = d3.json(api.network_steamies_url(args),
+                              callback);
+        return request;
+    };
+
+    api.toplevelgeo_request = function (tlg_id, callback) {
+        var request = d3.json(api.toplevelgeo_url(tlg_id), callback);
         return request;
     };
 

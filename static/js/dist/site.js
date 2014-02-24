@@ -225,7 +225,7 @@ module.exports = function dropdownConditionalText () {
         if (text_selection.classed('active')) {
             return editable_text.value();
         } else {
-            select.property('value');
+            return select.property('value');
         }
     };
 
@@ -1968,7 +1968,8 @@ function ModalFlow (context) {
                         .highlight({
                             tlg_id: d.top_level.id,
                             steamie_type: type,
-                            steamie_id: d[type].id
+                            steamie_id: d[type].id,
+                            steamie: [d]
                         });
                     self.dispatch.ApplyStateLeavingThankYou();
                 },
@@ -2826,9 +2827,10 @@ function Network (context) {
     };
 
     network.highlight = function (data) {
-        // data = { steamie_id: , tlg_id: , steamie_type: }
-        // going to require the persons ID in order to load
-        // them first
+        // data = .steamie_id, .tlg_id .steamie_type .steamie }
+        // you have the users data, just need tlg_id metadata
+        // to load and highlight them. then subsequently load others
+        // can also pan the map with the tlg request
         store.get(data);
 
         dispatch.on('create.highlight', function () {
@@ -3511,7 +3513,13 @@ function NetworkStore (context) {
         request,
         data = {};
 
+    self.highlight = function (x) {
+        // make it work
+    };
+
     self.get = function (x) {
+        console.log('network store get');
+        console.log(x);
 
         // x is the dat to initiliaze the business
         // {
@@ -3553,11 +3561,15 @@ function NetworkStore (context) {
     };
 
     function gather_steamies (tlg_id, offset) {
+        var args = {
+            tlg_id: tlg_id,
+            offset: offset
+        };
         if (request) {
             request.abort();
         }
         request = context.api
-            .network_request(tlg_id, function (err, results) {
+            .network_steamies_request(args, function (err, results) {
                 console.log('returned data');
                 console.log(results);
 
@@ -3905,7 +3917,6 @@ module.exports = function Profile (context) {
         // be valid to submit
         validatable.batchAdd([{
             isValid: profile.work_in.isValid,
-
         }, {
             isValid: profile.geo.isValid
         }, {
@@ -3938,7 +3949,8 @@ module.exports = function Profile (context) {
                     .highlight({
                         tlg_id: d.top_level.id,
                         steamie_type: type,
-                        steamie_id: d[type].id
+                        steamie_id: d[type].id,
+                        steamie: [d]
                     });
             });
 
@@ -5012,18 +5024,34 @@ function Backend () {
         return api.api_url + '/steamie/' + x + '/?format=json';
     };
 
-    api.network_url = function (x) {
-        return api.api_url + '/network/' + x + '/?format=json';
+    api.toplevelgeo_url = function (tlg_id) {
+        return api.api_url + '/toplevelgeo/' +
+               tlg_id + '/?format=json';
+    };
+
+    api.network_steamies_url = function (args) {
+        // args - .tlg_id, .offset
+        return api.api_url +
+            '/network/' + args.tlg_id +
+            '/?format=json' +
+            (args.offset ? ('&offset=' + args.offset) : '');
     };
 
     api.logout = function (callback) {
         d3.json(api.base + '/map/logout/', callback);
     };
 
-    api.network_request = function (network_id, callback) {
+    api.network_steamies_request = function (args, callback) {
+        // args - .tlg_id, .offset
         console.log('network request');
-        console.log('url: ', api.network_url(network_id));
-        var request = d3.json(api.network_url(network_id), callback);
+        console.log('url: ', api.network_steamies_url(args));
+        var request = d3.json(api.network_steamies_url(args),
+                              callback);
+        return request;
+    };
+
+    api.toplevelgeo_request = function (tlg_id, callback) {
+        var request = d3.json(api.toplevelgeo_url(tlg_id), callback);
         return request;
     };
 
