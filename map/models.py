@@ -129,6 +129,11 @@ class TopLevelGeo(models.Model):
             'id': self.pk,
             'properties': {
                 'tlg_id': self.pk,
+                'us_bool': self.us_bool,
+                'country': self.country,
+                'us_state': self.us_state,
+                'us_district': self.us_district,
+                'us_district_ordinal': self.us_district_ordinal,
                 'name': unicode(self),
                 'education': self.work_in_education,
                 'research': self.work_in_research,
@@ -152,6 +157,12 @@ class TopLevelGeo(models.Model):
             'maxx': float(self.maxx),
             'maxy': float(self.maxy),
         }
+
+    def work_in_total(self):
+        return self.work_in_education +\
+               self.work_in_research +\
+               self.work_in_political +\
+               self.work_in_industry
 
     def __geo_interface__(self):
         return {

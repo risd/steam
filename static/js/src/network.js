@@ -13,9 +13,9 @@ function Network (context) {
         width,
         canvas_wrapper = d3.select('#steamie-network'),
         canvas,
-        nodes,
+        nodes = [],
         force,
-        node_sel,
+        nodes_sel,
         info_tip_sel,
         canvas_blanket_sel,
         fixed_grid_sel,
@@ -44,6 +44,10 @@ function Network (context) {
             'force': force_highlight,
             'list': list_highlight
         },
+        network_update = {
+            'force': force_update,
+            'list': list_update
+        },
         network_transition = {
             'force': {
                 'list': transition_force_to_list
@@ -51,10 +55,12 @@ function Network (context) {
             'list': {
                 'force': transition_list_to_force
             }
-        },
-        store = networkStore(context);
+        };
 
-    var dispatch = d3.dispatch('create');
+    network.dispatch = d3.dispatch('created', 'updated', 'removed');
+
+    store = networkStore(context)
+                .networkDispatch(network.dispatch);
 
     var random_around_zero = function (range) {
         var val = Math.floor(Math.random() * range);
@@ -96,6 +102,23 @@ function Network (context) {
         return network;
     };
 
+    network.nodesPush = function (x) {
+        if (x.length >= 0) {
+            // an array, loop
+            x.forEach(function (n, i) {
+                nodes.push(n);
+            });
+        } else {
+            // an object, simply add
+            nodes.push(x);
+        }
+        return network;
+    };
+
+    network.nodesSelData = function () {
+        return nodes_sel.data();
+    };
+
     network.renderSvg = function (x) {
         if(!arguments.length) return render_svg;
 
@@ -117,6 +140,7 @@ function Network (context) {
     };
 
     network.create = function () {
+        console.log('creating');
 
         if (built) {
             network.remove();
@@ -226,8 +250,17 @@ function Network (context) {
         network_create[network_display]();
         
         built = true;
-        dispatch.create();
+        network.dispatch.created();
         context.clusters.dispatch.clearWaiting();
+
+        return network;
+    };
+
+    network.update = function () {
+        console.log('updating');
+        network_update[network_display]();
+
+        network.dispatch.updated();
 
         return network;
     };
@@ -279,6 +312,8 @@ function Network (context) {
 
         built = false;
 
+        network.dispatch.removed();
+
         return network;
     };
 
@@ -287,9 +322,9 @@ function Network (context) {
         // you have the users data, just need tlg_id metadata
         // to load and highlight them. then subsequently load others
         // can also pan the map with the tlg request
-        store.get(data);
+        store.highlight(data);
 
-        dispatch.on('create.highlight', function () {
+        network.dispatch.on('created.highlight', function () {
             var highlight_sel = nodes_sel.filter(function (d,i) {
                 if (d[data.steamie_type]) {
                     return d[data.steamie_type].id ===
@@ -299,7 +334,7 @@ function Network (context) {
             highlight_sel.each(highlight);
 
             // reset the dispatch;
-            dispatch.on('create.highlight', null);
+            network.dispatch.on('created.highlight', null);
         });
     };
 
@@ -498,9 +533,10 @@ function Network (context) {
     function force_coordinates (x) {
         // x:   all nodes
         x.forEach(function (d, i) {
-
-            d.x = width/2 + random_around_zero(30);
-            d.y = height/2 + random_around_zero(30);
+            // only define for nodes that don't already
+            // have values. since new nodes will be added
+            if (!d.x) d.x = width/2 + random_around_zero(30);
+            if (!d.y) d.y = height/2 + random_around_zero(30);
             // define px for more 'splosion
             // d.px = width/2;
             // d.py = height/2;
@@ -552,6 +588,10 @@ function Network (context) {
         return g;
     }
 
+    function force_update () {
+        force_start();
+    }
+
     function force_create () {
         // create force graph
         width = window.innerWidth;
@@ -573,27 +613,38 @@ function Network (context) {
             .links([])
             .nodes(nodes);
 
-        nodes_sel = canvas.selectAll('.node')
-                .data(nodes)
-            .enter()
-            .append('g')
-                .attr('class', function (d) {
-                    return 'node ' +
-                            d.work_in + ' ' +
-                            d.type;
-                })
-                .call(update_node_status)
-                .style('opacity', set_opacity)
-                .attr('transform', transform)
-                .call(force.drag)
-                .on('click', highlight)
-                .call(add_symbols);
+        force_start();
 
-        force.start();
         force.on('tick', function () {
             nodes_sel
                 .attr('transform', transform);
         });
+    }
+
+    function force_start () {
+        console.log('nodes');
+        console.log(nodes);
+        nodes_sel = canvas.selectAll('.node')
+                    .data(force.nodes(), nodes_key)
+                .enter()
+                .append('g')
+                    .attr('class', function (d) {
+                        return 'node ' +
+                                d.work_in + ' ' +
+                                d.type;
+                    })
+                    .call(update_node_status)
+                    .style('opacity', set_opacity)
+                    .attr('transform', transform)
+                    .call(force.drag)
+                    .on('click', highlight)
+                    .call(add_symbols);
+
+        force.start();
+    }
+
+    function list_update () {
+
     }
 
     function list_create () {
@@ -608,7 +659,7 @@ function Network (context) {
             .attr('class', 'four-column clearfix offset-one');
 
         nodes_sel = list_col_sel.selectAll('.steamie')
-            .data(nodes)
+            .data(nodes, nodes_key)
             .enter()
             .append('div')
             .each(function (d, i) {
@@ -775,7 +826,7 @@ function Network (context) {
             .stop();
 
         nodes_sel = canvas.selectAll('.node')
-                .data(nodes)
+                .data(nodes, nodes_key)
             .enter()
             .append('g')
                 .attr('class', function (d) {
@@ -840,7 +891,7 @@ function Network (context) {
         }
 
         var temp_nodes_sel = list_col_sel.selectAll('.steamie')
-            .data(nodes)
+            .data(nodes, nodes_key)
             .enter()
             .append('div')
             .each(function (d, i) {
@@ -948,6 +999,8 @@ function Network (context) {
             });
         transition = false;
     }
+
+    function nodes_key (d) { return d.id; }
 
     return network;
 }

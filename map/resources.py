@@ -1,3 +1,8 @@
+import logging
+
+from django.http import Http404
+from django.core.exceptions import ObjectDoesNotExist
+
 from django.conf.urls import url
 
 from tastypie import fields
@@ -9,7 +14,9 @@ from tastypie.authorization import Authorization
 
 from tastypie.exceptions import Unauthorized
 
-from tastypie.resources import ModelResource
+from tastypie.paginator import Paginator
+
+from tastypie.resources import ModelResource, ALL_WITH_RELATIONS, ALL
 
 from tastypie.serializers import Serializer
 
@@ -18,6 +25,9 @@ from tastypie.utils.urls import trailing_slash
 
 from django.contrib.auth.models import User
 from .models import Steamies, Institution, Individual, TopLevelGeo
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 
 class UserObjectsOnlyAuthorization(Authorization):
@@ -97,6 +107,9 @@ class TopLevelGeoResource(ModelResource):
     class Meta(CommonOpenResourceMeta):
         resource_name = 'toplevelgeo'
         queryset = TopLevelGeo.objects.all()
+        filtering = {
+            'id': ALL,
+        }
 
 
 class InstitutionResource(ModelResource):
@@ -136,61 +149,6 @@ class NetworkResource(ModelResource):
     that are associated with a particular
     top level uid
     """
-    steamies = fields.ToManyField(
-        'map.resources.SteamiesResource',
-        'top_level',
-        related_name='top_level',
-        full=True)
-    def prepend_urls(self):
-        return [
-            url(
-            r"^(?P<resource_name>%s)/" % (self._meta.resource_name) +\
-            r"(?P<pk>\w[\w/-]*)" +\
-            r"/steamies%s$" % (trailing_slash()),
-            self.wrap_view('gather_steamies'),
-            name="api_get_steamies"),
-        ]
-
-    def gather_steamies(self, request, **kwargs):
-        try:
-            bundle = self.build_bundle(data={'pk': kwargs['pk']},
-                                       request=request)
-            obj = self.cached_obj_get(
-                bundle=bundle,
-                **self.remove_api_resource_names(kwargs))
-        except ObjectDoesNotExist:
-            return HttpGone()
-        # except MultipleObjectsReturned:
-        #     return HttpMultipleChoices(
-        #             "More than one resource is found at this URI")
-
-        steamies_resource = SteamiesResource()
-        return steamies_resource.get_list(request,
-                                          top_level_id=obj.pk)
-
-
-    class Meta(CommonOpenResourceMeta):
-        queryset = TopLevelGeo.objects.all()
-        resource_name = 'network'
-        limit = 20
-        fields = ['us_state',
-                  'us_district',
-                  'us_district_ordinal',
-                  'us_bool',
-                  'country',
-                  'steamies',
-                  'work_in_education',
-                  'work_in_research',
-                  'work_in_political',
-                  'work_in_industry',]
-
-
-class SteamiesResource(ModelResource):
-    """
-    Returns Steamie objects to NetworkResource
-    to fill out the network diagram with user
-    information.
-    """   
     institution = fields.ForeignKey(
         InstitutionResource,
         'institution',
@@ -201,15 +159,64 @@ class SteamiesResource(ModelResource):
         'individual',
         null=True,
         full=True)
+    top_level = fields.ForeignKey(
+        TopLevelGeoResource,
+        'top_level',
+        null=True,
+        full=True)
+
+    def prepend_urls(self):
+        return [
+            url(
+            r"^(?P<resource_name>%s)/" % (self._meta.resource_name) +\
+            r"(?P<top_level_id>\w[\w/-]+)/$",
+            self.wrap_view('gather_steamies'),
+            name="api_gather_steamies"),
+        ]
+
+    def gather_steamies(self, request, **kwargs):
+        self.method_check(request, allowed=['get'])
+        self.throttle_check(request)
+
+        qs = Steamies.objects\
+                     .filter(top_level_id=kwargs['top_level_id'])
+
+        paginator = Paginator(request.GET,
+                              qs)
+
+        try:
+            page = paginator.page()
+        except InvalidPage:
+            raise Http404("Sorry, no results on that page.")
+
+        objects = []
+
+        for obj in page['objects']:
+            bundle = self.build_bundle(obj=obj,
+                                       request=request)
+            bundle = self.full_dehydrate(bundle)
+            objects.append(bundle)
+
+        page['objects'] = objects
+
+        self.log_throttled_access(request)
+        return self.create_response(request, page)
+
 
     class Meta(CommonOpenResourceMeta):
         queryset = Steamies.objects.all()
+        resource_name = 'network-steamies'
         limit = 20
-        fields = ['description',
+        fields = ['id',
+                  'description',
                   'institution',
                   'individual',
                   'avatar_url',
                   'work_in',]
+
+        filtering = {
+            'top_level': ALL_WITH_RELATIONS
+        }
 
 
 class AuthedInstitutionResource(ModelResource):

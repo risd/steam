@@ -931,9 +931,9 @@ function Network (context) {
         width,
         canvas_wrapper = d3.select('#steamie-network'),
         canvas,
-        nodes,
+        nodes = [],
         force,
-        node_sel,
+        nodes_sel,
         info_tip_sel,
         canvas_blanket_sel,
         fixed_grid_sel,
@@ -962,6 +962,10 @@ function Network (context) {
             'force': force_highlight,
             'list': list_highlight
         },
+        network_update = {
+            'force': force_update,
+            'list': list_update
+        },
         network_transition = {
             'force': {
                 'list': transition_force_to_list
@@ -969,10 +973,12 @@ function Network (context) {
             'list': {
                 'force': transition_list_to_force
             }
-        },
-        store = networkStore(context);
+        };
 
-    var dispatch = d3.dispatch('create');
+    network.dispatch = d3.dispatch('created', 'updated', 'removed');
+
+    store = networkStore(context)
+                .networkDispatch(network.dispatch);
 
     var random_around_zero = function (range) {
         var val = Math.floor(Math.random() * range);
@@ -1014,6 +1020,23 @@ function Network (context) {
         return network;
     };
 
+    network.nodesPush = function (x) {
+        if (x.length >= 0) {
+            // an array, loop
+            x.forEach(function (n, i) {
+                nodes.push(n);
+            });
+        } else {
+            // an object, simply add
+            nodes.push(x);
+        }
+        return network;
+    };
+
+    network.nodesSelData = function () {
+        return nodes_sel.data();
+    };
+
     network.renderSvg = function (x) {
         if(!arguments.length) return render_svg;
 
@@ -1035,6 +1058,7 @@ function Network (context) {
     };
 
     network.create = function () {
+        console.log('creating');
 
         if (built) {
             network.remove();
@@ -1144,8 +1168,17 @@ function Network (context) {
         network_create[network_display]();
         
         built = true;
-        dispatch.create();
+        network.dispatch.created();
         context.clusters.dispatch.clearWaiting();
+
+        return network;
+    };
+
+    network.update = function () {
+        console.log('updating');
+        network_update[network_display]();
+
+        network.dispatch.updated();
 
         return network;
     };
@@ -1197,6 +1230,8 @@ function Network (context) {
 
         built = false;
 
+        network.dispatch.removed();
+
         return network;
     };
 
@@ -1205,9 +1240,9 @@ function Network (context) {
         // you have the users data, just need tlg_id metadata
         // to load and highlight them. then subsequently load others
         // can also pan the map with the tlg request
-        store.get(data);
+        store.highlight(data);
 
-        dispatch.on('create.highlight', function () {
+        network.dispatch.on('created.highlight', function () {
             var highlight_sel = nodes_sel.filter(function (d,i) {
                 if (d[data.steamie_type]) {
                     return d[data.steamie_type].id ===
@@ -1217,7 +1252,7 @@ function Network (context) {
             highlight_sel.each(highlight);
 
             // reset the dispatch;
-            dispatch.on('create.highlight', null);
+            network.dispatch.on('created.highlight', null);
         });
     };
 
@@ -1416,9 +1451,10 @@ function Network (context) {
     function force_coordinates (x) {
         // x:   all nodes
         x.forEach(function (d, i) {
-
-            d.x = width/2 + random_around_zero(30);
-            d.y = height/2 + random_around_zero(30);
+            // only define for nodes that don't already
+            // have values. since new nodes will be added
+            if (!d.x) d.x = width/2 + random_around_zero(30);
+            if (!d.y) d.y = height/2 + random_around_zero(30);
             // define px for more 'splosion
             // d.px = width/2;
             // d.py = height/2;
@@ -1470,6 +1506,10 @@ function Network (context) {
         return g;
     }
 
+    function force_update () {
+        force_start();
+    }
+
     function force_create () {
         // create force graph
         width = window.innerWidth;
@@ -1491,27 +1531,38 @@ function Network (context) {
             .links([])
             .nodes(nodes);
 
-        nodes_sel = canvas.selectAll('.node')
-                .data(nodes)
-            .enter()
-            .append('g')
-                .attr('class', function (d) {
-                    return 'node ' +
-                            d.work_in + ' ' +
-                            d.type;
-                })
-                .call(update_node_status)
-                .style('opacity', set_opacity)
-                .attr('transform', transform)
-                .call(force.drag)
-                .on('click', highlight)
-                .call(add_symbols);
+        force_start();
 
-        force.start();
         force.on('tick', function () {
             nodes_sel
                 .attr('transform', transform);
         });
+    }
+
+    function force_start () {
+        console.log('nodes');
+        console.log(nodes);
+        nodes_sel = canvas.selectAll('.node')
+                    .data(force.nodes(), nodes_key)
+                .enter()
+                .append('g')
+                    .attr('class', function (d) {
+                        return 'node ' +
+                                d.work_in + ' ' +
+                                d.type;
+                    })
+                    .call(update_node_status)
+                    .style('opacity', set_opacity)
+                    .attr('transform', transform)
+                    .call(force.drag)
+                    .on('click', highlight)
+                    .call(add_symbols);
+
+        force.start();
+    }
+
+    function list_update () {
+
     }
 
     function list_create () {
@@ -1526,7 +1577,7 @@ function Network (context) {
             .attr('class', 'four-column clearfix offset-one');
 
         nodes_sel = list_col_sel.selectAll('.steamie')
-            .data(nodes)
+            .data(nodes, nodes_key)
             .enter()
             .append('div')
             .each(function (d, i) {
@@ -1693,7 +1744,7 @@ function Network (context) {
             .stop();
 
         nodes_sel = canvas.selectAll('.node')
-                .data(nodes)
+                .data(nodes, nodes_key)
             .enter()
             .append('g')
                 .attr('class', function (d) {
@@ -1758,7 +1809,7 @@ function Network (context) {
         }
 
         var temp_nodes_sel = list_col_sel.selectAll('.steamie')
-            .data(nodes)
+            .data(nodes, nodes_key)
             .enter()
             .append('div')
             .each(function (d, i) {
@@ -1867,6 +1918,8 @@ function Network (context) {
         transition = false;
     }
 
+    function nodes_key (d) { return d.id; }
+
     return network;
 }
 },{"./networkStore":10,"./svg/buttonForce":14,"./svg/buttonList":15,"./svg/svgCross":16}],10:[function(require,module,exports){
@@ -1877,115 +1930,241 @@ function NetworkStore (context) {
 
     var self = {},
         // stored by id
+        // steamies are all of the steamies
+        // network is two arrays of the steamies
+        //   rendered are already in the network graph
+        //   queued are waiting to be added
+        // title is the title of the network graph
         // {
         //     <tlgid>: {
         //         total: <int>,
         //         steamies: [],
+        //         network: {
+        //             rendered: [],
+        //             queued: []
+        //         },
         //         title: ,
         //     }
         // },
-        request,
-        data = {};
+        steamie_request,
+        highlighted,
+        tlg_request,
+        // flag for controlling a continuous cycle
+        // of gathering steamies for networks
+        // that may already be closed
+        exploring_network = false,
+        data = {},
+        network_dispatch;
 
-    self.highlight = function (x) {
-        // make it work
-    };
+    self.networkDispatch = function (x) {
+        if (!arguments.length) return network_dispatch;
+        network_dispatch = x;
 
-    self.get = function (x) {
-        console.log('network store get');
-        console.log(x);
+        network_dispatch
+            .on('removed.store', function () {
+                exploring_network = false;
+            })
+            .on('created.store', function () {
+                exploring_network = true;
+            });
 
-        // x is the dat to initiliaze the business
-        // {
-        //     tlg_id: ,       <- required
-        //     steamie_id: ,   <- optional, highlight
-        //     steamie_type: , <- optional, highlight 
-        // }
-
-        if (x.tlg_id in data){
-            var current = data[x.tlg_id];
-            // has been previously loaded
-            context.network
-                .nodes(current.steamies)
-                .title(current.title)
-                // highlight?
-                .create();
-            
-
-            // more to load?
-            if (current.total === current.steamies.length) {
-                // all loaded
-            } else {
-                // load more
-                gather_steamies(
-                    x.tlg_id,
-                    current.steamies.length);
-            }
-        } else {
-            // not previously loaded
-            data[x.tlg_id] = {
-                total: undefined,
-                title: undefined,
-                steamies: []
-            };
-
-            gather_steamies(x.tlg_id, 0);
-        }
         return self;
     };
 
-    function gather_steamies (tlg_id, offset) {
-        var args = {
-            tlg_id: tlg_id,
-            offset: offset
-        };
-        if (request) {
-            request.abort();
+    self.highlight = function (x) {
+        console.log('highlight x');
+        console.log(x);
+        highlighted = x.steamie[0];
+        // make it work
+        var current = null;
+        if (x.tlg_id in data) {
+            // already have some data
+            current = data[x.tlg_id];
+
+        } else {
+            // not previously loaded
+            current = data[x.tlg_id] = {
+                total: sum_steamies(x.steamie[0].top_level),
+                title: format_title(x.steamie[0].top_level),
+                steamies: x.steamie
+            };
         }
-        request = context.api
-            .network_steamies_request(args, function (err, results) {
+
+        context.network
+            .nodes(x.steamie)
+            .title(current.title)
+            .create();
+
+        // load the rest of the steamies
+        gather_steamies(current, x.tlg_id, 0);
+
+
+        return self;
+    };
+
+    self.get = function (x) {
+        // x is the properties attribute of the
+        // geojson feature that was clicked
+
+        // coming from this entry point, nothing is highlighted
+        highlighted = undefined;
+
+        var current = null;
+
+        if (x.tlg_id in data) {
+            // has been previously loaded
+            current = data[x.tlg_id];
+
+        } else {
+            // not previously loaded
+            data[x.tlg_id] = current = {
+                total: sum_steamies(x),
+                title: format_title(x),
+                steamies: []
+            };
+
+        }
+
+        context.network
+            .title(current.title);
+
+        gather_steamies(current, x.tlg_id, 0);
+
+        return self;
+    };
+
+    // function get_tlg_meta (tlg_id) {
+    //     if (tlg_request) {
+    //         tlg_request.abort();
+    //     }
+
+    //     tlg_request = context.api
+    //         .toplevelgeo_request(tlg_id, function (err, results) {
+    //             dispatch.attainTLG(results);
+    //         });
+    // }
+
+    function gather_steamies (current, tlg_id, offset) {
+        console.log('gathering');
+        // number of items gathered in the request
+        var count = 20;
+        // gather steamies should orchestrate this.
+        
+        // if you have more steamies than your offset,
+        // then you can dole them out here.
+        if (current.steamies.length > offset) {
+            // we have the steamies
+            var steamies_to_add = current.steamies
+                                        .splice(offset, count);
+            var current_nodes = context.network.nodesSelData();
+            console.log('current_nodes');
+            console.log(current_nodes);
+
+            current_nodes = current_nodes.concat(steamies_to_add);
+            context.network.nodes(current_nodes);
+
+            var so_far = current_nodes.length;
+
+            var network_dispatch_event =
+                set_network_dispatch_event();
+            console.log('so_far', so_far);
+            console.log('current.total', current.total);
+
+            // THIS IS A PROBLEM
+            // current.total is greater than so_far,
+            // because i moved my steamie from one
+            // location to another.
+            // so, if someone updates their position
+            // we don't want to get stuck in a weird
+            // cycle. so having an accurate current.total
+            // value will be important.
+            // another end point for just that?
+            // it would be nice if our total in .meta
+            // was actually acurate. could work toward
+            // that. but its an expense call to make,
+            // is the whole point. since there are so
+            // many to count.
+
+            // PERHAPS
+            // try having the request for steamies
+            // include a total count.
+            // work_in_X numbers would even work
+            // just can't depend on the geojson
+            // marker to have the exact number, since
+            // its written at an interval of 1 min.
+            if ((so_far < current.total) &&
+                (exploring_network)) {
+
+                console.log('needs more steamies');
+
+                set_dispatch_to_gather_steamies(
+                    network_dispatch_event,
+                    current,
+                    tlg_id,
+                    so_far);
+            }
+
+        } else {
+            // we dont have the steamies, yet
+            // if you need to request more steamies, get'em here
+            var request_args = {
+                tlg_id: tlg_id,
+                offset: offset
+            };
+            if (steamie_request) {
+                steamie_request.abort();
+            }
+            steamie_request = context.api
+                .network_steamies_request(
+                    request_args,
+                    function (err, results) {
+
+                new_steamies = results.steamies;
+
+                if (highlighted) {
+                    // ensure highlighted steamie
+                    // is not added as a dupe.
+                    new_steamies = new_steamies
+                        .filter(function(d, i){
+                            if (d.id !== highlighted.id) {
+                                return d;
+                            }
+                        });
+                }
                 console.log('returned data');
                 console.log(results);
 
-                var current = data[tlg_id];
+                context.network.nodesPush(new_steamies);
 
-                var so_far = add_steamies(current, results.steamies);
+                var so_far = context.network.nodes().length;
 
-                if (!(current.title)) {
-                    network_title(current, format_title(results));
-                }
-                if (!(current.total)) {
-                    current.total = sum_steamies(results);
-                }
+                var network_dispatch_event =
+                    set_network_dispatch_event();
 
-                if (context.network.built()) {
-                    context.network.update();
-                } else {
-                    context.network.create();
-                }
+                if ((so_far < current.total) &&
+                    (exploring_network)) {
 
-                if (so_far !== data[tlg_id].total) {
-                    make_request(tlg_id, so_far);
+                    set_dispatch_to_gather_steamies(
+                        network_dispatch_event,
+                        current,
+                        tlg_id,
+                        so_far);
                 }
             });
-    }
-
-    function network_title (current, title) {
-        current.title = title;
-        context.network.title(title);
-    }
-
-    function add_steamies (current, steamies) {
-        current.steamies = current.steamies.concat(steamies);
-        context.network.nodes(current.steamies);
-        return current.steamies.length;
+        }
     }
 
     function sum_steamies(x) {
-        return x.work_in_education +
-               x.work_in_research +
-               x.work_in_political +
-               x.work_in_industry;
+        // geojson does not have the prefix
+        // data from the server will
+        var prefix = '';
+        if ('work_in_education' in x) {
+            prefix = 'work_in_';
+        }
+        return x[prefix + 'education'] +
+               x[prefix + 'research'] +
+               x[prefix + 'political'] +
+               x[prefix + 'industry'];
     }
 
     function format_title (x) {
@@ -2002,6 +2181,40 @@ function NetworkStore (context) {
             title = x.country;
         }
         return title;
+    }
+
+    function set_network_dispatch_event () {
+        var network_dispatch_event;
+        if (context.network.built()) {
+            context.network.update();
+            network_dispatch_event = 'updated.storeGather';
+        } else {
+            context.network.create();
+            network_dispatch_event = 'created.storeGather';
+        }
+        return network_dispatch_event;
+    }
+
+    function set_dispatch_to_gather_steamies (network_dispatch_event,
+                                              current,
+                                              tlg_id,
+                                              so_far) {
+
+        context.network
+            .dispatch
+            .on(network_dispatch_event, function () {
+                context.network
+                    .dispatch
+                    .on(network_dispatch_event, null);
+
+
+                gather_steamies(current, tlg_id, so_far);
+            });
+
+    }
+
+    function node_key (d) {
+        return d.id;
     }
 
     return self;
@@ -4014,7 +4227,7 @@ function Backend () {
     api.network_steamies_url = function (args) {
         // args - .tlg_id, .offset
         return api.api_url +
-            '/network/' + args.tlg_id +
+            '/network-steamies/' + args.tlg_id +
             '/?format=json' +
             (args.offset ? ('&offset=' + args.offset) : '');
     };

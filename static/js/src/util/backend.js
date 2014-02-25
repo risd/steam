@@ -26,7 +26,7 @@ function Backend () {
     api.network_steamies_url = function (args) {
         // args - .tlg_id, .offset
         return api.api_url +
-            '/network/' + args.tlg_id +
+            '/network-steamies/' + args.tlg_id +
             '/?format=json' +
             (args.offset ? ('&offset=' + args.offset) : '');
     };

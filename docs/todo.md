@@ -1,6 +1,8 @@
 ### left off
 
-- sorted bug on frontend, select_geo wasn't returning a value out of the united states.
+- implement network.rendered and .queued in networkStore
+
+- pagination isn't working in tastypie yet. make it so.
 
 - make multiple requests for networks
     - highlight
@@ -12,17 +14,6 @@
         - first batch of steamies
             network_steamies_request
             http://localhost:5000/api/v1/network/342/steamies/?format=json
-
-
-- networkStore.
-    - update resources.py for pagination on nested resources
-        https://github.com/toastdriven/django-tastypie/issues/1031
-        https://github.com/toastdriven/django-tastypie/blob/master/docs/cookbook.rst#nested-resources
-        https://gist.github.com/imom0/4432602
-    - deal with highlight
-    - make a network.update
-
-- be sure no svgs are being appended to the DOM, seems to cause real problems.
 
 - | uglify > `site.min.js` and link to that in map.html
 
