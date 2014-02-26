@@ -102,6 +102,10 @@ function Network (context) {
         return network;
     };
 
+    network.nodesForceData = function (x) {
+        return force.nodes();
+    }
+
     network.nodesPush = function (x) {
         if (x.length >= 0) {
             // an array, loop
@@ -113,10 +117,6 @@ function Network (context) {
             nodes.push(x);
         }
         return network;
-    };
-
-    network.nodesSelData = function () {
-        return nodes_sel.data();
     };
 
     network.renderSvg = function (x) {
@@ -322,9 +322,8 @@ function Network (context) {
         // you have the users data, just need tlg_id metadata
         // to load and highlight them. then subsequently load others
         // can also pan the map with the tlg request
-        store.highlight(data);
-
         network.dispatch.on('created.highlight', function () {
+            console.log('higlighting');
             var highlight_sel = nodes_sel.filter(function (d,i) {
                 if (d[data.steamie_type]) {
                     return d[data.steamie_type].id ===
@@ -336,6 +335,8 @@ function Network (context) {
             // reset the dispatch;
             network.dispatch.on('created.highlight', null);
         });
+
+        store.highlight(data);
     };
 
     network.transition = function () {
@@ -622,10 +623,8 @@ function Network (context) {
     }
 
     function force_start () {
-        console.log('nodes');
-        console.log(nodes);
         nodes_sel = canvas.selectAll('.node')
-                    .data(force.nodes(), nodes_key)
+            .data(force.nodes(), nodes_key)
                 .enter()
                 .append('g')
                     .attr('class', function (d) {

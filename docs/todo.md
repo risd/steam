@@ -1,19 +1,7 @@
 ### left off
 
-- implement network.rendered and .queued in networkStore
-
-- pagination isn't working in tastypie yet. make it so.
-
-- make multiple requests for networks
-    - highlight
-        - you have user data, just wait for tlg metadata
-    - create
-        - get tlg metadata
-            api.toplevelgeo_request
-            http://localhost:5000/api/v1/toplevelgeo/342/?format=json
-        - first batch of steamies
-            network_steamies_request
-            http://localhost:5000/api/v1/network/342/steamies/?format=json
+- `network.js` replace references to `nodes` with `force.nodes()`
+    - refer to mike's exampel http://bl.ocks.org/mbostock/1095795
 
 - | uglify > `site.min.js` and link to that in map.html
 
