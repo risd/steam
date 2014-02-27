@@ -973,7 +973,8 @@ function Network (context) {
             'list': {
                 'force': transition_list_to_force
             }
-        };
+        },
+        format = d3.format(',');
 
     network.dispatch = d3.dispatch('created', 'updated', 'removed');
 
@@ -1019,10 +1020,6 @@ function Network (context) {
 
         return network;
     };
-
-    network.nodesForceData = function (x) {
-        return force.nodes();
-    }
 
     network.nodesPush = function (x) {
         if (x.length >= 0) {
@@ -1120,17 +1117,23 @@ function Network (context) {
                 .attr('class', 'four-column offset-one ' +
                                'network-count-wrapper clearfix');
 
-        count_sel = count_sel_wrapper.selectAll('p')
+        var count_sel_wrapper_p = count_sel_wrapper.append('p')
+            .attr('class', 'network-count');
+
+        count_sel = count_sel_wrapper_p.selectAll('span')
             .data([{
                 count: nodes.length
             }])
             .enter()
-            .append('p')
-            .attr('class', 'network-count')
+            .append('span')
+            .attr('class', 'count')
             .html(function (d) {
-                return d.count + ' <span class="label">'+
-                                 'STEAMies</span>';
+                return d.count;
             });
+
+        count_sel_wrapper_p.append('span')
+            .attr('class', 'label')
+            .text(' STEAMies');
 
         var buttons_sel = fixed_grid_sel
             .append('div')
@@ -1175,9 +1178,10 @@ function Network (context) {
     };
 
     network.update = function () {
-        console.log('updating');
+        console.log('network.update');
         network_update[network_display]();
 
+        update_count();
         network.dispatch.updated();
 
         return network;
@@ -1542,7 +1546,9 @@ function Network (context) {
 
     function force_start () {
         nodes_sel = canvas.selectAll('.node')
-            .data(force.nodes(), nodes_key)
+            .data(force.nodes(), nodes_key);
+
+        nodes_sel
                 .enter()
                 .append('g')
                     .attr('class', function (d) {
@@ -1570,7 +1576,8 @@ function Network (context) {
         overflow_grid_wrapper_sel
             .style('top', '0');
 
-        var svg_dimensions = ((radius_outter * 2) * scale['selected']);
+        var svg_dimensions = ((radius_outter * 2) *
+                               scale['selected']);
 
         list_col_sel = overflow_grid_sel.append('div')
             .attr('class', 'four-column clearfix offset-one');
@@ -1798,7 +1805,8 @@ function Network (context) {
 
         
         // list create
-        var svg_dimensions = ((radius_outter * 2) * scale['selected']);
+        var svg_dimensions = ((radius_outter * 2) *
+                              scale['selected']);
 
         list_col_sel = overflow_grid_sel.append('div')
             .attr('class', 'four-column clearfix offset-one');
@@ -1917,6 +1925,25 @@ function Network (context) {
         transition = false;
     }
 
+    function update_count () {
+        var data = count_sel.data()[0];
+
+        data.prev_count = data.count;
+        data.count = nodes.length;
+
+        count_sel.data(data);
+        count_sel
+            .transition()
+            .duration(800)
+            .tween('text', function (d) {
+                var i = d3.interpolateRound(d.prev_count,
+                                            d.count);
+                return function (t) {
+                    this.textContent = format(i(t));
+                };
+            });
+    }
+
     function nodes_key (d) { return d.id; }
 
     return network;
@@ -1971,6 +1998,7 @@ function NetworkStore (context) {
     };
 
     self.highlight = function (x) {
+        exploring_network = true;
         highlighted = x.steamie[0];
         // make it work
         if (x.tlg_id in data) {
@@ -1982,10 +2010,7 @@ function NetworkStore (context) {
                 total: sum_steamies(x.steamie[0].top_level),
                 title: format_title(x.steamie[0].top_level),
                 steamies: x.steamie,
-                network: {
-                    rendered: x.steamie,
-                    queued: []
-                }
+                network: {}
             };
         }
 
@@ -2006,6 +2031,7 @@ function NetworkStore (context) {
     };
 
     self.get = function (x) {
+        exploring_network = true;
         // x is the properties attribute of the
         // geojson feature that was clicked
 
@@ -2023,10 +2049,7 @@ function NetworkStore (context) {
                 total: sum_steamies(x),
                 title: format_title(x),
                 steamies: [],
-                network: {
-                    rendered: [],
-                    queued: []
-                }
+                network: {}
             };
 
         }
@@ -2081,7 +2104,7 @@ function NetworkStore (context) {
                               .rendered
                               .concat(steamies_to_add);
 
-            var so_far = context.network.nodesForceData().length;
+            var so_far = context.network.nodes().length;
 
             console.log('so far: ', so_far);
             console.log('total:  ', data[tlg_id].total);
@@ -2093,6 +2116,8 @@ function NetworkStore (context) {
                     tlg_id,
                     so_far);
             }
+
+            render_new_steamies();
 
         } else {
             console.log('getting more steamies');
@@ -2141,7 +2166,7 @@ function NetworkStore (context) {
                                     .rendered
                                     .concat(steamies_to_add);
 
-                var so_far = context.network.nodesForceData().length;
+                var so_far = context.network.nodes().length;
 
                 console.log('so far: ', so_far);
                 console.log('total:  ', data[tlg_id].total);
@@ -2153,6 +2178,8 @@ function NetworkStore (context) {
                         tlg_id,
                         so_far);
                 }
+
+                render_new_steamies();
             });
         }
     }
@@ -2188,6 +2215,9 @@ function NetworkStore (context) {
 
     function set_dispatch_to_gather_steamies (tlg_id,
                                               so_far) {
+
+        console.log('setting dispatch to get more, maybe');
+
         var network_dispatch_event;
         if (context.network.built()) {
             network_dispatch_event = 'updated.storeGather';
@@ -2205,13 +2235,16 @@ function NetworkStore (context) {
 
                 gather_steamies(tlg_id, so_far);
             });
-        
+    }
+
+    function render_new_steamies () {
         if (context.network.built()) {
+            console.log('update');
             context.network.update();
         } else {
+            console.log('create');
             context.network.create();
         }
-
     }
 
     function node_key (d) {

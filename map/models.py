@@ -497,14 +497,16 @@ def update_steamie_related_save(sender, instance, *args, **kwargs):
         instance.change_work_in_count(amount=1)
 
     if ((old.individual is None) and\
-        (not (instance.individual is None))):
+        (not (instance.individual is None)) and\
+        (not (instance.user is None))):
 
         instance.individual.first_name = instance.user.first_name
         instance.individual.last_name = instance.user.last_name
         instance.individual.save()
 
     elif ((old.institution is None) and\
-          (not (instance.institution is None))):
+          (not (instance.institution is None)) and\
+          (not (instance.user is None))):
 
         instance.institution.name = instance.user.username
         instance.institution.save()

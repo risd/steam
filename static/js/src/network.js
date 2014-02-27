@@ -55,7 +55,8 @@ function Network (context) {
             'list': {
                 'force': transition_list_to_force
             }
-        };
+        },
+        format = d3.format(',');
 
     network.dispatch = d3.dispatch('created', 'updated', 'removed');
 
@@ -101,10 +102,6 @@ function Network (context) {
 
         return network;
     };
-
-    network.nodesForceData = function (x) {
-        return force.nodes();
-    }
 
     network.nodesPush = function (x) {
         if (x.length >= 0) {
@@ -202,17 +199,23 @@ function Network (context) {
                 .attr('class', 'four-column offset-one ' +
                                'network-count-wrapper clearfix');
 
-        count_sel = count_sel_wrapper.selectAll('p')
+        var count_sel_wrapper_p = count_sel_wrapper.append('p')
+            .attr('class', 'network-count');
+
+        count_sel = count_sel_wrapper_p.selectAll('span')
             .data([{
                 count: nodes.length
             }])
             .enter()
-            .append('p')
-            .attr('class', 'network-count')
+            .append('span')
+            .attr('class', 'count')
             .html(function (d) {
-                return d.count + ' <span class="label">'+
-                                 'STEAMies</span>';
+                return d.count;
             });
+
+        count_sel_wrapper_p.append('span')
+            .attr('class', 'label')
+            .text(' STEAMies');
 
         var buttons_sel = fixed_grid_sel
             .append('div')
@@ -257,9 +260,10 @@ function Network (context) {
     };
 
     network.update = function () {
-        console.log('updating');
+        console.log('network.update');
         network_update[network_display]();
 
+        update_count();
         network.dispatch.updated();
 
         return network;
@@ -624,7 +628,9 @@ function Network (context) {
 
     function force_start () {
         nodes_sel = canvas.selectAll('.node')
-            .data(force.nodes(), nodes_key)
+            .data(force.nodes(), nodes_key);
+
+        nodes_sel
                 .enter()
                 .append('g')
                     .attr('class', function (d) {
@@ -652,7 +658,8 @@ function Network (context) {
         overflow_grid_wrapper_sel
             .style('top', '0');
 
-        var svg_dimensions = ((radius_outter * 2) * scale['selected']);
+        var svg_dimensions = ((radius_outter * 2) *
+                               scale['selected']);
 
         list_col_sel = overflow_grid_sel.append('div')
             .attr('class', 'four-column clearfix offset-one');
@@ -880,7 +887,8 @@ function Network (context) {
 
         
         // list create
-        var svg_dimensions = ((radius_outter * 2) * scale['selected']);
+        var svg_dimensions = ((radius_outter * 2) *
+                              scale['selected']);
 
         list_col_sel = overflow_grid_sel.append('div')
             .attr('class', 'four-column clearfix offset-one');
@@ -997,6 +1005,25 @@ function Network (context) {
                 nodes_sel = temp_nodes_sel;
             });
         transition = false;
+    }
+
+    function update_count () {
+        var data = count_sel.data()[0];
+
+        data.prev_count = data.count;
+        data.count = nodes.length;
+
+        count_sel.data(data);
+        count_sel
+            .transition()
+            .duration(800)
+            .tween('text', function (d) {
+                var i = d3.interpolateRound(d.prev_count,
+                                            d.count);
+                return function (t) {
+                    this.textContent = format(i(t));
+                };
+            });
     }
 
     function nodes_key (d) { return d.id; }
