@@ -2670,7 +2670,7 @@ rect.blanket {
   cursor: pointer;
   display: inline-block; }
   .network-display-button:first-child {
-    margin-right: -3px; }
+    margin-right: -2px; }
   .network-display-button rect,
   .network-display-button circle,
   .network-display-button line {

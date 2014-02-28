@@ -269,8 +269,10 @@ function Network (context) {
         network.dispatch.created();
         context.clusters.dispatch.clearWaiting();
 
-        update_count();
-        update_progress_bar();
+        setTimeout(function () {
+            update_count();
+            update_progress_bar();
+        }, 300);
 
         return network;
     };
@@ -294,6 +296,7 @@ function Network (context) {
     };
 
     network.remove = function () {
+        store.abort();
         // no draw on the map
         // d3.select('#steam-map').classed('active', true);
 
@@ -611,6 +614,8 @@ function Network (context) {
     }
 
     function force_update () {
+        var g = gravity_based_on_node_count(nodes.length);
+        force.gravity(g);
         force_start();
     }
 
@@ -682,7 +687,9 @@ function Network (context) {
             .attr('class', 'four-column clearfix offset-one');
 
         nodes_sel = list_col_sel.selectAll('.steamie')
-            .data(nodes, nodes_key)
+            .data(nodes, nodes_key);
+
+        nodes_sel
             .enter()
             .append('div')
             .each(function (d, i) {
@@ -1047,7 +1054,7 @@ function Network (context) {
         if (nodes_to_expect_count) {
             var percent = ((nodes.length/nodes_to_expect_count)*100);
             progress_bar_sel.style('width', (percent + '%'));
-            if (percent === 100) {
+            if (percent >= 100) {
                 progress_bar_sel.classed('hide', true);
             }
         }

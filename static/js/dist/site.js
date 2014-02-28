@@ -2814,8 +2814,10 @@ function Network (context) {
         network.dispatch.created();
         context.clusters.dispatch.clearWaiting();
 
-        update_count();
-        update_progress_bar();
+        setTimeout(function () {
+            update_count();
+            update_progress_bar();
+        }, 300);
 
         return network;
     };
@@ -2839,6 +2841,7 @@ function Network (context) {
     };
 
     network.remove = function () {
+        store.abort();
         // no draw on the map
         // d3.select('#steam-map').classed('active', true);
 
@@ -3156,6 +3159,8 @@ function Network (context) {
     }
 
     function force_update () {
+        var g = gravity_based_on_node_count(nodes.length);
+        force.gravity(g);
         force_start();
     }
 
@@ -3227,7 +3232,9 @@ function Network (context) {
             .attr('class', 'four-column clearfix offset-one');
 
         nodes_sel = list_col_sel.selectAll('.steamie')
-            .data(nodes, nodes_key)
+            .data(nodes, nodes_key);
+
+        nodes_sel
             .enter()
             .append('div')
             .each(function (d, i) {
@@ -3592,7 +3599,7 @@ function Network (context) {
         if (nodes_to_expect_count) {
             var percent = ((nodes.length/nodes_to_expect_count)*100);
             progress_bar_sel.style('width', (percent + '%'));
-            if (percent === 100) {
+            if (percent >= 100) {
                 progress_bar_sel.classed('hide', true);
             }
         }
@@ -3633,6 +3640,7 @@ function NetworkStore (context) {
         // of gathering steamies for networks
         // that may already be closed
         exploring_network = false,
+        prev_response_length,
         data = {},
         network_dispatch;
 
@@ -3641,6 +3649,12 @@ function NetworkStore (context) {
     //     if (arguments.length === 1) return data[x];
     //     return self;
     // };
+
+    self.abort = function () {
+        if (steamie_request) {
+            steamie_request.abort();
+        }
+    };
 
     self.networkDispatch = function (x) {
         if (!arguments.length) return network_dispatch;
@@ -3728,7 +3742,6 @@ function NetworkStore (context) {
 
     function gather_steamies (tlg_id, offset) {
         console.log('gathering. current:');
-        console.log(data[tlg_id].steamies);
         // number of items gathered in the request
         var count = 20;
         // gather steamies should orchestrate this.
@@ -3752,12 +3765,14 @@ function NetworkStore (context) {
                             return d;
                         }
                     });
-            }
 
-            if (context.network.built()) {
                 context.network.nodesPush(steamies_to_add);
             } else {
-                context.network.nodes(steamies_to_add);
+                if (context.network.built()) {
+                    context.network.nodesPush(steamies_to_add);
+                } else {
+                    context.network.nodes(steamies_to_add);
+                }
             }
 
             data[tlg_id].network.rendered =
@@ -3797,6 +3812,17 @@ function NetworkStore (context) {
                     function (err, results) {
 
                 if (results.objects.length === 0) return;
+                if ((results.objects.length ===
+                        prev_response_length) &&
+                    (results.objects.length < count)) {
+
+                    // consecutive requests with the
+                    // same number of objects, less
+                    // than the count. means something
+                    // is not processing correctly.
+                    console.log('consecutive non productive requests');
+                    return;
+                }
 
                 console.log('results');
                 console.log(results);
@@ -3815,13 +3841,16 @@ function NetworkStore (context) {
                                 return d;
                             }
                         });
-                }
 
-                if (context.network.built()) {
                     context.network.nodesPush(steamies_to_add);
                 } else {
-                    context.network.nodes(steamies_to_add);
+                    if (context.network.built()) {
+                        context.network.nodesPush(steamies_to_add);
+                    } else {
+                        context.network.nodes(steamies_to_add);
+                    }
                 }
+
                 data[tlg_id].steamies = data[tlg_id].steamies
                                           .concat(steamies_to_add);
                 data[tlg_id].network.rendered =
@@ -3843,6 +3872,8 @@ function NetworkStore (context) {
                 }
 
                 render_new_steamies();
+
+                prev_response_length = results.objects.length;
             });
         }
     }
@@ -3879,7 +3910,7 @@ function NetworkStore (context) {
     function set_dispatch_to_gather_steamies (tlg_id,
                                               so_far) {
 
-        console.log('setting dispatch to get more, maybe');
+        console.log('setting dispatch to get more');
 
         var network_dispatch_event;
         if (context.network.built()) {
@@ -4228,6 +4259,17 @@ module.exports = function Profile (context) {
                     
                 var d = context.user.data(),
                     type  = context.user.type();
+
+                // move the map
+                var sw = L.latLng(
+                        d.top_level.miny,
+                        d.top_level.minx),
+
+                    ne = L.latLng(
+                        d.top_level.maxy,
+                        d.top_level.maxx);
+
+                context.map.fitBounds(L.latLngBounds(sw, ne));
 
                 context.network
                     .highlight({

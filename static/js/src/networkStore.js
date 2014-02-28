@@ -28,6 +28,7 @@ function NetworkStore (context) {
         // of gathering steamies for networks
         // that may already be closed
         exploring_network = false,
+        prev_response_length,
         data = {},
         network_dispatch;
 
@@ -36,6 +37,12 @@ function NetworkStore (context) {
     //     if (arguments.length === 1) return data[x];
     //     return self;
     // };
+
+    self.abort = function () {
+        if (steamie_request) {
+            steamie_request.abort();
+        }
+    };
 
     self.networkDispatch = function (x) {
         if (!arguments.length) return network_dispatch;
@@ -123,7 +130,6 @@ function NetworkStore (context) {
 
     function gather_steamies (tlg_id, offset) {
         console.log('gathering. current:');
-        console.log(data[tlg_id].steamies);
         // number of items gathered in the request
         var count = 20;
         // gather steamies should orchestrate this.
@@ -147,12 +153,14 @@ function NetworkStore (context) {
                             return d;
                         }
                     });
-            }
 
-            if (context.network.built()) {
                 context.network.nodesPush(steamies_to_add);
             } else {
-                context.network.nodes(steamies_to_add);
+                if (context.network.built()) {
+                    context.network.nodesPush(steamies_to_add);
+                } else {
+                    context.network.nodes(steamies_to_add);
+                }
             }
 
             data[tlg_id].network.rendered =
@@ -192,6 +200,17 @@ function NetworkStore (context) {
                     function (err, results) {
 
                 if (results.objects.length === 0) return;
+                if ((results.objects.length ===
+                        prev_response_length) &&
+                    (results.objects.length < count)) {
+
+                    // consecutive requests with the
+                    // same number of objects, less
+                    // than the count. means something
+                    // is not processing correctly.
+                    console.log('consecutive non productive requests');
+                    return;
+                }
 
                 console.log('results');
                 console.log(results);
@@ -210,13 +229,16 @@ function NetworkStore (context) {
                                 return d;
                             }
                         });
-                }
 
-                if (context.network.built()) {
                     context.network.nodesPush(steamies_to_add);
                 } else {
-                    context.network.nodes(steamies_to_add);
+                    if (context.network.built()) {
+                        context.network.nodesPush(steamies_to_add);
+                    } else {
+                        context.network.nodes(steamies_to_add);
+                    }
                 }
+
                 data[tlg_id].steamies = data[tlg_id].steamies
                                           .concat(steamies_to_add);
                 data[tlg_id].network.rendered =
@@ -238,6 +260,8 @@ function NetworkStore (context) {
                 }
 
                 render_new_steamies();
+
+                prev_response_length = results.objects.length;
             });
         }
     }
@@ -274,7 +298,7 @@ function NetworkStore (context) {
     function set_dispatch_to_gather_steamies (tlg_id,
                                               so_far) {
 
-        console.log('setting dispatch to get more, maybe');
+        console.log('setting dispatch to get more');
 
         var network_dispatch_event;
         if (context.network.built()) {

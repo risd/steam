@@ -1,5 +1,9 @@
 ### left off
 
+- url for particular locations
+    - WA/7th/
+        - then you can share particular URLs or your network.
+
 - `network.js` replace references to `nodes` with `force.nodes()`
     - refer to mike's exampel http://bl.ocks.org/mbostock/1095795
 

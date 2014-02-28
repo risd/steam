@@ -91,6 +91,17 @@ module.exports = function Profile (context) {
                 var d = context.user.data(),
                     type  = context.user.type();
 
+                // move the map
+                var sw = L.latLng(
+                        d.top_level.miny,
+                        d.top_level.minx),
+
+                    ne = L.latLng(
+                        d.top_level.maxy,
+                        d.top_level.maxx);
+
+                context.map.fitBounds(L.latLngBounds(sw, ne));
+
                 context.network
                     .highlight({
                         tlg_id: d.top_level.id,
