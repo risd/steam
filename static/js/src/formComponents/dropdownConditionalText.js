@@ -239,14 +239,15 @@ module.exports = function dropdownConditionalText () {
     function update_visual_display () {
         var args = args_for_rendering();
 
+        console.log('updating visual for geo');
+        console.log(args);
+
         text_selection
-            .selectAll('.input-text')
             .data(args.text_selection_data);
 
         text_selection
-            .attr('class', function (d) {
-                var active = d.active ? ' active' : '';
-                return 'input-text hide-til-active' + active;
+            .classed('active', function (d) {
+                return d.active;
             });
 
         editable_text.value(args.editable_text);

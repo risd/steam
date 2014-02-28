@@ -423,14 +423,15 @@ module.exports = function dropdownConditionalText () {
     function update_visual_display () {
         var args = args_for_rendering();
 
+        console.log('updating visual for geo');
+        console.log(args);
+
         text_selection
-            .selectAll('.input-text')
             .data(args.text_selection_data);
 
         text_selection
-            .attr('class', function (d) {
-                var active = d.active ? ' active' : '';
-                return 'input-text hide-til-active' + active;
+            .classed('active', function (d) {
+                return d.active;
             });
 
         editable_text.value(args.editable_text);
@@ -1097,9 +1098,14 @@ function Network (context) {
             .append('div')
                 .attr('class', 'four-column clearfix offset-one');
 
+
         four_col_sel
             .append('h3')
                 .html(title);
+
+        progress_bar_sel = four_col_sel
+            .append('div')
+            .attr('class', 'network-progress');
 
         four_col_sel
             .append('div')
@@ -1174,10 +1180,6 @@ function Network (context) {
             })
             .html(function (d) { return d.html; });
 
-        progress_bar_sel = canvas_wrapper
-            .append('div')
-            .attr('class', 'network-progress');
-
         // end create divs
 
         network_create[network_display]();
@@ -1185,6 +1187,9 @@ function Network (context) {
         built = true;
         network.dispatch.created();
         context.clusters.dispatch.clearWaiting();
+
+        update_count();
+        update_progress_bar();
 
         return network;
     };
@@ -3363,16 +3368,17 @@ module.exports = function Profile (context) {
             context.user.data(results);
             profile.data(results);
 
+            // resets the initial values to the ones saved
+            // to the server. in case the user continues to
+            // do work while its being saved.
+            profile.updatable.resetInitialValues();
+
             // reset the initial value of geo manually
             // since it gets validated server side
             profile.geo
                 .initialValue(results.top_level_input)
                 .updateDOM();
 
-            // resets the initial values to the ones saved
-            // to the server. in case the user continues to
-            // do work while its being saved.
-            profile.updatable.resetInitialValues();
             // will reset the save button, unless
             // they have continued to edit
             validate();

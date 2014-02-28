@@ -248,16 +248,17 @@ module.exports = function Profile (context) {
             context.user.data(results);
             profile.data(results);
 
+            // resets the initial values to the ones saved
+            // to the server. in case the user continues to
+            // do work while its being saved.
+            profile.updatable.resetInitialValues();
+
             // reset the initial value of geo manually
             // since it gets validated server side
             profile.geo
                 .initialValue(results.top_level_input)
                 .updateDOM();
 
-            // resets the initial values to the ones saved
-            // to the server. in case the user continues to
-            // do work while its being saved.
-            profile.updatable.resetInitialValues();
             // will reset the save button, unless
             // they have continued to edit
             validate();

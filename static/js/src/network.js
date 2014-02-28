@@ -179,9 +179,14 @@ function Network (context) {
             .append('div')
                 .attr('class', 'four-column clearfix offset-one');
 
+
         four_col_sel
             .append('h3')
                 .html(title);
+
+        progress_bar_sel = four_col_sel
+            .append('div')
+            .attr('class', 'network-progress');
 
         four_col_sel
             .append('div')
@@ -256,10 +261,6 @@ function Network (context) {
             })
             .html(function (d) { return d.html; });
 
-        progress_bar_sel = canvas_wrapper
-            .append('div')
-            .attr('class', 'network-progress');
-
         // end create divs
 
         network_create[network_display]();
@@ -267,6 +268,9 @@ function Network (context) {
         built = true;
         network.dispatch.created();
         context.clusters.dispatch.clearWaiting();
+
+        update_count();
+        update_progress_bar();
 
         return network;
     };
