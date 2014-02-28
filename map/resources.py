@@ -159,11 +159,6 @@ class NetworkResource(ModelResource):
         'individual',
         null=True,
         full=True)
-    top_level = fields.ForeignKey(
-        TopLevelGeoResource,
-        'top_level',
-        null=True,
-        full=True)
 
     def prepend_urls(self):
         return [
