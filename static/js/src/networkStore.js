@@ -28,7 +28,6 @@ function NetworkStore (context) {
         // of gathering steamies for networks
         // that may already be closed
         exploring_network = false,
-        prev_response_length,
         data = {},
         network_dispatch;
 
@@ -66,6 +65,8 @@ function NetworkStore (context) {
         if (x.tlg_id in data) {
             // already have some data
 
+            context.network
+                   .nodesToExpect(data[x.tlg_id].total);
         } else {
             // not previously loaded
             data[x.tlg_id] = {
@@ -103,6 +104,8 @@ function NetworkStore (context) {
         if (x.tlg_id in data) {
             console.log('found steamie stash');
             // has been previously loaded
+            context.network
+                   .nodesToExpect(data[x.tlg_id].total);
 
         } else {
             console.log('new steamie stash');
@@ -141,8 +144,10 @@ function NetworkStore (context) {
             console.log(data[tlg_id].network.queued.length);
             // we have the steamies
 
-            var steamies_to_add = data[tlg_id].network.queued
-                                        .splice(0, count);
+            var steamies_to_add =
+                    [].concat(data[tlg_id].network.queued);
+
+            data[tlg_id].network.queued = [];
 
             if (highlighted) {
                 // ensure highlighted steamie
@@ -200,17 +205,6 @@ function NetworkStore (context) {
                     function (err, results) {
 
                 if (results.objects.length === 0) return;
-                if ((results.objects.length ===
-                        prev_response_length) &&
-                    (results.objects.length < count)) {
-
-                    // consecutive requests with the
-                    // same number of objects, less
-                    // than the count. means something
-                    // is not processing correctly.
-                    console.log('consecutive non productive requests');
-                    return;
-                }
 
                 console.log('results');
                 console.log(results);
@@ -260,8 +254,6 @@ function NetworkStore (context) {
                 }
 
                 render_new_steamies();
-
-                prev_response_length = results.objects.length;
             });
         }
     }
