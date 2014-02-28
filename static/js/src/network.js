@@ -342,6 +342,9 @@ function Network (context) {
     };
 
     network.highlight = function (data) {
+        if (built) {
+            network.remove();
+        }
         // data = .steamie_id, .tlg_id .steamie_type .steamie }
         // you have the users data, just need tlg_id metadata
         // to load and highlight them. then subsequently load others
