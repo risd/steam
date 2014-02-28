@@ -943,6 +943,8 @@ function Network (context) {
         grid_wrapper_sel,
         list_col_sel,
         count_sel,
+        progress_bar_sel,
+        nodes_to_expect_count,
         built = false,
         highlighted = false,
         transition = false,
@@ -1031,6 +1033,12 @@ function Network (context) {
             // an object, simply add
             nodes.push(x);
         }
+        return network;
+    };
+
+    network.nodesToExpect = function (x) {
+        if (!arguments.length) return nodes_to_expect_count;
+        nodes_to_expect_count = x;
         return network;
     };
 
@@ -1166,6 +1174,10 @@ function Network (context) {
             })
             .html(function (d) { return d.html; });
 
+        progress_bar_sel = canvas_wrapper
+            .append('div')
+            .attr('class', 'network-progress');
+
         // end create divs
 
         network_create[network_display]();
@@ -1182,6 +1194,7 @@ function Network (context) {
         network_update[network_display]();
 
         update_count();
+        update_progress_bar();
         network.dispatch.updated();
 
         return network;
@@ -1213,8 +1226,8 @@ function Network (context) {
                 d3.transition(nodes_sel.data([]).exit())
                     .style('opacity', 0)
                     .remove();
-
-                d3.transition(overflow_grid_sel)
+                    
+                d3.transition(overflow_grid_wrapper_sel)
                     .remove();
                 d3.transition(fixed_grid_wrapper_sel)
                     .remove();
@@ -1944,6 +1957,16 @@ function Network (context) {
             });
     }
 
+    function update_progress_bar () {
+        if (nodes_to_expect_count) {
+            var percent = ((nodes.length/nodes_to_expect_count)*100);
+            progress_bar_sel.style('width', (percent + '%'));
+            if (percent === 100) {
+                progress_bar_sel.classed('hide', true);
+            }
+        }
+    }
+
     function nodes_key (d) { return d.id; }
 
     return network;
@@ -1981,6 +2004,12 @@ function NetworkStore (context) {
         exploring_network = false,
         data = {},
         network_dispatch;
+
+    // self.nodes = function (tlg_id, current_nodes) {
+    //     if (!arguments.length) return self;
+    //     if (arguments.length === 1) return data[x];
+    //     return self;
+    // };
 
     self.networkDispatch = function (x) {
         if (!arguments.length) return network_dispatch;
@@ -2075,12 +2104,13 @@ function NetworkStore (context) {
         
         // if you have more steamies than your offset,
         // then you can dole them out here.
-        if (data[tlg_id].network.queued.length > offset) {
+        if (data[tlg_id].network.queued.length > 0) {
             console.log('have steamies');
+            console.log(data[tlg_id].network.queued.length);
             // we have the steamies
 
             var steamies_to_add = data[tlg_id].network.queued
-                                        .splice(offset, count);
+                                        .splice(0, count);
 
             if (highlighted) {
                 // ensure highlighted steamie
@@ -2142,6 +2172,8 @@ function NetworkStore (context) {
 
                 steamies_to_add = results.objects;
                 data[tlg_id].total = results.meta.total_count;
+                context.network
+                       .nodesToExpect(results.meta.total_count);
 
                 if (highlighted) {
                     // ensure highlighted steamie

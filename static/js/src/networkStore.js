@@ -31,6 +31,12 @@ function NetworkStore (context) {
         data = {},
         network_dispatch;
 
+    // self.nodes = function (tlg_id, current_nodes) {
+    //     if (!arguments.length) return self;
+    //     if (arguments.length === 1) return data[x];
+    //     return self;
+    // };
+
     self.networkDispatch = function (x) {
         if (!arguments.length) return network_dispatch;
         network_dispatch = x;
@@ -124,12 +130,13 @@ function NetworkStore (context) {
         
         // if you have more steamies than your offset,
         // then you can dole them out here.
-        if (data[tlg_id].network.queued.length > offset) {
+        if (data[tlg_id].network.queued.length > 0) {
             console.log('have steamies');
+            console.log(data[tlg_id].network.queued.length);
             // we have the steamies
 
             var steamies_to_add = data[tlg_id].network.queued
-                                        .splice(offset, count);
+                                        .splice(0, count);
 
             if (highlighted) {
                 // ensure highlighted steamie
@@ -191,6 +198,8 @@ function NetworkStore (context) {
 
                 steamies_to_add = results.objects;
                 data[tlg_id].total = results.meta.total_count;
+                context.network
+                       .nodesToExpect(results.meta.total_count);
 
                 if (highlighted) {
                     // ensure highlighted steamie

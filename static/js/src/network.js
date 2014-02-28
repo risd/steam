@@ -25,6 +25,8 @@ function Network (context) {
         grid_wrapper_sel,
         list_col_sel,
         count_sel,
+        progress_bar_sel,
+        nodes_to_expect_count,
         built = false,
         highlighted = false,
         transition = false,
@@ -113,6 +115,12 @@ function Network (context) {
             // an object, simply add
             nodes.push(x);
         }
+        return network;
+    };
+
+    network.nodesToExpect = function (x) {
+        if (!arguments.length) return nodes_to_expect_count;
+        nodes_to_expect_count = x;
         return network;
     };
 
@@ -248,6 +256,10 @@ function Network (context) {
             })
             .html(function (d) { return d.html; });
 
+        progress_bar_sel = canvas_wrapper
+            .append('div')
+            .attr('class', 'network-progress');
+
         // end create divs
 
         network_create[network_display]();
@@ -264,6 +276,7 @@ function Network (context) {
         network_update[network_display]();
 
         update_count();
+        update_progress_bar();
         network.dispatch.updated();
 
         return network;
@@ -295,8 +308,8 @@ function Network (context) {
                 d3.transition(nodes_sel.data([]).exit())
                     .style('opacity', 0)
                     .remove();
-
-                d3.transition(overflow_grid_sel)
+                    
+                d3.transition(overflow_grid_wrapper_sel)
                     .remove();
                 d3.transition(fixed_grid_wrapper_sel)
                     .remove();
@@ -1024,6 +1037,16 @@ function Network (context) {
                     this.textContent = format(i(t));
                 };
             });
+    }
+
+    function update_progress_bar () {
+        if (nodes_to_expect_count) {
+            var percent = ((nodes.length/nodes_to_expect_count)*100);
+            progress_bar_sel.style('width', (percent + '%'));
+            if (percent === 100) {
+                progress_bar_sel.classed('hide', true);
+            }
+        }
     }
 
     function nodes_key (d) { return d.id; }

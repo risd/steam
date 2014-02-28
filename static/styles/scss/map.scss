@@ -686,6 +686,21 @@ rect.blanket {
         font-style: italic;
     }
 }
+.network-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 6px;
+    width: 0%;
+    background-color: $color-slate;
+    opacity: 1;
+
+    @include transition(width, 0.8s, ease-in-out);
+}
+.network-progress.hide {
+    opacity: 0;
+    @include transition(opacity, 0.8s, ease-in-out);
+}
 
 /************
 form / profile
