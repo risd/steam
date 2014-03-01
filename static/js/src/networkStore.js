@@ -6,18 +6,14 @@ function NetworkStore (context) {
     var self = {},
         // stored by id
         // steamies are all of the steamies
-        // network is two arrays of the steamies
-        //   rendered are already in the network graph
-        //   queued are waiting to be added
+        // queued is an array of steamies that
+        //   are yet to be drawn
         // title is the title of the network graph
         // {
         //     <tlgid>: {
         //         total: <int>,
         //         steamies: [],
-        //         network: {
-        //             rendered: [],
-        //             queued: []
-        //         },
+        //         queued: [],
         //         title: ,
         //     }
         // },
@@ -59,6 +55,9 @@ function NetworkStore (context) {
     };
 
     self.highlight = function (x) {
+        context.network
+            .nodes([])
+            .nodesToExpect(0);
         exploring_network = true;
         highlighted = x.steamie[0];
         // make it work
@@ -72,28 +71,38 @@ function NetworkStore (context) {
             data[x.tlg_id] = {
                 total: sum_steamies(x.steamie[0].top_level),
                 title: format_title(x.steamie[0].top_level),
-                steamies: x.steamie,
-                network: {}
+                steamies: x.steamie
             };
         }
 
-        data[x.tlg_id].network.rendered = x.steamie;
-        data[x.tlg_id].network.queued =
-            [].concat(data[x.tlg_id].steamies);
+        var steamie_index = 0;
+        data[x.tlg_id].steamies.forEach(function (d, i) {
+            if (d.id === highlighted.id) steamie_index = i;
+        });
+
+
+        // data[x.tlg_id].network.rendered = x.steamie;
+        data[x.tlg_id].queued = [].concat(
+            data[x.tlg_id].steamies.slice(
+                steamie_index, (steamie_index + 1)),
+            data[x.tlg_id].steamies.slice(
+                0, steamie_index),
+            data[x.tlg_id].steamies.slice(
+                steamie_index + 1, data[x.tlg_id].steamies.length));
 
         context.network
-            .nodes(x.steamie)
-            .title(data[x.tlg_id].title)
-            .create();
+            .title(data[x.tlg_id].title);
 
         // load the rest of the steamies
         gather_steamies(x.tlg_id, 0);
-
 
         return self;
     };
 
     self.get = function (x) {
+        context.network
+            .nodes([])
+            .nodesToExpect(0);
         exploring_network = true;
         // x is the properties attribute of the
         // geojson feature that was clicked
@@ -102,25 +111,21 @@ function NetworkStore (context) {
         highlighted = undefined;
 
         if (x.tlg_id in data) {
-            console.log('found steamie stash');
             // has been previously loaded
             context.network
                    .nodesToExpect(data[x.tlg_id].total);
 
         } else {
-            console.log('new steamie stash');
             // not previously loaded
             data[x.tlg_id] = {
                 total: sum_steamies(x),
                 title: format_title(x),
-                steamies: [],
-                network: {}
+                steamies: []
             };
 
         }
 
-        data[x.tlg_id].network.rendered = [];
-        data[x.tlg_id].network.queued =
+        data[x.tlg_id].queued =
             [].concat(data[x.tlg_id].steamies);
 
         context.network
@@ -139,46 +144,21 @@ function NetworkStore (context) {
         
         // if you have more steamies than your offset,
         // then you can dole them out here.
-        if (data[tlg_id].network.queued.length > 0) {
-            console.log('have steamies');
-            console.log(data[tlg_id].network.queued.length);
+        if (data[tlg_id].queued.length > 0) {
             // we have the steamies
 
-            var steamies_to_add =
-                    [].concat(data[tlg_id].network.queued);
+            context.network.nodesPush(data[tlg_id].queued);
 
-            data[tlg_id].network.queued = [];
-
-            if (highlighted) {
-                // ensure highlighted steamie
-                // is not added as a dupe.
-                steamies_to_add = steamies_to_add
-                    .filter(function(d, i){
-                        if (d.id !== highlighted.id) {
-                            return d;
-                        }
-                    });
-
-                context.network.nodesPush(steamies_to_add);
-            } else {
-                if (context.network.built()) {
-                    context.network.nodesPush(steamies_to_add);
-                } else {
-                    context.network.nodes(steamies_to_add);
-                }
-            }
-
-            data[tlg_id].network.rendered =
-                data[tlg_id].network
-                              .rendered
-                              .concat(steamies_to_add);
+            data[tlg_id].queued = [];
 
             var so_far = context.network.nodes().length;
 
             console.log('so far: ', so_far);
             console.log('total:  ', data[tlg_id].total);
 
-            if ((so_far < data[tlg_id].total) &&
+            if ((so_far <
+                    (data[tlg_id].total -
+                     (highlighted ? 1 : 0))) &&
                 (exploring_network)) {
 
                 set_dispatch_to_gather_steamies(
@@ -206,46 +186,40 @@ function NetworkStore (context) {
 
                 if (results.objects.length === 0) return;
 
-                console.log('results');
-                console.log(results);
-
                 steamies_to_add = results.objects;
                 data[tlg_id].total = results.meta.total_count;
                 context.network
                        .nodesToExpect(results.meta.total_count);
 
-                if (highlighted) {
-                    // ensure highlighted steamie
-                    // is not added as a dupe.
-                    steamies_to_add = steamies_to_add
-                        .filter(function(d, i){
-                            if (d.id !== highlighted.id) {
-                                return d;
-                            }
-                        });
+                // if (highlighted) {
+                //     // ensure highlighted steamie
+                //     // is not added as a dupe.
+                //     steamies_to_add = steamies_to_add
+                //         .filter(function(d, i){
+                //             if (d.id !== highlighted.id) {
+                //                 return d;
+                //             } else {
+                //                 console.log('filtering');
+                //                 console.log(d);
+                //             }
+                //         });
+                // }
 
-                    context.network.nodesPush(steamies_to_add);
-                } else {
-                    if (context.network.built()) {
-                        context.network.nodesPush(steamies_to_add);
-                    } else {
-                        context.network.nodes(steamies_to_add);
-                    }
-                }
+                context.network.nodesPush(steamies_to_add);
 
-                data[tlg_id].steamies = data[tlg_id].steamies
-                                          .concat(steamies_to_add);
-                data[tlg_id].network.rendered =
-                        data[tlg_id].network
-                                    .rendered
-                                    .concat(steamies_to_add);
+                console.log('added steamies: ',
+                             steamies_to_add.length);
 
-                var so_far = context.network.nodes().length;
+                data[tlg_id].steamies = context.network.nodes();
+
+                var so_far = data[tlg_id].steamies.length;
 
                 console.log('so far: ', so_far);
                 console.log('total:  ', data[tlg_id].total);
 
-                if ((so_far < data[tlg_id].total) &&
+                if ((so_far <
+                        (data[tlg_id].total -
+                         (highlighted ? 1 : 0))) &&
                     (exploring_network)) {
 
                     set_dispatch_to_gather_steamies(
@@ -290,8 +264,6 @@ function NetworkStore (context) {
     function set_dispatch_to_gather_steamies (tlg_id,
                                               so_far) {
 
-        console.log('setting dispatch to get more');
-
         var network_dispatch_event;
         if (context.network.built()) {
             network_dispatch_event = 'updated.storeGather';
@@ -306,17 +278,16 @@ function NetworkStore (context) {
                     .dispatch
                     .on(network_dispatch_event, null);
 
-
+                // get more steamies after the latest
+                // ones are drawn.
                 gather_steamies(tlg_id, so_far);
             });
     }
 
     function render_new_steamies () {
         if (context.network.built()) {
-            console.log('update');
             context.network.update();
         } else {
-            console.log('create');
             context.network.create();
         }
     }

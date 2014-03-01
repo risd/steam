@@ -4,20 +4,9 @@
     - WA/7th/
         - then you can share particular URLs or your network.
 
-- `network.js` replace references to `nodes` with `force.nodes()`
-    - refer to mike's exampel http://bl.ocks.org/mbostock/1095795
-
 - | uglify > `site.min.js` and link to that in map.html
 
 - remove `window.state` from `modalFlow.js`
-
-- push state? how does the back button work through all of this?
-    - http://programming.oreilly.com/2014/01/pushstate-to-the-future-progressive-enhancement-using-html5-pushstate-at-twitter.html
-
-    - consider for:
-        - current network being shown? go back between them?
-
-        - most of the application is a single state. you are logged in, you can log out. you are looking at a network, you can close it. you aren't flipping through a bunch of lists.
 
 - error reporting
     - https://www.getsentry.com/pricing/

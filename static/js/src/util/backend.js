@@ -37,7 +37,6 @@ function Backend () {
 
     api.network_steamies_request = function (args, callback) {
         // args - .tlg_id, .offset
-        console.log('network request');
         console.log('url: ', api.network_steamies_url(args));
         var request = d3.json(api.network_steamies_url(args),
                               callback);
@@ -52,9 +51,8 @@ function Backend () {
     api.steamie_update = function (data_to_submit, callback) {
         var csrf_token = get_cookie('csrftoken');
 
-        console.log('data');
+        console.log('submitting steamie update: data, url');
         console.log(data_to_submit);
-        console.log('url');
         console.log(api.steamie_user(data_to_submit.id));
 
         // submit this data against the steamie endpoint
