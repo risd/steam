@@ -674,25 +674,15 @@ function Network (context) {
     }
 
     function list_update () {
-
-    }
-
-    function list_create () {
-
-        // show the list wrapper
-        overflow_grid_wrapper_sel
-            .style('top', '0');
+        // implement a list_update function
 
         var svg_dimensions = ((radius_outter * 2) *
                                scale['selected']);
-
-        list_col_sel = overflow_grid_sel.append('div')
-            .attr('class', 'four-column clearfix offset-one');
-
+        
         nodes_sel = list_col_sel.selectAll('.steamie')
             .data(nodes, nodes_key);
 
-        nodes_sel
+        var nodes_sel_div = nodes_sel
             .enter()
             .append('div')
             .each(function (d, i) {
@@ -705,26 +695,26 @@ function Network (context) {
                         d.work_in;
             });
 
-        if (render_svg) {
-            nodes_sel.append('svg')
-                .attr('width', svg_dimensions)
-                .attr('height', svg_dimensions)
-                .append('g')
-                    .attr('class', function (d) {
-                        return 'node ' +
-                                d.work_in + ' ' +
-                                d.type;
-                    })
-                    .style('opacity', set_opacity)
-                    .attr('transform', transform)
-                    .call(add_symbols);
-        }
+        nodes_sel_div
+            .append('svg')
+            .attr('width', svg_dimensions)
+            .attr('height', svg_dimensions)
+            .append('g')
+                .attr('class', function (d) {
+                    return 'node ' +
+                            d.work_in + ' ' +
+                            d.type;
+                })
+                .style('opacity', set_opacity)
+                .attr('transform', transform)
+                .call(add_symbols);
 
-        nodes_sel.append('img')
+        nodes_sel_div
+            .append('img')
             .attr('class', 'avatar')
             .attr('src', steamie_avatar);
 
-        var inner_div = nodes_sel.append('div')
+        var inner_div = nodes_sel_div.append('div')
                            .attr('class', 'user_info');
 
         inner_div.append('p')
@@ -734,6 +724,18 @@ function Network (context) {
         inner_div.append('p')
             .attr('class', 'description')
             .text(steamie_description);
+    }
+
+    function list_create () {
+
+        // show the list wrapper
+        overflow_grid_wrapper_sel
+            .style('top', '0');
+
+        list_col_sel = overflow_grid_sel.append('div')
+            .attr('class', 'four-column clearfix offset-one');
+
+        list_update();
     }
 
     function list_filter () {
