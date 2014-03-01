@@ -2147,9 +2147,7 @@ function NetworkStore (context) {
             console.log('so far: ', so_far);
             console.log('total:  ', data[tlg_id].total);
 
-            if ((so_far <
-                    (data[tlg_id].total -
-                     (highlighted ? 1 : 0))) &&
+            if ((so_far < data[tlg_id].total) &&
                 (exploring_network)) {
 
                 set_dispatch_to_gather_steamies(
@@ -2208,9 +2206,7 @@ function NetworkStore (context) {
                 console.log('so far: ', so_far);
                 console.log('total:  ', data[tlg_id].total);
 
-                if ((so_far <
-                        (data[tlg_id].total -
-                         (highlighted ? 1 : 0))) &&
+                if ((so_far < data[tlg_id].total) &&
                     (exploring_network)) {
 
                     set_dispatch_to_gather_steamies(
