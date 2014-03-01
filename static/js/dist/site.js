@@ -3756,7 +3756,7 @@ function NetworkStore (context) {
     function gather_steamies (tlg_id, offset) {
         console.log('gathering. current:');
         // number of items gathered in the request
-        var count = 20;
+        var number_of_steamies_to_gather = 20;
         // gather steamies should orchestrate this.
         
         // if you have more steamies than your offset,
@@ -3785,11 +3785,17 @@ function NetworkStore (context) {
 
         } else {
             console.log('getting more steamies');
+
+            if (data[tlg_id].total > 150) {
+                number_of_steamies_to_gather = 50;
+            }
+
             // we dont have the steamies, yet
             // if you need to request more steamies, get'em here
             var request_args = {
                 tlg_id: tlg_id,
-                offset: offset
+                offset: offset,
+                limit: number_of_steamies_to_gather
             };
             if (steamie_request) {
                 steamie_request.abort();
@@ -3805,20 +3811,6 @@ function NetworkStore (context) {
                 data[tlg_id].total = results.meta.total_count;
                 context.network
                        .nodesToExpect(results.meta.total_count);
-
-                // if (highlighted) {
-                //     // ensure highlighted steamie
-                //     // is not added as a dupe.
-                //     steamies_to_add = steamies_to_add
-                //         .filter(function(d, i){
-                //             if (d.id !== highlighted.id) {
-                //                 return d;
-                //             } else {
-                //                 console.log('filtering');
-                //                 console.log(d);
-                //             }
-                //         });
-                // }
 
                 context.network.nodesPush(steamies_to_add);
 
@@ -5325,7 +5317,8 @@ function Backend () {
         return api.api_url +
             '/network-steamies/' + args.tlg_id +
             '/?format=json' +
-            (args.offset ? ('&offset=' + args.offset) : '');
+            (args.offset ? ('&offset=' + args.offset) : '') +
+            (args.limit ? ('&limit=' + args.limit) : '');
     };
 
     api.logout = function (callback) {

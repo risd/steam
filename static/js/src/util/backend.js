@@ -28,7 +28,8 @@ function Backend () {
         return api.api_url +
             '/network-steamies/' + args.tlg_id +
             '/?format=json' +
-            (args.offset ? ('&offset=' + args.offset) : '');
+            (args.offset ? ('&offset=' + args.offset) : '') +
+            (args.limit ? ('&limit=' + args.limit) : '');
     };
 
     api.logout = function (callback) {
