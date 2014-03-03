@@ -62,5 +62,10 @@ urlpatterns = patterns(
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    url(r'^admin/', include(admin.site.urls)),
+    # url(r'^admin/', include(admin.site.urls)),
+
+    # root
+    url(r'^$',
+        'map.views.map',
+        name='map_index'),
 )
