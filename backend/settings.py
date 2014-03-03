@@ -250,12 +250,18 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+# user: risd_mg
+# website: https://apps.twitter.com/app/5142145/show
 SOCIAL_AUTH_TWITTER_KEY = env_var('SOCIAL_AUTH_TWITTER_KEY')
 SOCIAL_AUTH_TWITTER_SECRET = env_var('SOCIAL_AUTH_TWITTER_SECRET')
+
+# user: mgdevelopers@risd.edu
+# website: https://developers.facebook.com/x/apps/216038711906833/settings/
 SOCIAL_AUTH_FACEBOOK_KEY = env_var('SOCIAL_AUTH_FACEBOOK_KEY')
 SOCIAL_AUTH_FACEBOOK_SECRET = env_var('SOCIAL_AUTH_FACEBOOK_SECRET')
 
-# https://cloud.google.com/console/project
+# user: mgdevelopers@risd.edu
+# website: https://cloud.google.com/console/project
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env_var('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env_var('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 

@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "uglify-js": "~2.4.12",
-    "watchify": "~0.5.6"
+    "watchify": "~0.6.1"
   },
   "scripts": {
     "test": ""

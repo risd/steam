@@ -6,7 +6,7 @@ function Config (hostname) {
     return {
         backend_url: local ?
             'http://localhost:5000' :
-            'http://stemtosteam.herokuapp.com',
+            'http://map.stemtosteam.org',
 
         version: 'v1'
     };
