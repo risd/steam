@@ -230,6 +230,8 @@ LOGGING = {
     }
 }
 
+SESSION_COOKIE_DOMAIN = 'herokuapp.com'
+
 
 ### Cross domain middleware config, mostly for tastypie
 XS_SHARING_ALLOWED_ORIGINS = '*'
