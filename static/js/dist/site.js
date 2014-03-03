@@ -2369,7 +2369,7 @@ function ModalFlow (context) {
         return self;
     };
 
-    self.state = window.state = function (x) {
+    self.state = function (x) {
         if (!arguments.length) return state;
 
         if (x in states) {

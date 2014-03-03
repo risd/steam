@@ -2,15 +2,14 @@ BROWSERIFY = node_modules/.bin/browserify
 WATCHIFY = node_modules/.bin/watchify
 UGLIFY = node_modules/.bin/uglifyjs
 
-all: dist/site.js dist/site.nosvg.js oldbrowser
+.PHONY: all dist clean watch watch-site
 
-.PHONY: clean dist watch watch-site watch-site-nosvg oldbrowser
+all: dist/libs.min.js dist/site.min.js
 
-watch: dist dist/libs.js dist/libs.nosvg.js watch-site watch-site-nosvg
+watch: dist/libs.js watch-site
 
 watch-site:
-	$(WATCHIFY) src/index.js -o dist/site.js -v &
-	$(WATCHIFY) src/nosvg/index.js -o dist/site.nosvg.js -v
+	$(WATCHIFY) src/index.js -o dist/site.js -v
 
 dependencies: package.json
 	npm install
@@ -28,15 +27,15 @@ dist/libs.js: dist
 dist/site.js: dist
 	$(BROWSERIFY) src/index.js > dist/site.js
 
-dist/libs.nosvg.js: dist
-	cat lib/d3.v3.js \
-		lib/oldbrowser/aight.d3.min.js > dist/libs.nosvg.js
+dist/libs.min.js: dist/libs.js
+	$(UGLIFY) dist/libs.js \
+		-o dist/libs.min.js \
+		--compress drop_console
 
-dist/site.nosvg.js: dist
-	$(BROWSERIFY) src/nosvg/index.js > dist/site.nosvg.js
-
-oldbrowser: dist
-	cat lib/oldbrowser/aight.js > dist/aight.min.js
+dist/site.min.js: dist/site.js
+	$(UGLIFY) dist/site.js \
+		-o dist/site.min.js \
+		--compress drop_console
 
 clean:
 	rm -f dist/*

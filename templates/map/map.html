@@ -225,10 +225,9 @@
          <script>
          Modernizr.load({
             test: Modernizr.svg,
-            yep: ['{% static "js/dist/libs.js" %}',
-                  '{% static "js/dist/site.js" %}'],
-            nope: ['{% static "js/dist/libs.nosvg.js" %}',
-                   '{% static "js/dist/site.nosvg.js" %}']
+            yep: ['{% static "js/dist/libs.min.js" %}',
+                  '{% static "js/dist/site.min.js" %}'],
+            nope: []
          });
          </script>
         <script type="text/javascript">

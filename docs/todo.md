@@ -2,12 +2,6 @@
 
 - follow up with brian about analytics
 
-- get domain info from babette
-
-- | uglify > `site.min.js` and link to that in map.html
-
-- remove `window.state` from `modalFlow.js`
-
 - url for particular locations
     - WA/7th/
         - then you can share particular URLs or your network.
