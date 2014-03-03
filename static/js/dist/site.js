@@ -401,23 +401,25 @@ module.exports = function dropdownConditionalText () {
             value_selected: 'United States of America'
         };
 
-        options.forEach(function (d, i) {
-            if (d.country === 'United States of America') {
-                return;
-            }
+        if (options && (options.length >= 0)) {
+            options.forEach(function (d, i) {
+                if (d.country === 'United States of America') {
+                    return;
+                }
 
-            // 
-            if (initial_value === d.country) {
+                // 
+                if (initial_value === d.country) {
 
-                args.text_selection_data = [{
-                    active: false
-                }];
+                    args.text_selection_data = [{
+                        active: false
+                    }];
 
-                args.editable_text = '';
+                    args.editable_text = '';
 
-                args.value_selected = d.country;
-            }
-        });
+                    args.value_selected = d.country;
+                }
+            });
+        }
 
         return args;
     }
