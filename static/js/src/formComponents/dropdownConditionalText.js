@@ -81,8 +81,10 @@ module.exports = function dropdownConditionalText () {
         if (!arguments.length) return options;
         options = x;
 
-        if (options[options.length-1].country === '') {
-            options.pop();
+        if (options && (options.length >= 0)) {
+            if (options[options.length-1].country === '') {
+                options.pop();
+            }
         }
 
         return self;
