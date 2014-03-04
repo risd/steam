@@ -12,9 +12,6 @@ function Arcs (context) {
         format = d3.format(',');
 
     arcs.draw = function () {
-        console.log('draw');
-
-        // adding arcs
         d3.selectAll('.marker-cluster')
             .each(draw);
     };

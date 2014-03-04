@@ -243,9 +243,6 @@ module.exports = function dropdownConditionalText () {
     function update_visual_display () {
         var args = args_for_rendering();
 
-        console.log('updating visual for geo');
-        console.log(args);
-
         text_selection
             .data(args.text_selection_data);
 

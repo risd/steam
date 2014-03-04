@@ -19,15 +19,11 @@ function User (context) {
         // of the form.
 
         var url = context.api.steamie;
-        console.log('check_auth');
         d3.json(url, function (err, data_response) {
-            console.log('auth check');
-            console.log(data_response);
             if ((err) ||
                 (typeof(data_response) === 'undefined') ||
                 (data_response.meta.total_count === 0)) {
                 // not auth'ed
-                console.log('Not authed.');
                 data = null;
                 authed = false;
             } else {

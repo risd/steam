@@ -9,11 +9,9 @@ function Map (context) {
     };
 
     var zoomend = function() {
-        // console.log('zoomlevel: ', map.getZoom());
+
     };
 
-    //// Mapbox
-    // var mabox_id = "",
     var mabox_id = "mgdevelopers.map-6m0pmhd7",
         map = L.mapbox
             .map('steam-map', mabox_id, {
@@ -23,30 +21,6 @@ function Map (context) {
             .on('zoomstart', zoomstart)
             .on('zoomend', zoomend);
     //// end Mapbox
-
-    //// CloudMade
-    // var map = L.map('steam-map', {
-    //             'maxZoom': 12
-    //         })
-    //         .setView([39.16, -95.0], 4)
-    //         .on('zoomstart', zoomstart)
-    //         .on('zoomend', zoomend);
-
-    // var cloudMadeBase = 'http://{s}.tile.cloudmade.com';
-    // var cloudMadeAPI = '9e9c00943dfb4531a9769893c92b78c4';
-    // var cloudMadeStyleId = '121934';
-    // var retina_prefix = L.Browser.retina ? '@2x' : '';
-    // var cloudMadeTileSize = '256';
-
-    // var tileUrl = cloudMadeBase + '/' +
-    //               cloudMadeAPI + '/' +
-    //               cloudMadeStyleId +
-    //               retina_prefix + '/' +
-    //               cloudMadeTileSize + '/' +
-    //               '{z}/{x}/{y}.png';
-
-    // L.tileLayer(tileUrl).addTo(map);
-    //// end CloudMade
 
     // define max bounds
     // disables users ability to continually pan

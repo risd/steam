@@ -240,17 +240,11 @@ module.exports = function Profile (context) {
             .steamie_update(data_to_submit,
                              function (err, response) {
             if (err) {
-                console.log('err');
-                console.log(err);
                 return;
             }
-            
-            console.log('do something with');
-            console.log(response);
 
             var results = JSON.parse(response.responseText);
 
-            console.log(results);
             // reset user data
             // useful since the top_level_geo value
             // might have been udpated, and that

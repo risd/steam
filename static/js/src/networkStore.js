@@ -137,7 +137,6 @@ function NetworkStore (context) {
     };
 
     function gather_steamies (tlg_id, offset) {
-        console.log('gathering. current:');
         // number of items gathered in the request
         var number_of_steamies_to_gather = 20;
         // gather steamies should orchestrate this.
@@ -153,9 +152,6 @@ function NetworkStore (context) {
 
             var so_far = context.network.nodes().length;
 
-            console.log('so far: ', so_far);
-            console.log('total:  ', data[tlg_id].total);
-
             if ((so_far < data[tlg_id].total) &&
                 (exploring_network)) {
 
@@ -167,7 +163,6 @@ function NetworkStore (context) {
             render_new_steamies();
 
         } else {
-            console.log('getting more steamies');
 
             if (data[tlg_id].total > 150) {
                 number_of_steamies_to_gather = 50;
@@ -197,15 +192,9 @@ function NetworkStore (context) {
 
                 context.network.nodesPush(steamies_to_add);
 
-                console.log('added steamies: ',
-                             steamies_to_add.length);
-
                 data[tlg_id].steamies = context.network.nodes();
 
                 var so_far = data[tlg_id].steamies.length;
-
-                console.log('so far: ', so_far);
-                console.log('total:  ', data[tlg_id].total);
 
                 if ((so_far < data[tlg_id].total) &&
                     (exploring_network)) {

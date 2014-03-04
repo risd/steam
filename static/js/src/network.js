@@ -145,8 +145,6 @@ function Network (context) {
     };
 
     network.create = function () {
-        console.log('creating');
-
         if (built) {
             network.remove();
         }
@@ -278,7 +276,6 @@ function Network (context) {
     };
 
     network.update = function () {
-        console.log('network.update');
         network_update[network_display]();
 
         update_count();
@@ -350,7 +347,6 @@ function Network (context) {
         // to load and highlight them. then subsequently load others
         // can also pan the map with the tlg request
         network.dispatch.on('created.highlight', function () {
-            console.log('higlighting');
             var highlight_sel = nodes_sel.filter(function (d,i) {
                 if (d[data.steamie_type]) {
                     return d[data.steamie_type].id ===

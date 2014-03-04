@@ -103,8 +103,6 @@ module.exports = function radioSelection () {
     };
 
     self.isDifferent = function () {
-        console.log('initial ', self.initialSelected());
-        console.log('selected ', self.selected());
         // compare initial_selected (entire object)
         // against the selected() function,
         // which manages the data objects

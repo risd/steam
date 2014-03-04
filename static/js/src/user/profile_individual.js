@@ -71,8 +71,6 @@ module.exports = function ProfileIndividual (context) {
                 data.individual.first_name ?
                 data.individual.first_name : '')
             .valid(function (val) {
-                console.log('value');
-                console.log(val);
                 if (val.length > 0) {
                     return true;
                 }

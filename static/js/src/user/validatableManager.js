@@ -30,8 +30,6 @@ module.exports = function ValidatableComponentManager () {
         validated = [];
         validatable.forEach(function (n, i) {
             if (n.isValid()) {
-                console.log('n');
-                console.log(n);
                 validated.push(n);
             }
         });

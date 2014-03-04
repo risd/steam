@@ -36,8 +36,6 @@ module.exports = function flowAnimation () {
             force.alpha(10);
             return;
         }
-        console.log('rendering');
-        console.log(selection);
         var random = d3.random.normal(0, 15);
 
         var height = window.innerHeight,
@@ -54,12 +52,8 @@ module.exports = function flowAnimation () {
             d.dx = d.x;
             d.dy = d.y;
 
-            console.log(d.x, d.y);
-
             return d;
         });
-
-        console.log(data);
 
         force = d3.layout.force()
             .gravity(0.1)

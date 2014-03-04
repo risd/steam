@@ -427,9 +427,6 @@ module.exports = function dropdownConditionalText () {
     function update_visual_display () {
         var args = args_for_rendering();
 
-        console.log('updating visual for geo');
-        console.log(args);
-
         text_selection
             .data(args.text_selection_data);
 
@@ -484,8 +481,6 @@ module.exports = function flowAnimation () {
             force.alpha(10);
             return;
         }
-        console.log('rendering');
-        console.log(selection);
         var random = d3.random.normal(0, 15);
 
         var height = window.innerHeight,
@@ -502,12 +497,8 @@ module.exports = function flowAnimation () {
             d.dx = d.x;
             d.dy = d.y;
 
-            console.log(d.x, d.y);
-
             return d;
         });
-
-        console.log(data);
 
         force = d3.layout.force()
             .gravity(0.1)
@@ -685,8 +676,6 @@ module.exports = function radioSelection () {
     };
 
     self.isDifferent = function () {
-        console.log('initial ', self.initialSelected());
-        console.log('selected ', self.selected());
         // compare initial_selected (entire object)
         // against the selected() function,
         // which manages the data objects
@@ -1161,9 +1150,6 @@ function Arcs (context) {
         format = d3.format(',');
 
     arcs.draw = function () {
-        console.log('draw');
-
-        // adding arcs
         d3.selectAll('.marker-cluster')
             .each(draw);
     };
@@ -1758,11 +1744,9 @@ function Map (context) {
     };
 
     var zoomend = function() {
-        // console.log('zoomlevel: ', map.getZoom());
+
     };
 
-    //// Mapbox
-    // var mabox_id = "",
     var mabox_id = "mgdevelopers.map-6m0pmhd7",
         map = L.mapbox
             .map('steam-map', mabox_id, {
@@ -1772,30 +1756,6 @@ function Map (context) {
             .on('zoomstart', zoomstart)
             .on('zoomend', zoomend);
     //// end Mapbox
-
-    //// CloudMade
-    // var map = L.map('steam-map', {
-    //             'maxZoom': 12
-    //         })
-    //         .setView([39.16, -95.0], 4)
-    //         .on('zoomstart', zoomstart)
-    //         .on('zoomend', zoomend);
-
-    // var cloudMadeBase = 'http://{s}.tile.cloudmade.com';
-    // var cloudMadeAPI = '9e9c00943dfb4531a9769893c92b78c4';
-    // var cloudMadeStyleId = '121934';
-    // var retina_prefix = L.Browser.retina ? '@2x' : '';
-    // var cloudMadeTileSize = '256';
-
-    // var tileUrl = cloudMadeBase + '/' +
-    //               cloudMadeAPI + '/' +
-    //               cloudMadeStyleId +
-    //               retina_prefix + '/' +
-    //               cloudMadeTileSize + '/' +
-    //               '{z}/{x}/{y}.png';
-
-    // L.tileLayer(tileUrl).addTo(map);
-    //// end CloudMade
 
     // define max bounds
     // disables users ability to continually pan
@@ -1915,8 +1875,6 @@ function ModalFlow (context) {
             open_modal: {
                 el: d3.select('#activate-add-yourself'),
                 on_click: function () {
-                    console.log('open modal click');
-                    console.log(previous_state);
                     if ((typeof(previous_state) === 'undefined') |
                         (previous_state === 'inactive_no_profile') |
                         (previous_state === 'just_logged_out') |
@@ -1926,7 +1884,6 @@ function ModalFlow (context) {
                     } else {
                         self.state(previous_state);
                     }
-                    console.log(self.state());
                 },
                 append_to_el: function () {}
             },
@@ -2079,11 +2036,9 @@ function ModalFlow (context) {
             apply_state(active);
         },
         just_logged_out: function () {
-            console.log('just logged out');
             self.state('inactive_no_profile');
         },
         inactive_no_profile: function () {
-            console.log('inactive_no_profile');
             var active = [{
                 el_type: 'button',
                 el_name: 'open_modal'
@@ -2168,7 +2123,6 @@ function ModalFlow (context) {
             self.dispatch.ApplyStateChooseTypeAddZip();
         },
         waiting_for_add_me_flow: function () {
-            console.log('setting waiting_for_add_me_flow');
             var active = [{
                 el_type: 'display',
                 el_name: 'modal'
@@ -2176,7 +2130,6 @@ function ModalFlow (context) {
                 el_type: 'button',
                 el_name: 'close_modal'
             }];
-            console.log(active);
 
             apply_state(active);
             self.dispatch.ApplyStateWaitingForAddMeFlow();
@@ -2253,7 +2206,6 @@ function ModalFlow (context) {
         self.dispatch
             .on('ApplyStateWaitingForAddMeFlow',
                 function () {
-                    console.log('dispatching waiting for amf');
                     modal_animation.render();
                 });
 
@@ -2319,9 +2271,6 @@ function ModalFlow (context) {
                .dispatch.on('checkAuthComplete', function(err, d) {
 
             d = context.user.data();
-            console.log('auth check dispatch modal');
-            console.log(d);
-
 
             // remove loading svg
             d3.select('#loading')
@@ -2411,25 +2360,16 @@ function ModalFlow (context) {
             .work_in(select_work_in.selected())
             .top_level_input(select_geo.validatedData());
 
-        console.log('context.user.data()');
-        console.log(context.user.data());
-
         context.api.steamie_update(
             context.user.data(),
             function (err, results_raw) {
                 if (err) {
-                    console.log('error');
-                    console.log(err);
                     return;
                 }
 
                 var results = JSON.parse(results_raw.responseText);
 
-                console.log('add me flow');
-                console.log(results);
                 if (!results.top_level_input) {
-                    console.log('error');
-                    console.log(err);
 
                     // if there is an error, return
                     // the user to the stage where
@@ -2453,10 +2393,6 @@ function ModalFlow (context) {
                 // show thank you
                 self.state('thank_you');
             });
-    }
-
-    function show_validation_errors(errors) {
-        console.log('show validation errors');
     }
 
     function process_authentication (d) {
@@ -2501,7 +2437,6 @@ function ModalFlow (context) {
             enable_add_me();
             return true;
         } else {
-            console.log('not');
             disable_add_me();
             return false;
         }
@@ -2712,8 +2647,6 @@ function Network (context) {
     };
 
     network.create = function () {
-        console.log('creating');
-
         if (built) {
             network.remove();
         }
@@ -2845,7 +2778,6 @@ function Network (context) {
     };
 
     network.update = function () {
-        console.log('network.update');
         network_update[network_display]();
 
         update_count();
@@ -2917,7 +2849,6 @@ function Network (context) {
         // to load and highlight them. then subsequently load others
         // can also pan the map with the tlg request
         network.dispatch.on('created.highlight', function () {
-            console.log('higlighting');
             var highlight_sel = nodes_sel.filter(function (d,i) {
                 if (d[data.steamie_type]) {
                     return d[data.steamie_type].id ===
@@ -3776,7 +3707,6 @@ function NetworkStore (context) {
     };
 
     function gather_steamies (tlg_id, offset) {
-        console.log('gathering. current:');
         // number of items gathered in the request
         var number_of_steamies_to_gather = 20;
         // gather steamies should orchestrate this.
@@ -3792,9 +3722,6 @@ function NetworkStore (context) {
 
             var so_far = context.network.nodes().length;
 
-            console.log('so far: ', so_far);
-            console.log('total:  ', data[tlg_id].total);
-
             if ((so_far < data[tlg_id].total) &&
                 (exploring_network)) {
 
@@ -3806,7 +3733,6 @@ function NetworkStore (context) {
             render_new_steamies();
 
         } else {
-            console.log('getting more steamies');
 
             if (data[tlg_id].total > 150) {
                 number_of_steamies_to_gather = 50;
@@ -3836,15 +3762,9 @@ function NetworkStore (context) {
 
                 context.network.nodesPush(steamies_to_add);
 
-                console.log('added steamies: ',
-                             steamies_to_add.length);
-
                 data[tlg_id].steamies = context.network.nodes();
 
                 var so_far = data[tlg_id].steamies.length;
-
-                console.log('so far: ', so_far);
-                console.log('total:  ', data[tlg_id].total);
 
                 if ((so_far < data[tlg_id].total) &&
                     (exploring_network)) {
@@ -4387,17 +4307,11 @@ module.exports = function Profile (context) {
             .steamie_update(data_to_submit,
                              function (err, response) {
             if (err) {
-                console.log('err');
-                console.log(err);
                 return;
             }
-            
-            console.log('do something with');
-            console.log(response);
 
             var results = JSON.parse(response.responseText);
 
-            console.log(results);
             // reset user data
             // useful since the top_level_geo value
             // might have been udpated, and that
@@ -4545,8 +4459,6 @@ module.exports = function ProfileIndividual (context) {
                 data.individual.first_name ?
                 data.individual.first_name : '')
             .valid(function (val) {
-                console.log('value');
-                console.log(val);
                 if (val.length > 0) {
                     return true;
                 }
@@ -5113,15 +5025,11 @@ function User (context) {
         // of the form.
 
         var url = context.api.steamie;
-        console.log('check_auth');
         d3.json(url, function (err, data_response) {
-            console.log('auth check');
-            console.log(data_response);
             if ((err) ||
                 (typeof(data_response) === 'undefined') ||
                 (data_response.meta.total_count === 0)) {
                 // not auth'ed
-                console.log('Not authed.');
                 data = null;
                 authed = false;
             } else {
@@ -5286,8 +5194,6 @@ module.exports = function ValidatableComponentManager () {
         validated = [];
         validatable.forEach(function (n, i) {
             if (n.isValid()) {
-                console.log('n');
-                console.log(n);
                 validated.push(n);
             }
         });
@@ -5349,7 +5255,6 @@ function Backend () {
 
     api.network_steamies_request = function (args, callback) {
         // args - .tlg_id, .offset
-        console.log('url: ', api.network_steamies_url(args));
         var request = d3.json(api.network_steamies_url(args),
                               callback);
         return request;
@@ -5362,10 +5267,6 @@ function Backend () {
 
     api.steamie_update = function (data_to_submit, callback) {
         var csrf_token = get_cookie('csrftoken');
-
-        console.log('submitting steamie update: data, url');
-        console.log(data_to_submit);
-        console.log(api.steamie_user(data_to_submit.id));
 
         // submit this data against the steamie endpoint
         var xhr = d3.xhr(api.steamie_user(data_to_submit.id))

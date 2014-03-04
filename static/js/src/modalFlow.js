@@ -101,8 +101,6 @@ function ModalFlow (context) {
             open_modal: {
                 el: d3.select('#activate-add-yourself'),
                 on_click: function () {
-                    console.log('open modal click');
-                    console.log(previous_state);
                     if ((typeof(previous_state) === 'undefined') |
                         (previous_state === 'inactive_no_profile') |
                         (previous_state === 'just_logged_out') |
@@ -112,7 +110,6 @@ function ModalFlow (context) {
                     } else {
                         self.state(previous_state);
                     }
-                    console.log(self.state());
                 },
                 append_to_el: function () {}
             },
@@ -265,11 +262,9 @@ function ModalFlow (context) {
             apply_state(active);
         },
         just_logged_out: function () {
-            console.log('just logged out');
             self.state('inactive_no_profile');
         },
         inactive_no_profile: function () {
-            console.log('inactive_no_profile');
             var active = [{
                 el_type: 'button',
                 el_name: 'open_modal'
@@ -354,7 +349,6 @@ function ModalFlow (context) {
             self.dispatch.ApplyStateChooseTypeAddZip();
         },
         waiting_for_add_me_flow: function () {
-            console.log('setting waiting_for_add_me_flow');
             var active = [{
                 el_type: 'display',
                 el_name: 'modal'
@@ -362,7 +356,6 @@ function ModalFlow (context) {
                 el_type: 'button',
                 el_name: 'close_modal'
             }];
-            console.log(active);
 
             apply_state(active);
             self.dispatch.ApplyStateWaitingForAddMeFlow();
@@ -439,7 +432,6 @@ function ModalFlow (context) {
         self.dispatch
             .on('ApplyStateWaitingForAddMeFlow',
                 function () {
-                    console.log('dispatching waiting for amf');
                     modal_animation.render();
                 });
 
@@ -505,9 +497,6 @@ function ModalFlow (context) {
                .dispatch.on('checkAuthComplete', function(err, d) {
 
             d = context.user.data();
-            console.log('auth check dispatch modal');
-            console.log(d);
-
 
             // remove loading svg
             d3.select('#loading')
@@ -597,25 +586,16 @@ function ModalFlow (context) {
             .work_in(select_work_in.selected())
             .top_level_input(select_geo.validatedData());
 
-        console.log('context.user.data()');
-        console.log(context.user.data());
-
         context.api.steamie_update(
             context.user.data(),
             function (err, results_raw) {
                 if (err) {
-                    console.log('error');
-                    console.log(err);
                     return;
                 }
 
                 var results = JSON.parse(results_raw.responseText);
 
-                console.log('add me flow');
-                console.log(results);
                 if (!results.top_level_input) {
-                    console.log('error');
-                    console.log(err);
 
                     // if there is an error, return
                     // the user to the stage where
@@ -639,10 +619,6 @@ function ModalFlow (context) {
                 // show thank you
                 self.state('thank_you');
             });
-    }
-
-    function show_validation_errors(errors) {
-        console.log('show validation errors');
     }
 
     function process_authentication (d) {
@@ -687,7 +663,6 @@ function ModalFlow (context) {
             enable_add_me();
             return true;
         } else {
-            console.log('not');
             disable_add_me();
             return false;
         }

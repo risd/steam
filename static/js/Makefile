@@ -1,10 +1,9 @@
 BROWSERIFY = node_modules/.bin/browserify
 WATCHIFY = node_modules/.bin/watchify
-UGLIFY = node_modules/.bin/uglifyjs
 
 .PHONY: all dist clean watch watch-site
 
-all: dist/libs.min.js dist/site.min.js
+all: dist/libs.js dist/site.js
 
 watch: dist/libs.js watch-site
 
@@ -26,16 +25,6 @@ dist/libs.js: dist
 
 dist/site.js: dist
 	$(BROWSERIFY) src/index.js > dist/site.js
-
-dist/libs.min.js: dist/libs.js
-	$(UGLIFY) dist/libs.js \
-		-o dist/libs.min.js \
-		--compress drop_console
-
-dist/site.min.js: dist/site.js
-	$(UGLIFY) dist/site.js \
-		-o dist/site.min.js \
-		--compress drop_console
 
 clean:
 	rm -f dist/*
