@@ -1,4 +1,5 @@
-var polyfills = require('./polyfills'),
+var hash = require('./hash'),
+    polyfills = require('./polyfills'),
     filters = require('./filters'),
     colors = require('./colors'),
     clone = require('./util/clone'),
@@ -17,6 +18,7 @@ var polyfills = require('./polyfills'),
     modal_flow = require('./modalFlow'),
     user = require('./user/user');
 
+hash();
 polyfills();
 
 STEAMMap();

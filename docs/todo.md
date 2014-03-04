@@ -1,7 +1,5 @@
 ### left off
 
-- python social auth redirects to stemtosteam.herokuapp.com, have it redirect back to map.stemtosteam.org on auth
-
 - follow up with brian about analytics
 
 - url for particular locations
