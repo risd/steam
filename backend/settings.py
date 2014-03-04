@@ -28,8 +28,15 @@ DATABASES = {
 DATABASES['default'] = dj_database_url.config()
 DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
 
-# honor the 'x-forwarded-proto' header fro request.is_secure()
+# honor the 'x-forwarded-proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# HttpRequest.get_host() needs to know
+# which domain to use. Since the application
+# is hosted on Heroku, but sitting behind
+# another domain, and python social auth
+# uses get_host to build its redirect URI
+# USE_X_FORWARDED_HOST = env_var('HTTP_HOST', 'localhost:5000')
 
 
 DEBUG = env_var('DEBUG', False)

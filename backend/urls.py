@@ -33,11 +33,6 @@ urlpatterns = patterns(
         'marketing.views.join_us',
         name='join_us'),
 
-    # map
-    url(r'map/$',
-        'map.views.map',
-        name='map'),
-
     url(r'map/logout/$',
         'map.views.log_out',
         name='log_out'),

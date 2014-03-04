@@ -24,7 +24,7 @@ def logged_in(request):
     Redirect to map. Subsequent call will determine
     state of the application.
     """
-    return redirect('map')
+    return redirect('/')
 
 
 def login_error(request):
@@ -32,7 +32,7 @@ def login_error(request):
     Redirect to map. Subsequent call will determine
     state of the application.
     """
-    return redirect('map.views.map')
+    return redirect('/')
 
 def log_out(request):
     """
