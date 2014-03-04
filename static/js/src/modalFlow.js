@@ -197,7 +197,7 @@ function ModalFlow (context) {
                 on_click: function () {
                     self.state('logging_out');
                     context.api.logout(function (err, results) {
-                        if (err) {
+                        if (!results) {
                             self.state('choose_type_add_zip');
                             return;
                         }

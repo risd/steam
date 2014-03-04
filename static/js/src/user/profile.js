@@ -129,7 +129,7 @@ module.exports = function Profile (context) {
                 context.modal_flow
                     .state('logging_out');
                 context.api.logout(function (err, response) {
-                    if (err) {
+                    if (!response) {
                         context.modal_flow
                             .state('profile_' +
                                    context.user.type());

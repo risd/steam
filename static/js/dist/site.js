@@ -2011,7 +2011,7 @@ function ModalFlow (context) {
                 on_click: function () {
                     self.state('logging_out');
                     context.api.logout(function (err, results) {
-                        if (err) {
+                        if (!results) {
                             self.state('choose_type_add_zip');
                             return;
                         }
@@ -4276,7 +4276,7 @@ module.exports = function Profile (context) {
                 context.modal_flow
                     .state('logging_out');
                 context.api.logout(function (err, response) {
-                    if (err) {
+                    if (!response) {
                         context.modal_flow
                             .state('profile_' +
                                    context.user.type());
