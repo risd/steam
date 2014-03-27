@@ -491,6 +491,7 @@ textarea {
 
   @page {
     margin: 0.5cm; }
+
   p,
   h2,
   h3 {
@@ -1317,6 +1318,7 @@ textarea {
 @font-face {
   font-family: "ModernPictograms";
   src: url("../../fonts/modernpics.otf"); }
+
 body {
   margin: 0px; }
 
@@ -2017,6 +2019,7 @@ input[type="submit"]:hover {
     -ms-transform: scale(1.3);
     -o-transform: scale(1.3);
     transform: scale(1.3); } }
+
 .center-in-parent {
   position: relative;
   margin: 0 auto;
@@ -3893,6 +3896,7 @@ div.blanket {
 
   100% {
     -webkit-transform: rotate(360deg); } }
+
 .no-csstransitions .next-button {
   display: none; }
   .no-csstransitions .next-button.enabled {
@@ -3915,3 +3919,20 @@ div.blanket {
 .no-svg #modal,
 .no-svg .modal-wrapper {
   display: none; }
+.no-svg p {
+  font-family: georgia, times, serif;
+  font-size: 20px;
+  line-height: 29px;
+  padding: 1em;
+  color: #282828;
+  text-align: left;
+  border: 2px solid #282828; }
+.no-svg body {
+  background: #27B4F2; }
+.no-svg a:link, .no-svg a:visited {
+  color: #282828; }
+.no-svg a:hover {
+  color: #fff; }
+
+.outdated {
+  text-align: center; }

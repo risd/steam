@@ -38,13 +38,26 @@
     p{
         font-family:georgia, times, serif;
         font-size:20px;
-        line-height:19px;
+        line-height:29px;
         padding:1em;
         color:#282828;
+        text-align:left;
         border:2px solid #282828;
+    }
+
+    body{
+        background:#27B4F2;
+    }
+
+    a:link, a:visited{
+        color:#282828;
+    }
+
+    a:hover{
+        color:#fff;
     }
 }
 
 .outdated {
-
+    text-align:center;
 }
