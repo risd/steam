@@ -24,39 +24,15 @@
 }
 
 .no-svg {
-    .loading {
-        display: none;
-
-        svg {
-            display: none;
-        }
-
-        // make svg of orb to put in here
-        &.active {
-            display: block;
-        }
-    }
-
-    #profile-link,
-    .canvas-wrapper .network-button-wrapper,
-    .modal .close-button,
-    #explore-map, {
+    #activate-about,
+    #activate-add-yourself,
+    #loading,
+    #steamie-network
+    .filter-bar,
+    #steam-map,
+    #modal {
         display: none;
     }
-
-    .modal-animation {
-        // perhaps have a back ground image that 
-        // gets displayed where the cluster animation
-        // is typically happening
-
-        // background-image:
-    }
-
-    .button-activate,
-    .filter-bar {
-        display: none;
-    }
-
 }
 
 .outdated {

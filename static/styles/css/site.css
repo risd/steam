@@ -491,7 +491,6 @@ textarea {
 
   @page {
     margin: 0.5cm; }
-
   p,
   h2,
   h3 {
@@ -1318,7 +1317,6 @@ textarea {
 @font-face {
   font-family: "ModernPictograms";
   src: url("../../fonts/modernpics.otf"); }
-
 body {
   margin: 0px; }
 
@@ -2019,7 +2017,6 @@ input[type="submit"]:hover {
     -ms-transform: scale(1.3);
     -o-transform: scale(1.3);
     transform: scale(1.3); } }
-
 .center-in-parent {
   position: relative;
   margin: 0 auto;
@@ -3896,7 +3893,6 @@ div.blanket {
 
   100% {
     -webkit-transform: rotate(360deg); } }
-
 .no-csstransitions .next-button {
   display: none; }
   .no-csstransitions .next-button.enabled {
@@ -3910,17 +3906,11 @@ div.blanket {
   .no-csstransitions .animate-in-out.modal.active {
     display: block; }
 
-.no-svg .loading {
-  display: none; }
-  .no-svg .loading svg {
-    display: none; }
-  .no-svg .loading.active {
-    display: block; }
-.no-svg #profile-link,
-.no-svg .canvas-wrapper .network-button-wrapper,
-.no-svg .modal .close-button,
-.no-svg #explore-map {
-  display: none; }
-.no-svg .button-activate,
-.no-svg .filter-bar {
+.no-svg #activate-about,
+.no-svg #activate-add-yourself,
+.no-svg #loading,
+.no-svg #steamie-network
+.filter-bar,
+.no-svg #steam-map,
+.no-svg #modal {
   display: none; }
