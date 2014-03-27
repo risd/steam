@@ -3912,5 +3912,6 @@ div.blanket {
 .no-svg #steamie-network
 .filter-bar,
 .no-svg #steam-map,
-.no-svg #modal {
+.no-svg #modal,
+.no-svg .modal-wrapper {
   display: none; }
