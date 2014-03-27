@@ -491,6 +491,7 @@ textarea {
 
   @page {
     margin: 0.5cm; }
+
   p,
   h2,
   h3 {
@@ -1317,6 +1318,7 @@ textarea {
 @font-face {
   font-family: "ModernPictograms";
   src: url("../../fonts/modernpics.otf"); }
+
 body {
   margin: 0px; }
 
@@ -2017,6 +2019,7 @@ input[type="submit"]:hover {
     -ms-transform: scale(1.3);
     -o-transform: scale(1.3);
     transform: scale(1.3); } }
+
 .center-in-parent {
   position: relative;
   margin: 0 auto;
@@ -2694,6 +2697,9 @@ rect.blanket {
   .network-count .label {
     font-size: 0.8em;
     font-style: italic; }
+
+.modal .network-count {
+  margin-top: 10em; }
 
 .network-progress {
   position: relative;
@@ -3890,6 +3896,7 @@ div.blanket {
 
   100% {
     -webkit-transform: rotate(360deg); } }
+
 .no-csstransitions .next-button {
   display: none; }
   .no-csstransitions .next-button.enabled {

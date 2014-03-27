@@ -11,7 +11,7 @@ rvm use 1.9.3
 rvm gemset use steam-proto
 
 # open browser to URL defined in Procfile.dev
-open http://localhost:5000/map/
+open http://localhost:5000/
 
 # start the party
 foreman start --procfile Procfile.dev
