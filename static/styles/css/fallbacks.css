@@ -20,6 +20,8 @@
 .no-svg #modal,
 .no-svg .modal-wrapper {
   display: none; }
+.no-svg .outdated {
+  text-align: center; }
 .no-svg p {
   font-family: georgia, times, serif;
   font-size: 20px;
@@ -34,6 +36,3 @@
   color: #282828; }
 .no-svg a:hover {
   color: #fff; }
-
-.outdated {
-  text-align: center; }

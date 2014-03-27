@@ -35,6 +35,10 @@
         display: none;
     }
 
+    .outdated {
+        text-align:center;
+    }
+
     p{
         font-family:georgia, times, serif;
         font-size:20px;
@@ -56,8 +60,4 @@
     a:hover{
         color:#fff;
     }
-}
-
-.outdated {
-    text-align:center;
 }
