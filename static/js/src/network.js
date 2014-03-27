@@ -226,7 +226,7 @@ function Network (context) {
 
         count_sel_wrapper_p.append('span')
             .attr('class', 'label')
-            .text(' STEAMies');
+            .text(' STEAM supporters');
 
         var buttons_sel = fixed_grid_sel
             .append('div')
