@@ -244,7 +244,8 @@ function Clusters (context) {
     clusters.init = function () {
         // show initial map data
         // d3.json('/static/geo/fake_level_1_pnt.geojson',
-        d3.json('/static/geo/top_level_geo.geojson',
+        d3.json('https://s3.amazonaws.com/steammap/'+
+                'geo/top_level_geo.json',
                 clusters.data);
 
         return clusters;
