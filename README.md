@@ -4,7 +4,7 @@ Work in progress
 
 Django application for STEAM.
 
-- [Production][production]. *
+- [Production][production].
 - [Development][development].
 
 Organization
@@ -16,7 +16,6 @@ Organization
 - /static/     - assets for all applications
 - /templates/  - templates for all applications
 
-* yet to be moved there.
 
-[production]:http://stemtosteam.org/
+[production]:http://map.stemtosteam.org/
 [development]:http://django-steam.herokuapp.com/

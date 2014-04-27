@@ -10,7 +10,7 @@ python manage.py populate_toplevelgeo.py
 """
 import random
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from ...models import Steamies, Individual, Institution, TopLevelGeo
 
