@@ -43,7 +43,8 @@ def update_top_level_geojson():
     collect_static = subprocess.check_call(
         ['python',
          'manage.py',
-         'collectstatic --noinput'])
+         'collectstatic',
+         '--noinput'])
     logger.info(collect_static)
 ## end Map application scheduled procceses
 
