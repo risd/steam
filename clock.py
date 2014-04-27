@@ -4,6 +4,7 @@ import atexit
 
 from apscheduler.scheduler import Scheduler
 
+
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 sched = Scheduler(daemon=True)
@@ -40,12 +41,6 @@ def update_top_level_geojson():
                      'manage.py',
                      'worker_write_top_level_geojson'])
     logger.info(new_geojson)
-    collect_static = subprocess.check_call(
-        ['python',
-         'manage.py',
-         'collectstatic',
-         '--noinput'])
-    logger.info(collect_static)
 ## end Map application scheduled procceses
 
 sched.start()

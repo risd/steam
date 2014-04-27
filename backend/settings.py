@@ -257,6 +257,11 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+# user: media@risd.edu
+# https://console.aws.amazon.com/iam/home?#security_credential
+AWS_KEY = env_var('AWS_KEY')
+AWS_SECRET_KEY = env_var('AWS_SECRET_KEY')
+
 # user: risd_mg
 # website: https://apps.twitter.com/app/5142145/show
 SOCIAL_AUTH_TWITTER_KEY = env_var('SOCIAL_AUTH_TWITTER_KEY')

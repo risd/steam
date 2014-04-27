@@ -10,15 +10,21 @@ python manage.py populate_toplevelgeo.py
 """
 import logging
 
+from django.conf import settings
 from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
 
 from ...models import TopLevelGeo
 
 import geojson
+import boto
+from boto.s3.key import Key
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
+
+s3 = boto.connect_s3(settings.AWS_KEY, settings.AWS_SECRET_KEY)
+bucket = s3.get_bucket('steammap')
 
 
 class Command(BaseCommand):
@@ -41,16 +47,11 @@ class Command(BaseCommand):
             gj = geojson.FeatureCollection(features)
 
             print "write feature collection"
-            with open('static/geo/top_level_geo.geojson',
-                      'w') as gj_out:
+            k = Key(bucket)
+            k.key = 'geo/top_level_geo.json'
+            k.set_contents_from_string(geojson.dumps(gj))
 
-                gj_out.write(geojson.dumps(gj))
-
-            with open('staticfiles/geo/top_level_geo.geojson',
-                      'w') as gj_out:
-
-                gj_out.write(geojson.dumps(gj))
-
+            
             logger.info('Wrote new top_level_geo.geojson file. '+\
                         '{0} features.'.format(len(features)))
 
