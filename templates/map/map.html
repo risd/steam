@@ -22,10 +22,6 @@
         <link rel="stylesheet" href="{% static "styles/css/site.css" %}">
 
         <script src="{% static "js/lib/modernizr.custom.js"%}"></script>
-        <!--[if lt IE 9]>
-        <script type="text/javascript" src="{% static "js/dist/html5shiv.js" %}"></script>
-        <script type="text/javascript" src="{% static "js/dist/aight.min.js" %}"></script>
-        <![endif]-->
     </head>
     <body>
         <!--[if lt IE 9]>
@@ -225,8 +221,7 @@ education is important to 21st century economy.  </p>
          <script>
          Modernizr.load({
             test: Modernizr.svg,
-            yep: ['{% static "js/dist/libs.js" %}',
-                  '{% static "js/dist/site.js" %}'],
+            yep: ['{% static "js/dist/bundle.js" %}'],
             nope: []
          });
          </script>
