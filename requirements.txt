@@ -19,6 +19,7 @@ jellyfish==0.2.0
 lxml==3.2.3
 mailchimp==2.0.7
 mimeparse==0.1.3
+newrelic==2.18.1.15
 nodeenv==0.6.6
 oauth2==1.5.211
 oauthlib==0.6.1
