@@ -137,6 +137,13 @@ function filterUI (context) {
                 // apply filter to network and map
                 context.network.filter();
                 context.clusters.filter();
+
+                // analytics
+                ga('send',
+                   'event',
+                   'button',
+                   'click',
+                   'Index - Filter Button');
             });
         }
     };

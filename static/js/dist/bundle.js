@@ -20749,6 +20749,13 @@ function filterUI (context) {
                 // apply filter to network and map
                 context.network.filter();
                 context.clusters.filter();
+
+                // analytics
+                ga('send',
+                   'event',
+                   'button',
+                   'click',
+                   'Index - Filter Button');
             });
         }
     };
@@ -22483,6 +22490,12 @@ function ModalFlow (context) {
                     } else {
                         self.state(previous_state);
                     }
+                    // analytics
+                    ga('send',
+                       'event',
+                       'button',
+                       'click',
+                       'Index - Add Me');
                 },
                 append_to_el: function () {}
             },
@@ -22491,6 +22504,12 @@ function ModalFlow (context) {
                 el: d3.select('#activate-about'),
                 on_click: function () {
                     self.state('about');
+                    // analytics
+                    ga('send',
+                       'event',
+                       'button',
+                       'click',
+                       'Index - About');
                 },
                 append_to_el: function () {}
             },
@@ -22499,6 +22518,12 @@ function ModalFlow (context) {
                 el: d3.select('#about_to_action'),
                 on_click: function () {
                     self.state('call_to_action');
+                    // analytics
+                    ga('send',
+                       'event',
+                       'button',
+                       'click',
+                       'About - Add Me');
                 },
                 append_to_el: function () {}
             },
@@ -22522,6 +22547,12 @@ function ModalFlow (context) {
                 on_click: function () {
                     self.state('profile_' + context.user.type());
                     self.dispatch.ApplyStateLeavingThankYou();
+                    // analytics
+                    ga('send',
+                       'event',
+                       'button',
+                       'click',
+                       'Post sign up - Profile');
                 },
                 append_to_el: function () {}
             },
@@ -22531,6 +22562,11 @@ function ModalFlow (context) {
                 on_click: function () {
                     self.state('inactive_with_profile');
                     self.dispatch.ApplyStateLeavingThankYou();
+                    ga('send',
+                       'event',
+                       'button',
+                       'click',
+                       'Post sign up - Explore map');
                 },
                 append_to_el: function () {}
             },
@@ -22551,6 +22587,11 @@ function ModalFlow (context) {
                             steamie: [d]
                         });
                     self.dispatch.ApplyStateLeavingThankYou();
+                    ga('send',
+                       'event',
+                       'button',
+                       'click',
+                       'Post sign up - Locate me');
                 },
                 append_to_el: function () {}
             },
@@ -22559,6 +22600,11 @@ function ModalFlow (context) {
                 el: d3.select('#profile-link'),
                 on_click: function () {
                     self.state('profile_' + context.user.type());
+                    ga('send',
+                       'event',
+                       'button',
+                       'click',
+                       'Index - Profile');
                 },
                 append_to_el: function () {}
             },
@@ -22573,6 +22619,11 @@ function ModalFlow (context) {
                         }
                         self.state('just_logged_out');
                     });
+                    ga('send',
+                       'event',
+                       'button',
+                       'click',
+                       'Profile - Logout');
                 },
                 append_to_el: function () {}
             }
