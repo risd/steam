@@ -116,6 +116,14 @@ class Command(BaseCommand):
             to_move.lat = float(41.87900)
             to_move.save()
             print "Maually moved Illinois 7th District"
+
+            # change  canada
+            #   from: [-98.40444, 61.46129]
+            #   to:   [-98.40444, 52.8]
+            to_move = TopLevelGeo.objects.get(country='Canada')
+            to_move.lat = float(52.8)
+            to_move.save()
+
             print "\n\nDone!"
 
         except CommandError as detail:
