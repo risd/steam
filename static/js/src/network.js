@@ -224,9 +224,18 @@ function Network (context) {
                 return d.count;
             });
 
-        count_sel_wrapper_p.append('span')
+        count_sel_wrapper_p.selectAll('span.label')
+            .data([{
+                count: nodes.length
+            }])
+            .enter()
+            .append('span')
             .attr('class', 'label')
-            .text(' STEAM supporters');
+            .text(function (d) {
+                return (d.count === 1) ?
+                       ' STEAM supporter' :
+                       ' STEAM supporters';
+            });
 
         var buttons_sel = fixed_grid_sel
             .append('div')
