@@ -3,6 +3,7 @@ import logging
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import F
 from django.utils.translation import ugettext as _
 
 from .signals.geo import Geo
@@ -163,6 +164,37 @@ class TopLevelGeo(models.Model):
                self.work_in_research +\
                self.work_in_political +\
                self.work_in_industry
+
+    def change_work_in_count(self, amount=1, field='education'):
+        logger.info('Updating work in count')
+        logger.info('work_in   = {0}'.format(field))
+        logger.info('top_lev   = {0}'.format(self))
+        logger.info('amount    = {0}'.format(amount))
+
+        if field == 'education':
+            TopLevelGeo.objects\
+                .filter(pk=self.pk)\
+                .update(
+                    work_in_education=\
+                        F('work_in_education') + amount)
+        if field == 'research':
+            TopLevelGeo.objects\
+                .filter(pk=self.pk)\
+                .update(
+                    work_in_education=\
+                        F('work_in_education') + amount)
+        if field == 'industry':
+            TopLevelGeo.objects\
+                .filter(pk=self.pk)\
+                .update(
+                    work_in_education=\
+                        F('work_in_education') + amount)
+        if field == 'poltical':
+            TopLevelGeo.objects\
+                .filter(pk=self.pk)\
+                .update(
+                    work_in_education=\
+                        F('work_in_education') + amount)
 
     def __geo_interface__(self):
         return {
@@ -372,39 +404,12 @@ class Steamies(models.Model):
 
     def change_work_in_count(self, amount=1):
         if (self.work_in and self.top_level):
-            to_change = 'work_in_{0}'.format(self.work_in)
+            self.top_level\
+                .change_work_in_count(
+                    amount=amount,
+                    field=self.work_in)
 
-            logger.info('Updating work in count')
-            logger.info('work_in   = {0}'.format(self.work_in))
-            logger.info('top_lev   = {0}'.format(self.top_level))
-            logger.info('amount    = {0}'.format(amount))
-            logger.info('to change = {0}'.format(getattr(
-                self.top_level,
-                to_change)))
-
-            setattr(
-                self.top_level,
-                to_change,
-                getattr(
-                    self.top_level,
-                    to_change
-                    ) + amount
-                )
-
-            # thought this would be better, but count is off
-            # setattr(
-            #     self.top_level,
-            #     to_change,
-            #     models.F(to_change) + amount
-            # )
-
-            self.top_level.save()
-
-            logger.info('changed   = {0}'.format(getattr(
-                self.top_level,
-                to_change)))
-
-        logger.info('Updated work_in count')
+            logger.info('Updated work_in count')
 
     def set_geo(self):
         if self.top_level_input:
