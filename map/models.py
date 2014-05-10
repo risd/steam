@@ -181,20 +181,20 @@ class TopLevelGeo(models.Model):
             TopLevelGeo.objects\
                 .filter(pk=self.pk)\
                 .update(
-                    work_in_education=\
-                        F('work_in_education') + amount)
+                    work_in_research=\
+                        F('work_in_research') + amount)
         if field == 'industry':
             TopLevelGeo.objects\
                 .filter(pk=self.pk)\
                 .update(
-                    work_in_education=\
-                        F('work_in_education') + amount)
-        if field == 'poltical':
+                    work_in_industry=\
+                        F('work_in_industry') + amount)
+        if field == 'political':
             TopLevelGeo.objects\
                 .filter(pk=self.pk)\
                 .update(
-                    work_in_education=\
-                        F('work_in_education') + amount)
+                    work_in_political=\
+                        F('work_in_political') + amount)
 
     def __geo_interface__(self):
         return {
