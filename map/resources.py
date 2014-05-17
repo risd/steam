@@ -164,7 +164,7 @@ class NetworkResource(ModelResource):
         return [
             url(
             r"^(?P<resource_name>%s)/" % (self._meta.resource_name) +\
-            r"(?P<top_level_id>\w[\w/-]+)/$",
+            r"(?P<top_level_id>(\d+))/$",
             self.wrap_view('gather_steamies'),
             name="api_gather_steamies"),
         ]
@@ -175,6 +175,8 @@ class NetworkResource(ModelResource):
 
         qs = Steamies.objects\
                      .filter(top_level_id=kwargs['top_level_id'])
+
+        print 'steamies: {0}'.format(qs.count())
 
         paginator = Paginator(request.GET,
                               qs)
