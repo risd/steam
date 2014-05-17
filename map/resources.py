@@ -176,8 +176,6 @@ class NetworkResource(ModelResource):
         qs = Steamies.objects\
                      .filter(top_level_id=kwargs['top_level_id'])
 
-        print 'steamies: {0}'.format(qs.count())
-
         paginator = Paginator(request.GET,
                               qs)
 
