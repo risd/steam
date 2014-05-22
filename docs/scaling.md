@@ -14,3 +14,8 @@ heroku accounts:set risd_media
 heroku ps:scale web=2
 heroku ps:scale clock=1
 ```
+
+
+## Monitoring
+
+Heroku has an experimental feature referred to as [`log-runtime-metrics`](https://devcenter.heroku.com/articles/log-runtime-metrics), which will log performance metrics of CPU and memory load. These are made visible in the [log2viz](http://log2viz.herokuapp.com/app/stemtosteam) application.
