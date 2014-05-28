@@ -173,7 +173,7 @@ class TopLevelGeo(models.Model):
             'work_in_industry': self.work_in_industry,
         }
 
-    def change_work_in_count(self, amount=1, field=None):
+    def change_work_in_count(self, amount=0, field=None):
         logger.info('Updating work in count')
         logger.info('work_in   = {0}'.format(field))
         logger.info('top_lev   = {0}'.format(self))
@@ -412,7 +412,7 @@ class Steamies(models.Model):
         verbose_name = _('Steamies')
         verbose_name_plural = _("Steamies'")
 
-    def change_work_in_count(self, amount=1):
+    def change_work_in_count(self, amount=0):
         if (self.work_in and self.top_level):
             self.top_level\
                 .change_work_in_count(
