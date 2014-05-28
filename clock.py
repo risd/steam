@@ -11,6 +11,7 @@ sched = Scheduler(daemon=True)
 atexit.register(lambda: sched.shutdown(wait=False))
 
 ## News application scheduled processes
+## ----
 # @sched.interval_schedule(minutes=1)
 # def update_for_news():
 #     tumblr = subprocess.check_call(['python',
@@ -31,9 +32,9 @@ atexit.register(lambda: sched.shutdown(wait=False))
 #                                          'manage.py',
 #                                          'worker_hash_tweets'])
 #     logger.info(hash_tweets)
-## end News application schedule processes
 
 ## Map application scheduled procceses
+## ---
 @sched.interval_schedule(minutes=1)
 def update_top_level_geojson():
     new_geojson = subprocess.check_call(
@@ -41,7 +42,15 @@ def update_top_level_geojson():
                      'manage.py',
                      'worker_write_top_level_geojson'])
     logger.info(new_geojson)
-## end Map application scheduled procceses
+
+@sched.interval_schedule(hours=6)
+def check_tlg_values():
+    check_tlg = subprocess.check_call(
+                    ['python',
+                     'manage.py',
+                     'reset_tlg_count'])
+    logger.info(check_tlg)
+
 
 sched.start()
 

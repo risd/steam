@@ -165,7 +165,15 @@ class TopLevelGeo(models.Model):
                self.work_in_political +\
                self.work_in_industry
 
-    def change_work_in_count(self, amount=1, field='education'):
+    def work_in_dict(self):
+        return {
+            'work_in_education': self.work_in_education,
+            'work_in_research': self.work_in_research,
+            'work_in_political': self.work_in_political,
+            'work_in_industry': self.work_in_industry,
+        }
+
+    def change_work_in_count(self, amount=1, field=None):
         logger.info('Updating work in count')
         logger.info('work_in   = {0}'.format(field))
         logger.info('top_lev   = {0}'.format(self))
@@ -177,24 +185,26 @@ class TopLevelGeo(models.Model):
                 .update(
                     work_in_education=\
                         F('work_in_education') + amount)
-        if field == 'research':
+        elif field == 'research':
             TopLevelGeo.objects\
                 .filter(pk=self.pk)\
                 .update(
                     work_in_research=\
                         F('work_in_research') + amount)
-        if field == 'industry':
+        elif field == 'industry':
             TopLevelGeo.objects\
                 .filter(pk=self.pk)\
                 .update(
                     work_in_industry=\
                         F('work_in_industry') + amount)
-        if field == 'political':
+        elif field == 'political':
             TopLevelGeo.objects\
                 .filter(pk=self.pk)\
                 .update(
                     work_in_political=\
                         F('work_in_political') + amount)
+        else:
+            logger.info('No field to update.')
 
     def __geo_interface__(self):
         return {
