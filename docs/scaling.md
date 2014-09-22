@@ -23,4 +23,4 @@ Heroku has an experimental feature referred to as [`log-runtime-metrics`](https:
 
 ## Logs
 
-Logs are not retained for very log on Heroku, so we are leaning on loggly for keeping track of logs. `heroku addons:add loggly`. To view the logs, `heroku addons:open loggly`.
+Persistent logs were previously being provided by loggly. The heroku loggly plugin has been updated, and has not yet been re-integrated.
