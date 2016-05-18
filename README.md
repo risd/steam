@@ -1,8 +1,6 @@
-Work in progress
-
 # STEAM
 
-Django application for STEAM.
+Django application to power [STEAM](http://stemtosteam.org). Currently only being used for the [map](http://map.stemtosteam.org). The News applications is not active at the moment.
 
 - [Production][production].
 - [Development][development].
