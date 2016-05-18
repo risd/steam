@@ -63,4 +63,13 @@ urlpatterns = patterns(
     url(r'^$',
         'map.views.map',
         name='map_index'),
+
+    # CSV data
+    url(r'spreadsheet/individual/$',
+        'map.views.spreadsheet_individual',
+        name="map_spreadsheet_individual"),
+
+    url(r'spreadsheet/institution/$',
+        'map.views.spreadsheet_institution',
+        name="map_spreadsheet_institution"),
 )
