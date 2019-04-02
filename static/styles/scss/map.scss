@@ -113,6 +113,11 @@ header {
 .hide-til-active.active {
     display: block;
 }
+// remove ability to add yourself to the map
+.add-me.hide-til-active.active,
+#about_to_action {
+    display: none;
+}
 .clickable {
     cursor: pointer;
 }
